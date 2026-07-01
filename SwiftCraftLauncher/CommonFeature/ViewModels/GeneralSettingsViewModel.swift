@@ -52,7 +52,6 @@ final class GeneralSettingsViewModel: ObservableObject {
                 .appendingPathComponent(Bundle.main.appName)
             else {
                 throw GlobalError.configuration(
-                    chineseMessage: "无法获取应用支持目录",
                     i18nKey: "error.configuration.app_support_directory_not_found",
                     level: .popup,
                 )
@@ -60,7 +59,7 @@ final class GeneralSettingsViewModel: ObservableObject {
 
             try FileManager.default.createDirectory(at: supportDir, withIntermediateDirectories: true)
             generalSettings.launcherWorkingDirectory = supportDir.path
-            AppLog.common.info("工作目录已重置为: \(supportDir.path)")
+            AppLog.common.info("Working directory reset to: \(supportDir.path)")
         } catch {
             present(GlobalError.from(error))
         }
@@ -75,21 +74,19 @@ final class GeneralSettingsViewModel: ObservableObject {
                 let resourceValues = try url.resourceValues(forKeys: [.isDirectoryKey, .isReadableKey])
                 guard resourceValues.isDirectory == true, resourceValues.isReadable == true else {
                     throw GlobalError.fileSystem(
-                        chineseMessage: "选择的路径不是可读的目录",
                         i18nKey: "error.filesystem.invalid_directory_selected",
                         level: .notification,
                     )
                 }
 
                 generalSettings.launcherWorkingDirectory = url.path
-                AppLog.common.info("工作目录已设置为: \(url.path)")
+                AppLog.common.info("Working directory set to: \(url.path)")
             } catch {
                 present(GlobalError.from(error))
             }
         case let .failure(error):
             present(
                 GlobalError.fileSystem(
-                    chineseMessage: "选择目录失败: \(error.localizedDescription)",
                     i18nKey: "error.filesystem.directory_selection_failed",
                     level: .notification,
                 ),

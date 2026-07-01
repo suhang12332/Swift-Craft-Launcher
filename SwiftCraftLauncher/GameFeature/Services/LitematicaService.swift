@@ -21,9 +21,8 @@ class LitematicaService {
                 try loadLitematicaFilesSync(schematicsDir: schematicsDir)
             }.value
         } catch {
-            AppLog.game.error("读取 Litematica 文件列表失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to read Litematica file list: \(error.localizedDescription)")
             throw GlobalError.fileSystem(
-                chineseMessage: "读取 Litematica 文件列表失败",
                 i18nKey: "error.filesystem.litematica_list_read_failed",
                 level: .notification,
             )
@@ -36,7 +35,7 @@ class LitematicaService {
                 try loadFullMetadataSync(filePath: filePath)
             }.value
         } catch {
-            AppLog.game.error("解析Litematica文件失败: \(filePath.lastPathComponent), 错误: \(error)")
+            AppLog.game.error("Failed to parse Litematica file: \(filePath.lastPathComponent), error: \(error)")
             throw error
         }
     }

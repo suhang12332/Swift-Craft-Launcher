@@ -103,7 +103,7 @@ enum WorldNBTMapper {
             }
             return nil
         } catch {
-            AppLog.game.error("读取 world_gen_settings.dat 失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to read world_gen_settings.dat: \(error.localizedDescription)")
             return nil
         }
     }

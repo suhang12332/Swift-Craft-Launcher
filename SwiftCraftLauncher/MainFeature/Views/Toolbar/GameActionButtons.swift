@@ -118,7 +118,7 @@ struct GameActionButtons: View {
                     if let directory = crashDirectory {
                         NSWorkspace.shared.open(directory)
                     } else {
-                        AppLog.main.error("无法打开游戏目录：directory 为空")
+                        AppLog.main.error("Unable to open game directory: directory is nil")
                     }
                 }
                 Button("common.close".localized(), role: .cancel) { }

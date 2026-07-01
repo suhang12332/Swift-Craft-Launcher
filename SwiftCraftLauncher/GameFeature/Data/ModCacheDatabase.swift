@@ -46,7 +46,7 @@ class ModCacheDatabase {
         """
         try? db.execute(createIndexSQL)
 
-        AppLog.game.debug("mod 缓存表已创建或已存在")
+        AppLog.game.debug("Mod cache table created or already exists")
     }
 
     /// Closes the database connection.
@@ -83,7 +83,6 @@ class ModCacheDatabase {
             guard result == SQLITE_DONE else {
                 let errorMessage = String(cString: sqlite3_errmsg(db.database))
                 throw GlobalError.validation(
-                    chineseMessage: "保存 mod 缓存失败: \(errorMessage)",
                     i18nKey: "error.validation.mod_cache_save_failed",
                     level: .notification,
                 )
@@ -120,7 +119,6 @@ class ModCacheDatabase {
                 guard result == SQLITE_DONE else {
                     let errorMessage = String(cString: sqlite3_errmsg(db.database))
                     throw GlobalError.validation(
-                        chineseMessage: "批量保存 mod 缓存失败: \(errorMessage)",
                         i18nKey: "error.validation.mod_cache_batch_save_failed",
                         level: .notification,
                     )

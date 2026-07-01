@@ -121,7 +121,6 @@ struct MinecraftSkinUtils: View {
 
                 guard let ciImage = CIImage(data: data) else {
                     throw GlobalError.validation(
-                        chineseMessage: "无效的图像数据",
                         i18nKey: "error.validation.invalid_image_data",
                         level: .silent,
                     )
@@ -129,7 +128,6 @@ struct MinecraftSkinUtils: View {
 
                 guard ciImage.extent.width == 64, ciImage.extent.height == 64 else {
                     throw GlobalError.validation(
-                        chineseMessage: "不支持的皮肤格式，仅支持64x64像素",
                         i18nKey: "error.validation.unsupported_skin_format",
                         level: .silent,
                     )
@@ -162,7 +160,7 @@ struct MinecraftSkinUtils: View {
                     self.error = globalError.localizedDescription
                     isLoading = false
                 }
-                AppLog.player.error("❌ 皮肤加载失败: \(globalError.chineseMessage)")
+                AppLog.player.error("Skin loading failed: \(globalError.localizedDescription)")
                 AppServices.errorHandler.handle(globalError)
             }
         }

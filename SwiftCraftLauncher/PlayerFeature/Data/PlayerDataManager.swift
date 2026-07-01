@@ -46,7 +46,6 @@ class PlayerDataManager {
 
         if playerExists(name: name) {
             throw GlobalError.player(
-                chineseMessage: "玩家已存在: \(name)",
                 i18nKey: "error.player.already_exists",
                 level: .notification,
             )
@@ -85,17 +84,15 @@ class PlayerDataManager {
                 if !credentialStore.saveCredential(credential) {
                     try? profileStore.deleteProfile(byID: newPlayer.id)
                     throw GlobalError.validation(
-                        chineseMessage: "保存认证凭据失败",
                         i18nKey: "error.validation.credential_save_failed",
                         level: .notification,
                     )
                 }
             }
 
-            AppLog.player.debug("已添加新玩家: \(name)")
+            AppLog.player.debug("New player added: \(name)")
         } catch {
             throw GlobalError.player(
-                chineseMessage: "玩家创建失败: \(error.localizedDescription)",
                 i18nKey: "error.player.creation_failed",
                 level: .notification,
             )
@@ -135,7 +132,7 @@ class PlayerDataManager {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("添加玩家失败: \(globalError.chineseMessage)")
+            AppLog.player.error("Failed to add player: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return false
         }
@@ -149,7 +146,7 @@ class PlayerDataManager {
             return try loadPlayersThrowing()
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("加载玩家数据失败: \(globalError.chineseMessage)")
+            AppLog.player.error("Failed to load player data: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return []
         }
@@ -185,7 +182,7 @@ class PlayerDataManager {
             return players.contains { $0.name.lowercased() == name.lowercased() }
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("检查玩家存在性失败: \(globalError.chineseMessage)")
+            AppLog.player.error("Failed to check player existence: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return false
         }
@@ -213,10 +210,10 @@ class PlayerDataManager {
                     var firstPlayer = remainingPlayers[0]
                     firstPlayer.isCurrent = true
                     try updatePlayer(firstPlayer)
-                    AppLog.player.debug("当前玩家被删除，已设置第一个玩家为当前玩家: \(firstPlayer.name)")
+                    AppLog.player.debug("Current player deleted, set first player as current: \(firstPlayer.name)")
                 }
             }
-            AppLog.player.debug("已删除玩家 (ID: \(id))")
+            AppLog.player.debug("Player deleted (ID: \(id))")
         }
     }
 
@@ -230,7 +227,7 @@ class PlayerDataManager {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("删除玩家失败: \(globalError.chineseMessage)")
+            AppLog.player.error("Failed to delete player: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return false
         }
@@ -244,7 +241,7 @@ class PlayerDataManager {
             try savePlayersThrowing(players)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("保存玩家数据失败: \(globalError.chineseMessage)")
+            AppLog.player.error("Failed to save player data: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
         }
     }
@@ -271,7 +268,6 @@ class PlayerDataManager {
 
         for credential in credentials where !credentialStore.saveCredential(credential) {
             throw GlobalError.validation(
-                chineseMessage: "保存认证凭据失败: \(credential.userId)",
                 i18nKey: "error.validation.credential_save_failed",
                 level: .notification,
             )
@@ -283,7 +279,7 @@ class PlayerDataManager {
             _ = credentialStore.deleteCredential(userId: credential.userId)
         }
 
-        AppLog.player.debug("玩家数据已保存")
+        AppLog.player.debug("Player data saved")
     }
 
     /// Updates an existing player's profile and credential.
@@ -296,16 +292,15 @@ class PlayerDataManager {
         if let credential = updatedPlayer.credential {
             if !credentialStore.saveCredential(credential) {
                 throw GlobalError.validation(
-                    chineseMessage: "更新认证凭据失败",
                     i18nKey: "error.validation.credential_update_failed",
                     level: .notification,
                 )
             }
         } else {
-            AppLog.player.debug("未提供新的认证凭据，保留现有 Keychain 状态 - userId: \(updatedPlayer.id)")
+            AppLog.player.debug("No new credentials provided, keeping existing Keychain state - userId: \(updatedPlayer.id)")
         }
 
-        AppLog.player.debug("已更新玩家信息: \(updatedPlayer.name)")
+        AppLog.player.debug("Player info updated: \(updatedPlayer.name)")
     }
 
     /// Updates an existing player without propagating errors.
@@ -318,7 +313,7 @@ class PlayerDataManager {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("更新玩家信息失败: \(globalError.chineseMessage)")
+            AppLog.player.error("Failed to update player info: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return false
         }

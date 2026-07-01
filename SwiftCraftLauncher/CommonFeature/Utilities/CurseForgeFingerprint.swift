@@ -20,7 +20,6 @@ public enum CurseForgeFingerprint {
         let normalizedLength = try computeNormalizedLength(fileAt: url)
         guard normalizedLength > 0 else {
             throw GlobalError.fileSystem(
-                chineseMessage: "Jar 文件为空",
                 i18nKey: "error.resource.client_jar_not_found",
                 level: .notification,
             )
@@ -97,7 +96,6 @@ public enum CurseForgeFingerprint {
     private static func readBytes(fileAt url: URL, _ handler: (UInt8) -> Void) throws {
         guard let stream = InputStream(url: url) else {
             throw GlobalError.fileSystem(
-                chineseMessage: "无法读取文件",
                 i18nKey: "error.resource.client_jar_not_found",
                 level: .notification,
             )
@@ -114,7 +112,6 @@ public enum CurseForgeFingerprint {
             let bytesRead = stream.read(buffer, maxLength: bufferSize)
             if bytesRead < 0 {
                 throw stream.streamError ?? GlobalError.fileSystem(
-                    chineseMessage: "读取文件失败",
                     i18nKey: "error.resource.client_jar_not_found",
                     level: .notification,
                 )

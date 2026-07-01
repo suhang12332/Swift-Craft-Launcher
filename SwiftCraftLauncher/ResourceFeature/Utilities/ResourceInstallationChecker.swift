@@ -72,7 +72,7 @@ enum ResourceInstallationChecker {
             }
         } catch {
             AppLog.resource.error(
-                "获取项目版本以检查安装状态失败: \(error.localizedDescription)",
+                "Failed to get project versions for installation check: \(error.localizedDescription)",
             )
         }
 

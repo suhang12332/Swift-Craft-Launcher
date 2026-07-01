@@ -67,7 +67,7 @@ class GameStatusManager: ObservableObject {
     private func updateGameStatusIfNeeded(key: String, actuallyRunning: Bool) {
         if gameRunningStates[key] != actuallyRunning {
             gameRunningStates[key] = actuallyRunning
-            AppLog.game.debug("游戏状态同步更新: \(key) -> \(actuallyRunning ? "运行中" : "已停止")")
+            AppLog.game.debug("Game state sync updated: \(key) -> \(actuallyRunning ? "Running" : "Stopped")")
         }
     }
 
@@ -81,7 +81,7 @@ class GameStatusManager: ObservableObject {
         applyOnMain { [weak self] in
             guard let self else { return }
             gameRunningStates[key] = actuallyRunning
-            AppLog.game.debug("强制刷新游戏状态: \(key) -> \(actuallyRunning ? "运行中" : "已停止")")
+            AppLog.game.debug("Force refresh game state: \(key) -> \(actuallyRunning ? "Running" : "Stopped")")
         }
     }
 
@@ -97,7 +97,7 @@ class GameStatusManager: ObservableObject {
             let currentState = gameRunningStates[key]
             if currentState != isRunning {
                 gameRunningStates[key] = isRunning
-                AppLog.game.debug("游戏状态更新: \(key) -> \(isRunning ? "运行中" : "已停止")")
+                AppLog.game.debug("Game state updated: \(key) -> \(isRunning ? "Running" : "Stopped")")
             }
         }
     }
@@ -144,7 +144,7 @@ class GameStatusManager: ObservableObject {
             let currentState = gameLaunchingStates[key] ?? false
             if currentState != isLaunching {
                 gameLaunchingStates[key] = isLaunching
-                AppLog.game.debug("游戏启动中状态更新: \(key) -> \(isLaunching ? "启动中" : "非启动中")")
+                AppLog.game.debug("Game launch state updated: \(key) -> \(isLaunching ? "Launching" : "Not launching")")
             }
         }
     }

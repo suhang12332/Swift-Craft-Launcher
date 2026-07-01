@@ -204,7 +204,7 @@ final class SkinLibraryStore {
     }
 
     private func upsert(_ item: SkinLibraryItem) throws {
-        try executeUpdate(upsertSQL, errorPrefix: "保存皮肤库失败") { statement in
+        try executeUpdate(upsertSQL, errorPrefix: "Failed to save skin library") { statement in
             SQLiteDatabase.bind(statement, index: 1, value: item.originalFileName)
             SQLiteDatabase.bind(statement, index: 2, value: item.sha1)
             SQLiteDatabase.bind(statement, index: 3, value: item.model.rawValue)
@@ -213,7 +213,7 @@ final class SkinLibraryStore {
     }
 
     private func deleteItemRecord(sha1: String) throws {
-        try executeUpdate(deleteSQL, errorPrefix: "删除皮肤库记录失败") { statement in
+        try executeUpdate(deleteSQL, errorPrefix: "Failed to delete skin library record") { statement in
             SQLiteDatabase.bind(statement, index: 1, value: sha1)
         }
     }
@@ -237,7 +237,6 @@ final class SkinLibraryStore {
                 try bind(statement)
                 guard sqlite3_step(statement) == SQLITE_DONE else {
                     throw GlobalError.validation(
-                        chineseMessage: "\(errorPrefix): \(sqliteErrorMessage())",
                         i18nKey: "error.validation.sql_execution_failed",
                         level: .notification,
                     )

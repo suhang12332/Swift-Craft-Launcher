@@ -111,6 +111,6 @@ extension MinecraftSkinUtils {
     /// Clears the entire skin image cache.
     static func clearCache() {
         imageCache.removeAllObjects()
-        AppLog.player.debug("🧹 MinecraftSkinUtils 缓存已清理")
+        AppLog.player.debug("MinecraftSkinUtils cache cleared")
     }
 }

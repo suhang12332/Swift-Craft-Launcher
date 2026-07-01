@@ -52,7 +52,7 @@ extension CurseForgeService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("搜索 CurseForge 项目失败: \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to search CurseForge projects: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return CurseForgeSearchResult(data: [], pagination: nil)
         }
@@ -110,7 +110,6 @@ extension CurseForgeService {
             let data = try JSONEncoder().encode(stringIds)
             guard let jsonArrayString = String(data: data, encoding: .utf8) else {
                 throw GlobalError.validation(
-                    chineseMessage: "编码 categoryIds 失败",
                     i18nKey: "error.validation.encode_category_ids_failed",
                     level: .notification,
                 )
@@ -125,7 +124,6 @@ extension CurseForgeService {
             let data = try JSONEncoder().encode(limitedGameVersions)
             guard let jsonArrayString = String(data: data, encoding: .utf8) else {
                 throw GlobalError.validation(
-                    chineseMessage: "编码 gameVersions 失败",
                     i18nKey: "error.validation.encode_game_versions_failed",
                     level: .notification,
                 )
@@ -154,7 +152,6 @@ extension CurseForgeService {
             let data = try JSONEncoder().encode(stringTypes)
             guard let jsonArrayString = String(data: data, encoding: .utf8) else {
                 throw GlobalError.validation(
-                    chineseMessage: "编码 modLoaderTypes 失败",
                     i18nKey: "error.validation.encode_mod_loader_types_failed",
                     level: .notification,
                 )
@@ -167,7 +164,6 @@ extension CurseForgeService {
         components?.queryItems = queryItems
         guard let url = components?.url else {
             throw GlobalError.validation(
-                chineseMessage: "构建搜索URL失败",
                 i18nKey: "error.validation.search_url_build_failed",
                 level: .notification,
             )

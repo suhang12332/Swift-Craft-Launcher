@@ -22,7 +22,6 @@ class AppCacheManager {
             try FileManager.default.createDirectory(at: AppPaths.appCache, withIntermediateDirectories: true)
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "创建缓存目录失败: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.cache_directory_creation_failed",
                 level: .notification,
             )
@@ -47,7 +46,6 @@ class AppCacheManager {
                 try saveNamespace(namespace, dict: nsDict)
             } catch {
                 throw GlobalError.validation(
-                    chineseMessage: "缓存数据编码失败: \(error.localizedDescription)",
                     i18nKey: "error.validation.cache_data_encode_failed",
                     level: .notification,
                 )
@@ -84,7 +82,6 @@ class AppCacheManager {
                     return try JSONDecoder().decode(T.self, from: data)
                 } catch {
                     errorHandler.handle(GlobalError.validation(
-                        chineseMessage: "解码缓存数据失败: \(error.localizedDescription)",
                         i18nKey: "error.validation.cache_data_decode_failed",
                         level: .silent,
                     ))
@@ -109,7 +106,6 @@ class AppCacheManager {
             return try JSONDecoder().decode([String: Data].self, from: data)
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "读取缓存文件失败: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.cache_read_failed",
                 level: .notification,
             )
@@ -124,7 +120,6 @@ class AppCacheManager {
             try data.write(to: url)
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "写入缓存文件失败: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.cache_write_failed",
                 level: .notification,
             )

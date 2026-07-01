@@ -60,7 +60,6 @@ enum ProcessorExecutor {
     ) throws -> URL {
         guard let jar else {
             throw GlobalError.validation(
-                chineseMessage: "处理器缺少JAR文件配置",
                 i18nKey: "error.validation.processor_missing_jar",
                 level: .notification,
             )
@@ -70,7 +69,6 @@ enum ProcessorExecutor {
             let relativePath = CommonService.mavenCoordinateToRelativePath(jar)
         else {
             throw GlobalError.validation(
-                chineseMessage: "无效的Maven坐标: \(jar)",
                 i18nKey: String(
                     format: "error.validation.invalid_maven_coordinate",
                     jar,
@@ -82,7 +80,6 @@ enum ProcessorExecutor {
         let jarPath = librariesDir.appendingPathComponent(relativePath)
         guard FileManager.default.fileExists(atPath: jarPath.path) else {
             throw GlobalError.resource(
-                chineseMessage: "找不到处理器JAR文件: \(jar)",
                 i18nKey: String(
                     format: "error.resource.processor_jar_not_found",
                     jar,
@@ -111,7 +108,7 @@ enum ProcessorExecutor {
                 if FileManager.default.fileExists(atPath: cpPath.path) {
                     classpath.append(cpPath.path)
                 } else {
-                    AppLog.game.error("classpath文件不存在: \(cpPath.path)")
+                    AppLog.game.error("classpath file does not exist: \(cpPath.path)")
                 }
             }
         }
@@ -138,7 +135,6 @@ enum ProcessorExecutor {
                 )
             else {
                 throw GlobalError.validation(
-                    chineseMessage: "无效的Maven坐标: \(coordinate)",
                     i18nKey: String(
                         format: "error.validation.invalid_maven_coordinate",
                         coordinate,
@@ -166,7 +162,7 @@ enum ProcessorExecutor {
         if let args {
             let processedArgs: [String] = args.compactMap { arg in
                 guard let extractedValue = CommonFileManager.extractClientValue(from: arg) else {
-                    AppLog.game.error("无法提取客户端值: \(arg)")
+                    AppLog.game.error("Unable to extract client value: \(arg)")
                     return nil
                 }
                 return processPlaceholders(
@@ -266,15 +262,12 @@ enum ProcessorExecutor {
 
             if process.terminationStatus != 0 {
                 throw GlobalError.download(
-                    chineseMessage:
-                        "处理器执行失败 (退出码: \(process.terminationStatus))",
                     i18nKey: "error.download.processor_execution_failed",
                     level: .notification,
                 )
             }
         } catch {
             throw GlobalError.download(
-                chineseMessage: "启动处理器失败: \(error.localizedDescription)",
                 i18nKey: "error.download.processor_start_failed",
                 level: .notification,
             )
@@ -320,7 +313,6 @@ enum ProcessorExecutor {
             archive = try Archive(url: jarPath, accessMode: .read)
         } catch {
             throw GlobalError.download(
-                chineseMessage: "无法打开JAR文件: \(jarPath.lastPathComponent)",
                 i18nKey: "error.download.jar_open_failed",
                 level: .notification,
             )
@@ -328,8 +320,6 @@ enum ProcessorExecutor {
 
         guard let manifestEntry = archive["META-INF/MANIFEST.MF"] else {
             throw GlobalError.download(
-                chineseMessage:
-                    "无法从processor JAR文件中获取主类: \(jarPath.lastPathComponent)",
                 i18nKey: "error.download.processor_main_class_not_found",
                 level: .notification,
             )
@@ -343,7 +333,6 @@ enum ProcessorExecutor {
         guard let manifestContent = String(data: manifestData, encoding: .utf8)
         else {
             throw GlobalError.download(
-                chineseMessage: "无法解析MANIFEST.MF内容",
                 i18nKey: "error.download.manifest_parse_failed",
                 level: .notification,
             )
@@ -359,8 +348,6 @@ enum ProcessorExecutor {
         }
 
         throw GlobalError.download(
-            chineseMessage:
-                "无法从processor JAR文件中获取主类: \(jarPath.lastPathComponent)",
             i18nKey: "error.download.processor_main_class_not_found",
             level: .notification,
         )

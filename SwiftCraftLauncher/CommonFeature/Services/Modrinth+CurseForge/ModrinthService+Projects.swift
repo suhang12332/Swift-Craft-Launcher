@@ -22,7 +22,7 @@ extension ModrinthService {
             return try await fetchProjectDetailsThrowing(id: id)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("获取项目详情失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to fetch project details (ID: \(id)): \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }
@@ -54,7 +54,7 @@ extension ModrinthService {
             return try await fetchProjectDetailsV3Throwing(id: id)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("获取 v3 项目详情失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to fetch v3 project details (ID: \(id)): \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }
@@ -78,7 +78,7 @@ extension ModrinthService {
             return try await fetchProjectVersionsThrowing(id: id)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("获取项目版本列表失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to fetch project version list (ID: \(id)): \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return []
         }

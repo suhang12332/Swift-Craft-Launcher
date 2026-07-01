@@ -45,12 +45,12 @@ enum ModPackDependencyInstaller {
         let (filesSuccess, dependenciesSuccess) = await (filesResult, dependenciesResult)
 
         if !filesSuccess {
-            AppLog.modPack.error("整合包文件安装失败")
+            AppLog.modPack.error("Modpack file installation failed")
             return false
         }
 
         if !dependenciesSuccess {
-            AppLog.modPack.error("整合包依赖安装失败")
+            AppLog.modPack.error("Modpack dependency installation failed")
             return false
         }
 

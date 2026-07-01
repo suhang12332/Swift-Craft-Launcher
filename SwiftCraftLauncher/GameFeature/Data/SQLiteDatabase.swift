@@ -57,12 +57,11 @@ class SQLiteDatabase {
             let result = sqlite3_open_v2(dbPath, &tempDb, flags, nil)
 
             guard result == SQLITE_OK, let openedDb = tempDb else {
-                let errorMessage = tempDb.map { String(cString: sqlite3_errmsg($0)) } ?? "未知错误"
+                let errorMessage = tempDb.map { String(cString: sqlite3_errmsg($0)) } ?? "Unknown error"
                 if let dbToClose = tempDb {
                     sqlite3_close(dbToClose)
                 }
                 throw GlobalError.validation(
-                    chineseMessage: "无法打开数据库: \(errorMessage)",
                     i18nKey: "error.validation.database_open_failed",
                     level: .notification,
                 )
@@ -71,7 +70,7 @@ class SQLiteDatabase {
             self.db = openedDb
             try enableWALMode()
             try enableMmap()
-            AppLog.game.debug("SQLite 数据库已打开: \(self.dbPath)")
+            AppLog.game.debug("SQLite database opened: \(self.dbPath)")
         }
     }
 
@@ -81,7 +80,7 @@ class SQLiteDatabase {
             guard let db else { return }
             sqlite3_close(db)
             self.db = nil
-            AppLog.game.debug("SQLite 数据库已关闭")
+            AppLog.game.debug("SQLite database closed")
         }
     }
 
@@ -92,7 +91,6 @@ class SQLiteDatabase {
         guard result == SQLITE_OK else {
             let errorMessage = String(cString: sqlite3_errmsg(db))
             throw GlobalError.validation(
-                chineseMessage: "无法启用 WAL 模式: \(errorMessage)",
                 i18nKey: "error.validation.wal_mode_failed",
                 level: .notification,
             )
@@ -100,7 +98,7 @@ class SQLiteDatabase {
 
         sqlite3_exec(db, "PRAGMA wal_autocheckpoint=1000;", nil, nil, nil)
 
-        AppLog.game.debug("WAL 模式已启用")
+        AppLog.game.debug("WAL mode enabled")
     }
 
     private func enableMmap() throws {
@@ -113,13 +111,12 @@ class SQLiteDatabase {
         guard result == SQLITE_OK else {
             let errorMessage = String(cString: sqlite3_errmsg(db))
             throw GlobalError.validation(
-                chineseMessage: "无法启用 mmap: \(errorMessage)",
                 i18nKey: "error.validation.mmap_failed",
                 level: .notification,
             )
         }
 
-        AppLog.game.debug("mmap 已启用 (64MB)")
+        AppLog.game.debug("mmap enabled (64MB)")
     }
 
     /// Executes a block within a database transaction.
@@ -132,7 +129,6 @@ class SQLiteDatabase {
         try sync {
             guard let db else {
                 throw GlobalError.validation(
-                    chineseMessage: "数据库未打开",
                     i18nKey: "error.validation.database_not_open",
                     level: .notification,
                 )
@@ -142,7 +138,6 @@ class SQLiteDatabase {
             guard result == SQLITE_OK else {
                 let errorMessage = String(cString: sqlite3_errmsg(db))
                 throw GlobalError.validation(
-                    chineseMessage: "无法开始事务: \(errorMessage)",
                     i18nKey: "error.validation.transaction_begin_failed",
                     level: .notification,
                 )
@@ -155,7 +150,6 @@ class SQLiteDatabase {
                 guard result == SQLITE_OK else {
                     let errorMessage = String(cString: sqlite3_errmsg(db))
                     throw GlobalError.validation(
-                        chineseMessage: "无法提交事务: \(errorMessage)",
                         i18nKey: "error.validation.transaction_commit_failed",
                         level: .notification,
                     )
@@ -176,7 +170,6 @@ class SQLiteDatabase {
         try sync {
             guard let db else {
                 throw GlobalError.validation(
-                    chineseMessage: "数据库未打开",
                     i18nKey: "error.validation.database_not_open",
                     level: .notification,
                 )
@@ -186,10 +179,9 @@ class SQLiteDatabase {
             let result = sqlite3_exec(db, sql, nil, nil, &errorMessage)
 
             if result != SQLITE_OK {
-                let message = errorMessage.map { String(cString: $0) } ?? "未知错误"
+                let message = errorMessage.map { String(cString: $0) } ?? "Unknown error"
                 sqlite3_free(errorMessage)
                 throw GlobalError.validation(
-                    chineseMessage: "SQL 执行失败: \(message)",
                     i18nKey: "error.validation.sql_execution_failed",
                     level: .notification,
                 )
@@ -207,7 +199,6 @@ class SQLiteDatabase {
         try sync {
             guard let db else {
                 throw GlobalError.validation(
-                    chineseMessage: "数据库未打开",
                     i18nKey: "error.validation.database_not_open",
                     level: .notification,
                 )
@@ -219,7 +210,6 @@ class SQLiteDatabase {
             guard result == SQLITE_OK, let stmt = statement else {
                 let errorMessage = String(cString: sqlite3_errmsg(db))
                 throw GlobalError.validation(
-                    chineseMessage: "无法准备 SQL 语句: \(errorMessage)",
                     i18nKey: "error.validation.sql_prepare_failed",
                     level: .notification,
                 )

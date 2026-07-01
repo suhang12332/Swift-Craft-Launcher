@@ -12,7 +12,6 @@ enum NeoForgeLoaderService {
     static func fetchAllNeoForgeVersions(for minecraftVersion: String) async throws -> LoaderVersion {
         guard let result = await CommonService.fetchAllLoaderVersions(type: "neo", minecraftVersion: minecraftVersion) else {
             throw GlobalError.resource(
-                chineseMessage: "未找到 Minecraft \(minecraftVersion) 的 NeoForge 加载器版本",
                 i18nKey: "error.resource.neoforge_loader_version_not_found",
                 level: .notification,
             )
@@ -53,7 +52,7 @@ enum NeoForgeLoaderService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("NeoForge 指定版本设置失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to set NeoForge specified version: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }
@@ -65,7 +64,7 @@ enum NeoForgeLoaderService {
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
-        AppLog.game.info("开始设置指定版本的 NeoForge 加载器: \(loaderVersion)")
+        AppLog.game.info("Starting to set specified NeoForge loader version: \(loaderVersion)")
 
         let neoForgeProfile = try await fetchSpecificNeoForgeProfile(for: gameVersion, loaderVersion: loaderVersion)
         let librariesDirectory = AppPaths.librariesDirectory
@@ -98,7 +97,6 @@ enum NeoForgeLoaderService {
 
         guard let version = neoForgeProfile.version else {
             throw GlobalError.resource(
-                chineseMessage: "NeoForge profile 缺少版本信息",
                 i18nKey: "error.resource.neoforge_missing_version",
                 level: .notification,
             )

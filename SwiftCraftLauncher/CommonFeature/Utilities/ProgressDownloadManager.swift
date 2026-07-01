@@ -88,7 +88,6 @@ enum ProgressDownloadManager {
               let contentLength = httpResponse.value(forHTTPHeaderField: APIClient.Header.contentLength),
               let fileSize = Int64(contentLength) else {
             throw GlobalError.download(
-                chineseMessage: "无法获取文件大小",
                 i18nKey: "error.download.cannot_get_file_size",
                 level: .notification,
             )
@@ -127,7 +126,6 @@ enum ProgressDownloadManager {
     private static func mapDownloadError(_ error: Error) -> Error {
         if case ProgressDownloadError.httpStatus = error {
             return GlobalError.download(
-                chineseMessage: "HTTP 请求失败",
                 i18nKey: "error.download.http_status_error",
                 level: .notification,
             )
@@ -181,7 +179,6 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
         let (data, response) = try await session.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
-                chineseMessage: "无效的 HTTP 响应",
                 i18nKey: "error.network.invalid_response",
                 level: .notification,
             )

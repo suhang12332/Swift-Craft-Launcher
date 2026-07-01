@@ -27,7 +27,7 @@ class UserProfileStore {
             let decoder = JSONDecoder()
             return try decoder.decode([UserProfile].self, from: profilesData)
         } catch {
-            AppLog.player.error("加载用户基本信息失败: \(error.localizedDescription)")
+            AppLog.player.error("Failed to load user profile: \(error.localizedDescription)")
             return []
         }
     }
@@ -46,7 +46,6 @@ class UserProfileStore {
             return try decoder.decode([UserProfile].self, from: profilesData)
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "加载用户基本信息失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.user_profile_load_failed",
                 level: .notification,
             )
@@ -61,7 +60,7 @@ class UserProfileStore {
             try saveProfilesThrowing(profiles)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("保存用户基本信息失败: \(globalError.chineseMessage)")
+            AppLog.player.error("Failed to save user profile: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
         }
     }
@@ -75,10 +74,9 @@ class UserProfileStore {
             let encoder = JSONEncoder()
             let encodedData = try encoder.encode(profiles)
             UserDefaults.standard.set(encodedData, forKey: AppConstants.UserDefaultsKeys.userProfiles)
-            AppLog.player.debug("用户基本信息已保存")
+            AppLog.player.debug("User profile saved")
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "保存用户基本信息失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.user_profile_save_failed",
                 level: .notification,
             )
@@ -96,7 +94,6 @@ class UserProfileStore {
 
         if profiles.contains(where: { $0.id == profile.id }) {
             throw GlobalError.player(
-                chineseMessage: "用户已存在: \(profile.name)",
                 i18nKey: "error.player.already_exists",
                 level: .notification,
             )
@@ -111,7 +108,7 @@ class UserProfileStore {
         }
 
         try saveProfilesThrowing(profiles)
-        AppLog.player.debug("已添加新用户: \(profile.name)")
+        AppLog.player.debug("New user added: \(profile.name)")
     }
 
     /// Updates an existing user profile.
@@ -123,7 +120,6 @@ class UserProfileStore {
 
         guard let index = profiles.firstIndex(where: { $0.id == profile.id }) else {
             throw GlobalError.player(
-                chineseMessage: "要更新的用户不存在: \(profile.name)",
                 i18nKey: "error.player.not_found_for_update",
                 level: .notification,
             )
@@ -131,7 +127,7 @@ class UserProfileStore {
 
         profiles[index] = profile
         try saveProfilesThrowing(profiles)
-        AppLog.player.debug("已更新用户信息: \(profile.name)")
+        AppLog.player.debug("User profile updated: \(profile.name)")
     }
 
     /// Deletes a user profile by its identifier.
@@ -150,14 +146,13 @@ class UserProfileStore {
         if profiles.count < initialCount {
             if isDeletingCurrentUser, !profiles.isEmpty {
                 profiles[0].isCurrent = true
-                AppLog.player.debug("当前用户被删除，已设置第一个用户为当前用户: \(profiles[0].name)")
+                AppLog.player.debug("Current user deleted, set first user as current: \(profiles[0].name)")
             }
 
             try saveProfilesThrowing(profiles)
-            AppLog.player.debug("已删除用户 (ID: \(id))")
+            AppLog.player.debug("User deleted (ID: \(id))")
         } else {
             throw GlobalError.player(
-                chineseMessage: "用户不存在: \(id)",
                 i18nKey: "error.player.not_found",
                 level: .notification,
             )
@@ -173,7 +168,7 @@ class UserProfileStore {
             let profiles = try loadProfilesThrowing()
             return profiles.contains { $0.id == id }
         } catch {
-            AppLog.player.error("检查用户存在性失败: \(error.localizedDescription)")
+            AppLog.player.error("Failed to check user existence: \(error.localizedDescription)")
             return false
         }
     }

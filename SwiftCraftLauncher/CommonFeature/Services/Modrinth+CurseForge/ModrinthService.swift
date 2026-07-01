@@ -70,7 +70,6 @@ enum ModrinthService {
                 throw error
             } else {
                 throw GlobalError.validation(
-                    chineseMessage: "解析版本信息失败",
                     i18nKey: "error.validation.version_info_parse_failed",
                     level: .notification,
                 )
@@ -91,7 +90,7 @@ enum ModrinthService {
                 }
             } catch {
                 let globalError = GlobalError.from(error)
-                AppLog.common.error("通过哈希获取项目详情失败 (Hash: \(hash)): \(globalError.chineseMessage)")
+                AppLog.common.error("Failed to fetch project details by hash (Hash: \(hash)): \(globalError.localizedDescription)")
                 await MainActor.run {
                     completion(nil)
                 }

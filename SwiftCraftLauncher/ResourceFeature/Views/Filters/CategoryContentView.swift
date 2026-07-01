@@ -95,7 +95,7 @@ struct CategoryContentView: View {
             try await loadDataThrowing()
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.resource.error("加载分类数据失败: \(globalError.chineseMessage)")
+            AppLog.resource.error("Failed to load category data: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             await MainActor.run {
                 viewModel.setError(globalError)
@@ -106,7 +106,6 @@ struct CategoryContentView: View {
     private func loadDataThrowing() async throws {
         guard !project.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "项目类型不能为空",
                 i18nKey: "error.validation.project_type_empty",
                 level: .notification,
             )

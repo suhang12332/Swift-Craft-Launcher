@@ -175,7 +175,7 @@ class GameRepository: ObservableObject {
             }
         }
 
-        AppLog.game.info("成功添加游戏: \(game.gameName) (工作路径: \(workingPath))")
+        AppLog.game.info("Successfully added game: \(game.gameName) (working path: \(workingPath))")
     }
 
     func addGameSilently(_ game: GameVersionInfo) {
@@ -192,7 +192,6 @@ class GameRepository: ObservableObject {
         let workingPath = currentWorkingPath
         guard let game = getGame(by: id) else {
             throw GlobalError.validation(
-                chineseMessage: "找不到要删除的游戏：\(id)",
                 i18nKey: "error.validation.game_not_found_delete",
                 level: .notification,
             )
@@ -206,7 +205,7 @@ class GameRepository: ObservableObject {
             gamesByWorkingPath[workingPath]?.removeAll { $0.id == id }
         }
 
-        AppLog.game.info("成功删除游戏: \(game.gameName) (工作路径: \(workingPath))")
+        AppLog.game.info("Successfully deleted game: \(game.gameName) (working path: \(workingPath))")
     }
 
     func deleteGameSilently(id: String) {
@@ -234,7 +233,7 @@ class GameRepository: ObservableObject {
             corruptedGamesByWorkingPath[workingPath]?.removeAll { $0 == gameName }
         }
 
-        AppLog.game.info("成功删除名称为 \(gameName) 的游戏记录（工作路径: \(workingPath)）")
+        AppLog.game.info("Successfully deleted game record named \(gameName) (working path: \(workingPath))")
     }
 
     func getGame(by id: String) -> GameVersionInfo? {
@@ -265,7 +264,7 @@ class GameRepository: ObservableObject {
             }
         }
 
-        AppLog.game.info("成功更新游戏: \(game.gameName) (工作路径: \(workingPath))")
+        AppLog.game.info("Successfully updated game: \(game.gameName) (working path: \(workingPath))")
     }
 
     func updateGameSilently(_ game: GameVersionInfo) -> Bool {
@@ -283,7 +282,6 @@ class GameRepository: ObservableObject {
         let workingPath = currentWorkingPath
         guard var game = getGame(by: id) else {
             throw GlobalError.validation(
-                chineseMessage: "找不到要更新状态的游戏：\(id)",
                 i18nKey: "error.validation.game_not_found_status",
                 level: .notification,
             )
@@ -301,7 +299,7 @@ class GameRepository: ObservableObject {
             }
         }
 
-        AppLog.game.info("成功更新游戏最后游玩时间: \(game.gameName) (工作路径: \(workingPath))")
+        AppLog.game.info("Successfully updated game last played time: \(game.gameName) (working path: \(workingPath))")
     }
 
     func updateGameLastPlayedSilently(id: String, lastPlayed: Date = Date()) -> Bool {
@@ -318,7 +316,6 @@ class GameRepository: ObservableObject {
     func updateJavaPath(id: String, javaPath: String) async throws {
         guard var game = getGame(by: id) else {
             throw GlobalError.validation(
-                chineseMessage: "找不到要更新 Java 路径的游戏：\(id)",
                 i18nKey: "error.validation.game_not_found_java",
                 level: .notification,
             )
@@ -326,7 +323,7 @@ class GameRepository: ObservableObject {
 
         game.javaPath = javaPath
         try await updateGame(game)
-        AppLog.game.info("成功更新游戏 Java 路径: \(game.gameName)")
+        AppLog.game.info("Successfully updated game Java path: \(game.gameName)")
     }
 
     func updateJavaPathSilently(id: String, javaPath: String) -> Bool {
@@ -343,7 +340,6 @@ class GameRepository: ObservableObject {
     func updateJvmArguments(id: String, jvmArguments: String) async throws {
         guard var game = getGame(by: id) else {
             throw GlobalError.validation(
-                chineseMessage: "找不到要更新 JVM 参数的游戏：\(id)",
                 i18nKey: "error.validation.game_not_found_jvm",
                 level: .notification,
             )
@@ -351,7 +347,7 @@ class GameRepository: ObservableObject {
 
         game.jvmArguments = jvmArguments
         try await updateGame(game)
-        AppLog.game.info("成功更新游戏 JVM 参数: \(game.gameName)")
+        AppLog.game.info("Successfully updated game JVM arguments: \(game.gameName)")
     }
 
     func updateJvmArgumentsSilently(id: String, jvmArguments: String) -> Bool {
@@ -368,7 +364,6 @@ class GameRepository: ObservableObject {
     func updateMemorySize(id: String, xms: Int, xmx: Int) async throws {
         guard var game = getGame(by: id) else {
             throw GlobalError.validation(
-                chineseMessage: "找不到要更新内存大小的游戏：\(id)",
                 i18nKey: "error.validation.game_not_found_memory",
                 level: .notification,
             )
@@ -376,7 +371,6 @@ class GameRepository: ObservableObject {
 
         guard xms > 0, xmx > 0, xms <= xmx else {
             throw GlobalError.validation(
-                chineseMessage: "无效的内存参数：xms=\(xms), xmx=\(xmx)",
                 i18nKey: "error.validation.invalid_memory_params",
                 level: .notification,
             )
@@ -385,7 +379,7 @@ class GameRepository: ObservableObject {
         game.xms = xms
         game.xmx = xmx
         try await updateGame(game)
-        AppLog.game.info("成功更新游戏内存大小: \(game.gameName)")
+        AppLog.game.info("Successfully updated game memory size: \(game.gameName)")
     }
 
     func updateMemorySizeSilently(id: String, xms: Int, xmx: Int) -> Bool {
@@ -420,7 +414,7 @@ class GameRepository: ObservableObject {
 
     private func scanAllGamesModsDirectory() async {
         let games = games
-        AppLog.game.info("开始扫描 \(games.count) 个游戏的 mods 目录")
+        AppLog.game.info("Starting scan of \(games.count) games mods directories")
 
         await withTaskGroup(of: Void.self) { group in
             for game in games {
@@ -430,7 +424,7 @@ class GameRepository: ObservableObject {
             }
         }
 
-        AppLog.game.info("完成所有游戏的 mods 目录扫描")
+        AppLog.game.info("Completed scan of all games mods directories")
     }
 
     /// Fetches all working paths with their game counts from the database.
@@ -472,7 +466,7 @@ class GameRepository: ObservableObject {
                     localGameNames = []
                 }
             } catch {
-                AppLog.game.error("无法读取工作路径的游戏目录: \(workingPath), 错误: \(error.localizedDescription)")
+                AppLog.game.error("Unable to read game directory at working path: \(workingPath), error: \(error.localizedDescription)")
                 localGameNames = []
             }
             let valid = games.filter { localGameNames.contains($0.gameName) }
@@ -488,6 +482,6 @@ class GameRepository: ObservableObject {
             corruptedGamesByWorkingPath[workingPath] = corruptedNames
         }
 
-        AppLog.game.info("成功加载 \(validGames.count) 个游戏（工作路径: \(pathForLog)）")
+        AppLog.game.info("Successfully loaded \(validGames.count) games (working path: \(pathForLog))")
     }
 }

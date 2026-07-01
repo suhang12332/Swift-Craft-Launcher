@@ -38,7 +38,6 @@ class AIChatManager: ObservableObject {
     func sendMessage(_ text: String, attachments: [MessageAttachmentType] = [], chatState: ChatState) async {
         guard !settings.apiKey.isEmpty else {
             let error = GlobalError.configuration(
-                chineseMessage: "AI 服务未配置，请检查 API Key",
                 i18nKey: "error.configuration.ai_service_not_configured",
                 level: .notification,
             )
@@ -51,7 +50,6 @@ class AIChatManager: ObservableObject {
 
         guard !settings.getModel().isEmpty else {
             let error = GlobalError.configuration(
-                chineseMessage: "AI 模型未配置，请在设置中填写模型名称",
                 i18nKey: "error.configuration.ai_model_not_configured",
                 level: .notification,
             )
@@ -89,7 +87,7 @@ class AIChatManager: ObservableObject {
 //                try await sendGeminiMessage(messages: allMessages, chatState: chatState)
             }
         } catch {
-            AppLog.common.error("发送消息失败: \(error.localizedDescription)")
+            AppLog.common.error("Failed to send message: \(error.localizedDescription)")
             await MainActor.run {
                 chatState.isSending = false
 
@@ -101,7 +99,6 @@ class AIChatManager: ObservableObject {
                     }
                 } else {
                     let globalError = GlobalError.network(
-                        chineseMessage: error.localizedDescription,
                         i18nKey: "error.network.ai_request_failed",
                         level: .notification,
                     )
@@ -119,7 +116,6 @@ class AIChatManager: ObservableObject {
         let apiURL = settings.getAPIURL()
         guard let url = URL(string: apiURL) else {
             throw GlobalError.network(
-                chineseMessage: "无效的 API URL",
                 i18nKey: "error.network.invalid_url",
                 level: .notification,
             )
@@ -143,9 +139,8 @@ class AIChatManager: ObservableObject {
 
         guard (200 ... 299).contains(httpResponse.statusCode) else {
             let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
-            let errorMessage = String(data: errorData, encoding: .utf8) ?? "未知错误"
+            let errorMessage = String(data: errorData, encoding: .utf8) ?? "Unknown error"
             throw GlobalError.network(
-                chineseMessage: "API 错误: \(errorMessage)",
                 i18nKey: "error.network.api_error",
                 level: .notification,
             )
@@ -228,7 +223,6 @@ class AIChatManager: ObservableObject {
 
         guard let url = URL(string: apiURL) else {
             throw GlobalError.network(
-                chineseMessage: "无效的 API URL",
                 i18nKey: "error.network.invalid_url",
                 level: .notification,
             )
@@ -255,9 +249,8 @@ class AIChatManager: ObservableObject {
 
         guard (200 ... 299).contains(httpResponse.statusCode) else {
             let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
-            let errorMessage = String(data: errorData, encoding: .utf8) ?? "未知错误"
+            let errorMessage = String(data: errorData, encoding: .utf8) ?? "Unknown error"
             throw GlobalError.network(
-                chineseMessage: "API 错误: \(errorMessage)",
                 i18nKey: "error.network.api_error",
                 level: .notification,
             )
@@ -329,7 +322,6 @@ class AIChatManager: ObservableObject {
 
         guard let url = URL(string: apiURL) else {
             throw GlobalError.network(
-                chineseMessage: "无效的 API URL",
                 i18nKey: "error.network.invalid_url",
                 level: .notification,
             )
@@ -350,9 +342,8 @@ class AIChatManager: ObservableObject {
 
         guard (200 ... 299).contains(httpResponse.statusCode) else {
             let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
-            let errorMessage = String(data: errorData, encoding: .utf8) ?? "未知错误"
+            let errorMessage = String(data: errorData, encoding: .utf8) ?? "Unknown error"
             throw GlobalError.network(
-                chineseMessage: "API 错误: \(errorMessage)",
                 i18nKey: "error.network.api_error",
                 level: .notification,
             )

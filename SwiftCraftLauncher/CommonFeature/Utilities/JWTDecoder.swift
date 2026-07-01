@@ -16,7 +16,7 @@ enum JWTDecoder {
         let components = jwt.components(separatedBy: ".")
 
         guard components.count == 3 else {
-            AppLog.common.error("JWT格式无效：不是标准的3部分格式")
+            AppLog.common.error("Invalid JWT format: not standard 3-part format")
             return nil
         }
 
@@ -24,7 +24,7 @@ enum JWTDecoder {
         let paddedPayload = addPadding(to: payload)
 
         guard let payloadData = Data(base64Encoded: paddedPayload) else {
-            AppLog.common.error("JWT payload base64解码失败")
+            AppLog.common.error("JWT payload base64 decode failed")
             return nil
         }
 
@@ -34,15 +34,15 @@ enum JWTDecoder {
             if let exp = payloadJSON?["exp"] as? TimeInterval {
                 let expirationDate = Date(timeIntervalSince1970: exp)
                 if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
-                    AppLog.common.debug("从JWT中解析到过期时间：\(expirationDate)")
+                    AppLog.common.debug("Parsed expiration time from JWT: \(expirationDate)")
                 }
                 return expirationDate
             } else {
-                AppLog.common.error("JWT payload中未找到exp字段")
+                AppLog.common.error("exp field not found in JWT payload")
                 return nil
             }
         } catch {
-            AppLog.common.error("JWT payload JSON解析失败：\(error.localizedDescription)")
+            AppLog.common.error("JWT payload JSON parsing failed: \(error.localizedDescription)")
             return nil
         }
     }
@@ -54,7 +54,7 @@ enum JWTDecoder {
         let components = jwt.components(separatedBy: ".")
 
         guard components.count == 3 else {
-            AppLog.common.error("JWT格式无效：不是标准的3部分格式")
+            AppLog.common.error("Invalid JWT format: not standard 3-part format")
             return nil
         }
 
@@ -62,14 +62,14 @@ enum JWTDecoder {
         let paddedPayload = addPadding(to: payload)
 
         guard let payloadData = Data(base64Encoded: paddedPayload) else {
-            AppLog.common.error("JWT payload base64解码失败")
+            AppLog.common.error("JWT payload base64 decode failed")
             return nil
         }
 
         do {
             return try JSONSerialization.jsonObject(with: payloadData) as? [String: Any]
         } catch {
-            AppLog.common.error("JWT payload JSON解析失败：\(error.localizedDescription)")
+            AppLog.common.error("JWT payload JSON parsing failed: \(error.localizedDescription)")
             return nil
         }
     }
@@ -113,13 +113,13 @@ extension JWTDecoder {
     static func getMinecraftTokenExpiration(from minecraftToken: String) -> Date {
         if let expirationTime = extractExpirationTime(from: minecraftToken) {
             if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
-                AppLog.common.debug("使用JWT解析的Minecraft token过期时间：\(expirationTime)")
+                AppLog.common.debug("Using JWT-parsed Minecraft token expiration: \(expirationTime)")
             }
             return expirationTime
         } else {
             let defaultExpiration = Date().addingTimeInterval(defaultMinecraftTokenExpiration)
             if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
-                AppLog.common.debug("使用默认的Minecraft token过期时间：\(defaultExpiration)")
+                AppLog.common.debug("Using default Minecraft token expiration: \(defaultExpiration)")
             }
             return defaultExpiration
         }

@@ -65,7 +65,6 @@ final class PlayerSettingsViewModel: ObservableObject {
             authlibInjectorExists = true
         } catch {
             let globalError = GlobalError.download(
-                chineseMessage: "下载 authlib-injector 失败: \(error.localizedDescription)",
                 i18nKey: "error.download.authlib_injector_failed",
                 level: .notification,
             )

@@ -25,7 +25,6 @@ enum MinecraftJavaServerResourceUtils {
         let address = parseAddress(from: detail)
         guard !address.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "无法解析服务器地址",
                 i18nKey: "error.server.invalid_address",
                 level: .notification,
             )

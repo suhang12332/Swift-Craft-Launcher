@@ -59,7 +59,6 @@ final class ModPackInstallCoordinator {
         guard let indexInfo = await ModPackIndexParser.parseIndex(extractedPath: extractedPath) else {
             errorHandler.handle(
                 GlobalError.resource(
-                    chineseMessage: "不支持的整合包格式，请使用 Modrinth (.mrpack) 或 CurseForge (.zip) 格式的整合包",
                     i18nKey: "error.resource.unsupported_modpack_format",
                     level: .notification,
                 ),
@@ -301,7 +300,7 @@ final class ModPackInstallCoordinator {
                     },
                     onError: { error, message in
                         Task { @MainActor in
-                            AppLog.modPack.error("游戏设置失败: \(message)")
+                            AppLog.modPack.error("Game setup failed: \(message)")
                             self.errorHandler.handle(error)
                         }
                         continuation.resume(returning: false)
@@ -350,7 +349,7 @@ final class ModPackInstallCoordinator {
             let allFiles = try InstanceFileCopier.getAllFiles(in: overridesPath)
             return allFiles.count
         } catch {
-            AppLog.modPack.error("计算 overrides 文件总数失败: \(error.localizedDescription)")
+            AppLog.modPack.error("Failed to calculate overrides total: \(error.localizedDescription)")
             return 0
         }
     }
@@ -369,11 +368,10 @@ final class ModPackInstallCoordinator {
                 )
             } catch {
                 AppLog.modPack.error(
-                    "创建目录失败: \(dir.path), 错误: \(error.localizedDescription)",
+                    "Failed to create directory: \(dir.path), error: \(error.localizedDescription)",
                 )
                 errorHandler.handle(
                     GlobalError.fileSystem(
-                        chineseMessage: "创建目录失败: \(dir.path)",
                         i18nKey: "error.filesystem.directory_creation_failed",
                         level: .notification,
                     ),
@@ -446,13 +444,12 @@ final class ModPackInstallCoordinator {
         }
 
         if success {
-            AppLog.modPack.info("整合包依赖安装完成: \(gameName)")
+            AppLog.modPack.info("Modpack dependency installation completed: \(gameName)")
         } else {
-            AppLog.modPack.error("整合包依赖安装失败: \(gameName)")
+            AppLog.modPack.error("Modpack dependency installation failed: \(gameName)")
             await cleanupGameDirectories(gameName: gameName)
             errorHandler.handle(
                 GlobalError.resource(
-                    chineseMessage: "整合包依赖安装失败",
                     i18nKey: "error.resource.modpack_dependencies_failed",
                     level: .notification,
                 ),
@@ -467,7 +464,7 @@ final class ModPackInstallCoordinator {
         gameSetupService: GameSetupUtil,
         modPackInstallState: ModPackInstallState,
     ) async {
-        AppLog.modPack.info("整合包安装已取消: \(gameName)")
+        AppLog.modPack.info("Modpack installation cancelled: \(gameName)")
         await cleanupGameDirectories(gameName: gameName)
         modPackInstallState.reset()
         gameSetupService.downloadState.reset()
@@ -478,7 +475,7 @@ final class ModPackInstallCoordinator {
             let fileManager = MinecraftFileManager()
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
-            AppLog.modPack.error("清理游戏文件夹失败: \(error.localizedDescription)")
+            AppLog.modPack.error("Failed to clean up game directories: \(error.localizedDescription)")
         }
     }
 }

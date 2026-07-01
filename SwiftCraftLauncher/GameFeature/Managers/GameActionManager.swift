@@ -21,12 +21,12 @@ class GameActionManager: ObservableObject {
         let gameDirectory = AppPaths.profileDirectory(gameName: game.gameName)
 
         guard FileManager.default.fileExists(atPath: gameDirectory.path) else {
-            AppLog.game.error("游戏目录不存在: \(gameDirectory.path)")
+            AppLog.game.error("Game directory does not exist: \(gameDirectory.path)")
             return
         }
 
         NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: gameDirectory.path)
-        AppLog.game.info("在访达中显示游戏目录: \(game.gameName)")
+        AppLog.game.info("Show game directory in Finder: \(game.gameName)")
     }
 
     /// Deletes a game and its associated files.
@@ -49,7 +49,6 @@ class GameActionManager: ObservableObject {
 
                 if gameProcessManager.isGameRunningForAnyUser(gameId: game.id) {
                     let error = GlobalError.validation(
-                        chineseMessage: "游戏运行中，无法删除",
                         i18nKey: "error.validation.game_running_cannot_delete",
                         level: .notification,
                     )
@@ -77,21 +76,20 @@ class GameActionManager: ObservableObject {
                 if FileManager.default.fileExists(atPath: profileDir.path) {
                     try FileManager.default.removeItem(at: profileDir)
                 } else {
-                    AppLog.game.error("删除游戏时未找到游戏目录，跳过文件删除: \(profileDir.path)")
+                    AppLog.game.error("Game directory not found when deleting game, skipping file deletion: \(profileDir.path)")
                 }
 
                 await modScanner.clearModCache(for: game.gameName)
 
                 try await gameRepository.deleteGame(id: game.id)
 
-                AppLog.game.info("成功删除游戏: \(game.gameName)")
+                AppLog.game.info("Successfully deleted game: \(game.gameName)")
             } catch {
                 let globalError = GlobalError.fileSystem(
-                    chineseMessage: "删除游戏失败: \(error.localizedDescription)",
                     i18nKey: "error.filesystem.game_deletion_failed",
                     level: .notification,
                 )
-                AppLog.game.error("删除游戏失败: \(globalError.chineseMessage)")
+                AppLog.game.error("Failed to delete game: \(globalError.localizedDescription)")
                 AppServices.errorHandler.handle(globalError)
             }
         }
@@ -118,14 +116,13 @@ class GameActionManager: ObservableObject {
 
                 try await gameRepository.deleteGamesByName(name)
 
-                AppLog.game.info("成功删除损坏游戏（目录 + 数据库）: \(name)")
+                AppLog.game.info("Successfully deleted corrupted game (directory + database): \(name)")
             } catch {
                 let globalError = GlobalError.fileSystem(
-                    chineseMessage: "删除损坏游戏失败: \(error.localizedDescription)",
                     i18nKey: "error.filesystem.game_deletion_failed",
                     level: .notification,
                 )
-                AppLog.game.error("删除损坏游戏失败: \(globalError.chineseMessage)")
+                AppLog.game.error("Failed to delete corrupted game: \(globalError.localizedDescription)")
                 AppServices.errorHandler.handle(globalError)
             }
         }

@@ -130,7 +130,7 @@ final class ModrinthSearchViewModel: ObservableObject {
                     self.isLoading = false
                     self.isLoadingMore = false
                 }
-                AppLog.resource.error("搜索失败: \(globalError.chineseMessage)")
+                AppLog.resource.error("Search failed: \(globalError.localizedDescription)")
                 errorHandler.handle(globalError)
             }
         }

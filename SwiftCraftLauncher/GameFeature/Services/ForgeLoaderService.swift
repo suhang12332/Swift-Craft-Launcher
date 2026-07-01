@@ -12,7 +12,6 @@ enum ForgeLoaderService {
     static func fetchAllForgeVersions(for minecraftVersion: String) async throws -> LoaderVersion {
         guard let result = await CommonService.fetchAllLoaderVersions(type: GameLoader.forge.displayName, minecraftVersion: minecraftVersion) else {
             throw GlobalError.resource(
-                chineseMessage: "未找到 Minecraft \(minecraftVersion) 的 Forge 加载器版本",
                 i18nKey: "error.resource.forge_loader_version_not_found",
                 level: .notification,
             )
@@ -53,7 +52,7 @@ enum ForgeLoaderService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("Forge 指定版本设置失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to set Forge specified version: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }
@@ -65,7 +64,7 @@ enum ForgeLoaderService {
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
-        AppLog.game.info("开始设置指定版本的 Forge 加载器: \(loaderVersion)")
+        AppLog.game.info("Starting to set specified Forge loader version: \(loaderVersion)")
 
         let forgeProfile = try await fetchSpecificForgeProfile(for: gameVersion, loaderVersion: loaderVersion)
         let librariesDirectory = AppPaths.librariesDirectory
@@ -99,7 +98,6 @@ enum ForgeLoaderService {
         let mainClass = forgeProfile.mainClass
         guard let version = forgeProfile.version else {
             throw GlobalError.resource(
-                chineseMessage: "Forge profile 缺少版本信息",
                 i18nKey: "error.resource.missing_forge_version",
                 level: .notification,
             )

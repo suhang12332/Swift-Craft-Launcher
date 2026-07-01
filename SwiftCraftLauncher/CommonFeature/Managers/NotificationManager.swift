@@ -35,10 +35,9 @@ enum NotificationManager {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             UNUserNotificationCenter.current().add(request) { error in
                 if let error {
-                    AppLog.common.error("添加通知请求时出错：\(error.localizedDescription)")
+                    AppLog.common.error("Error adding notification request：\(error.localizedDescription)")
                     continuation.resume(
                         throwing: GlobalError.resource(
-                            chineseMessage: "发送通知失败: \(error.localizedDescription)",
                             i18nKey: "error.resource.notification_send_failed",
                             level: .silent,
                         ),
@@ -59,7 +58,7 @@ enum NotificationManager {
             try await send(title: title, body: body)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("发送通知失败: \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to send notification: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
         }
     }
@@ -72,10 +71,9 @@ enum NotificationManager {
                 .requestAuthorization(options: [.alert, .sound, .badge])
 
             if granted {
-                AppLog.common.info("通知权限已授予")
+                AppLog.common.info("Notification permission granted")
             } else {
                 throw GlobalError.configuration(
-                    chineseMessage: "用户拒绝了通知权限",
                     i18nKey: "error.configuration.notification_permission_denied",
                     level: .notification,
                 )
@@ -85,7 +83,6 @@ enum NotificationManager {
                 throw error
             } else {
                 throw GlobalError.configuration(
-                    chineseMessage: "请求通知权限失败: \(error.localizedDescription)",
                     i18nKey: "error.configuration.notification_permission_request_failed",
                     level: .notification,
                 )
@@ -99,7 +96,7 @@ enum NotificationManager {
             try await requestAuthorization()
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("请求通知权限失败: \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to request notification permission: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
         }
     }

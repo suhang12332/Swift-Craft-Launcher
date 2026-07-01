@@ -48,7 +48,7 @@ extension ModPackDependencyInstaller {
 
                     if success {
                         let currentCount = completedCount.increment()
-                        let dependencyName = dep.projectId ?? "未知依赖"
+                        let dependencyName = dep.projectId ?? "Unknown dependency"
                         onProgressUpdate?(dependencyName, currentCount, requiredDependencies.count, .dependencies)
                     }
 
@@ -66,7 +66,7 @@ extension ModPackDependencyInstaller {
         let failedCount = results.count - results.count { $0.1 }
 
         if failedCount > 0 {
-            AppLog.modPack.error("有 \(failedCount) 个依赖安装失败")
+            AppLog.modPack.error("\(failedCount) dependencies failed to install")
             return false
         }
 
@@ -122,7 +122,7 @@ extension ModPackDependencyInstaller {
         resourceDir: URL,
     ) async -> Bool {
         guard let projectId = dep.projectId else {
-            AppLog.modPack.error("依赖缺少项目ID")
+            AppLog.modPack.error("Dependency missing project ID")
             return false
         }
 
@@ -152,7 +152,7 @@ extension ModPackDependencyInstaller {
 
             guard version.gameVersions.contains(gameInfo.gameVersion),
                   version.loaders.contains(gameInfo.modLoader) else {
-                AppLog.modPack.error("版本不兼容: \(versionId)")
+                AppLog.modPack.error("Version incompatible: \(versionId)")
                 return false
             }
 
@@ -165,7 +165,7 @@ extension ModPackDependencyInstaller {
                 resourceDir: resourceDir,
             )
         } catch {
-            AppLog.modPack.error("获取版本详情失败")
+            AppLog.modPack.error("Failed to get version details")
             return false
         }
     }
@@ -184,7 +184,7 @@ extension ModPackDependencyInstaller {
                 version.gameVersions.contains(gameInfo.gameVersion) &&
                 version.loaders.contains(gameInfo.modLoader)
             }) else {
-                AppLog.modPack.error("未找到兼容版本: \(projectId)")
+                AppLog.modPack.error("No compatible version found: \(projectId)")
                 return false
             }
 
@@ -195,7 +195,7 @@ extension ModPackDependencyInstaller {
                 resourceDir: resourceDir,
             )
         } catch {
-            AppLog.modPack.error("获取项目详情失败")
+            AppLog.modPack.error("Failed to get project details")
             return false
         }
     }
@@ -208,7 +208,7 @@ extension ModPackDependencyInstaller {
     ) async -> Bool {
         do {
             guard let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) else {
-                AppLog.modPack.error("未找到主文件: \(version.id)")
+                AppLog.modPack.error("No primary file found: \(version.id)")
                 return false
             }
 
@@ -228,7 +228,7 @@ extension ModPackDependencyInstaller {
 
             return true
         } catch {
-            AppLog.modPack.error("下载依赖失败")
+            AppLog.modPack.error("Failed to download dependency")
             return false
         }
     }

@@ -147,11 +147,10 @@ struct CustomVersionPicker: View {
 
     private func handleEmptyVersionsError() {
         let globalError = GlobalError.resource(
-            chineseMessage: "没有可用的版本",
             i18nKey: "error.resource.no_versions_available",
             level: .notification,
         )
-        AppLog.game.error("版本选择器错误: \(globalError.chineseMessage)")
+        AppLog.game.error("Version picker error: \(globalError.localizedDescription)")
         errorHandler.handle(globalError)
         error = globalError
     }

@@ -54,7 +54,6 @@ struct ResourceImportButton: View {
                 importSelectedFiles(urls)
             case let .failure(error):
                 errorHandler.handle(GlobalError.fileSystem(
-                    chineseMessage: "文件选择失败：\(error.localizedDescription)",
                     i18nKey: "error.filesystem.file_selection_failed",
                     level: .notification,
                 ))
@@ -69,7 +68,6 @@ struct ResourceImportButton: View {
         if queryLowercased == ResourceType.modpack.rawValue
             || !AppConstants.validResourceTypes.contains(queryLowercased) {
             errorHandler.handle(GlobalError.configuration(
-                chineseMessage: "不支持导入此类型的资源",
                 i18nKey: "error.configuration.resource_directory_not_found",
                 level: .notification,
             ))
@@ -78,7 +76,6 @@ struct ResourceImportButton: View {
 
         guard let gameRoot = AppPaths.resourceDirectory(for: gameResourcesType, gameName: game.gameName) else {
             errorHandler.handle(GlobalError.fileSystem(
-                chineseMessage: "找不到游戏目录",
                 i18nKey: "error.filesystem.game_directory_not_found",
                 level: .notification,
             ))
@@ -94,7 +91,6 @@ struct ResourceImportButton: View {
                       allowedExtensions.contains(ext)
                 else {
                     throw GlobalError.resource(
-                        chineseMessage: "不支持的文件类型。请导入 .jar 或 .zip 文件。",
                         i18nKey: "error.resource.invalid_file_type",
                         level: .notification,
                     )

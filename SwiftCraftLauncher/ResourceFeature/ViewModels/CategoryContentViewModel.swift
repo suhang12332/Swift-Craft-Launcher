@@ -85,7 +85,6 @@ final class CategoryContentViewModel: ObservableObject {
 
             guard !categoriesResult.isEmpty else {
                 throw GlobalError.resource(
-                    chineseMessage: "无法获取分类数据",
                     i18nKey: "error.resource.categories_not_found",
                     level: .notification,
                 )
@@ -93,7 +92,6 @@ final class CategoryContentViewModel: ObservableObject {
 
             guard !versionsResult.isEmpty else {
                 throw GlobalError.resource(
-                    chineseMessage: "无法获取游戏版本数据",
                     i18nKey: "error.resource.game_versions_not_found",
                     level: .notification,
                 )
@@ -182,7 +180,7 @@ final class CategoryContentViewModel: ObservableObject {
 
     private func handleError(_ error: Error) {
         let globalError = GlobalError.from(error)
-        AppLog.resource.error("加载分类数据错误: \(globalError.chineseMessage)")
+        AppLog.resource.error("Error loading category data: \(globalError.localizedDescription)")
         errorHandler.handle(globalError)
         Task { @MainActor in
             self.error = globalError

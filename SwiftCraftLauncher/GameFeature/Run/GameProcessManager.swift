@@ -37,7 +37,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
         queue.async { [weak self] in
             self?.gameProcesses[key] = process
         }
-        AppLog.game.debug("存储游戏进程: \(key)")
+        AppLog.game.debug("Stored game process: \(key)")
     }
 
     private func handleProcessTermination(gameId: String, userId: String, process: Process) async {
@@ -52,7 +52,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
             if isCrash {
                 let gameSettings = gameSettingsManager
                 if gameSettings.enableAICrashAnalysis {
-                    AppLog.game.info("检测到游戏崩溃，启用AI分析: \(gameId)")
+                    AppLog.game.info("Detected game crash, enabling AI analysis: \(gameId)")
                     await collectLogsForGameImmediately(gameId: gameId)
                 } else {
                     let gameDirectory = CommonUtil.gameDirectory(for: gameId)
@@ -65,7 +65,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
                     }
                 }
             } else {
-                AppLog.game.debug("游戏正常退出，不触发AI分析: \(gameId)")
+                AppLog.game.debug("Game exited normally, not triggering AI analysis: \(gameId)")
             }
         }
 
@@ -81,16 +81,16 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
     private func checkIfCrash(gameId: String, process: Process) async -> Bool {
         let exitCode = process.terminationStatus
         if exitCode == 0 {
-            AppLog.game.debug("游戏退出码为0: \(gameId)")
+            AppLog.game.debug("Game exit code is 0: \(gameId)")
         } else {
-            AppLog.game.info("游戏退出码非0 (\(exitCode))，可能是崩溃: \(gameId)")
+            AppLog.game.info("Game exit code non-zero (\(exitCode)), possible crash: \(gameId)")
             return true
         }
 
         do {
             try? gameDatabase.initialize()
             guard let game = try gameDatabase.getGame(by: gameId) else {
-                AppLog.game.error("无法从数据库找到游戏，无法检查崩溃报告: \(gameId)")
+                AppLog.game.error("Unable to find game in database, unable to check crash reports: \(gameId)")
                 return exitCode != 0
             }
 
@@ -119,17 +119,17 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
                     for crashFile in crashFiles {
                         if let creationDate = try? crashFile.resourceValues(forKeys: [.creationDateKey]).creationDate,
                            creationDate >= fiveMinutesAgo {
-                            AppLog.game.info("找到最近生成的崩溃报告: \(crashFile.lastPathComponent)")
+                            AppLog.game.info("Found recently generated crash report: \(crashFile.lastPathComponent)")
                             return true
                         }
                     }
                 } catch {
-                    AppLog.game.error("读取崩溃报告文件夹失败: \(error.localizedDescription)")
+                    AppLog.game.error("Failed to read crash report folder: \(error.localizedDescription)")
                 }
             }
             return false
         } catch {
-            AppLog.game.error("从数据库查询游戏失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to query game from database: \(error.localizedDescription)")
             return exitCode != 0
         }
     }
@@ -138,21 +138,21 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
         do {
             try? gameDatabase.initialize()
             guard let game = try gameDatabase.getGame(by: gameId) else {
-                AppLog.game.error("无法从数据库找到游戏: \(gameId)")
+                AppLog.game.error("Unable to find game in database: \(gameId)")
                 return
             }
 
             await AppServices.gameLogCollector.collectAndOpenAIWindow(gameName: game.gameName)
         } catch {
-            AppLog.game.error("从数据库查询游戏失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to query game from database: \(error.localizedDescription)")
         }
     }
 
     private func handleProcessExit(gameId: String, wasManuallyStopped: Bool) {
         if wasManuallyStopped {
-            AppLog.game.debug("游戏被用户主动停止: \(gameId)")
+            AppLog.game.debug("Game stopped by user: \(gameId)")
         } else {
-            AppLog.game.info("游戏进程已退出: \(gameId)")
+            AppLog.game.info("Game process exited: \(gameId)")
         }
     }
 
@@ -177,7 +177,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
             }
         }
 
-        AppLog.game.debug("停止游戏进程: \(key)")
+        AppLog.game.debug("Stopping game process: \(key)")
         return true
     }
 
@@ -209,7 +209,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
         guard !terminatedKeys.isEmpty else { return }
 
         for key in terminatedKeys {
-            AppLog.game.debug("清理已终止的进程: \(key)")
+            AppLog.game.debug("Cleaning up terminated process: \(key)")
         }
 
         Task { @MainActor in

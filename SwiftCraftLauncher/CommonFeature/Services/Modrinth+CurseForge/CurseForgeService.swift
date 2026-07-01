@@ -26,7 +26,7 @@ enum CurseForgeService {
         do {
             return try await fetchFileDetailThrowing(projectId: projectId, fileId: fileId)
         } catch {
-            AppLog.common.error("获取 CurseForge 文件详情失败: \(error.localizedDescription)")
+            AppLog.common.error("Failed to fetch CurseForge file details: \(error.localizedDescription)")
             return nil
         }
     }
@@ -50,7 +50,7 @@ enum CurseForgeService {
         do {
             return try await fetchModDetailThrowing(modId: modId)
         } catch {
-            AppLog.common.error("获取 CurseForge 模组详情失败: \(error.localizedDescription)")
+            AppLog.common.error("Failed to fetch CurseForge mod details: \(error.localizedDescription)")
             return nil
         }
     }
@@ -85,7 +85,7 @@ enum CurseForgeService {
         do {
             return try await fetchProjectFilesThrowing(projectId: projectId, gameVersion: gameVersion, modLoaderType: modLoaderType)
         } catch {
-            AppLog.common.error("获取 CurseForge 项目文件列表失败: \(error.localizedDescription)")
+            AppLog.common.error("Failed to fetch CurseForge project file list: \(error.localizedDescription)")
             return nil
         }
     }

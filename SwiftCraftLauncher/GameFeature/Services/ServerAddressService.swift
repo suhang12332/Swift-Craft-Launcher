@@ -28,7 +28,6 @@ class ServerAddressService {
         let trimmedAddress = address.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedAddress.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "服务器地址不能为空",
                 i18nKey: "error.server.address_empty",
                 level: .notification,
             )
@@ -41,7 +40,6 @@ class ServerAddressService {
         }
         guard !exists else {
             throw GlobalError.validation(
-                chineseMessage: "该服务器已添加到列表中",
                 i18nKey: "error.server.already_added",
                 level: .notification,
             )
@@ -66,20 +64,20 @@ class ServerAddressService {
         let serversDatURL = profileDir.appendingPathComponent("servers.dat")
 
         guard FileManager.default.fileExists(atPath: serversDatURL.path) else {
-            AppLog.game.debug("servers.dat 文件不存在: \(serversDatURL.path)")
+            AppLog.game.debug("servers.dat file does not exist: \(serversDatURL.path)")
             return []
         }
-        AppLog.game.debug("开始读取 servers.dat: \(serversDatURL.path)")
+        AppLog.game.debug("Starting to read servers.dat: \(serversDatURL.path)")
         do {
             let data = try await Task.detached(priority: .userInitiated) {
                 try Data(contentsOf: serversDatURL)
             }.value
-            AppLog.game.debug("servers.dat 文件大小: \(data.count) 字节")
+            AppLog.game.debug("servers.dat file size: \(data.count) bytes")
             let servers = try parseServersDat(data: data)
-            AppLog.game.debug("成功解析 \(servers.count) 个服务器")
+            AppLog.game.debug("Successfully parsed \(servers.count) servers")
             return servers
         } catch {
-            AppLog.game.error("解析服务器地址 servers.dat 文件失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to parse servers.dat file: \(error.localizedDescription)")
             return []
         }
     }
@@ -88,14 +86,14 @@ class ServerAddressService {
         let parser = NBTParser(data: data)
         let nbtData = try parser.parse()
 
-        AppLog.game.debug("NBT 解析完成，根标签键: \(nbtData.keys.joined(separator: ", "))")
+        AppLog.game.debug("NBT parsing complete, root tag keys: \(nbtData.keys.joined(separator: ", "))")
 
         guard let serversList = nbtData["servers"] as? [[String: Any]] else {
-            AppLog.game.debug("未找到 servers 列表，或类型不匹配")
+            AppLog.game.debug("servers list not found, or type mismatch")
             return []
         }
 
-        AppLog.game.debug("找到 \(serversList.count) 个服务器条目")
+        AppLog.game.debug("Found \(serversList.count) server entries")
 
         var servers: [ServerAddress] = []
 
@@ -207,7 +205,7 @@ class ServerAddressService {
         let serversDatURL = AppPaths.profileDirectory(gameName: gameName)
             .appendingPathComponent("servers.dat")
 
-        AppLog.game.debug("开始保存服务器地址列表到: \(serversDatURL.path)")
+        AppLog.game.debug("Starting to save server address list to: \(serversDatURL.path)")
 
         var serversList: [[String: Any]] = []
 
@@ -244,6 +242,6 @@ class ServerAddressService {
 
         try encodedData.write(to: serversDatURL)
 
-        AppLog.game.debug("成功保存 \(servers.count) 个服务器地址到 servers.dat")
+        AppLog.game.debug("Successfully saved \(servers.count) server addresses to servers.dat")
     }
 }

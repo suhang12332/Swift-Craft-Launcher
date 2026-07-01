@@ -14,7 +14,7 @@ enum QuiltLoaderService {
             return try await fetchAllQuiltLoadersThrowing(for: minecraftVersion)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("获取 Fabric 加载器版本失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to get Quilt loader version: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return []
         }
@@ -61,7 +61,7 @@ enum QuiltLoaderService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("Quilt 指定版本设置失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to set Quilt specified version: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }
@@ -73,7 +73,7 @@ enum QuiltLoaderService {
         gameInfo _: GameVersionInfo,
         onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
-        AppLog.game.info("开始设置指定版本的 Quilt 加载器: \(loaderVersion)")
+        AppLog.game.info("Starting to set specified Quilt loader version: \(loaderVersion)")
 
         let quiltProfile = try await fetchSpecificLoaderVersion(for: gameVersion, loaderVersion: loaderVersion)
         let librariesDirectory = AppPaths.librariesDirectory
@@ -86,7 +86,6 @@ enum QuiltLoaderService {
         let mainClass = quiltProfile.mainClass
         guard let version = quiltProfile.version else {
             throw GlobalError.resource(
-                chineseMessage: "Quilt profile 缺少版本信息",
                 i18nKey: "error.resource.quilt_missing_version",
                 level: .notification,
             )

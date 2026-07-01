@@ -53,7 +53,6 @@ public enum SHA1Calculator {
             return digest.map { String(format: "%02hhx", $0) }.joined()
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "计算文件 SHA1 失败: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.sha1_calculation_failed",
                 level: .notification,
             )
@@ -68,7 +67,7 @@ public enum SHA1Calculator {
             return try sha1(ofFileAt: url)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("计算文件哈希值失败: \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to calculate file hash: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }

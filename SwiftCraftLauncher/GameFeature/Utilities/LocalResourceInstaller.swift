@@ -36,7 +36,6 @@ enum LocalResourceInstaller {
         guard let ext = fileURL.pathExtension.lowercased() as String?,
               resourceType.allowedExtensions.contains(ext) else {
             throw GlobalError.resource(
-                chineseMessage: "不支持的文件类型。请导入 .jar 或 .zip 文件。",
                 i18nKey: "error.resource.invalid_file_type",
                 level: .notification,
             )
@@ -45,7 +44,6 @@ enum LocalResourceInstaller {
         var isDir: ObjCBool = false
         guard FileManager.default.fileExists(atPath: gameRoot.path, isDirectory: &isDir), isDir.boolValue else {
             throw GlobalError.fileSystem(
-                chineseMessage: "目标文件夹不存在。",
                 i18nKey: "error.filesystem.destination_unavailable",
                 level: .notification,
             )
@@ -55,7 +53,6 @@ enum LocalResourceInstaller {
         defer { if needsSecurity { fileURL.stopAccessingSecurityScopedResource() } }
         if !needsSecurity {
             throw GlobalError.fileSystem(
-                chineseMessage: "无法访问所选文件。",
                 i18nKey: "error.filesystem.security_scope_failed",
                 level: .notification,
             )
@@ -71,7 +68,6 @@ enum LocalResourceInstaller {
             try FileManager.default.copyItem(at: fileURL, to: destURL)
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "文件复制失败：\(error.localizedDescription)",
                 i18nKey: "error.filesystem.copy_failed",
                 level: .notification,
             )

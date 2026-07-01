@@ -17,7 +17,7 @@ extension CurseForgeService {
             return try await fetchProjectDetailsAsModrinthThrowing(id: id)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("获取项目详情失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to fetch project details (ID: \(id)): \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }
@@ -38,7 +38,6 @@ extension CurseForgeService {
 
         guard var modrinthDetail = CFToModrinthAdapter.convertProjectDetail(cfDetail, descriptionHTML: description) else {
             throw GlobalError.validation(
-                chineseMessage: "转换项目详情失败",
                 i18nKey: "error.validation.project_detail_convert_failed",
                 level: .notification,
             )
@@ -59,7 +58,7 @@ extension CurseForgeService {
         do {
             return try await fetchProjectDetailsAsModrinthByFingerprintThrowing(fingerprint: fingerprint)
         } catch {
-            AppLog.common.error("通过 fingerprint 获取 CurseForge 项目详情失败: \(error.localizedDescription)")
+            AppLog.common.error("Failed to fetch CurseForge project details by fingerprint: \(error.localizedDescription)")
             return nil
         }
     }
@@ -95,7 +94,7 @@ extension CurseForgeService {
             if error is CancellationError {
                 return nil
             }
-            AppLog.common.error("通过 fingerprint 获取 CurseForge 文件信息失败: \(error.localizedDescription)")
+            AppLog.common.error("Failed to fetch CurseForge file info by fingerprint: \(error.localizedDescription)")
             return nil
         }
     }
@@ -108,7 +107,7 @@ extension CurseForgeService {
             return try await fetchProjectVersionsAsModrinthThrowing(id: id)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("获取项目版本列表失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to fetch project version list (ID: \(id)): \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return []
         }

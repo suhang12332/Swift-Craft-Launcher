@@ -57,7 +57,7 @@ struct ModrinthProjectContentView: View {
             try await loadProjectDetailsThrowing()
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.resource.error("加载项目详情失败: \(globalError.chineseMessage)")
+            AppLog.resource.error("Failed to load project details: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             await MainActor.run {
                 self.error = globalError
@@ -72,7 +72,6 @@ struct ModrinthProjectContentView: View {
     private func loadProjectDetailsThrowing() async throws {
         guard !projectId.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
             )

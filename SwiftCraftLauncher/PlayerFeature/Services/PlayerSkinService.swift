@@ -22,14 +22,13 @@ enum PlayerSkinService {
 
     private static func handleError(_ error: Error, operation: String) {
         let globalError = GlobalError.from(error)
-        AppLog.player.error("\(operation) failed: \(globalError.chineseMessage)")
+        AppLog.player.error("\(operation) failed: \(globalError.localizedDescription)")
         AppServices.errorHandler.handle(globalError)
     }
 
     private static func validateAccessToken(_ player: Player) throws {
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
-                chineseMessage: "缺少访问令牌，请重新登录",
                 i18nKey: "error.authentication.missing_token",
                 level: .popup,
             )
@@ -40,31 +39,26 @@ enum PlayerSkinService {
         switch error.statusCode {
         case 400:
             throw GlobalError.validation(
-                chineseMessage: "无效的请求参数",
                 i18nKey: "error.validation.invalid_request",
                 level: .notification,
             )
         case 401:
             throw GlobalError.authentication(
-                chineseMessage: "访问令牌无效或已过期，请重新登录",
                 i18nKey: "error.authentication.token_expired",
                 level: .popup,
             )
         case 403:
             throw GlobalError.authentication(
-                chineseMessage: "没有\(operation)的权限 (403)",
                 i18nKey: "error.authentication.\(operation)_forbidden",
                 level: .notification,
             )
         case 404:
             throw GlobalError.resource(
-                chineseMessage: "未找到相关资源",
                 i18nKey: "error.resource.not_found",
                 level: .notification,
             )
         case 429:
             throw GlobalError.network(
-                chineseMessage: "请求过于频繁，请稍后再试",
                 i18nKey: "error.network.rate_limited",
             )
         default:
@@ -129,14 +123,14 @@ enum PlayerSkinService {
             let profile = try await fetchPlayerProfileThrowing(player: player)
 
             guard !profile.skins.isEmpty else {
-                AppLog.player.error("玩家没有皮肤信息")
+                AppLog.player.error("Player has no skin information")
                 return nil
             }
 
             let activeSkin = profile.skins.first { $0.state == "ACTIVE" } ?? profile.skins.first
 
             guard let skin = activeSkin else {
-                AppLog.player.error("没有找到激活的皮肤")
+                AppLog.player.error("No active skin found")
                 return nil
             }
 
@@ -147,7 +141,7 @@ enum PlayerSkinService {
                 fetchedAt: Date(),
             )
         } catch {
-            AppLog.player.error("从 Minecraft Services API 获取皮肤信息失败: \(error.localizedDescription)")
+            AppLog.player.error("Failed to fetch skin info from Minecraft Services API: \(error.localizedDescription)")
             return nil
         }
     }
@@ -282,12 +276,11 @@ enum PlayerSkinService {
             switch error.statusCode {
             case 400:
                 throw GlobalError.validation(
-                    chineseMessage: "无效的皮肤文件",
                     i18nKey: "error.validation.skin_invalid_file",
                     level: .popup,
                 )
             default:
-                try handleHTTPError(error, operation: "皮肤上传")
+                try handleHTTPError(error, operation: "skin_upload")
             }
         }
         AppLog.player.info("Skin upload successful with variant: \(variantValue)")
@@ -428,12 +421,11 @@ enum PlayerSkinService {
             switch error.statusCode {
             case 404:
                 throw GlobalError.resource(
-                    chineseMessage: "未找到斗篷或未拥有",
                     i18nKey: "error.resource.cape_not_found",
                     level: .notification,
                 )
             default:
-                try handleHTTPError(error, operation: "装备斗篷")
+                try handleHTTPError(error, operation: "equip_cape")
             }
         }
     }
@@ -463,7 +455,7 @@ enum PlayerSkinService {
                 headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)],
             )
         } catch let error as GlobalError where error.kind == .network {
-            try handleHTTPError(error, operation: "隐藏斗篷")
+            try handleHTTPError(error, operation: "hide_cape")
         }
     }
 
@@ -476,7 +468,7 @@ enum PlayerSkinService {
                 headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)],
             )
         } catch let error as GlobalError where error.kind == .network {
-            try handleHTTPError(error, operation: "重置皮肤")
+            try handleHTTPError(error, operation: "reset_skin")
         }
     }
 }

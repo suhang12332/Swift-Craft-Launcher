@@ -49,7 +49,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
                 try await downloadMainOnlyThrowing(game: game)
             } catch {
                 let globalError = GlobalError.from(error)
-                AppLog.resource.error("下载主资源失败: \(globalError.chineseMessage)")
+                AppLog.resource.error("Failed to download main resource: \(globalError.localizedDescription)")
                 errorHandler.handle(globalError)
             }
 
@@ -80,7 +80,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
                 )
             } catch {
                 let globalError = GlobalError.from(error)
-                AppLog.resource.error("手动下载所有依赖项失败: \(globalError.chineseMessage)")
+                AppLog.resource.error("Failed to manually download all dependencies: \(globalError.localizedDescription)")
                 errorHandler.handle(globalError)
             }
 
@@ -108,7 +108,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
                 )
             } catch {
                 let globalError = GlobalError.from(error)
-                AppLog.resource.error("添加服务器失败: \(globalError.chineseMessage)")
+                AppLog.resource.error("Failed to add server: \(globalError.localizedDescription)")
                 errorHandler.handle(globalError)
             }
 
@@ -128,7 +128,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
                 try await downloadResourceThrowing(game: game)
             } catch {
                 let globalError = GlobalError.from(error)
-                AppLog.resource.error("下载资源失败: \(globalError.chineseMessage)")
+                AppLog.resource.error("Failed to download resource: \(globalError.localizedDescription)")
                 errorHandler.handle(globalError)
             }
 
@@ -140,7 +140,6 @@ final class GlobalResourceFooterViewModel: ObservableObject {
     private func downloadMainOnlyThrowing(game: GameVersionInfo) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
             )
@@ -157,7 +156,6 @@ final class GlobalResourceFooterViewModel: ObservableObject {
 
         if !success {
             throw GlobalError.download(
-                chineseMessage: "下载主资源失败",
                 i18nKey: "error.download.main_resource_failed",
                 level: .notification,
             )
@@ -171,7 +169,6 @@ final class GlobalResourceFooterViewModel: ObservableObject {
     ) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
             )
@@ -195,7 +192,6 @@ final class GlobalResourceFooterViewModel: ObservableObject {
 
         if !success {
             throw GlobalError.download(
-                chineseMessage: "手动下载依赖项失败",
                 i18nKey: "error.download.manual_dependencies_failed",
                 level: .notification,
             )
@@ -205,7 +201,6 @@ final class GlobalResourceFooterViewModel: ObservableObject {
     private func downloadResourceThrowing(game: GameVersionInfo) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
             )
@@ -222,7 +217,6 @@ final class GlobalResourceFooterViewModel: ObservableObject {
 
         if !success {
             throw GlobalError.download(
-                chineseMessage: "下载资源失败",
                 i18nKey: "error.download.resource_download_failed",
                 level: .notification,
             )

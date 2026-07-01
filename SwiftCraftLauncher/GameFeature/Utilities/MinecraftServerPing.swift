@@ -232,7 +232,7 @@ enum MinecraftServerPing {
                         } else if isComplete {
                             if state.setResumed() {
                                 state.cancelTimeoutTask()
-                                AppLog.game.debug("解析服务器响应失败: \(connectAddress):\(connectPort)")
+                                AppLog.game.debug("Failed to parse server response: \(connectAddress):\(connectPort)")
                                 connection.cancel()
                                 continuation.resume(returning: nil)
                             }
@@ -262,7 +262,7 @@ enum MinecraftServerPing {
                     if !state.isTimeout {
                         if state.setResumed() {
                             state.cancelTimeoutTask()
-                            AppLog.game.debug("服务器连接失败: \(connectAddress):\(connectPort) - \(error.localizedDescription)")
+                            AppLog.game.debug("Server connection failed: \(connectAddress):\(connectPort) - \(error.localizedDescription)")
                             connection.cancel()
                             continuation.resume(returning: nil)
                         }
@@ -302,7 +302,7 @@ enum MinecraftServerPing {
         let handshakePacket = handshakeLength + packetData
         connection.send(content: handshakePacket, completion: .contentProcessed { error in
             if let error {
-                AppLog.game.debug("发送握手包失败: \(error.localizedDescription)")
+                AppLog.game.debug("Failed to send handshake packet: \(error.localizedDescription)")
                 return
             }
 
@@ -313,7 +313,7 @@ enum MinecraftServerPing {
             let statusRequestPacket = statusRequestLength + statusRequestData
             connection.send(content: statusRequestPacket, completion: .contentProcessed { error in
                 if let error {
-                    AppLog.game.debug("发送状态请求包失败: \(error.localizedDescription)")
+                    AppLog.game.debug("Failed to send status request packet: \(error.localizedDescription)")
                 }
             })
         })
@@ -354,7 +354,7 @@ enum MinecraftServerPing {
             let decoder = JSONDecoder()
             return try decoder.decode(MinecraftServerInfo.self, from: jsonData)
         } catch {
-            AppLog.game.debug("解析服务器 JSON 失败: \(error.localizedDescription)")
+            AppLog.game.debug("Failed to parse server JSON: \(error.localizedDescription)")
             return nil
         }
     }

@@ -36,7 +36,6 @@ class GameLogCollector {
 
         if logFiles.isEmpty {
             let error = GlobalError.fileSystem(
-                chineseMessage: "未找到游戏日志文件",
                 i18nKey: "error.filesystem.logs_not_found",
                 level: .notification,
             )
@@ -72,11 +71,11 @@ class GameLogCollector {
                     }
 
                 if !crashFiles.isEmpty {
-                    AppLog.game.info("找到 \(crashFiles.count) 个崩溃报告文件")
+                    AppLog.game.info("Found \(crashFiles.count) crash report file(s)")
                     return crashFiles.sorted { $0.lastPathComponent < $1.lastPathComponent }
                 }
             } catch {
-                AppLog.game.error("读取崩溃报告文件夹失败: \(error.localizedDescription)")
+                AppLog.game.error("Failed to read crash report folder: \(error.localizedDescription)")
             }
         }
 
@@ -84,11 +83,11 @@ class GameLogCollector {
         let latestLog = logsDir.appendingPathComponent("latest.log")
 
         if fileManager.fileExists(atPath: latestLog.path) {
-            AppLog.game.info("找到 latest.log 文件")
+            AppLog.game.info("Found latest.log file")
             return [latestLog]
         }
 
-        AppLog.game.error("未找到崩溃报告和 latest.log 文件")
+        AppLog.game.error("No crash reports or latest.log files found")
         return []
     }
 

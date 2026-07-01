@@ -24,7 +24,7 @@ enum MinecraftLaunchCommandBuilder {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("构建启动命令失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to build launch command: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return []
         }
@@ -102,7 +102,6 @@ enum MinecraftLaunchCommandBuilder {
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: clientJarPath) else {
             throw GlobalError.resource(
-                chineseMessage: "客户端 JAR 文件不存在: \(clientJarPath)",
                 i18nKey: "error.resource.client_jar_not_found",
                 level: .popup,
             )
@@ -138,11 +137,11 @@ enum MinecraftLaunchCommandBuilder {
     }
 
     private static func buildClasspath(_ libraries: [Library], librariesDir: URL, clientJarPath: String, modClassPath: String, minecraftVersion: String) -> String {
-        AppLog.game.debug("开始构建类路径 - 库数量: \(libraries.count), mod类路径: \(modClassPath.isEmpty ? "无" : "\(modClassPath.split(separator: ":").count)个路径")")
+        AppLog.game.debug("Starting classpath build - library count: \(libraries.count), mod classpath: \(modClassPath.isEmpty ? "none" : "\(modClassPath.split(separator: ":").count) paths")")
 
         let modClassPaths = parseModClassPath(modClassPath, librariesDir: librariesDir)
         let existingModBasePaths = extractBasePaths(from: modClassPaths, librariesDir: librariesDir)
-        AppLog.game.debug("解析到 \(modClassPaths.count) 个 mod 类路径，\(existingModBasePaths.count) 个基础路径")
+        AppLog.game.debug("Parsed \(modClassPaths.count) mod classpaths, \(existingModBasePaths.count) base paths")
 
         let manifestLibraryPaths = libraries
             .filter { shouldIncludeLibrary($0, minecraftVersion: minecraftVersion) }
@@ -151,13 +150,13 @@ enum MinecraftLaunchCommandBuilder {
             }
             .flatMap(\.self)
 
-        AppLog.game.debug("处理完成 - manifest库路径: \(manifestLibraryPaths.count)个")
+        AppLog.game.debug("Processing complete - manifest library paths: \(manifestLibraryPaths.count) items")
 
         let allPaths = manifestLibraryPaths + [clientJarPath] + modClassPaths
         let uniquePaths = removeDuplicatePaths(allPaths)
         let classpath = uniquePaths.joined(separator: ":")
 
-        AppLog.game.debug("类路径构建完成 - 原始路径数: \(allPaths.count), 去重后: \(uniquePaths.count)")
+        AppLog.game.debug("Classpath build complete - raw path count: \(allPaths.count), after dedup: \(uniquePaths.count)")
         return classpath
     }
 
@@ -172,7 +171,7 @@ enum MinecraftLaunchCommandBuilder {
             guard !normalizedPath.isEmpty else { return false }
 
             if seen.contains(normalizedPath) {
-                AppLog.game.debug("发现重复路径，已跳过: \(normalizedPath)")
+                AppLog.game.debug("Found duplicate path, skipped: \(normalizedPath)")
                 return false
             } else {
                 seen.insert(normalizedPath)
@@ -216,7 +215,7 @@ enum MinecraftLaunchCommandBuilder {
             return librariesDir.appendingPathComponent(existingPath).path
         } else {
             let fullPath = CommonService.convertMavenCoordinateToPath(libraryName)
-            AppLog.game.debug("库文件 \(libraryName) 缺少路径信息，使用 Maven 坐标生成路径: \(fullPath)")
+            AppLog.game.debug("Library file \(libraryName) missing path info, generated path from Maven coordinate: \(fullPath)")
             return fullPath
         }
     }

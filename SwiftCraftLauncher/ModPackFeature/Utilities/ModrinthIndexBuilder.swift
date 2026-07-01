@@ -27,7 +27,7 @@ enum ModrinthIndexBuilder {
         let gameVersion = gameInfo.gameVersion
         let loaderType = gameInfo.modLoader.lowercased()
 
-        AppLog.modPack.info("导出整合包 - 加载器类型: \(loaderType), 版本: \(gameInfo.modVersion)")
+        AppLog.modPack.info("Exporting modpack - loader type: \(loaderType), version: \(gameInfo.modVersion)")
 
         let dependencies = buildDependencies(
             gameVersion: gameVersion,

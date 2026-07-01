@@ -43,7 +43,6 @@ enum DownloadManager {
     static func downloadResource(for game: GameVersionInfo, urlString: String, resourceType: String, expectedSha1: String? = nil) async throws -> URL {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
-                chineseMessage: "无效的下载地址",
                 i18nKey: "error.validation.invalid_download_url",
                 level: .notification,
             )
@@ -51,7 +50,6 @@ enum DownloadManager {
 
         guard let type = ResourceType(from: resourceType) else {
             throw GlobalError.resource(
-                chineseMessage: "未知的资源类型",
                 i18nKey: "error.resource.unknown_type",
                 level: .notification,
             )
@@ -80,7 +78,6 @@ enum DownloadManager {
 
         guard let resourceDirUnwrapped = resourceDir else {
             throw GlobalError.resource(
-                chineseMessage: "无法获取资源目录",
                 i18nKey: "error.resource.directory_not_found",
                 level: .notification,
             )
@@ -127,13 +124,11 @@ enum DownloadManager {
         }
         if error is URLError {
             return GlobalError.download(
-                chineseMessage: "网络请求失败",
                 i18nKey: "error.download.network_request_failed",
                 level: .notification,
             )
         }
         return GlobalError.download(
-            chineseMessage: "下载失败",
             i18nKey: "error.download.general_failure",
             level: .notification,
         )
@@ -151,13 +146,11 @@ enum DownloadManager {
                 throw globalError
             } else if error is URLError {
                 throw GlobalError.download(
-                    chineseMessage: "网络请求失败",
                     i18nKey: "error.download.network_request_failed",
                     level: .notification,
                 )
             } else {
                 throw GlobalError.download(
-                    chineseMessage: "下载失败",
                     i18nKey: "error.download.general_failure",
                     level: .notification,
                 )

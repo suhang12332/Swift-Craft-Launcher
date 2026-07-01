@@ -16,13 +16,12 @@ extension MinecraftAuthService {
 
         do {
             let refreshedPlayer = try await validateAndRefreshPlayerTokenThrowing(for: player)
-            AppLog.common.info("成功刷新玩家 \(player.name) 的 Token")
+            AppLog.common.info("Successfully refreshed token for player \(player.name)")
             return .success(refreshedPlayer)
         } catch let error as GlobalError {
             return .failure(error)
         } catch {
             let globalError = GlobalError.authentication(
-                chineseMessage: "刷新 Token 时发生未知错误: \(error.localizedDescription)",
                 i18nKey: "error.authentication.unknown_refresh_error",
                 level: .popup,
             )
@@ -33,7 +32,6 @@ extension MinecraftAuthService {
     func validateAndRefreshPlayerTokenThrowing(for player: Player) async throws -> Player {
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
-                chineseMessage: "缺少访问令牌，请重新登录",
                 i18nKey: "error.authentication.missing_token",
                 level: .notification,
             )
@@ -43,16 +41,15 @@ extension MinecraftAuthService {
 
         if !isTokenExpired {
             if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
-                AppLog.common.debug("玩家 \(player.name) 的Token尚未过期，无需刷新")
+                AppLog.common.debug("Token for player \(player.name) not yet expired, no refresh needed")
             }
             return player
         }
 
-        AppLog.common.info("玩家 \(player.name) 的Token已过期，尝试刷新")
+        AppLog.common.info("Token for player \(player.name) expired, attempting refresh")
 
         guard !player.authRefreshToken.isEmpty else {
             throw GlobalError.authentication(
-                chineseMessage: "登录已过期，请重新登录该账户",
                 i18nKey: "error.authentication.token_expired_relogin_required",
                 level: .popup,
             )
@@ -133,20 +130,17 @@ extension MinecraftAuthService {
                 switch error {
                 case "invalid_grant":
                     throw GlobalError.authentication(
-                        chineseMessage: "刷新令牌已过期或无效",
                         i18nKey: "error.authentication.invalid_refresh_token",
                         level: .notification,
                     )
                 default:
                     throw GlobalError.authentication(
-                        chineseMessage: "刷新令牌错误: \(error)",
                         i18nKey: "error.authentication.refresh_token_error",
                         level: .notification,
                     )
                 }
             }
             throw GlobalError.authentication(
-                chineseMessage: "刷新访问令牌失败: HTTP \(statusCode)",
                 i18nKey: "error.authentication.refresh_token_request_failed",
                 level: .notification,
             )
@@ -160,7 +154,6 @@ extension MinecraftAuthService {
 
     func promptForReauth(player: Player) {
         let notification = GlobalError.authentication(
-            chineseMessage: "玩家 \(player.name) 的登录已过期，请在玩家管理中重新登录该账户后再启动游戏",
             i18nKey: "error.authentication.reauth_required",
             level: .notification,
         )

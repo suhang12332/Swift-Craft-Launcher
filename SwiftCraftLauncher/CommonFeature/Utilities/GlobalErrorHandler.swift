@@ -19,13 +19,13 @@ enum ErrorLevel: String, CaseIterable {
     var displayName: String {
         switch self {
         case .popup:
-            return "弹窗"
+            return "Popup"
         case .notification:
-            return "通知"
+            return "Notification"
         case .silent:
-            return "静默"
+            return "Silent"
         case .disabled:
-            return "无操作"
+            return "Disabled"
         }
     }
 }
@@ -95,27 +95,24 @@ enum GlobalErrorKind: String, CaseIterable {
 /// A unified error type that carries category metadata, a localized message, and a display level.
 struct GlobalError: Error, LocalizedError, Identifiable {
     let kind: GlobalErrorKind
-    let chineseMessage: String
     let i18nKey: String
     let level: ErrorLevel
     let statusCode: Int?
 
     init(
         kind: GlobalErrorKind,
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel? = nil,
         statusCode: Int? = nil,
     ) {
         self.kind = kind
-        self.chineseMessage = chineseMessage
         self.i18nKey = i18nKey
         self.level = level ?? kind.defaultLevel
         self.statusCode = statusCode
     }
 
     var id: String {
-        "\(kind.idPrefix)_\(i18nKey)_\(chineseMessage.hashValue)"
+        "\(kind.idPrefix)_\(i18nKey)"
     }
 
     var notificationTitle: String {
@@ -126,104 +123,88 @@ struct GlobalError: Error, LocalizedError, Identifiable {
         i18nKey.localized()
     }
 
-    /// Returns the localized description, falling back to the Chinese message if no localization is found.
     var localizedDescription: String {
-        let localizedText = i18nKey.localized()
-        if localizedText != i18nKey {
-            return localizedText
-        }
-        return chineseMessage
+        i18nKey.localized()
     }
 }
 
 extension GlobalError {
     static func network(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .notification,
         statusCode: Int? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .network, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level, statusCode: statusCode)
+        GlobalError(kind: .network, i18nKey: i18nKey, level: level, statusCode: statusCode)
     }
 
     static func fileSystem(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .notification,
     ) -> GlobalError {
-        GlobalError(kind: .fileSystem, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .fileSystem, i18nKey: i18nKey, level: level)
     }
 
     static func authentication(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .popup,
     ) -> GlobalError {
-        GlobalError(kind: .authentication, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .authentication, i18nKey: i18nKey, level: level)
     }
 
     static func validation(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .notification,
     ) -> GlobalError {
-        GlobalError(kind: .validation, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .validation, i18nKey: i18nKey, level: level)
     }
 
     static func download(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .notification,
     ) -> GlobalError {
-        GlobalError(kind: .download, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .download, i18nKey: i18nKey, level: level)
     }
 
     static func installation(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .notification,
     ) -> GlobalError {
-        GlobalError(kind: .installation, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .installation, i18nKey: i18nKey, level: level)
     }
 
     static func gameLaunch(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .popup,
     ) -> GlobalError {
-        GlobalError(kind: .gameLaunch, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .gameLaunch, i18nKey: i18nKey, level: level)
     }
 
     static func resource(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .notification,
     ) -> GlobalError {
-        GlobalError(kind: .resource, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .resource, i18nKey: i18nKey, level: level)
     }
 
     static func player(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .notification,
     ) -> GlobalError {
-        GlobalError(kind: .player, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .player, i18nKey: i18nKey, level: level)
     }
 
     static func configuration(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .notification,
     ) -> GlobalError {
-        GlobalError(kind: .configuration, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .configuration, i18nKey: i18nKey, level: level)
     }
 
     static func unknown(
-        chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .silent,
     ) -> GlobalError {
-        GlobalError(kind: .unknown, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .unknown, i18nKey: i18nKey, level: level)
     }
 }
 
@@ -241,7 +222,6 @@ extension GlobalError {
             if let urlError = error as? URLError {
                 let level: ErrorLevel = urlError.code == .cancelled ? .silent : .notification
                 return Self.network(
-                    chineseMessage: urlError.localizedDescription,
                     i18nKey: "error.network.url",
                     level: level,
                 )
@@ -250,14 +230,12 @@ extension GlobalError {
             let nsError = error as NSError
             if nsError.domain == NSCocoaErrorDomain {
                 return Self.fileSystem(
-                    chineseMessage: nsError.localizedDescription,
                     i18nKey: "error.filesystem.cocoa",
                     level: .notification,
                 )
             }
 
             return Self.unknown(
-                chineseMessage: error.localizedDescription,
                 i18nKey: "error.unknown.generic",
                 level: .silent,
             )
@@ -274,21 +252,18 @@ extension GlobalError {
 
     private static func fromMinecraftFriendsServiceError(_ error: MinecraftFriendsServiceError) -> GlobalError {
         switch error {
-        case let .network(message, key, level):
+        case let .network(_, key, level):
             return Self.network(
-                chineseMessage: message,
                 i18nKey: key,
                 level: minecraftFriendsErrorLevel(level),
             )
-        case let .authentication(message, key, level):
+        case let .authentication(_, key, level):
             return Self.authentication(
-                chineseMessage: message,
                 i18nKey: key,
                 level: minecraftFriendsErrorLevel(level),
             )
-        case let .validation(message, key, level):
+        case let .validation(_, key, level):
             return Self.validation(
-                chineseMessage: message,
                 i18nKey: key,
                 level: minecraftFriendsErrorLevel(level),
             )
@@ -324,7 +299,7 @@ class GlobalErrorHandler: ObservableObject {
     private func handleErrorByLevel(_ error: GlobalError) {
         switch error.level {
         case .popup:
-            AppLog.common.error("[GlobalError-Popup] \(error.chineseMessage)")
+            AppLog.common.error("[GlobalError-Popup] \(error.localizedDescription)")
 
         case .notification:
             Task {
@@ -335,7 +310,7 @@ class GlobalErrorHandler: ObservableObject {
             }
 
         case .silent:
-            AppLog.common.error("[GlobalError-Silent] \(error.chineseMessage)")
+            AppLog.common.error("[GlobalError-Silent] \(error.localizedDescription)")
 
         case .disabled:
             break
@@ -373,7 +348,7 @@ class GlobalErrorHandler: ObservableObject {
     }
 
     private func logError(_ error: GlobalError) {
-        AppLog.common.error("[GlobalError] \(error.chineseMessage) | Key: \(error.i18nKey) | Level: \(error.level.rawValue)")
+        AppLog.common.error("[GlobalError] \(error.localizedDescription) | Key: \(error.i18nKey) | Level: \(error.level.rawValue)")
     }
 }
 
@@ -388,7 +363,7 @@ struct GlobalErrorHandlerModifier: ViewModifier {
         content
             .onReceive(errorHandler.$currentError) { error in
                 if let error {
-                    AppLog.common.error("Global error occurred: \(error.chineseMessage)")
+                    AppLog.common.error("Global error occurred: \(error.localizedDescription)")
                 }
             }
     }

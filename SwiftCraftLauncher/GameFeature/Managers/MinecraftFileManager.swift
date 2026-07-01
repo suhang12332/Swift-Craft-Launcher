@@ -39,7 +39,6 @@ class MinecraftFileManager {
             try fileManager.removeItem(at: profileDirectory)
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "清理游戏文件夹失败",
                 i18nKey: "error.filesystem.game_deletion_failed",
                 level: .notification,
             )
@@ -59,7 +58,7 @@ class MinecraftFileManager {
         } catch {
             let globalError = GlobalError.from(error)
             AppLog.game.error(
-                "下载 Minecraft 版本文件失败: \(globalError.chineseMessage)",
+                "Failed to download Minecraft version files: \(globalError.localizedDescription)",
             )
             errorHandler.handle(globalError)
             return false
@@ -134,7 +133,6 @@ class MinecraftFileManager {
                 )
             } catch {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "创建目录失败",
                     i18nKey: "error.filesystem.directory_creation_failed",
                     level: .notification,
                 )
@@ -197,7 +195,6 @@ class MinecraftFileManager {
                 throw globalError
             } else {
                 throw GlobalError.download(
-                    chineseMessage: "下载文件失败",
                     i18nKey: "error.download.file_download_failed",
                     level: .notification,
                 )

@@ -94,7 +94,7 @@ enum ModUpdateChecker {
                 latestVersion: latestVersion,
             )
         } catch {
-            AppLog.game.error("检测 mod 更新失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to check mod updates: \(error.localizedDescription)")
             return UpdateCheckResult(
                 hasUpdate: false,
                 currentHash: currentHash,

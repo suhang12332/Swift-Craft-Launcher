@@ -26,7 +26,7 @@ extension ModrinthService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("获取项目依赖失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to fetch project dependencies (ID: \(id)): \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return ModrinthProjectDependency(projects: [])
         }
@@ -90,7 +90,7 @@ extension ModrinthService {
                                     type: type,
                                 )
                                 guard let firstDepVersion = depVersions.first else {
-                                    AppLog.common.error("未找到兼容的依赖版本 (ID: \(projectId))")
+                                    AppLog.common.error("No compatible dependency version found (ID: \(projectId))")
                                     return nil
                                 }
                                 depVersion = firstDepVersion
@@ -100,7 +100,7 @@ extension ModrinthService {
                         } catch {
                             let globalError = GlobalError.from(error)
                             AppLog.common.error(
-                                "获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)",
+                                "Failed to fetch dependency project version (ID: \(projectId)): \(globalError.localizedDescription)",
                             )
                             return nil
                         }
@@ -188,7 +188,7 @@ extension ModrinthService {
             }
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("检查项目安装状态失败 (ID: \(projectId)): \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to check project installation status (ID: \(projectId)): \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
         }
 

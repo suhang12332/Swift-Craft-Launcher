@@ -25,7 +25,7 @@ extension ModrinthService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("搜索 Modrinth 项目失败: \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to search Modrinth projects: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return ModrinthResult(hits: [], offset: offset, limit: limit, totalHits: 0)
         }
@@ -43,7 +43,6 @@ extension ModrinthService {
             resolvingAgainstBaseURL: true,
         ) else {
             throw GlobalError.validation(
-                chineseMessage: "构建URLComponents失败",
                 i18nKey: "error.validation.url_components_build_failed",
                 level: .notification,
             )
@@ -66,7 +65,6 @@ extension ModrinthService {
                 }
             } catch {
                 throw GlobalError.validation(
-                    chineseMessage: "编码搜索条件失败: \(error.localizedDescription)",
                     i18nKey: "error.validation.search_condition_encode_failed",
                     level: .notification,
                 )
@@ -75,7 +73,6 @@ extension ModrinthService {
         components.queryItems = queryItems
         guard let url = components.url else {
             throw GlobalError.validation(
-                chineseMessage: "构建搜索URL失败",
                 i18nKey: "error.validation.search_url_build_failed",
                 level: .notification,
             )

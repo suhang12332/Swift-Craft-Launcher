@@ -40,7 +40,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
             return try await modScanner.scanAllDetailIdsThrowing(in: resourceDir)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("扫描所有资源失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to scan all resources: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return []
         }
@@ -52,7 +52,6 @@ final class GameInfoDetailIOViewModel: ObservableObject {
         case let .success(urls):
             guard let url = urls.first else {
                 let globalError = GlobalError.validation(
-                    chineseMessage: "未选择文件",
                     i18nKey: "error.validation.no_file_selected",
                     level: .notification,
                 )
@@ -62,7 +61,6 @@ final class GameInfoDetailIOViewModel: ObservableObject {
 
             guard url.startAccessingSecurityScopedResource() else {
                 let globalError = GlobalError.fileSystem(
-                    chineseMessage: "无法访问所选文件",
                     i18nKey: "error.filesystem.file_access_failed",
                     level: .notification,
                 )
@@ -85,11 +83,11 @@ final class GameInfoDetailIOViewModel: ObservableObject {
                     try optimizedImageData.write(to: iconURL)
                 }.value
 
-                AppLog.game.info("成功更新游戏图标: \(gameName)")
+                AppLog.game.info("Successfully updated game icon: \(gameName)")
                 return true
             } catch {
                 let globalError = GlobalError.from(error)
-                AppLog.game.error("更新游戏图标失败: \(globalError.chineseMessage)")
+                AppLog.game.error("Failed to update game icon: \(globalError.localizedDescription)")
                 errorHandler.handle(globalError)
                 return false
             }

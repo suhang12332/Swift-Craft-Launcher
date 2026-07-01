@@ -184,7 +184,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
             preloadImages(searchViewModel: searchViewModel)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.resource.error("搜索失败: \(globalError.chineseMessage)")
+            AppLog.resource.error("Search failed: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             self.error = globalError
         }
@@ -203,7 +203,6 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
 
         guard !context.query.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "查询类型不能为空",
                 i18nKey: "error.validation.query_type_empty",
                 level: .notification,
             )

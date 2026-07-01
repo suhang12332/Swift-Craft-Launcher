@@ -14,7 +14,6 @@ extension NBTParser {
     func readString() throws -> String {
         guard offset + 2 <= data.count else {
             throw GlobalError.fileSystem(
-                chineseMessage: "NBT 数据不足，无法读取字符串长度",
                 i18nKey: "error.filesystem.nbt_insufficient_data",
                 level: .notification,
             )
@@ -23,7 +22,6 @@ extension NBTParser {
         let length = Int(readShort())
         guard offset + length <= data.count else {
             throw GlobalError.fileSystem(
-                chineseMessage: "NBT 字符串长度超出数据范围",
                 i18nKey: "error.filesystem.nbt_string_out_of_range",
                 level: .notification,
             )
@@ -115,7 +113,6 @@ extension NBTParser {
             let length = Int(readInt())
             guard offset + length <= data.count else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "NBT 字节数组长度超出数据范围",
                     i18nKey: "error.filesystem.nbt_byte_array_out_of_range",
                     level: .notification,
                 )
@@ -139,7 +136,6 @@ extension NBTParser {
             return array
         case .end:
             throw GlobalError.fileSystem(
-                chineseMessage: "NBT 解析遇到 End 标签",
                 i18nKey: "error.filesystem.nbt_unexpected_end_tag",
                 level: .notification,
             )
@@ -180,7 +176,6 @@ extension NBTParser {
     func readList() throws -> [Any] {
         guard offset < data.count else {
             throw GlobalError.fileSystem(
-                chineseMessage: "NBT 数据不足，无法读取列表类型",
                 i18nKey: "error.filesystem.nbt_insufficient_data_for_list",
                 level: .notification,
             )

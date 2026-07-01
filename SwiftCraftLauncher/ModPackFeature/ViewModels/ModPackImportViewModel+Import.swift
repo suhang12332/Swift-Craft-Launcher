@@ -52,19 +52,18 @@ extension ModPackImportViewModel {
     ///   - gameName: The name of the game being installed.
     func handleModPackInstallationResult(success: Bool, gameName: String) {
         if success {
-            AppLog.modPack.info("本地整合包导入完成: \(gameName)")
+            AppLog.modPack.info("Local modpack import completed: \(gameName)")
             configuration.actions.onCancel() // Use cancel to dismiss
         } else if Task.isCancelled || gameSetupService.downloadState.isCancelled {
-            AppLog.modPack.info("本地整合包导入已取消: \(gameName)")
+            AppLog.modPack.info("Local modpack import cancelled: \(gameName)")
             modPackViewModel.modPackInstallState.reset()
             gameSetupService.downloadState.reset()
         } else {
-            AppLog.modPack.error("本地整合包导入失败: \(gameName)")
+            AppLog.modPack.error("Local modpack import failed: \(gameName)")
             Task {
                 await cleanupGameDirectories(gameName: gameName)
             }
             let globalError = GlobalError.resource(
-                chineseMessage: "本地整合包导入失败",
                 i18nKey: "error.resource.local_modpack_import_failed",
                 level: .notification,
             )
@@ -83,7 +82,7 @@ extension ModPackImportViewModel {
             let fileManager = MinecraftFileManager()
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
-            AppLog.modPack.error("清理游戏文件夹失败: \(error.localizedDescription)")
+            AppLog.modPack.error("Failed to clean up game directories: \(error.localizedDescription)")
         }
     }
 }

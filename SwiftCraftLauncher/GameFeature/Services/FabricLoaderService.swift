@@ -14,7 +14,7 @@ enum FabricLoaderService {
             return try await fetchAllLoaderVersionsThrowing(for: minecraftVersion)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("获取 Fabric 加载器版本失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to get Fabric loader version: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return []
         }
@@ -38,7 +38,6 @@ enum FabricLoaderService {
             return result
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "解析 Fabric 加载器版本数据失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.fabric_loader_parse_failed",
                 level: .notification,
             )
@@ -77,7 +76,7 @@ enum FabricLoaderService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("Fabric 指定版本设置失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to set Fabric specified version: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }
@@ -89,7 +88,7 @@ enum FabricLoaderService {
         gameInfo _: GameVersionInfo,
         onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
-        AppLog.game.info("开始设置指定版本的 Fabric 加载器: \(loaderVersion)")
+        AppLog.game.info("Starting to set specified Fabric loader version: \(loaderVersion)")
 
         let fabricProfile = try await fetchSpecificLoaderVersion(for: gameVersion, loaderVersion: loaderVersion)
         let librariesDirectory = AppPaths.librariesDirectory
@@ -102,7 +101,6 @@ enum FabricLoaderService {
         let mainClass = fabricProfile.mainClass
         guard let version = fabricProfile.version else {
             throw GlobalError.validation(
-                chineseMessage: "Fabric 加载器版本信息缺失",
                 i18nKey: "error.validation.fabric_loader_version_missing",
                 level: .notification,
             )

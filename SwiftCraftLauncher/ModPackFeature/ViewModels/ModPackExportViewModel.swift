@@ -74,19 +74,19 @@ class ModPackExportViewModel: ObservableObject {
             }
 
             await MainActor.run {
-                if Task.isCancelled || result.error is CancellationError || result.message == "已取消" {
+                if Task.isCancelled || result.error is CancellationError || result.message == "Cancelled" {
                     return
                 }
                 if result.success {
                     self.exportState = .completed
                     self.tempExportPath = result.outputPath
-                    AppLog.modPack.info("整合包导出到临时位置成功: \(result.outputPath?.path ?? "未知路径")")
+                    AppLog.modPack.info("Modpack exported to temp location successfully: \(result.outputPath?.path ?? "unknown path")")
                 } else {
                     self.cleanupTempFile()
                     self.exportState = .idle
                     self.exportError = result.message
                     self.exportProgress = ModPackExporter.ExportProgress()
-                    AppLog.modPack.error("整合包导出失败: \(result.message)")
+                    AppLog.modPack.error("Modpack export failed: \(result.message)")
                 }
             }
         }
@@ -169,10 +169,10 @@ class ModPackExportViewModel: ObservableObject {
         do {
             if FileManager.default.fileExists(atPath: tempPath.path) {
                 try FileManager.default.removeItem(at: tempPath)
-                AppLog.modPack.info("已清理临时文件: \(tempPath.path)")
+                AppLog.modPack.info("Cleaned up temp file: \(tempPath.path)")
             }
         } catch {
-            AppLog.modPack.error("清理临时文件失败: \(error.localizedDescription)")
+            AppLog.modPack.error("Failed to clean up temp file: \(error.localizedDescription)")
         }
         tempExportPath = nil
     }
@@ -183,9 +183,9 @@ class ModPackExportViewModel: ObservableObject {
         guard FileManager.default.fileExists(atPath: exportDir.path) else { return }
         do {
             try FileManager.default.removeItem(at: exportDir)
-            AppLog.modPack.info("已清理临时导出目录: \(exportDir.path)")
+            AppLog.modPack.info("Cleaned up temp export directory: \(exportDir.path)")
         } catch {
-            AppLog.modPack.error("清理临时导出目录失败: \(error.localizedDescription)")
+            AppLog.modPack.error("Failed to clean up temp export directory: \(error.localizedDescription)")
         }
     }
 

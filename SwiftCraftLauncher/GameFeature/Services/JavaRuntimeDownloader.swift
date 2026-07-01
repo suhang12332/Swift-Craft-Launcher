@@ -48,7 +48,6 @@ class JavaRuntimeDownloader {
         guard let manifest = try JSONSerialization.jsonObject(with: manifestData) as? [String: Any],
               let files = manifest["files"] as? [String: Any] else {
             throw GlobalError.validation(
-                chineseMessage: "解析manifest.json失败",
                 i18nKey: "error.validation.manifest_parse_failed",
                 level: .notification,
             )
@@ -82,9 +81,8 @@ class JavaRuntimeDownloader {
             for (filePath, fileInfo) in files {
                 group.addTask { [progressActor, cancelActor, self] in
                     if await cancelActor.shouldCancel() {
-                        AppLog.game.info("Java下载已被取消")
+                        AppLog.game.info("Java download cancelled")
                         throw GlobalError.download(
-                            chineseMessage: "下载已被取消",
                             i18nKey: "error.download.cancelled",
                             level: .notification,
                         )
@@ -99,7 +97,7 @@ class JavaRuntimeDownloader {
                     let isExecutable = fileData["executable"] as? Bool ?? false
 
                     guard let raw = downloads["raw"] as? [String: Any] else {
-                        AppLog.game.error("文件 \(filePath) 没有RAW格式，跳过")
+                        AppLog.game.error("File \(filePath) does not have RAW format, skipping")
                         return
                     }
 
@@ -134,7 +132,7 @@ class JavaRuntimeDownloader {
                                 await progressActor.callProgressUpdate(filePath, completed, totalFiles)
                             }
                         } catch {
-                            AppLog.game.error("无法验证文件 \(filePath) 的下载状态: \(error.localizedDescription)")
+                            AppLog.game.error("Unable to verify file \(filePath) download status: \(error.localizedDescription)")
                         }
                     }
                 }
@@ -146,7 +144,6 @@ class JavaRuntimeDownloader {
     private func fetchDataFromURL(_ urlString: String) async throws -> Data {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
-                chineseMessage: "无效的URL",
                 i18nKey: "error.validation.invalid_url",
                 level: .notification,
             )
@@ -182,7 +179,7 @@ class JavaRuntimeDownloader {
             targetDirectory: targetDirectory,
         )
 
-        await progressActor.callProgressUpdate("Java运行时 \(version) 安装完成", 1, 1)
+        await progressActor.callProgressUpdate("Java runtime \(version) installation complete", 1, 1)
     }
 
     private func extractAndProcessBundledJavaRuntime(zipPath: URL, targetDirectory: URL) async throws {
@@ -200,10 +197,9 @@ class JavaRuntimeDownloader {
                 destinationPath: finalJreBundlePath,
             )
         } catch {
-            AppLog.game.error("解压Java运行时失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to extract Java runtime: \(error.localizedDescription)")
 
             throw GlobalError.validation(
-                chineseMessage: "解压Java运行时失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.extract_failed",
                 level: .notification,
             )
@@ -220,7 +216,6 @@ class JavaRuntimeDownloader {
             archive = try Archive(url: zipPath, accessMode: .read)
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "无法打开zip文件: \(error.localizedDescription)",
                 i18nKey: "error.validation.cannot_open_zip",
                 level: .notification,
             )
@@ -255,7 +250,6 @@ class JavaRuntimeDownloader {
 
         guard !targetFolderEntries.isEmpty, let prefix = targetFolderPrefix else {
             throw GlobalError.validation(
-                chineseMessage: "在zip文件中未找到zulu文件夹",
                 i18nKey: "error.validation.zulu_folder_not_found_in_zip",
                 level: .notification,
             )
@@ -287,7 +281,7 @@ class JavaRuntimeDownloader {
                     }
                 }
 
-                AppLog.game.error("解压失败: \(entry.path) - \(error.localizedDescription)")
+                AppLog.game.error("Extraction failed: \(entry.path) - \(error.localizedDescription)")
                 throw error
             }
         }

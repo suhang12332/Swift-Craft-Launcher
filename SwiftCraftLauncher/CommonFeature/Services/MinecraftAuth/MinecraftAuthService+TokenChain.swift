@@ -30,7 +30,6 @@ extension MinecraftAuthService {
             return try JSONDecoder().decode(TokenResponse.self, from: data)
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "解析令牌响应失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.token_response_parse_failed",
                 level: .notification,
             )
@@ -55,7 +54,6 @@ extension MinecraftAuthService {
             bodyData = try JSONSerialization.data(withJSONObject: body)
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "序列化 Xbox Live 认证请求失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.xbox_live_request_serialize_failed",
                 level: .notification,
             )
@@ -68,7 +66,6 @@ extension MinecraftAuthService {
             return try JSONDecoder().decode(XboxLiveTokenResponse.self, from: data)
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "解析 Xbox Live 令牌响应失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.xbox_live_token_parse_failed",
                 level: .notification,
             )
@@ -92,7 +89,6 @@ extension MinecraftAuthService {
             xstsBodyData = try JSONSerialization.data(withJSONObject: xstsBody)
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "序列化 XSTS 认证请求失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.xsts_request_serialize_failed",
                 level: .notification,
             )
@@ -106,13 +102,12 @@ extension MinecraftAuthService {
             xstsTokenResponse = try JSONDecoder().decode(XboxLiveTokenResponse.self, from: xstsData)
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "解析 XSTS 令牌响应失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.xsts_token_parse_failed",
                 level: .notification,
             )
         }
 
-        AppLog.common.debug("开始获取 Minecraft 访问令牌")
+        AppLog.common.debug("Starting to fetch Minecraft access token")
         let minecraftUrl = URLConfig.API.Authentication.minecraftLogin
 
         let minecraftBody: [String: Any] = [
@@ -124,7 +119,6 @@ extension MinecraftAuthService {
             minecraftBodyData = try JSONSerialization.data(withJSONObject: minecraftBody)
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "序列化 Minecraft 认证请求失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.minecraft_request_serialize_failed",
                 level: .notification,
             )
@@ -141,24 +135,20 @@ extension MinecraftAuthService {
             switch error.statusCode {
             case 401:
                 throw GlobalError.authentication(
-                    chineseMessage: "Minecraft 认证失败: Xbox Live 令牌无效或已过期",
                     i18nKey: "error.authentication.invalid_xbox_token",
                     level: .notification,
                 )
             case 403:
                 throw GlobalError.authentication(
-                    chineseMessage: "Minecraft 认证失败: 该Microsoft账户未购买Minecraft",
                     i18nKey: "error.authentication.minecraft_not_owned",
                     level: .notification,
                 )
             case 429:
                 throw GlobalError.network(
-                    chineseMessage: "请求过于频繁，请稍后重试",
                     i18nKey: "error.network.rate_limited",
                 )
             case 503:
                 throw GlobalError.network(
-                    chineseMessage: "Minecraft 认证服务暂时不可用，请稍后重试",
                     i18nKey: "error.network.minecraft_service_unavailable",
                 )
             default:
@@ -171,7 +161,6 @@ extension MinecraftAuthService {
             minecraftTokenResponse = try JSONDecoder().decode(TokenResponse.self, from: minecraftData)
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "解析 Minecraft 访问令牌响应失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.minecraft_token_parse_failed",
                 level: .notification,
             )
@@ -193,13 +182,11 @@ extension MinecraftAuthService {
             switch error.statusCode {
             case 401:
                 throw GlobalError.authentication(
-                    chineseMessage: "Minecraft 访问令牌无效或已过期",
                     i18nKey: "error.authentication.invalid_minecraft_token",
                     level: .notification,
                 )
             case 403:
                 throw GlobalError.authentication(
-                    chineseMessage: "该账户未购买 Minecraft，请使用已购买 Minecraft 的 Microsoft 账户登录",
                     i18nKey: "error.authentication.minecraft_not_purchased",
                     level: .popup,
                 )
@@ -220,14 +207,12 @@ extension MinecraftAuthService {
 
             if !hasProductMinecraft || !hasGameMinecraft {
                 throw GlobalError.authentication(
-                    chineseMessage: "该 Microsoft 账户未购买 Minecraft 或权限不足，请使用已购买 Minecraft 的账户登录",
                     i18nKey: "error.authentication.insufficient_minecraft_entitlements",
                     level: .popup,
                 )
             }
         } catch let decodingError as DecodingError {
             throw GlobalError.validation(
-                chineseMessage: "解析游戏权限响应失败: \(decodingError.localizedDescription)",
                 i18nKey: "error.validation.entitlements_parse_failed",
                 level: .notification,
             )
@@ -235,7 +220,6 @@ extension MinecraftAuthService {
             throw globalError
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "检查游戏拥有情况时发生未知错误: \(error.localizedDescription)",
                 i18nKey: "error.validation.entitlements_check_unknown_error",
                 level: .notification,
             )
@@ -265,7 +249,6 @@ extension MinecraftAuthService {
             )
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "解析 Minecraft 用户资料响应失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.minecraft_profile_parse_failed",
                 level: .notification,
             )

@@ -16,7 +16,6 @@ extension GameCreationViewModel {
             guard let url = urls.first else {
                 handleNonCriticalError(
                     GlobalError.validation(
-                        chineseMessage: "未选择文件",
                         i18nKey: "error.validation.no_file_selected",
                         level: .notification,
                     ),
@@ -25,7 +24,7 @@ extension GameCreationViewModel {
                 return
             }
             guard url.startAccessingSecurityScopedResource() else {
-                handleFileAccessError(URLError(.cannotOpenFile), context: "图片文件")
+                handleFileAccessError(URLError(.cannotOpenFile), context: "Image file")
                 return
             }
             Task {
@@ -48,7 +47,7 @@ extension GameCreationViewModel {
                     pendingIconData = dataToWrite
                     iconImage = nil
                 case let .failure(error):
-                    handleFileReadError(error, context: "图片文件")
+                    handleFileReadError(error, context: "Image file")
                 }
             }
 
@@ -63,7 +62,7 @@ extension GameCreationViewModel {
 
     func handleImageDrop(_ providers: [NSItemProvider]) -> Bool {
         guard let provider = providers.first else {
-            AppLog.game.error("图片拖放失败：没有提供者")
+            AppLog.game.error("Image drag-and-drop failed: no provider")
             return false
         }
 
@@ -106,7 +105,7 @@ extension GameCreationViewModel {
                                     code: NSFileWriteUnknownError,
                                     userInfo: nil,
                                 ),
-                                context: "图片保存",
+                                context: "Image save",
                             )
                         }
                     }
@@ -114,7 +113,7 @@ extension GameCreationViewModel {
             }
             return true
         }
-        AppLog.game.error("图片拖放失败：不支持的类型")
+        AppLog.game.error("Image drag-and-drop failed: unsupported type")
         return false
     }
 }

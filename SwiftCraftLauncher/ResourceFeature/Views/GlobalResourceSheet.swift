@@ -144,7 +144,7 @@ struct GlobalResourceSheet: View {
                 try await loadDependenciesThrowing(for: version, game: game)
             } catch {
                 let globalError = GlobalError.from(error)
-                AppLog.resource.error("加载依赖项失败: \(globalError.chineseMessage)")
+                AppLog.resource.error("Failed to load dependencies: \(globalError.localizedDescription)")
                 errorHandler.handle(globalError)
                 _ = await MainActor.run {
                     dependencyState = DependencyState()
@@ -159,7 +159,6 @@ struct GlobalResourceSheet: View {
     ) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
             )

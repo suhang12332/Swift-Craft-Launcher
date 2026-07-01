@@ -54,10 +54,9 @@ class GameSetupUtil: ObservableObject {
     ) async {
         if let playerListViewModel {
             guard playerListViewModel.currentPlayer != nil else {
-                AppLog.game.error("无法保存游戏，因为没有选择当前玩家。")
+                AppLog.game.error("Unable to save game, no current player selected.")
                 onError(
                     GlobalError.configuration(
-                        chineseMessage: "没有选择当前玩家",
                         i18nKey: "error.configuration.no_current_player",
                         level: .popup,
                     ),
@@ -149,7 +148,7 @@ class GameSetupUtil: ObservableObject {
             onSuccess()
         } catch {
             if isSaveGameDownloadCancelled(error) {
-                AppLog.game.info("游戏下载任务已取消")
+                AppLog.game.info("Game download task cancelled")
                 await cleanupGameDirectories(gameName: input.gameName)
                 await MainActor.run {
                     self.objectWillChange.send()
@@ -177,7 +176,7 @@ class GameSetupUtil: ObservableObject {
             let fileManager = MinecraftFileManager()
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
-            AppLog.game.error("清理游戏文件夹失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to clean game folder: \(error.localizedDescription)")
         }
     }
 
@@ -207,11 +206,10 @@ class GameSetupUtil: ObservableObject {
             }
         } catch {
             AppLog.game.error(
-                "游戏图标保存失败，将继续安装: \(error.localizedDescription)",
+                "Game icon save failed, continuing installation: \(error.localizedDescription)",
             )
             errorHandler.handle(
                 GlobalError.fileSystem(
-                    chineseMessage: "图片保存失败",
                     i18nKey: "error.filesystem.image_save_failed",
                     level: .silent,
                 ),
@@ -282,7 +280,6 @@ class GameSetupUtil: ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             throw GlobalError.download(
-                chineseMessage: "下载资源索引失败: \(globalError.chineseMessage)",
                 i18nKey: "error.download.asset_index_failed",
                 level: .notification,
             )

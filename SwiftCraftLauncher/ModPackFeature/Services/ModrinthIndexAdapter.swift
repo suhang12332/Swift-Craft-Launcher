@@ -62,7 +62,6 @@ struct ModrinthIndexAdapter: ModPackIndexAdapter {
         } catch ModrinthIndexError.emptyIndex {
             errorHandler.handle(
                 GlobalError.resource(
-                    chineseMessage: "modrinth.index.json 文件为空",
                     i18nKey: "error.resource.modrinth_index_empty",
                     level: .notification,
                 ),
@@ -70,7 +69,7 @@ struct ModrinthIndexAdapter: ModPackIndexAdapter {
             return nil
         } catch {
             if error is DecodingError {
-                AppLog.modPack.error("解析 modrinth.index.json 失败: JSON 格式错误")
+                AppLog.modPack.error("Failed to parse modrinth.index.json: Invalid JSON format")
             }
             return nil
         }

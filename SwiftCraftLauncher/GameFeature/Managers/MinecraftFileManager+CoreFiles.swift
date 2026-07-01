@@ -52,7 +52,6 @@ extension MinecraftFileManager {
                 throw globalError
             } else {
                 throw GlobalError.download(
-                    chineseMessage: "下载客户端 JAR 文件失败",
                     i18nKey: "error.download.client_jar_failed",
                     level: .notification,
                 )
@@ -115,7 +114,6 @@ extension MinecraftFileManager {
 
         guard let artifactURL = library.downloads.artifact.url else {
             throw GlobalError.download(
-                chineseMessage: "库文件缺少下载 URL",
                 i18nKey: "error.download.missing_library_url",
                 level: .notification,
             )
@@ -138,7 +136,6 @@ extension MinecraftFileManager {
                 throw globalError
             } else {
                 throw GlobalError.download(
-                    chineseMessage: "下载库文件失败",
                     i18nKey: "error.download.library_failed",
                     level: .notification,
                 )
@@ -178,7 +175,6 @@ extension MinecraftFileManager {
 
         guard let nativeURL = nativeArtifact.url else {
             throw GlobalError.download(
-                chineseMessage: "原生库文件 \(library.name) 缺少下载 URL",
                 i18nKey: "error.download.missing_native_url",
                 level: .notification,
             )
@@ -200,7 +196,6 @@ extension MinecraftFileManager {
                 throw globalError
             } else {
                 throw GlobalError.download(
-                    chineseMessage: "下载原生库文件失败",
                     i18nKey: "error.download.native_library_failed",
                     level: .notification,
                 )
@@ -234,7 +229,6 @@ extension MinecraftFileManager {
                 throw globalError
             } else {
                 throw GlobalError.download(
-                    chineseMessage: "下载日志配置文件失败",
                     i18nKey: "error.download.logging_config_failed",
                     level: .notification,
                 )
@@ -261,7 +255,7 @@ extension MinecraftFileManager {
                     minecraftVersion: minecraftVersion,
                 )
             } catch {
-                AppLog.game.error("下载原生库失败")
+                AppLog.game.error("Failed to download native libraries")
             }
         }
     }

@@ -35,14 +35,13 @@ extension GameAdvancedSettingsViewModel {
                 updatedGame.javaPath = self.javaPath
 
                 try await repository.updateGame(updatedGame)
-                AppLog.game.debug("自动保存游戏设置: \(game.gameName)")
+                AppLog.game.debug("Auto-saving game settings: \(game.gameName)")
             } catch {
                 let globalError = error as? GlobalError ?? GlobalError.unknown(
-                    chineseMessage: "保存设置失败: \(error.localizedDescription)",
                     i18nKey: "error.unknown.settings_save_failed",
                     level: .notification,
                 )
-                AppLog.game.error("自动保存游戏设置失败: \(globalError.chineseMessage)")
+                AppLog.game.error("Failed to auto-save game settings: \(globalError.localizedDescription)")
                 await MainActor.run { self.error = globalError }
             }
         }

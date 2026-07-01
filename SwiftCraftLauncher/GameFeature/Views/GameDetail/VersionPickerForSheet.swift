@@ -82,7 +82,6 @@ struct VersionPickerForSheet: View {
     private func loadVersionsThrowing() async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
             )

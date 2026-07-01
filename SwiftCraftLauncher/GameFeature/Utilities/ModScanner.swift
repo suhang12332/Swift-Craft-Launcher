@@ -32,11 +32,11 @@ class ModScanner {
                 let globalError = GlobalError.from(error)
                 if let gameNameHint {
                     AppLog.game.error(
-                        "FSEvents 重新扫描游戏 \(gameNameHint) 的 mods 目录失败: \(globalError.chineseMessage)",
+                        "FSEvents rescan of game \(gameNameHint) mods directory failed: \(globalError.localizedDescription)",
                     )
                 } else {
                     AppLog.game.error(
-                        "FSEvents 重新扫描目录 \(standardizedDirectoryURL.lastPathComponent) 失败: \(globalError.chineseMessage)",
+                        "FSEvents rescan of directory \(standardizedDirectoryURL.lastPathComponent) failed: \(globalError.localizedDescription)",
                     )
                 }
             }
@@ -57,7 +57,7 @@ class ModScanner {
             } catch {
                 let globalError = GlobalError.from(error)
                 AppLog.game.error(
-                    "获取 Modrinth 项目详情失败: \(globalError.chineseMessage)",
+                    "Failed to get Modrinth project details: \(globalError.localizedDescription)",
                 )
                 errorHandler.handle(globalError)
                 completion(nil)
@@ -71,7 +71,6 @@ class ModScanner {
     ) async throws -> ModrinthProjectDetail? {
         guard let hash = try Self.sha1HashThrowing(of: fileURL) else {
             throw GlobalError.validation(
-                chineseMessage: "无法计算文件哈希值",
                 i18nKey: "error.validation.file_hash_calculation_failed",
                 level: .silent,
             )
@@ -125,7 +124,7 @@ class ModScanner {
         do {
             return try JSONDecoder().decode(ModrinthProjectDetail.self, from: jsonData)
         } catch {
-            AppLog.game.error("解码 mod 缓存失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to decode mod cache: \(error.localizedDescription)")
             return nil
         }
     }
@@ -136,9 +135,8 @@ class ModScanner {
             let jsonData = try JSONEncoder().encode(detail)
             AppServices.modCacheManager.setSilently(hash: hash, jsonData: jsonData)
         } catch {
-            AppLog.game.error("编码 mod 缓存失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to encode mod cache: \(error.localizedDescription)")
             errorHandler.handle(GlobalError.validation(
-                chineseMessage: "保存 mod 缓存失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.mod_cache_encode_failed",
                 level: .silent,
             ))

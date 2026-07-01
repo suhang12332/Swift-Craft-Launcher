@@ -117,7 +117,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             let fileManager = MinecraftFileManager()
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
-            AppLog.modPack.error("清理游戏文件夹失败: \(error.localizedDescription)")
+            AppLog.modPack.error("Failed to clean up game directories: \(error.localizedDescription)")
         }
     }
 
@@ -142,7 +142,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             isProcessing = false
             errorHandler.handle(
                 GlobalError.resource(
-                    chineseMessage: "没有找到可下载的文件",
                     i18nKey: "error.resource.no_downloadable_file",
                     level: .notification,
                 ),
@@ -256,7 +255,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
     private func handleDownloadError(_ message: String, _ i18nKey: String) {
         let globalError = GlobalError.resource(
-            chineseMessage: message,
             i18nKey: i18nKey,
             level: .notification,
         )

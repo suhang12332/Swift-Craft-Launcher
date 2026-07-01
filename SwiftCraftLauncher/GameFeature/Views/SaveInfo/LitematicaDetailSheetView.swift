@@ -209,20 +209,20 @@ struct LitematicaDetailSheetView: View {
         errorMessage = nil
 
         do {
-            AppLog.game.debug("开始加载投影详细信息: \(filePath.lastPathComponent)")
+            AppLog.game.debug("Starting to load litematica details: \(filePath.lastPathComponent)")
             let loadedMetadata = try await litematicaService.loadFullMetadata(filePath: filePath)
             await MainActor.run {
                 if let metadata = loadedMetadata {
-                    AppLog.game.debug("成功加载投影元数据: \(metadata.name)")
+                    AppLog.game.debug("Successfully loaded litematica metadata: \(metadata.name)")
                     self.metadata = metadata
                 } else {
-                    AppLog.game.error("投影元数据为nil: \(filePath.lastPathComponent)")
+                    AppLog.game.error("Litematica metadata is nil: \(filePath.lastPathComponent)")
                     errorMessage = "litematica.detail.error.parse_failed".localized()
                 }
                 isLoading = false
             }
         } catch {
-            AppLog.game.error("加载投影详细信息失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to load litematica details: \(error.localizedDescription)")
             await MainActor.run {
                 isLoading = false
                 errorMessage = String(format: "litematica.detail.error.load_failed".localized(), error.localizedDescription)

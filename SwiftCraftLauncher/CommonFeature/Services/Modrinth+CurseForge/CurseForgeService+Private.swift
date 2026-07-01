@@ -16,7 +16,6 @@ extension CurseForgeService {
     static func tryFetchFileDetail(from urlString: String) async throws -> CurseForgeModFileDetail {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
-                chineseMessage: "无效的镜像 API URL",
                 i18nKey: "error.network.url",
                 level: .notification,
             )
@@ -36,7 +35,6 @@ extension CurseForgeService {
     static func tryFetchModDetail(from urlString: String) async throws -> CurseForgeModDetail {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
-                chineseMessage: "无效的镜像 API URL",
                 i18nKey: "error.network.url",
                 level: .notification,
             )
@@ -56,7 +54,6 @@ extension CurseForgeService {
     static func tryFetchModDescription(from urlString: String) async throws -> String {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
-                chineseMessage: "无效的镜像 API URL",
                 i18nKey: "error.network.url",
                 level: .notification,
             )
@@ -74,7 +71,6 @@ extension CurseForgeService {
         let cleanId = id.replacingOccurrences(of: "cf-", with: "")
         guard let modId = Int(cleanId) else {
             throw GlobalError.validation(
-                chineseMessage: "无效的项目 ID",
                 i18nKey: "error.validation.invalid_project_id",
                 level: .notification,
             )

@@ -72,7 +72,6 @@ class CacheCalculator {
 
         guard let enumerator = fileManager.enumerator(at: directory, includingPropertiesForKeys: [.fileSizeKey]) else {
             throw GlobalError.fileSystem(
-                chineseMessage: "无法枚举目录: \(directory.path)",
                 i18nKey: "error.filesystem.directory_enumeration_failed",
                 level: .silent,
             )
@@ -90,7 +89,7 @@ class CacheCalculator {
                     totalSize += Int64(fileSize)
                 }
             } catch {
-                AppLog.common.error("无法获取文件大小: \(fileURL.path), 错误: \(error.localizedDescription)")
+                AppLog.common.error("Unable to get file size: \(fileURL.path), error: \(error.localizedDescription)")
             }
         }
 

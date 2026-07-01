@@ -60,7 +60,7 @@ struct MinecraftLaunchCommand {
 
     private func validatePlayerTokenBeforeLaunch() async throws -> Player? {
         guard let player else {
-            AppLog.game.error("没有选择玩家，使用默认认证参数")
+            AppLog.game.error("No player selected, using default auth parameters")
             return nil
         }
 
@@ -68,7 +68,7 @@ struct MinecraftLaunchCommand {
             return player
         }
 
-        AppLog.game.info("启动游戏前验证玩家 \(player.name) 的Token")
+        AppLog.game.info("Verifying player \(player.name) token before launch")
 
         var playerWithCredential = player
         if playerWithCredential.credential == nil {
@@ -81,7 +81,7 @@ struct MinecraftLaunchCommand {
         let validatedPlayer = try await minecraftAuthService.validateAndRefreshPlayerTokenThrowing(for: playerWithCredential)
 
         if validatedPlayer.authAccessToken != player.authAccessToken {
-            AppLog.game.info("玩家 \(player.name) 的Token已更新，保存到数据管理器")
+            AppLog.game.info("Player \(player.name) token updated, saved to data manager")
             await updatePlayerInDataManager(validatedPlayer)
         }
 
@@ -92,7 +92,7 @@ struct MinecraftLaunchCommand {
         let dataManager = AppServices.playerDataManager
         let success = dataManager.updatePlayerSilently(updatedPlayer)
         if success {
-            AppLog.game.debug("已更新玩家数据管理器中的Token信息")
+            AppLog.game.debug("Updated token info in player data manager")
             NotificationCenter.default.post(
                 name: .playerUpdated,
                 object: nil,
@@ -103,7 +103,7 @@ struct MinecraftLaunchCommand {
 
     private func replaceAuthParameters(command: [String], with validatedPlayer: Player?) async throws -> [String] {
         guard let player = validatedPlayer else {
-            AppLog.game.error("没有验证的玩家，使用默认认证参数")
+            AppLog.game.error("No verified player, using default auth parameters")
             return replaceGameParameters(command: command)
         }
 
@@ -161,7 +161,6 @@ struct MinecraftLaunchCommand {
             accessToken = try await yggdrasilAuthService.getMinecraftToken(profile: profile, server: server)
         } catch {
             throw GlobalError.authentication(
-                chineseMessage: "获取访问令牌失败",
                 i18nKey: "error.authentication.token_fetch_failed",
                 level: .popup,
             )
@@ -169,7 +168,7 @@ struct MinecraftLaunchCommand {
 
         let jarPath = AppConstants.AuthlibInjector.jarPath
         if !FileManager.default.fileExists(atPath: jarPath) {
-            AppLog.game.error("Authlib Injector JAR 不存在，等待用户选择: \(jarPath)")
+            AppLog.game.error("Authlib Injector JAR does not exist, waiting for user selection: \(jarPath)")
             let choice = await AppServices.authlibInjectorMissingPresenter.requestUserChoice()
             switch choice {
             case .continueWithoutInjector:
@@ -236,7 +235,6 @@ struct MinecraftLaunchCommand {
         let javaExecutable = game.javaPath
         guard !javaExecutable.isEmpty else {
             throw GlobalError.configuration(
-                chineseMessage: "Java 路径未设置",
                 i18nKey: "error.configuration.java_path_not_set",
                 level: .popup,
             )
@@ -244,7 +242,7 @@ struct MinecraftLaunchCommand {
 
         let gameWorkingDirectory = AppPaths.profileDirectory(gameName: game.gameName)
 
-        AppLog.game.info("游戏工作目录: \(gameWorkingDirectory.path)")
+        AppLog.game.info("Game working directory: \(gameWorkingDirectory.path)")
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: javaExecutable)
@@ -274,7 +272,7 @@ struct MinecraftLaunchCommand {
                 gameStatusManager.setGameRunning(gameId: game.id, userId: userId, isRunning: true)
             }
         } catch {
-            AppLog.game.error("启动进程失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to launch process: \(error.localizedDescription)")
 
             _ = gameProcessManager.stopProcess(for: game.id, userId: userId)
             _ = await MainActor.run {
@@ -282,7 +280,6 @@ struct MinecraftLaunchCommand {
             }
 
             throw GlobalError.gameLaunch(
-                chineseMessage: "启动游戏进程失败: \(error.localizedDescription)",
                 i18nKey: "error.game_launch.process_failed",
                 level: .popup,
             )
@@ -290,7 +287,7 @@ struct MinecraftLaunchCommand {
     }
 
     private func handleLaunchError(_ error: Error) async {
-        AppLog.game.error("启动游戏失败：\(error.localizedDescription)")
+        AppLog.game.error("Failed to launch game: \(error.localizedDescription)")
 
         let globalError = GlobalError.from(error)
         AppServices.errorHandler.handle(globalError)

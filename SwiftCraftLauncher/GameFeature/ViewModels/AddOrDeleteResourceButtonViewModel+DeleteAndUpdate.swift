@@ -18,11 +18,10 @@ extension AddOrDeleteResourceButtonViewModel {
 
         if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
             let globalError = GlobalError.configuration(
-                chineseMessage: "无法删除文件：不支持删除此类型的资源",
                 i18nKey: "error.configuration.delete_file_failed",
                 level: .notification,
             )
-            AppLog.game.error("删除文件失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to delete file: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return
         }
@@ -31,22 +30,20 @@ extension AddOrDeleteResourceButtonViewModel {
               let resourceDir = AppPaths.resourceDirectory(for: query, gameName: gameInfo.gameName)
         else {
             let globalError = GlobalError.configuration(
-                chineseMessage: "无法删除文件：游戏信息或资源目录无效",
                 i18nKey: "error.configuration.delete_file_failed",
                 level: .notification,
             )
-            AppLog.game.error("删除文件失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to delete file: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return
         }
 
         guard let fileName else {
             let globalError = GlobalError.resource(
-                chineseMessage: "无法删除文件：缺少文件名信息",
                 i18nKey: "error.resource.file_name_missing",
                 level: .notification,
             )
-            AppLog.game.error("删除文件失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to delete file: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return
         }
@@ -88,13 +85,13 @@ extension AddOrDeleteResourceButtonViewModel {
         guard let gameInfo,
               let resourceDir = AppPaths.resourceDirectory(for: query, gameName: gameInfo.gameName)
         else {
-            AppLog.game.error("切换资源启用状态失败：资源目录不存在")
+            AppLog.game.error("Failed to toggle resource enabled state: resource directory does not exist")
             return
         }
 
         let fileName = effectiveFileName
         guard let fileName else {
-            AppLog.game.error("切换资源启用状态失败：缺少文件名")
+            AppLog.game.error("Failed to toggle resource enabled state: missing filename")
             return
         }
 
@@ -111,7 +108,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 checkForUpdate()
             }
         } catch {
-            AppLog.game.error("切换资源启用状态失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to toggle resource enabled state: \(error.localizedDescription)")
         }
     }
 
@@ -146,7 +143,7 @@ extension AddOrDeleteResourceButtonViewModel {
             try performDeleteThrowing(fileURL: fileURL)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("删除文件失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to delete file: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
         }
     }
@@ -154,7 +151,6 @@ extension AddOrDeleteResourceButtonViewModel {
     func performDeleteThrowing(fileURL: URL) throws {
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
             throw GlobalError.resource(
-                chineseMessage: "文件不存在: \(fileURL.lastPathComponent)",
                 i18nKey: "error.resource.file_not_found",
                 level: .notification,
             )
@@ -174,8 +170,6 @@ extension AddOrDeleteResourceButtonViewModel {
             }
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage:
-                    "删除文件失败: \(fileURL.lastPathComponent), 错误: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.file_deletion_failed",
                 level: .notification,
             )

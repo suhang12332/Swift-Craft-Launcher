@@ -32,7 +32,6 @@ class NBTParser {
 
         guard !data.isEmpty else {
             throw GlobalError.fileSystem(
-                chineseMessage: "NBT 数据为空",
                 i18nKey: "error.filesystem.nbt_empty_data",
                 level: .notification,
             )
@@ -41,7 +40,6 @@ class NBTParser {
         let tagType = NBTType(rawValue: data[offset]) ?? .end
         guard tagType == .compound else {
             throw GlobalError.fileSystem(
-                chineseMessage: "NBT 根标签不是 Compound 类型",
                 i18nKey: "error.filesystem.nbt_invalid_root",
                 level: .notification,
             )

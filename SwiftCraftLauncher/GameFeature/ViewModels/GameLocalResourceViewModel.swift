@@ -207,11 +207,10 @@ final class GameLocalResourceViewModel: ObservableObject {
 
         if resourceDirectory == nil {
             let globalError = GlobalError.configuration(
-                chineseMessage: "无法获取资源目录路径",
                 i18nKey: "error.configuration.resource_directory_not_found",
                 level: .notification,
             )
-            AppLog.game.error("初始化资源目录失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to initialize resource directory: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             error = globalError
         }

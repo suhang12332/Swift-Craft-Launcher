@@ -13,7 +13,6 @@ enum FileDownloadCore {
         try autoreleasepool {
             guard let url = URL(string: urlString) else {
                 throw GlobalError.validation(
-                    chineseMessage: "无效的下载地址",
                     i18nKey: "error.validation.invalid_download_url",
                     level: .notification,
                 )
@@ -36,7 +35,6 @@ enum FileDownloadCore {
             )
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "创建目标目录失败",
                 i18nKey: "error.filesystem.download_directory_creation_failed",
                 level: .notification,
             )
@@ -80,7 +78,6 @@ enum FileDownloadCore {
         }
         if actualSha1 != expectedSha1 {
             throw GlobalError.validation(
-                chineseMessage: "SHA1 校验失败",
                 i18nKey: "error.validation.sha1_check_failed",
                 level: .notification,
             )

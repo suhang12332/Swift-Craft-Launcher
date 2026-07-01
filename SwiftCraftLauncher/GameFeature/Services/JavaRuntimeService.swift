@@ -43,7 +43,6 @@ class JavaRuntimeService {
         let json = try await fetchJavaRuntimeAPI()
         guard let gamecore = json["gamecore"] as? [String: Any] else {
             throw GlobalError.validation(
-                chineseMessage: "未找到gamecore平台数据",
                 i18nKey: "error.validation.gamecore_not_found",
                 level: .notification,
             )
@@ -57,7 +56,6 @@ class JavaRuntimeService {
         let platform = getCurrentMacPlatform()
         guard let platformData = json[platform] as? [String: Any] else {
             throw GlobalError.validation(
-                chineseMessage: "未找到\(platform)平台数据",
                 i18nKey: "error.validation.platform_data_not_found",
                 level: .notification,
             )
@@ -69,9 +67,8 @@ class JavaRuntimeService {
     func getMacJavaRuntimeData(for version: String) async throws -> [[String: Any]] {
         let platformData = try await getMacJavaRuntimeData()
         guard let versionData = platformData[version] as? [[String: Any]] else {
-            AppLog.game.error("版本 \(version) 的数据类型不正确，期望 [[String: Any]]，实际: \(type(of: platformData[version]))")
+            AppLog.game.error("Version \(version) data type is incorrect, expected [[String: Any]], actual: \(type(of: platformData[version]))")
             throw GlobalError.validation(
-                chineseMessage: "未找到版本 \(version) 的数据",
                 i18nKey: "error.validation.version_data_not_found",
                 level: .notification,
             )
@@ -85,15 +82,14 @@ class JavaRuntimeService {
         guard let firstVersion = versionData.first,
               let manifest = firstVersion["manifest"] as? [String: Any],
               let manifestURL = manifest["url"] as? String else {
-            AppLog.game.error("无法解析版本 \(version) 的数据结构")
+            AppLog.game.error("Unable to parse version \(version) data structure")
             throw GlobalError.validation(
-                chineseMessage: "未找到版本 \(version) 的manifest URL",
                 i18nKey: "error.validation.manifest_url_not_found",
                 level: .notification,
             )
         }
 
-        AppLog.game.info("找到版本 \(version) 的manifest URL: \(manifestURL)")
+        AppLog.game.info("Found manifest URL for version \(version): \(manifestURL)")
         return manifestURL
     }
 
@@ -103,7 +99,6 @@ class JavaRuntimeService {
 
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             throw GlobalError.validation(
-                chineseMessage: "解析JSON失败",
                 i18nKey: "error.validation.json_parse_failed",
                 level: .notification,
             )
@@ -115,7 +110,6 @@ class JavaRuntimeService {
     private func fetchDataFromURL(_ urlString: String) async throws -> Data {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
-                chineseMessage: "无效的URL",
                 i18nKey: "error.validation.invalid_url",
                 level: .notification,
             )

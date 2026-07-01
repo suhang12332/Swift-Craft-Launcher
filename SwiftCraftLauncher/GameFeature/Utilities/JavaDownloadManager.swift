@@ -66,7 +66,7 @@ class JavaDownloadManager: ObservableObject {
             try await task.value
 
             if downloadState.isCancelled || cancelRequested {
-                AppLog.game.info("Java下载已被取消")
+                AppLog.game.info("Java download cancelled")
                 cleanupCancelledDownload()
                 return
             }
@@ -76,7 +76,7 @@ class JavaDownloadManager: ObservableObject {
             closeWindow()
         } catch {
             if error is CancellationError || downloadState.isCancelled || cancelRequested {
-                AppLog.game.info("Java下载任务已取消")
+                AppLog.game.info("Java download task cancelled")
                 cleanupCancelledDownload()
                 return
             }

@@ -53,7 +53,7 @@ extension ModPackDependencyInstaller {
 
             return true
         } catch {
-            AppLog.modPack.error("处理 overrides 文件夹失败: \(error.localizedDescription)")
+            AppLog.modPack.error("Failed to process overrides folder: \(error.localizedDescription)")
             return false
         }
     }

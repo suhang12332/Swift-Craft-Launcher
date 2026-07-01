@@ -177,7 +177,6 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
             let fileManager = FileManager.default
             guard fileManager.fileExists(atPath: url.path) else {
                 error = GlobalError.fileSystem(
-                    chineseMessage: "选择的文件不存在",
                     i18nKey: "error.filesystem.file_not_found",
                     level: .notification,
                 )
@@ -187,10 +186,9 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
             if javaManager.canJavaRun(at: url.path) {
                 javaPath = url.path
                 autoSave()
-                AppLog.game.info("Java路径已设置为: \(url.path)")
+                AppLog.game.info("Java path set to: \(url.path)")
             } else {
                 error = GlobalError.validation(
-                    chineseMessage: "选择的文件不是有效的Java可执行文件",
                     i18nKey: "error.validation.invalid_java_executable",
                     level: .popup,
                 )
@@ -198,7 +196,6 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
 
         case let .failure(err):
             error = GlobalError.fileSystem(
-                chineseMessage: "选择Java路径失败: \(err.localizedDescription)",
                 i18nKey: "error.filesystem.java_path_selection_failed",
                 level: .notification,
             )

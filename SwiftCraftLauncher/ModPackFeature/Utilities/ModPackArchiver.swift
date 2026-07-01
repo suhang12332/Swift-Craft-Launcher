@@ -31,7 +31,6 @@ enum ModPackArchiver {
             archive = try Archive(url: outputPath, accessMode: .create)
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "无法创建压缩文件: \(outputPath.path)",
                 i18nKey: "error.modpack.export.archive_creation_failed",
                 level: .notification,
             )
@@ -75,7 +74,7 @@ enum ModPackArchiver {
                     let filePath = (fileURL.path as NSString).standardizingPath
 
                     guard filePath.hasPrefix(overridesDirPathWithSlash) else {
-                        AppLog.modPack.error("文件路径不在 overrides 目录内: \(filePath)")
+                        AppLog.modPack.error("File path is not within overrides directory: \(filePath)")
                         continue
                     }
 

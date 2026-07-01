@@ -44,7 +44,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
             updater?.updateCheckInterval = 24 * 60 * 60
             updater?.sendsSystemProfile = false
         } catch {
-            AppLog.common.error("初始化更新器失败：\(error.localizedDescription)")
+            AppLog.common.error("Failed to initialize updater: \(error.localizedDescription)")
         }
     }
 
@@ -61,13 +61,13 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     }
 
     func updaterDidNotFindUpdate(_: SPUUpdater) {
-        AppLog.common.info("检查完成，未发现新版本")
+        AppLog.common.info("Check completed, no new version found")
         isCheckingForUpdates = false
         updateAvailable = false
     }
 
     func updater(_: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
-        AppLog.common.info("发现新版本：\(item.versionString)")
+        AppLog.common.info("New version found: \(item.versionString)")
         isCheckingForUpdates = false
         updateAvailable = true
         latestVersion = item.versionString
@@ -76,18 +76,18 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     }
 
     func updater(_: SPUUpdater, didFailToCheckForUpdatesWithError error: Error) {
-        AppLog.common.error("更新检查失败：\(error.localizedDescription)")
+        AppLog.common.error("Update check failed: \(error.localizedDescription)")
         isCheckingForUpdates = false
         updateAvailable = false
     }
 
     func updater(_: SPUUpdater, willInstallUpdate item: SUAppcastItem) {
-        AppLog.common.info("开始安装更新：\(item.versionString)")
+        AppLog.common.info("Starting update installation: \(item.versionString)")
         isCheckingForUpdates = false
     }
 
     func updater(_: SPUUpdater, didFinishLoading _: SUAppcast) {
-        AppLog.common.info("更新清单加载完成")
+        AppLog.common.info("Update manifest loaded")
     }
 
     private func getSystemArchitecture() -> String {
@@ -119,12 +119,12 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     func checkForUpdatesWithUI() {
         ensureUpdaterStarted()
         guard let updater else {
-            AppLog.common.error("更新器尚未初始化")
+            AppLog.common.error("Updater not yet initialized")
             return
         }
 
         if updater.sessionInProgress {
-            AppLog.common.error("更新会话正在进行中，跳过重复的更新检查")
+            AppLog.common.error("Update session in progress, skipping duplicate update check")
             return
         }
 
@@ -137,12 +137,12 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     func checkForUpdatesSilently() {
         ensureUpdaterStarted()
         guard let updater else {
-            AppLog.common.error("更新器尚未初始化")
+            AppLog.common.error("Updater not yet initialized")
             return
         }
 
         if updater.sessionInProgress {
-            AppLog.common.error("更新会话正在进行中，跳过重复的更新检查")
+            AppLog.common.error("Update session in progress, skipping duplicate update check")
             return
         }
 
@@ -159,7 +159,7 @@ extension SparkleUpdateService {
 
         let proxiedURL = URLConfig.applyGitProxyIfNeeded(originalURL)
         if proxiedURL != originalURL {
-            AppLog.common.info("更新下载链接已重写：\(originalURL.absoluteString) -> \(proxiedURL.absoluteString)")
+            AppLog.common.info("Update download URL rewritten: \(originalURL.absoluteString) -> \(proxiedURL.absoluteString)")
             request.url = proxiedURL
         }
     }

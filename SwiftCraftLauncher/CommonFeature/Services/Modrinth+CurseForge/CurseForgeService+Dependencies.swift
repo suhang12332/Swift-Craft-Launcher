@@ -34,7 +34,7 @@ extension CurseForgeService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("获取 CurseForge 项目依赖失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("Failed to fetch CurseForge project dependencies (ID: \(id)): \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return ModrinthProjectDependency(projects: [])
         }
@@ -132,7 +132,7 @@ extension CurseForgeService {
                             return depVersion
                         } catch {
                             let globalError = GlobalError.from(error)
-                            AppLog.common.error("获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)")
+                            AppLog.common.error("Failed to fetch dependency project version (ID: \(projectId)): \(globalError.localizedDescription)")
                             return nil
                         }
                     }

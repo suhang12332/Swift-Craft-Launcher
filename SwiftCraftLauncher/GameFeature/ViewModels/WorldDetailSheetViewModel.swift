@@ -105,7 +105,7 @@ final class WorldDetailSheetViewModel: ObservableObject {
             errorMessage = "saveinfo.world.detail.error.invalid_structure".localized()
             showError = true
         } catch {
-            AppLog.game.error("加载世界详细信息失败: \(error.localizedDescription)")
+            AppLog.game.error("Failed to load world details: \(error.localizedDescription)")
             isLoading = false
             errorMessage = String(
                 format: "saveinfo.world.detail.error.load_failed".localized(),

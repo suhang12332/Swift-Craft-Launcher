@@ -53,7 +53,6 @@ extension MinecraftFileManager {
                 throw globalError
             } else {
                 throw GlobalError.download(
-                    chineseMessage: "下载资源索引失败",
                     i18nKey: "error.download.asset_index_failed",
                     level: .notification,
                 )
@@ -125,7 +124,6 @@ extension MinecraftFileManager {
                 throw globalError
             } else {
                 throw GlobalError.download(
-                    chineseMessage: "下载资源文件失败",
                     i18nKey: "error.download.asset_file_failed",
                     level: .notification,
                 )

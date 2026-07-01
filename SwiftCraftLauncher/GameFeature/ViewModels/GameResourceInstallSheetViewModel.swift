@@ -59,7 +59,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
                 try await loadDependenciesThrowing()
             } catch {
                 let globalError = GlobalError.from(error)
-                AppLog.game.error("加载依赖项失败: \(globalError.chineseMessage)")
+                AppLog.game.error("Failed to load dependencies: \(globalError.localizedDescription)")
                 errorHandler.handle(globalError)
                 dependencyState = DependencyState()
             }
@@ -69,7 +69,6 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
     private func loadDependenciesThrowing() async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
             )
@@ -110,7 +109,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
                 try await downloadAllManualThrowing(onSuccess: onSuccess, dismiss: dismiss)
             } catch {
                 let globalError = GlobalError.from(error)
-                AppLog.game.error("手动下载所有依赖项失败: \(globalError.chineseMessage)")
+                AppLog.game.error("Failed to manually download all dependencies: \(globalError.localizedDescription)")
                 errorHandler.handle(globalError)
                 isDownloadingAll = false
             }
@@ -123,7 +122,6 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
     ) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
             )
@@ -131,7 +129,6 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
 
         guard let gameRepository else {
             throw GlobalError.configuration(
-                chineseMessage: "缺少 GameRepository",
                 i18nKey: "error.configuration.game_repository_missing",
                 level: .notification,
             )
@@ -155,7 +152,6 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
 
         if !success {
             throw GlobalError.download(
-                chineseMessage: "手动下载依赖项失败",
                 i18nKey: "error.download.manual_dependencies_failed",
                 level: .notification,
             )
@@ -177,7 +173,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
                 try await downloadResourceThrowing(onSuccess: onSuccess, dismiss: dismiss)
             } catch {
                 let globalError = GlobalError.from(error)
-                AppLog.game.error("下载资源失败: \(globalError.chineseMessage)")
+                AppLog.game.error("Failed to download resource: \(globalError.localizedDescription)")
                 errorHandler.handle(globalError)
                 isDownloadingAll = false
             }
@@ -190,7 +186,6 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
     ) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
             )
@@ -198,7 +193,6 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
 
         guard let gameRepository else {
             throw GlobalError.configuration(
-                chineseMessage: "缺少 GameRepository",
                 i18nKey: "error.configuration.game_repository_missing",
                 level: .notification,
             )
@@ -215,7 +209,6 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
 
         if !success {
             throw GlobalError.download(
-                chineseMessage: "下载资源失败",
                 i18nKey: "error.download.resource_download_failed",
                 level: .notification,
             )

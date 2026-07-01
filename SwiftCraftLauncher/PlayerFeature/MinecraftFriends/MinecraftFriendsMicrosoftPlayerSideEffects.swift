@@ -29,7 +29,6 @@ struct MinecraftFriendsMicrosoftPlayerSideEffects {
     func reportMissingAccessToken() {
         errorHandler.handle(
             GlobalError.authentication(
-                chineseMessage: "缺少 Minecraft 访问令牌，请重新登录该正版账号",
                 i18nKey: "error.authentication.missing_token",
                 level: .notification,
             ),

@@ -97,7 +97,6 @@ extension NBTParser {
                 writeByte(boolValue ? 1 : 0)
             } else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "无法将值转换为 Byte 类型",
                     i18nKey: "error.filesystem.nbt_invalid_byte_value",
                     level: .notification,
                 )
@@ -110,7 +109,6 @@ extension NBTParser {
                 shortValue = int16Value
             } else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "无法将值转换为 Short 类型",
                     i18nKey: "error.filesystem.nbt_invalid_short_value",
                     level: .notification,
                 )
@@ -124,7 +122,6 @@ extension NBTParser {
                 intValue = int32Value
             } else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "无法将值转换为 Int 类型",
                     i18nKey: "error.filesystem.nbt_invalid_int_value",
                     level: .notification,
                 )
@@ -138,7 +135,6 @@ extension NBTParser {
                 longValue = int64Value
             } else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "无法将值转换为 Long 类型",
                     i18nKey: "error.filesystem.nbt_invalid_long_value",
                     level: .notification,
                 )
@@ -147,7 +143,6 @@ extension NBTParser {
         case .float:
             guard let floatValue = value as? Float else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "无法将值转换为 Float 类型",
                     i18nKey: "error.filesystem.nbt_invalid_float_value",
                     level: .notification,
                 )
@@ -156,7 +151,6 @@ extension NBTParser {
         case .double:
             guard let doubleValue = value as? Double else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "无法将值转换为 Double 类型",
                     i18nKey: "error.filesystem.nbt_invalid_double_value",
                     level: .notification,
                 )
@@ -175,7 +169,6 @@ extension NBTParser {
         case .compound:
             guard let compoundValue = value as? [String: Any] else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "无法将值转换为 Compound 类型",
                     i18nKey: "error.filesystem.nbt_invalid_compound_value",
                     level: .notification,
                 )
@@ -184,7 +177,6 @@ extension NBTParser {
         case .byteArray:
             guard let array = value as? [UInt8] else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "无法将值转换为 ByteArray 类型",
                     i18nKey: "error.filesystem.nbt_invalid_byte_array_value",
                     level: .notification,
                 )
@@ -194,7 +186,6 @@ extension NBTParser {
         case .intArray:
             guard let array = value as? [Int32] else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "无法将值转换为 IntArray 类型",
                     i18nKey: "error.filesystem.nbt_invalid_int_array_value",
                     level: .notification,
                 )
@@ -206,7 +197,6 @@ extension NBTParser {
         case .longArray:
             guard let array = value as? [Int64] else {
                 throw GlobalError.fileSystem(
-                    chineseMessage: "无法将值转换为 LongArray 类型",
                     i18nKey: "error.filesystem.nbt_invalid_long_array_value",
                     level: .notification,
                 )

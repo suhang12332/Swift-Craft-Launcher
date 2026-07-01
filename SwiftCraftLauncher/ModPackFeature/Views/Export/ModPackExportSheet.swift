@@ -76,11 +76,11 @@ struct ModPackExportSheet: View {
         ) { result in
             switch result {
             case let .success(url):
-                AppLog.modPack.info("整合包已保存到: \(url.path)")
+                AppLog.modPack.info("Modpack saved to: \(url.path)")
                 viewModel.handleSaveSuccess()
                 dismiss()
             case let .failure(error):
-                AppLog.modPack.error("保存文件失败: \(error.localizedDescription)")
+                AppLog.modPack.error("Failed to save file: \(error.localizedDescription)")
                 viewModel.handleSaveFailure(error: error.localizedDescription)
             }
             coordinator.reset()
@@ -285,7 +285,7 @@ struct ModPackExportSheet: View {
             viewModel.markSaveDialogShown()
         }
         coordinator.prepareExportDocument(from: tempFilePath) { errorMessage in
-            AppLog.modPack.error("读取临时文件失败: \(errorMessage)")
+            AppLog.modPack.error("Failed to read temp file: \(errorMessage)")
             viewModel.handleSaveFailure(error: errorMessage)
         }
     }

@@ -32,7 +32,7 @@ extension ModScanner {
             return hashes.contains(hash)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("检查资源安装状态失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to check resource installation status: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return false
         }
@@ -46,7 +46,7 @@ extension ModScanner {
             return try localModDetailsThrowing(in: dir)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("获取本地 mod 详情失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to get local mod details: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return []
         }
@@ -68,7 +68,7 @@ extension ModScanner {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("检查 mod 安装状态失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to check mod installation status: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
             return false
         }
@@ -111,7 +111,7 @@ extension ModScanner {
             } catch {
                 let globalError = GlobalError.from(error)
                 AppLog.game.error(
-                    "检查 mod 安装状态失败: \(globalError.chineseMessage)",
+                    "Failed to check mod installation status: \(globalError.localizedDescription)",
                 )
                 errorHandler.handle(globalError)
                 completion(false)

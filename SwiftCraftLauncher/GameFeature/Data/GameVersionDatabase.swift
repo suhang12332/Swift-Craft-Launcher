@@ -62,7 +62,7 @@ class GameVersionDatabase {
             try? db.execute(createIndexSQL)
         }
 
-        AppLog.game.debug("游戏版本表已创建或已存在")
+        AppLog.game.debug("Game version table created or already exists")
     }
 
     /// Saves a game version to the database.
@@ -77,7 +77,6 @@ class GameVersionDatabase {
             let jsonData = try encoder.encode(game)
             guard let jsonString = String(data: jsonData, encoding: .utf8) else {
                 throw GlobalError.validation(
-                    chineseMessage: "无法编码游戏数据为 JSON",
                     i18nKey: "error.validation.json_encode_failed",
                     level: .notification,
                 )
@@ -108,7 +107,6 @@ class GameVersionDatabase {
             guard result == SQLITE_DONE else {
                 let errorMessage = String(cString: sqlite3_errmsg(db.database))
                 throw GlobalError.validation(
-                    chineseMessage: "保存游戏失败: \(errorMessage)",
                     i18nKey: "error.validation.game_save_failed",
                     level: .notification,
                 )
@@ -158,7 +156,6 @@ class GameVersionDatabase {
                 guard result == SQLITE_DONE else {
                     let errorMessage = String(cString: sqlite3_errmsg(db.database))
                     throw GlobalError.validation(
-                        chineseMessage: "批量保存游戏失败: \(errorMessage)",
                         i18nKey: "error.validation.games_batch_save_failed",
                         level: .notification,
                     )
@@ -197,7 +194,7 @@ class GameVersionDatabase {
                 let game = try decoder.decode(GameVersionInfo.self, from: jsonData)
                 games.append(game)
             } catch {
-                AppLog.game.error("解码游戏数据失败: \(error.localizedDescription)")
+                AppLog.game.error("Failed to decode game data: \(error.localizedDescription)")
                 continue
             }
         }
@@ -235,7 +232,7 @@ class GameVersionDatabase {
                 }
                 gamesByPath[workingPath]?.append(game)
             } catch {
-                AppLog.game.error("解码游戏数据失败: \(error.localizedDescription)")
+                AppLog.game.error("Failed to decode game data: \(error.localizedDescription)")
                 continue
             }
         }
@@ -301,7 +298,6 @@ class GameVersionDatabase {
             guard result == SQLITE_DONE else {
                 let errorMessage = String(cString: sqlite3_errmsg(db.database))
                 throw GlobalError.validation(
-                    chineseMessage: "删除游戏失败: \(errorMessage)",
                     i18nKey: "error.validation.game_delete_failed",
                     level: .notification,
                 )
@@ -324,7 +320,6 @@ class GameVersionDatabase {
             guard result == SQLITE_DONE else {
                 let errorMessage = String(cString: sqlite3_errmsg(db.database))
                 throw GlobalError.validation(
-                    chineseMessage: "删除工作路径游戏失败: \(errorMessage)",
                     i18nKey: "error.validation.games_delete_failed",
                     level: .notification,
                 )
@@ -352,7 +347,6 @@ class GameVersionDatabase {
             guard result == SQLITE_DONE else {
                 let errorMessage = String(cString: sqlite3_errmsg(db.database))
                 throw GlobalError.validation(
-                    chineseMessage: "删除游戏失败: \(errorMessage)",
                     i18nKey: "error.validation.game_delete_failed",
                     level: .notification,
                 )
@@ -388,7 +382,6 @@ class GameVersionDatabase {
             guard result == SQLITE_DONE else {
                 let errorMessage = String(cString: sqlite3_errmsg(db.database))
                 throw GlobalError.validation(
-                    chineseMessage: "更新最后游玩时间失败: \(errorMessage)",
                     i18nKey: "error.validation.last_played_update_failed",
                     level: .notification,
                 )

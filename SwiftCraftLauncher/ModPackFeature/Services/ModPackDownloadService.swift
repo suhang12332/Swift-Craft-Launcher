@@ -28,18 +28,18 @@ final class ModPackDownloadService {
             if fm.fileExists(atPath: downloadDir.path) {
                 do {
                     try fm.removeItem(at: downloadDir)
-                    AppLog.modPack.info("已清理临时下载目录: \(downloadDir.path)")
+                    AppLog.modPack.info("Cleaned up temp download directory: \(downloadDir.path)")
                 } catch {
-                    AppLog.modPack.error("清理临时下载目录失败: \(error.localizedDescription)")
+                    AppLog.modPack.error("Failed to clean up temp download directory: \(error.localizedDescription)")
                 }
             }
             let extractionDir = tempBaseDir.appendingPathComponent("modpack_extraction")
             if fm.fileExists(atPath: extractionDir.path) {
                 do {
                     try fm.removeItem(at: extractionDir)
-                    AppLog.modPack.info("已清理临时解压目录: \(extractionDir.path)")
+                    AppLog.modPack.info("Cleaned up temp extraction directory: \(extractionDir.path)")
                 } catch {
-                    AppLog.modPack.error("清理临时解压目录失败: \(error.localizedDescription)")
+                    AppLog.modPack.error("Failed to clean up temp extraction directory: \(error.localizedDescription)")
                 }
             }
         }
@@ -66,7 +66,7 @@ final class ModPackDownloadService {
                 return savePath
             } catch {
                 if error is CancellationError || Task.isCancelled {
-                    AppLog.modPack.info("整合包下载已取消")
+                    AppLog.modPack.info("Modpack download cancelled")
                     return nil
                 }
                 let globalError = GlobalError.from(error)
@@ -112,14 +112,14 @@ final class ModPackDownloadService {
                 return iconFileName
             } catch {
                 onError?(
-                    "下载游戏图标失败",
+                    "Failed to download game icon",
                     "error.network.icon_download_failed",
                 )
                 return nil
             }
         } catch {
             onError?(
-                "下载游戏图标失败",
+                "Failed to download game icon",
                 "error.network.icon_download_failed",
             )
             return nil
@@ -135,7 +135,7 @@ final class ModPackDownloadService {
 
             guard fileExtension == AppConstants.FileExtensions.zip || fileExtension == AppConstants.FileExtensions.mrpack else {
                 onError?(
-                    "不支持的整合包格式: \(fileExtension)",
+                    "Unsupported modpack format: \(fileExtension)",
                     "error.resource.unsupported_modpack_format",
                 )
                 return nil
@@ -144,7 +144,7 @@ final class ModPackDownloadService {
             let modPackPathString = modPackPath.path
             guard FileManager.default.fileExists(atPath: modPackPathString) else {
                 onError?(
-                    "整合包文件不存在: \(modPackPathString)",
+                    "Modpack file does not exist: \(modPackPathString)",
                     "error.filesystem.file_not_found",
                 )
                 return nil
@@ -155,7 +155,7 @@ final class ModPackDownloadService {
             )
             let sourceSize = sourceAttributes[.size] as? Int64 ?? 0
             guard sourceSize > 0 else {
-                onError?("整合包文件为空", "error.resource.modpack_empty")
+                onError?("Modpack file is empty", "error.resource.modpack_empty")
                 return nil
             }
 
@@ -164,7 +164,7 @@ final class ModPackDownloadService {
             return tempDir
         } catch {
             onError?(
-                "解压整合包失败: \(error.localizedDescription)",
+                "Failed to extract modpack: \(error.localizedDescription)",
                 "error.filesystem.extraction_failed",
             )
             return nil

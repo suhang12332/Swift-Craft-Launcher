@@ -81,18 +81,18 @@ class ModPackImportViewModel: BaseGameFormViewModel {
                 if fm.fileExists(atPath: profileDir.path) {
                     do {
                         try fm.removeItem(at: profileDir)
-                        AppLog.modPack.info("已删除取消创建的ModPack游戏文件夹: \(profileDir.path)")
+                        AppLog.modPack.info("Deleted cancelled ModPack game folder: \(profileDir.path)")
                     } catch {
-                        AppLog.modPack.error("删除ModPack游戏文件夹失败: \(error.localizedDescription)")
+                        AppLog.modPack.error("Failed to delete ModPack game folder: \(error.localizedDescription)")
                     }
                 }
             }
             if let path = extractedPath, fm.fileExists(atPath: path.path) {
                 do {
                     try fm.removeItem(at: path)
-                    AppLog.modPack.info("已删除ModPack临时解压文件: \(path.path)")
+                    AppLog.modPack.info("Deleted ModPack temp extracted files: \(path.path)")
                 } catch {
-                    AppLog.modPack.error("删除ModPack临时文件失败: \(error.localizedDescription)")
+                    AppLog.modPack.error("Failed to delete ModPack temp files: \(error.localizedDescription)")
                 }
             }
         }.value

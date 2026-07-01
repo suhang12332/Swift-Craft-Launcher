@@ -26,7 +26,6 @@ enum ResourceDetailLoader {
         guard let detail = await ModrinthService.fetchProjectDetails(id: projectId, type: isServer ? resourceType : "") else {
             AppServices.errorHandler.handle(
                 GlobalError.resource(
-                    chineseMessage: "无法获取项目详情",
                     i18nKey: "error.resource.project_details_not_found",
                     level: .notification,
                 ),
@@ -61,7 +60,6 @@ enum ResourceDetailLoader {
     static func loadModPackDetail(projectId: String) async -> ModrinthProjectDetail? {
         guard let detail = await ModrinthService.fetchProjectDetails(id: projectId) else {
             AppServices.errorHandler.handle(GlobalError.resource(
-                chineseMessage: "无法获取整合包项目详情",
                 i18nKey: "error.resource.project_details_not_found",
                 level: .notification,
             ))

@@ -24,7 +24,6 @@ enum PlayerUtils {
     static func generateOfflineUUID(for username: String) throws -> String {
         guard !username.isEmpty else {
             throw GlobalError.player(
-                chineseMessage: "无效的用户名: 用户名不能为空",
                 i18nKey: "error.player.invalid_username_empty",
                 level: .notification,
             )
@@ -32,7 +31,6 @@ enum PlayerUtils {
 
         guard let data = (offlinePrefix + username).data(using: .utf8) else {
             throw GlobalError.validation(
-                chineseMessage: "用户名编码失败: \(username)",
                 i18nKey: "error.validation.username_encode_failed",
                 level: .notification,
             )
@@ -43,7 +41,7 @@ enum PlayerUtils {
         bytes[8] = (bytes[8] & 0x3F) | 0x80
         let uuid = bytes.withUnsafeBytes { UUID(uuid: $0.load(as: uuid_t.self)) }
         let uuidString = uuid.uuidString.lowercased()
-        AppLog.player.debug("生成离线 UUID - 用户名：\(username), UUID：\(uuidString)")
+        AppLog.player.debug("Generated offline UUID - username: \(username), UUID: \(uuidString)")
         return uuidString.replacingOccurrences(of: "-", with: "")
     }
 
@@ -53,7 +51,7 @@ enum PlayerUtils {
     /// - Returns: An avatar asset name, or `nil` if the UUID is invalid.
     static func avatarName(for uuid: String) -> String? {
         guard let index = nameIndex(for: uuid) else {
-            AppLog.player.error("无法获取头像名称 - 无效的UUID: \(uuid)")
+            AppLog.player.error("Cannot get avatar name - invalid UUID: \(uuid)")
             return nil
         }
         return names[index]

@@ -21,7 +21,7 @@ enum CommonService {
         } catch {
             let globalError = GlobalError.from(error)
             AppLog.game.error(
-                "获取 \(loader) 版本失败: \(globalError.chineseMessage)",
+                "Failed to get \(loader) version: \(globalError.localizedDescription)",
             )
             AppServices.errorHandler.handle(globalError)
             return []
@@ -98,7 +98,7 @@ enum CommonService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("获取加载器版本失败: \(globalError.chineseMessage)")
+            AppLog.game.error("Failed to get loader version: \(globalError.localizedDescription)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }
@@ -114,8 +114,6 @@ enum CommonService {
 
         guard let firstVersion = filteredVersions.first else {
             throw GlobalError.resource(
-                chineseMessage:
-                    "未找到 Minecraft \(minecraftVersion) 的 \(type) 加载器版本",
                 i18nKey: "error.resource.loader_version_not_found",
                 level: .notification,
             )
@@ -143,8 +141,6 @@ enum CommonService {
             }
         } catch {
             throw GlobalError.validation(
-                chineseMessage:
-                    "解析 \(type) 版本清单失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.version_manifest_parse_failed",
                 level: .notification,
             )

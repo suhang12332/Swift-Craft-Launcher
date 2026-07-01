@@ -90,10 +90,10 @@ extension YggdrasilAuthService {
                     if let error {
                         if let authError = error as? ASWebAuthenticationSessionError,
                            authError.code == .canceledLogin {
-                            AppLog.common.info("用户取消了 Yggdrasil 登录")
+                            AppLog.common.info("User cancelled Yggdrasil login")
                             finish(.idle)
                         } else {
-                            AppLog.common.error("Yggdrasil 登录失败: \(error.localizedDescription)")
+                            AppLog.common.error("Yggdrasil login failed: \(error.localizedDescription)")
                             finish(.failed("yggdrasil.error.login_failed_retry".localized()))
                         }
                         return
@@ -101,26 +101,26 @@ extension YggdrasilAuthService {
 
                     guard let callbackURL,
                           let authResponse = AuthorizationCodeResponse(from: callbackURL) else {
-                        AppLog.common.error("Yggdrasil 回调地址无效")
+                        AppLog.common.error("Invalid Yggdrasil callback URL")
                         finish(.failed("yggdrasil.error.invalid_callback_url".localized()))
                         return
                     }
 
                     if authResponse.isUserDenied {
-                        AppLog.common.info("用户拒绝了 Yggdrasil 授权")
+                        AppLog.common.info("User denied Yggdrasil authorization")
                         finish(.idle)
                         return
                     }
 
                     if let error = authResponse.error {
                         let description = authResponse.errorDescription ?? error
-                        AppLog.common.error("Yggdrasil 授权失败: \(description)")
+                        AppLog.common.error("Yggdrasil authorization failed: \(description)")
                         finish(.failed(description))
                         return
                     }
 
                     guard authResponse.isSuccess, let code = authResponse.code else {
-                        AppLog.common.error("未获取到 Yggdrasil 授权码")
+                        AppLog.common.error("No Yggdrasil authorization code received")
                         finish(.failed("yggdrasil.error.no_auth_code".localized()))
                         return
                     }
@@ -188,14 +188,13 @@ private extension YggdrasilAuthService {
 
             if candidates.isEmpty {
                 throw GlobalError.validation(
-                    chineseMessage: "未获取到任何玩家资料",
                     i18nKey: "error.validation.yggdrasil_no_profiles",
                     level: .notification,
                 )
             }
 
             if candidates.count > 1 {
-                AppLog.common.info("Yggdrasil 返回多个玩家资料，默认选择第一个: \(candidates[0].name)")
+                AppLog.common.info("Yggdrasil returned multiple player profiles, defaulting to the first one: \(candidates[0].name)")
             }
 
             let profiles = candidates.map { c in
@@ -215,7 +214,7 @@ private extension YggdrasilAuthService {
             authState = .authenticated(profile: profiles[0])
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.common.error("Yggdrasil 认证失败: \(globalError.chineseMessage)")
+            AppLog.common.error("Yggdrasil authentication failed: \(globalError.localizedDescription)")
             isLoading = false
             authState = .failed(globalError.localizedDescription)
         }

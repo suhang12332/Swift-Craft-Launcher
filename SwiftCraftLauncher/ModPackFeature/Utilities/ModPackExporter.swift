@@ -128,15 +128,15 @@ enum ModPackExporter {
                     success: false,
                     outputPath: nil,
                     error: error,
-                    message: "已取消",
+                    message: "Cancelled",
                 )
             }
-            AppLog.modPack.error("导出整合包失败: \(error.localizedDescription)")
+            AppLog.modPack.error("Failed to export modpack: \(error.localizedDescription)")
             return ExportResult(
                 success: false,
                 outputPath: nil,
                 error: error,
-                message: "导出失败: \(error.localizedDescription)",
+                message: "Export failed: \(error.localizedDescription)",
             )
         }
     }
