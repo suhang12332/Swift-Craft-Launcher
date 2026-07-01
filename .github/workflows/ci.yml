@@ -61,13 +61,13 @@ jobs:
       # Code Rules Check
       # =========================
       - name: Check code rules
-        run: python3 .github/scripts/check_code_rules.py
+        run: python3 .github/scripts/check_code_rules.py || { echo "::error::Code rules check failed — fix violations before pushing."; exit 1; }
 
       # =========================
       # Localization Check
       # =========================
       - name: Check localization completeness
-        run: python3 .github/scripts/check_localization.py
+        run: python3 .github/scripts/check_localization.py || { echo "::error::Localization check failed — fix before pushing."; exit 1; }
 
       # =========================
       # Run Tests
