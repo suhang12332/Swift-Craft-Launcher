@@ -46,7 +46,7 @@ class ModCacheDatabase {
         """
         try? db.execute(createIndexSQL)
 
-        Logger.shared.debug("mod 缓存表已创建或已存在")
+        AppLog.game.debug("mod 缓存表已创建或已存在")
     }
 
     /// Closes the database connection.

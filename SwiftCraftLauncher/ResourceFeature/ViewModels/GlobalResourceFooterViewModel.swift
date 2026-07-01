@@ -49,7 +49,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
                 try await downloadMainOnlyThrowing(game: game)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("下载主资源失败: \(globalError.chineseMessage)")
+                AppLog.resource.error("下载主资源失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
             }
 
@@ -80,7 +80,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
                 )
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("手动下载所有依赖项失败: \(globalError.chineseMessage)")
+                AppLog.resource.error("手动下载所有依赖项失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
             }
 
@@ -108,7 +108,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
                 )
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("添加服务器失败: \(globalError.chineseMessage)")
+                AppLog.resource.error("添加服务器失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
             }
 
@@ -128,7 +128,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
                 try await downloadResourceThrowing(game: game)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("下载资源失败: \(globalError.chineseMessage)")
+                AppLog.resource.error("下载资源失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
             }
 

@@ -89,7 +89,7 @@ class AIChatManager: ObservableObject {
 //                try await sendGeminiMessage(messages: allMessages, chatState: chatState)
             }
         } catch {
-            Logger.shared.error("发送消息失败: \(error.localizedDescription)")
+            AppLog.common.error("发送消息失败: \(error.localizedDescription)")
             await MainActor.run {
                 chatState.isSending = false
 

@@ -31,10 +31,10 @@ enum KeychainManager {
         let status = SecItemAdd(query as CFDictionary, nil)
 
         if status == errSecSuccess {
-            Logger.shared.debug("Keychain 保存成功 - account: \(account), key: \(key)")
+            AppLog.common.debug("Keychain 保存成功 - account: \(account), key: \(key)")
             return true
         } else {
-            Logger.shared.error("Keychain 保存失败 - account: \(account), key: \(key), status: \(status)")
+            AppLog.common.error("Keychain 保存失败 - account: \(account), key: \(key), status: \(status)")
             return false
         }
     }
@@ -58,16 +58,16 @@ enum KeychainManager {
 
         if status == errSecSuccess, let data = result as? Data {
             if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
-                Logger.shared.debug("Keychain 读取成功 - account: \(account), key: \(key)")
+                AppLog.common.debug("Keychain 读取成功 - account: \(account), key: \(key)")
             }
             return data
         } else if status == errSecItemNotFound {
             if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
-                Logger.shared.debug("Keychain 项不存在 - account: \(account), key: \(key)")
+                AppLog.common.debug("Keychain 项不存在 - account: \(account), key: \(key)")
             }
             return nil
         } else {
-            Logger.shared.error("Keychain 读取失败 - account: \(account), key: \(key), status: \(status)")
+            AppLog.common.error("Keychain 读取失败 - account: \(account), key: \(key), status: \(status)")
             return nil
         }
     }
@@ -87,10 +87,10 @@ enum KeychainManager {
         let status = SecItemDelete(query as CFDictionary)
 
         if status == errSecSuccess || status == errSecItemNotFound {
-            Logger.shared.debug("Keychain 删除成功 - account: \(account), key: \(key)")
+            AppLog.common.debug("Keychain 删除成功 - account: \(account), key: \(key)")
             return true
         } else {
-            Logger.shared.error("Keychain 删除失败 - account: \(account), key: \(key), status: \(status)")
+            AppLog.common.error("Keychain 删除失败 - account: \(account), key: \(key), status: \(status)")
             return false
         }
     }
@@ -113,10 +113,10 @@ enum KeychainManager {
 
         guard status == errSecSuccess, let items = result as? [[String: Any]] else {
             if status == errSecItemNotFound {
-                Logger.shared.debug("Keychain 无数据可删 - account: \(account)")
+                AppLog.common.debug("Keychain 无数据可删 - account: \(account)")
                 return true
             }
-            Logger.shared.error("Keychain 查询所有数据失败 - account: \(account), status: \(status)")
+            AppLog.common.error("Keychain 查询所有数据失败 - account: \(account), status: \(status)")
             return false
         }
 
@@ -131,13 +131,13 @@ enum KeychainManager {
             ]
             let deleteStatus = SecItemDelete(deleteQuery as CFDictionary)
             if deleteStatus != errSecSuccess, deleteStatus != errSecItemNotFound {
-                Logger.shared.error("Keychain 删除单项失败 - account: \(storedAccount), status: \(deleteStatus)")
+                AppLog.common.error("Keychain 删除单项失败 - account: \(storedAccount), status: \(deleteStatus)")
                 allSucceeded = false
             }
         }
 
         if allSucceeded {
-            Logger.shared.debug("Keychain 删除所有数据成功 - account: \(account)")
+            AppLog.common.debug("Keychain 删除所有数据成功 - account: \(account)")
         }
         return allSucceeded
     }

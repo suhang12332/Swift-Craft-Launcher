@@ -117,7 +117,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             let fileManager = MinecraftFileManager()
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
-            Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
+            AppLog.modPack.error("清理游戏文件夹失败: \(error.localizedDescription)")
         }
     }
 

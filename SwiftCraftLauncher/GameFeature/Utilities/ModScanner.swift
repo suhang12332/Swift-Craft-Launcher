@@ -31,11 +31,11 @@ class ModScanner {
             } catch {
                 let globalError = GlobalError.from(error)
                 if let gameNameHint {
-                    Logger.shared.warning(
+                    AppLog.game.error(
                         "FSEvents 重新扫描游戏 \(gameNameHint) 的 mods 目录失败: \(globalError.chineseMessage)",
                     )
                 } else {
-                    Logger.shared.warning(
+                    AppLog.game.error(
                         "FSEvents 重新扫描目录 \(standardizedDirectoryURL.lastPathComponent) 失败: \(globalError.chineseMessage)",
                     )
                 }
@@ -56,7 +56,7 @@ class ModScanner {
                 completion(detail)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error(
+                AppLog.game.error(
                     "获取 Modrinth 项目详情失败: \(globalError.chineseMessage)",
                 )
                 errorHandler.handle(globalError)
@@ -125,7 +125,7 @@ class ModScanner {
         do {
             return try JSONDecoder().decode(ModrinthProjectDetail.self, from: jsonData)
         } catch {
-            Logger.shared.error("解码 mod 缓存失败: \(error.localizedDescription)")
+            AppLog.game.error("解码 mod 缓存失败: \(error.localizedDescription)")
             return nil
         }
     }
@@ -136,7 +136,7 @@ class ModScanner {
             let jsonData = try JSONEncoder().encode(detail)
             AppServices.modCacheManager.setSilently(hash: hash, jsonData: jsonData)
         } catch {
-            Logger.shared.error("编码 mod 缓存失败: \(error.localizedDescription)")
+            AppLog.game.error("编码 mod 缓存失败: \(error.localizedDescription)")
             errorHandler.handle(GlobalError.validation(
                 chineseMessage: "保存 mod 缓存失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.mod_cache_encode_failed",

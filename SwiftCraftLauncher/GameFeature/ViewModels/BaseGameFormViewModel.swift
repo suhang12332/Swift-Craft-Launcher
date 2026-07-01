@@ -130,7 +130,7 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     }
 
     func handleNonCriticalError(_ error: GlobalError, message: String) {
-        Logger.shared.error("\(message): \(error.chineseMessage)")
+        AppLog.game.error("\(message): \(error.chineseMessage)")
         errorHandler.handle(error)
     }
 }

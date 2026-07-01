@@ -82,7 +82,7 @@ class JavaRuntimeDownloader {
             for (filePath, fileInfo) in files {
                 group.addTask { [progressActor, cancelActor, self] in
                     if await cancelActor.shouldCancel() {
-                        Logger.shared.info("Java下载已被取消")
+                        AppLog.game.info("Java下载已被取消")
                         throw GlobalError.download(
                             chineseMessage: "下载已被取消",
                             i18nKey: "error.download.cancelled",
@@ -99,7 +99,7 @@ class JavaRuntimeDownloader {
                     let isExecutable = fileData["executable"] as? Bool ?? false
 
                     guard let raw = downloads["raw"] as? [String: Any] else {
-                        Logger.shared.warning("文件 \(filePath) 没有RAW格式，跳过")
+                        AppLog.game.error("文件 \(filePath) 没有RAW格式，跳过")
                         return
                     }
 
@@ -134,7 +134,7 @@ class JavaRuntimeDownloader {
                                 await progressActor.callProgressUpdate(filePath, completed, totalFiles)
                             }
                         } catch {
-                            Logger.shared.warning("无法验证文件 \(filePath) 的下载状态: \(error.localizedDescription)")
+                            AppLog.game.error("无法验证文件 \(filePath) 的下载状态: \(error.localizedDescription)")
                         }
                     }
                 }
@@ -200,7 +200,7 @@ class JavaRuntimeDownloader {
                 destinationPath: finalJreBundlePath,
             )
         } catch {
-            Logger.shared.error("解压Java运行时失败: \(error.localizedDescription)")
+            AppLog.game.error("解压Java运行时失败: \(error.localizedDescription)")
 
             throw GlobalError.validation(
                 chineseMessage: "解压Java运行时失败: \(error.localizedDescription)",
@@ -287,7 +287,7 @@ class JavaRuntimeDownloader {
                     }
                 }
 
-                Logger.shared.error("解压失败: \(entry.path) - \(error.localizedDescription)")
+                AppLog.game.error("解压失败: \(entry.path) - \(error.localizedDescription)")
                 throw error
             }
         }

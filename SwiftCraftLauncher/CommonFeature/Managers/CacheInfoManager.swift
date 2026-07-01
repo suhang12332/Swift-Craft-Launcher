@@ -30,7 +30,7 @@ class CacheInfoManager: ObservableObject {
             cacheInfo = try calculator.calculateCacheInfo()
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("计算数据缓存信息失败: \(globalError.chineseMessage)")
+            AppLog.common.error("计算数据缓存信息失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
         }
     }
@@ -42,7 +42,7 @@ class CacheInfoManager: ObservableObject {
             cacheInfo = try calculator.calculateProfileCacheInfo(gameName: game)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("计算游戏缓存信息失败: \(globalError.chineseMessage)")
+            AppLog.common.error("计算游戏缓存信息失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
         }
     }

@@ -25,7 +25,7 @@ extension ModPackImportViewModel {
                     withIntermediateDirectories: true,
                 )
             } catch {
-                Logger.shared.error("创建目录失败: \(dir.path), 错误: \(error.localizedDescription)")
+                AppLog.modPack.error("创建目录失败: \(dir.path), 错误: \(error.localizedDescription)")
                 errorHandler.handle(
                     GlobalError.fileSystem(
                         chineseMessage: "创建目录失败: \(dir.path)",

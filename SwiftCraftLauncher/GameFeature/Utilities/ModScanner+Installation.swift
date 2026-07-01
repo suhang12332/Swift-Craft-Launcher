@@ -32,7 +32,7 @@ extension ModScanner {
             return hashes.contains(hash)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("检查资源安装状态失败: \(globalError.chineseMessage)")
+            AppLog.game.error("检查资源安装状态失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return false
         }
@@ -46,7 +46,7 @@ extension ModScanner {
             return try localModDetailsThrowing(in: dir)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取本地 mod 详情失败: \(globalError.chineseMessage)")
+            AppLog.game.error("获取本地 mod 详情失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return []
         }
@@ -68,7 +68,7 @@ extension ModScanner {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("检查 mod 安装状态失败: \(globalError.chineseMessage)")
+            AppLog.game.error("检查 mod 安装状态失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return false
         }
@@ -110,7 +110,7 @@ extension ModScanner {
                 completion(result)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error(
+                AppLog.game.error(
                     "检查 mod 安装状态失败: \(globalError.chineseMessage)",
                 )
                 errorHandler.handle(globalError)

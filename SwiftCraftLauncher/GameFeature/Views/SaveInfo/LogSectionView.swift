@@ -48,7 +48,7 @@ struct LogSectionView: View {
         do {
             try process.run()
         } catch {
-            Logger.shared.error("打开日志文件失败: \(error.localizedDescription)")
+            AppLog.game.error("打开日志文件失败: \(error.localizedDescription)")
         }
     }
 }

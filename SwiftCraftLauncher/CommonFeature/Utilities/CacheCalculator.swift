@@ -90,7 +90,7 @@ class CacheCalculator {
                     totalSize += Int64(fileSize)
                 }
             } catch {
-                Logger.shared.warning("无法获取文件大小: \(fileURL.path), 错误: \(error.localizedDescription)")
+                AppLog.common.error("无法获取文件大小: \(fileURL.path), 错误: \(error.localizedDescription)")
             }
         }
 

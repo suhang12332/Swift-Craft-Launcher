@@ -69,14 +69,14 @@ class JavaManager {
 
             let exitCode = process.terminationStatus
             if exitCode == 0 {
-                Logger.shared.debug("Java启动验证成功: \(javaPath)")
+                AppLog.game.debug("Java启动验证成功: \(javaPath)")
                 return true
             } else {
-                Logger.shared.warning("Java启动验证失败，退出码: \(exitCode)")
+                AppLog.game.error("Java启动验证失败，退出码: \(exitCode)")
                 return false
             }
         } catch {
-            Logger.shared.error("Java启动验证异常: \(error.localizedDescription)")
+            AppLog.game.error("Java启动验证异常: \(error.localizedDescription)")
             return false
         }
     }
@@ -103,7 +103,7 @@ class JavaManager {
             return String(data: data, encoding: .utf8)?
                 .trimmingCharacters(in: .whitespacesAndNewlines)
         } catch {
-            Logger.shared.error("获取 Java 版本信息失败: \(error.localizedDescription)")
+            AppLog.game.error("获取 Java 版本信息失败: \(error.localizedDescription)")
             return nil
         }
     }
@@ -114,17 +114,17 @@ class JavaManager {
     func ensureJavaExists(version: String) async -> String {
         let existingPath = findJavaExecutable(version: version)
         if !existingPath.isEmpty {
-            Logger.shared.info("Java版本 \(version) 已存在")
+            AppLog.game.info("Java版本 \(version) 已存在")
             return existingPath
         }
 
-        Logger.shared.info("Java版本 \(version) 不存在，开始下载...")
+        AppLog.game.info("Java版本 \(version) 不存在，开始下载...")
         await javaDownloadManager.downloadJavaRuntime(version: version)
-        Logger.shared.info("Java版本 \(version) 下载完成")
+        AppLog.game.info("Java版本 \(version) 下载完成")
 
         let newPath = findJavaExecutable(version: version)
         if newPath.isEmpty {
-            Logger.shared.error("Java版本 \(version) 下载完成后仍无法找到可用的Java可执行文件")
+            AppLog.game.error("Java版本 \(version) 下载完成后仍无法找到可用的Java可执行文件")
         }
         return newPath
     }
@@ -136,7 +136,7 @@ class JavaManager {
 
             return getJavaExecutablePath(version: component)
         } catch {
-            Logger.shared.error("获取游戏版本信息失败: \(error.localizedDescription)")
+            AppLog.game.error("获取游戏版本信息失败: \(error.localizedDescription)")
             return ""
         }
     }

@@ -21,7 +21,7 @@ class IPLocationService: ObservableObject {
             return try await isForeignIPThrowing()
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("检测IP地理位置失败: \(globalError.chineseMessage)")
+            AppLog.common.error("检测IP地理位置失败: \(globalError.chineseMessage)")
             return false
         }
     }
@@ -37,9 +37,9 @@ class IPLocationService: ObservableObject {
         do {
             locationResponse = try JSONDecoder().decode(IPLocationResponse.self, from: data)
         } catch {
-            Logger.shared.error("解析IP地理位置响应失败: HTTP \(statusCode), error: \(error.localizedDescription)")
+            AppLog.common.error("解析IP地理位置响应失败: HTTP \(statusCode), error: \(error.localizedDescription)")
             if let responseString = String(data: data, encoding: .utf8) {
-                Logger.shared.error("响应内容: \(responseString)")
+                AppLog.common.error("响应内容: \(responseString)")
             }
             throw GlobalError.validation(
                 chineseMessage: "解析IP地理位置响应失败: \(error.localizedDescription)",
@@ -49,12 +49,12 @@ class IPLocationService: ObservableObject {
         }
 
         if statusCode != 200 {
-            Logger.shared.warning("IP地理位置API返回非200状态码: \(statusCode)")
+            AppLog.common.error("IP地理位置API返回非200状态码: \(statusCode)")
         }
 
         guard locationResponse.isSuccess else {
             let errorMessage = locationResponse.reason ?? "IP地理位置检测失败"
-            Logger.shared.error("IP地理位置检测失败: \(errorMessage), 国家代码: \(locationResponse.countryCode ?? "未知")")
+            AppLog.common.error("IP地理位置检测失败: \(errorMessage), 国家代码: \(locationResponse.countryCode ?? "未知")")
             throw GlobalError.network(
                 chineseMessage: errorMessage,
                 i18nKey: "error.network.ip_location_failed",
@@ -62,7 +62,7 @@ class IPLocationService: ObservableObject {
             )
         }
 
-        Logger.shared.debug("IP地理位置检测完成: 国家代码 = \(locationResponse.countryCode ?? "未知"), 是否为国外 = \(locationResponse.isForeign)")
+        AppLog.common.debug("IP地理位置检测完成: 国家代码 = \(locationResponse.countryCode ?? "未知"), 是否为国外 = \(locationResponse.isForeign)")
 
         return locationResponse.isForeign
     }

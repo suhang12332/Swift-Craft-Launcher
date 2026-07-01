@@ -54,7 +54,7 @@ class GameSetupUtil: ObservableObject {
     ) async {
         if let playerListViewModel {
             guard playerListViewModel.currentPlayer != nil else {
-                Logger.shared.error("无法保存游戏，因为没有选择当前玩家。")
+                AppLog.game.error("无法保存游戏，因为没有选择当前玩家。")
                 onError(
                     GlobalError.configuration(
                         chineseMessage: "没有选择当前玩家",
@@ -149,7 +149,7 @@ class GameSetupUtil: ObservableObject {
             onSuccess()
         } catch {
             if isSaveGameDownloadCancelled(error) {
-                Logger.shared.info("游戏下载任务已取消")
+                AppLog.game.info("游戏下载任务已取消")
                 await cleanupGameDirectories(gameName: input.gameName)
                 await MainActor.run {
                     self.objectWillChange.send()
@@ -177,7 +177,7 @@ class GameSetupUtil: ObservableObject {
             let fileManager = MinecraftFileManager()
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
-            Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
+            AppLog.game.error("清理游戏文件夹失败: \(error.localizedDescription)")
         }
     }
 
@@ -206,7 +206,7 @@ class GameSetupUtil: ObservableObject {
                 )
             }
         } catch {
-            Logger.shared.warning(
+            AppLog.game.error(
                 "游戏图标保存失败，将继续安装: \(error.localizedDescription)",
             )
             errorHandler.handle(

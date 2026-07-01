@@ -104,7 +104,7 @@ extension GameCreationViewModel {
                 let forgeVersions = try await ForgeLoaderService.fetchAllForgeVersions(for: gameVersion)
                 versions = forgeVersions.loaders.map(\.id)
             } catch {
-                Logger.shared.error("获取 Forge 版本失败: \(error.localizedDescription)")
+                AppLog.game.error("获取 Forge 版本失败: \(error.localizedDescription)")
                 versions = []
             }
         case GameLoader.neoforge.displayName:
@@ -112,7 +112,7 @@ extension GameCreationViewModel {
                 let neoforgeVersions = try await NeoForgeLoaderService.fetchAllNeoForgeVersions(for: gameVersion)
                 versions = neoforgeVersions.loaders.map(\.id)
             } catch {
-                Logger.shared.error("获取 NeoForge 版本失败: \(error.localizedDescription)")
+                AppLog.game.error("获取 NeoForge 版本失败: \(error.localizedDescription)")
                 versions = []
             }
         case GameLoader.quilt.rawValue:

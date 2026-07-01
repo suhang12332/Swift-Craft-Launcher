@@ -22,7 +22,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 i18nKey: "error.configuration.delete_file_failed",
                 level: .notification,
             )
-            Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
+            AppLog.game.error("删除文件失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return
         }
@@ -35,7 +35,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 i18nKey: "error.configuration.delete_file_failed",
                 level: .notification,
             )
-            Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
+            AppLog.game.error("删除文件失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return
         }
@@ -46,7 +46,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 i18nKey: "error.resource.file_name_missing",
                 level: .notification,
             )
-            Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
+            AppLog.game.error("删除文件失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return
         }
@@ -88,13 +88,13 @@ extension AddOrDeleteResourceButtonViewModel {
         guard let gameInfo,
               let resourceDir = AppPaths.resourceDirectory(for: query, gameName: gameInfo.gameName)
         else {
-            Logger.shared.error("切换资源启用状态失败：资源目录不存在")
+            AppLog.game.error("切换资源启用状态失败：资源目录不存在")
             return
         }
 
         let fileName = effectiveFileName
         guard let fileName else {
-            Logger.shared.error("切换资源启用状态失败：缺少文件名")
+            AppLog.game.error("切换资源启用状态失败：缺少文件名")
             return
         }
 
@@ -111,7 +111,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 checkForUpdate()
             }
         } catch {
-            Logger.shared.error("切换资源启用状态失败: \(error.localizedDescription)")
+            AppLog.game.error("切换资源启用状态失败: \(error.localizedDescription)")
         }
     }
 
@@ -146,7 +146,7 @@ extension AddOrDeleteResourceButtonViewModel {
             try performDeleteThrowing(fileURL: fileURL)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
+            AppLog.game.error("删除文件失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
         }
     }

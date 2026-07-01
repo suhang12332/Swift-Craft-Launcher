@@ -138,7 +138,7 @@ extension AppPaths {
         if let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
             return cachesDirectory.appendingPathComponent(Bundle.main.identifier)
         }
-        Logger.shared.error("无法获取系统缓存目录，使用应用支持目录下的 Cache")
+        AppLog.common.error("无法获取系统缓存目录，使用应用支持目录下的 Cache")
         return launcherSupportDirectory.appendingPathComponent("Cache", isDirectory: true)
     }
 

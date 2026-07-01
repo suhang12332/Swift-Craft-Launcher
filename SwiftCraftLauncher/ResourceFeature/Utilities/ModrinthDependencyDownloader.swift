@@ -24,7 +24,7 @@ enum ModrinthDependencyDownloader {
 
         // Return early for modpacks or unrecognized types.
         if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
-            Logger.shared.error("不支持下载此类型的资源: \(query)")
+            AppLog.resource.error("不支持下载此类型的资源: \(query)")
             return
         }
 
@@ -48,7 +48,7 @@ enum ModrinthDependencyDownloader {
             guard
                 await ModrinthService.fetchProjectDetails(id: projectId) != nil
             else {
-                Logger.shared.error("无法获取主项目详情 (ID: \(projectId))")
+                AppLog.resource.error("无法获取主项目详情 (ID: \(projectId))")
                 return
             }
 
@@ -70,7 +70,7 @@ enum ModrinthDependencyDownloader {
                                     id: depVersion.projectId,
                                 )
                         else {
-                            Logger.shared.error(
+                            AppLog.resource.error(
                                 "无法获取依赖项目详情 (ID: \(depVersion.projectId))",
                             )
                             return nil
@@ -120,7 +120,7 @@ enum ModrinthDependencyDownloader {
                                     id: projectId,
                                 )
                         else {
-                            Logger.shared.error("无法获取主项目详情 (ID: \(projectId))")
+                            AppLog.resource.error("无法获取主项目详情 (ID: \(projectId))")
                             return nil
                         }
                         let filteredVersions =
@@ -161,7 +161,7 @@ enum ModrinthDependencyDownloader {
                         return nil
                     } catch {
                         let globalError = GlobalError.from(error)
-                        Logger.shared.error(
+                        AppLog.resource.error(
                             "下载主资源 \(projectId) 失败: \(globalError.chineseMessage)",
                         )
                         AppServices.errorHandler.handle(globalError)
@@ -227,7 +227,7 @@ enum ModrinthDependencyDownloader {
                             type: ResourceType.mod.rawValue,
                         )
                     } catch {
-                        Logger.shared.error("获取依赖 \(projectDetail.title) 的版本失败: \(error.localizedDescription)")
+                        AppLog.resource.error("获取依赖 \(projectDetail.title) 的版本失败: \(error.localizedDescription)")
                         filteredVersions = []
                     }
 
@@ -353,7 +353,7 @@ enum ModrinthDependencyDownloader {
                         }
                     } catch {
                         let globalError = GlobalError.from(error)
-                        Logger.shared.error(
+                        AppLog.resource.error(
                             "下载依赖 \(depId) 失败: \(globalError.chineseMessage)",
                         )
                         AppServices.errorHandler.handle(globalError)
@@ -385,7 +385,7 @@ enum ModrinthDependencyDownloader {
                 var mainProjectDetail =
                     await ModrinthService.fetchProjectDetails(id: input.mainProjectId)
             else {
-                Logger.shared.error("无法获取主项目详情 (ID: \(input.mainProjectId))")
+                AppLog.resource.error("无法获取主项目详情 (ID: \(input.mainProjectId))")
                 return false
             }
 
@@ -408,7 +408,7 @@ enum ModrinthDependencyDownloader {
             } else if let latestVersion = filteredVersions.first {
                 targetVersion = latestVersion
             } else {
-                Logger.shared.error("无法找到合适的版本")
+                AppLog.resource.error("无法找到合适的版本")
                 return false
             }
 
@@ -417,7 +417,7 @@ enum ModrinthDependencyDownloader {
                     from: targetVersion.files,
                 )
             else {
-                Logger.shared.error("无法找到主文件")
+                AppLog.resource.error("无法找到主文件")
                 return false
             }
 
@@ -444,7 +444,7 @@ enum ModrinthDependencyDownloader {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error(
+            AppLog.resource.error(
                 "下载主资源 \(input.mainProjectId) 失败: \(globalError.chineseMessage)",
             )
             AppServices.errorHandler.handle(globalError)
@@ -466,7 +466,7 @@ enum ModrinthDependencyDownloader {
                 var mainProjectDetail =
                     await ModrinthService.fetchProjectDetails(id: mainProjectId)
             else {
-                Logger.shared.error("无法获取主项目详情 (ID: \(mainProjectId))")
+                AppLog.resource.error("无法获取主项目详情 (ID: \(mainProjectId))")
                 return (false, nil, nil)
             }
             let selectedLoaders = filterLoader ? [gameInfo.modLoader] : []
@@ -511,7 +511,7 @@ enum ModrinthDependencyDownloader {
             return (true, primaryFile.filename, hash)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error(
+            AppLog.resource.error(
                 "仅下载主资源 \(mainProjectId) 失败: \(globalError.chineseMessage)",
             )
             AppServices.errorHandler.handle(globalError)

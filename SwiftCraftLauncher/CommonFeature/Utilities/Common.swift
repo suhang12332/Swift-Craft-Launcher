@@ -308,12 +308,12 @@ enum CommonUtil {
         do {
             try? gameDatabase.initialize()
             guard let game = try gameDatabase.getGame(by: gameId) else {
-                Logger.shared.warning("无法从数据库找到游戏，无法获取游戏目录: \(gameId)")
+                AppLog.common.error("无法从数据库找到游戏，无法获取游戏目录: \(gameId)")
                 return nil
             }
             return AppPaths.profileDirectory(gameName: game.gameName)
         } catch {
-            Logger.shared.error("从数据库查询游戏失败，无法获取游戏目录: \(error.localizedDescription)")
+            AppLog.common.error("从数据库查询游戏失败，无法获取游戏目录: \(error.localizedDescription)")
             return nil
         }
     }
@@ -352,7 +352,7 @@ enum CommonUtil {
             let newContent = lines.joined(separator: "\n")
             try newContent.write(to: optionsURL, atomically: true, encoding: .utf8)
         } catch {
-            Logger.shared.warning("更新 options.txt 失败（游戏: \(gameName), key: \(key)）: \(error.localizedDescription)")
+            AppLog.common.error("更新 options.txt 失败（游戏: \(gameName), key: \(key)）: \(error.localizedDescription)")
         }
     }
 }

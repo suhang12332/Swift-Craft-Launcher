@@ -28,18 +28,18 @@ final class ModPackDownloadService {
             if fm.fileExists(atPath: downloadDir.path) {
                 do {
                     try fm.removeItem(at: downloadDir)
-                    Logger.shared.info("已清理临时下载目录: \(downloadDir.path)")
+                    AppLog.modPack.info("已清理临时下载目录: \(downloadDir.path)")
                 } catch {
-                    Logger.shared.warning("清理临时下载目录失败: \(error.localizedDescription)")
+                    AppLog.modPack.error("清理临时下载目录失败: \(error.localizedDescription)")
                 }
             }
             let extractionDir = tempBaseDir.appendingPathComponent("modpack_extraction")
             if fm.fileExists(atPath: extractionDir.path) {
                 do {
                     try fm.removeItem(at: extractionDir)
-                    Logger.shared.info("已清理临时解压目录: \(extractionDir.path)")
+                    AppLog.modPack.info("已清理临时解压目录: \(extractionDir.path)")
                 } catch {
-                    Logger.shared.warning("清理临时解压目录失败: \(error.localizedDescription)")
+                    AppLog.modPack.error("清理临时解压目录失败: \(error.localizedDescription)")
                 }
             }
         }
@@ -66,7 +66,7 @@ final class ModPackDownloadService {
                 return savePath
             } catch {
                 if error is CancellationError || Task.isCancelled {
-                    Logger.shared.info("整合包下载已取消")
+                    AppLog.modPack.info("整合包下载已取消")
                     return nil
                 }
                 let globalError = GlobalError.from(error)

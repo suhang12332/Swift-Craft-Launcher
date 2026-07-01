@@ -131,7 +131,7 @@ enum ModPackExporter {
                     message: "已取消",
                 )
             }
-            Logger.shared.error("导出整合包失败: \(error.localizedDescription)")
+            AppLog.modPack.error("导出整合包失败: \(error.localizedDescription)")
             return ExportResult(
                 success: false,
                 outputPath: nil,

@@ -21,12 +21,12 @@ class GameActionManager: ObservableObject {
         let gameDirectory = AppPaths.profileDirectory(gameName: game.gameName)
 
         guard FileManager.default.fileExists(atPath: gameDirectory.path) else {
-            Logger.shared.warning("游戏目录不存在: \(gameDirectory.path)")
+            AppLog.game.error("游戏目录不存在: \(gameDirectory.path)")
             return
         }
 
         NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: gameDirectory.path)
-        Logger.shared.info("在访达中显示游戏目录: \(game.gameName)")
+        AppLog.game.info("在访达中显示游戏目录: \(game.gameName)")
     }
 
     /// Deletes a game and its associated files.
@@ -77,21 +77,21 @@ class GameActionManager: ObservableObject {
                 if FileManager.default.fileExists(atPath: profileDir.path) {
                     try FileManager.default.removeItem(at: profileDir)
                 } else {
-                    Logger.shared.warning("删除游戏时未找到游戏目录，跳过文件删除: \(profileDir.path)")
+                    AppLog.game.error("删除游戏时未找到游戏目录，跳过文件删除: \(profileDir.path)")
                 }
 
                 await modScanner.clearModCache(for: game.gameName)
 
                 try await gameRepository.deleteGame(id: game.id)
 
-                Logger.shared.info("成功删除游戏: \(game.gameName)")
+                AppLog.game.info("成功删除游戏: \(game.gameName)")
             } catch {
                 let globalError = GlobalError.fileSystem(
                     chineseMessage: "删除游戏失败: \(error.localizedDescription)",
                     i18nKey: "error.filesystem.game_deletion_failed",
                     level: .notification,
                 )
-                Logger.shared.error("删除游戏失败: \(globalError.chineseMessage)")
+                AppLog.game.error("删除游戏失败: \(globalError.chineseMessage)")
                 AppServices.errorHandler.handle(globalError)
             }
         }
@@ -118,14 +118,14 @@ class GameActionManager: ObservableObject {
 
                 try await gameRepository.deleteGamesByName(name)
 
-                Logger.shared.info("成功删除损坏游戏（目录 + 数据库）: \(name)")
+                AppLog.game.info("成功删除损坏游戏（目录 + 数据库）: \(name)")
             } catch {
                 let globalError = GlobalError.fileSystem(
                     chineseMessage: "删除损坏游戏失败: \(error.localizedDescription)",
                     i18nKey: "error.filesystem.game_deletion_failed",
                     level: .notification,
                 )
-                Logger.shared.error("删除损坏游戏失败: \(globalError.chineseMessage)")
+                AppLog.game.error("删除损坏游戏失败: \(globalError.chineseMessage)")
                 AppServices.errorHandler.handle(globalError)
             }
         }

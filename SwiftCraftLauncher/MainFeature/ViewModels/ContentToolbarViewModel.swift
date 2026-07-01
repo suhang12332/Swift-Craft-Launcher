@@ -39,7 +39,7 @@ final class ContentToolbarViewModel: ObservableObject {
             return
         }
 
-        Logger.shared.info("打开皮肤管理器前验证玩家 \(player.name) 的Token")
+        AppLog.main.info("打开皮肤管理器前验证玩家 \(player.name) 的Token")
 
         var playerWithCredential = player
         if playerWithCredential.credential == nil {
@@ -54,11 +54,11 @@ final class ContentToolbarViewModel: ObservableObject {
             validatedPlayer = try await authService.validateAndRefreshPlayerTokenThrowing(for: playerWithCredential)
 
             if validatedPlayer.authAccessToken != player.authAccessToken {
-                Logger.shared.info("玩家 \(player.name) 的Token已更新，保存到数据管理器")
+                AppLog.main.info("玩家 \(player.name) 的Token已更新，保存到数据管理器")
                 let dataManager = AppServices.playerDataManager
                 let success = dataManager.updatePlayerSilently(validatedPlayer)
                 if success {
-                    Logger.shared.debug("已更新玩家数据管理器中的Token信息")
+                    AppLog.main.debug("已更新玩家数据管理器中的Token信息")
                     NotificationCenter.default.post(
                         name: .playerUpdated,
                         object: nil,
@@ -67,7 +67,7 @@ final class ContentToolbarViewModel: ObservableObject {
                 }
             }
         } catch {
-            Logger.shared.error("刷新Token失败: \(error.localizedDescription)")
+            AppLog.main.error("刷新Token失败: \(error.localizedDescription)")
             validatedPlayer = playerWithCredential
         }
 

@@ -60,7 +60,7 @@ struct MinecraftLaunchCommand {
 
     private func validatePlayerTokenBeforeLaunch() async throws -> Player? {
         guard let player else {
-            Logger.shared.warning("没有选择玩家，使用默认认证参数")
+            AppLog.game.error("没有选择玩家，使用默认认证参数")
             return nil
         }
 
@@ -68,7 +68,7 @@ struct MinecraftLaunchCommand {
             return player
         }
 
-        Logger.shared.info("启动游戏前验证玩家 \(player.name) 的Token")
+        AppLog.game.info("启动游戏前验证玩家 \(player.name) 的Token")
 
         var playerWithCredential = player
         if playerWithCredential.credential == nil {
@@ -81,7 +81,7 @@ struct MinecraftLaunchCommand {
         let validatedPlayer = try await minecraftAuthService.validateAndRefreshPlayerTokenThrowing(for: playerWithCredential)
 
         if validatedPlayer.authAccessToken != player.authAccessToken {
-            Logger.shared.info("玩家 \(player.name) 的Token已更新，保存到数据管理器")
+            AppLog.game.info("玩家 \(player.name) 的Token已更新，保存到数据管理器")
             await updatePlayerInDataManager(validatedPlayer)
         }
 
@@ -92,7 +92,7 @@ struct MinecraftLaunchCommand {
         let dataManager = AppServices.playerDataManager
         let success = dataManager.updatePlayerSilently(updatedPlayer)
         if success {
-            Logger.shared.debug("已更新玩家数据管理器中的Token信息")
+            AppLog.game.debug("已更新玩家数据管理器中的Token信息")
             NotificationCenter.default.post(
                 name: .playerUpdated,
                 object: nil,
@@ -103,7 +103,7 @@ struct MinecraftLaunchCommand {
 
     private func replaceAuthParameters(command: [String], with validatedPlayer: Player?) async throws -> [String] {
         guard let player = validatedPlayer else {
-            Logger.shared.warning("没有验证的玩家，使用默认认证参数")
+            AppLog.game.error("没有验证的玩家，使用默认认证参数")
             return replaceGameParameters(command: command)
         }
 
@@ -169,7 +169,7 @@ struct MinecraftLaunchCommand {
 
         let jarPath = AppConstants.AuthlibInjector.jarPath
         if !FileManager.default.fileExists(atPath: jarPath) {
-            Logger.shared.warning("Authlib Injector JAR 不存在，等待用户选择: \(jarPath)")
+            AppLog.game.error("Authlib Injector JAR 不存在，等待用户选择: \(jarPath)")
             let choice = await AppServices.authlibInjectorMissingPresenter.requestUserChoice()
             switch choice {
             case .continueWithoutInjector:
@@ -244,7 +244,7 @@ struct MinecraftLaunchCommand {
 
         let gameWorkingDirectory = AppPaths.profileDirectory(gameName: game.gameName)
 
-        Logger.shared.info("游戏工作目录: \(gameWorkingDirectory.path)")
+        AppLog.game.info("游戏工作目录: \(gameWorkingDirectory.path)")
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: javaExecutable)
@@ -274,7 +274,7 @@ struct MinecraftLaunchCommand {
                 gameStatusManager.setGameRunning(gameId: game.id, userId: userId, isRunning: true)
             }
         } catch {
-            Logger.shared.error("启动进程失败: \(error.localizedDescription)")
+            AppLog.game.error("启动进程失败: \(error.localizedDescription)")
 
             _ = gameProcessManager.stopProcess(for: game.id, userId: userId)
             _ = await MainActor.run {
@@ -290,7 +290,7 @@ struct MinecraftLaunchCommand {
     }
 
     private func handleLaunchError(_ error: Error) async {
-        Logger.shared.error("启动游戏失败：\(error.localizedDescription)")
+        AppLog.game.error("启动游戏失败：\(error.localizedDescription)")
 
         let globalError = GlobalError.from(error)
         AppServices.errorHandler.handle(globalError)

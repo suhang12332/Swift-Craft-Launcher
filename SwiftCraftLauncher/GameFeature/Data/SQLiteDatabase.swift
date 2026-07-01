@@ -71,7 +71,7 @@ class SQLiteDatabase {
             self.db = openedDb
             try enableWALMode()
             try enableMmap()
-            Logger.shared.debug("SQLite 数据库已打开: \(dbPath)")
+            AppLog.game.debug("SQLite 数据库已打开: \(self.dbPath)")
         }
     }
 
@@ -81,7 +81,7 @@ class SQLiteDatabase {
             guard let db else { return }
             sqlite3_close(db)
             self.db = nil
-            Logger.shared.debug("SQLite 数据库已关闭")
+            AppLog.game.debug("SQLite 数据库已关闭")
         }
     }
 
@@ -100,7 +100,7 @@ class SQLiteDatabase {
 
         sqlite3_exec(db, "PRAGMA wal_autocheckpoint=1000;", nil, nil, nil)
 
-        Logger.shared.debug("WAL 模式已启用")
+        AppLog.game.debug("WAL 模式已启用")
     }
 
     private func enableMmap() throws {
@@ -119,7 +119,7 @@ class SQLiteDatabase {
             )
         }
 
-        Logger.shared.debug("mmap 已启用 (64MB)")
+        AppLog.game.debug("mmap 已启用 (64MB)")
     }
 
     /// Executes a block within a database transaction.

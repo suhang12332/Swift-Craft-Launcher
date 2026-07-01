@@ -71,7 +71,7 @@ enum ResourceInstallationChecker {
                 }
             }
         } catch {
-            Logger.shared.error(
+            AppLog.resource.error(
                 "获取项目版本以检查安装状态失败: \(error.localizedDescription)",
             )
         }

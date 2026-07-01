@@ -58,7 +58,7 @@ class MinecraftFileManager {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error(
+            AppLog.game.error(
                 "下载 Minecraft 版本文件失败: \(globalError.chineseMessage)",
             )
             errorHandler.handle(globalError)

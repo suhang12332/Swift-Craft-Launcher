@@ -43,14 +43,10 @@ final class AcknowledgementsViewModel: ObservableObject {
                 libraries = decodedLibraries
                 isLoading = false
                 loadFailed = false
-                Logger.shared.info(
-                    "Successfully loaded",
-                    decodedLibraries.count,
-                    "libraries from GitHubService",
-                )
+                AppLog.common.info("Successfully loaded \(decodedLibraries.count) libraries from GitHubService")
             } catch {
                 guard !Task.isCancelled else { return }
-                Logger.shared.error("Failed to load libraries from GitHubService:", error)
+                AppLog.common.error("Failed to load libraries from GitHubService: \(error.localizedDescription)")
                 loadFailed = true
                 isLoading = false
             }

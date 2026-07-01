@@ -95,7 +95,7 @@ struct CategoryContentView: View {
             try await loadDataThrowing()
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("加载分类数据失败: \(globalError.chineseMessage)")
+            AppLog.resource.error("加载分类数据失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             await MainActor.run {
                 viewModel.setError(globalError)

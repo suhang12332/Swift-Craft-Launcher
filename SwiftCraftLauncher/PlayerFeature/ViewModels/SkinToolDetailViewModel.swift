@@ -171,7 +171,7 @@ final class SkinToolDetailViewModel: ObservableObject {
         let fileURL = item.fileURL
 
         guard let image = NSImage(contentsOf: fileURL) else {
-            Logger.shared.error("Failed to decode selected skin library image at path: \(fileURL.path)")
+            AppLog.player.error("Failed to decode selected skin library image at path: \(fileURL.path)")
             return
         }
 

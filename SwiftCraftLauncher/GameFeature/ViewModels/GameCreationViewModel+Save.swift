@@ -12,7 +12,7 @@ extension GameCreationViewModel {
     func saveGame() async {
         guard let gameRepository,
               let playerListViewModel else {
-            Logger.shared.error("GameRepository 或 PlayerListViewModel 未设置")
+            AppLog.game.error("GameRepository 或 PlayerListViewModel 未设置")
             return
         }
 

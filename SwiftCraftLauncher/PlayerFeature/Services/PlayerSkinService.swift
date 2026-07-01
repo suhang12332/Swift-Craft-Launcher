@@ -22,7 +22,7 @@ enum PlayerSkinService {
 
     private static func handleError(_ error: Error, operation: String) {
         let globalError = GlobalError.from(error)
-        Logger.shared.error("\(operation) failed: \(globalError.chineseMessage)")
+        AppLog.player.error("\(operation) failed: \(globalError.chineseMessage)")
         AppServices.errorHandler.handle(globalError)
     }
 
@@ -93,7 +93,7 @@ enum PlayerSkinService {
             let players = try dataManager.loadPlayersThrowing()
 
             guard let player = players.first(where: { $0.id == uuid }) else {
-                Logger.shared.warning("Player not found for UUID: \(uuid)")
+                AppLog.player.error("Player not found for UUID: \(uuid)")
                 return false
             }
 
@@ -115,7 +115,7 @@ enum PlayerSkinService {
 
             return true
         } catch {
-            Logger.shared.error("Failed to update player skin info: \(error.localizedDescription)")
+            AppLog.player.error("Failed to update player skin info: \(error.localizedDescription)")
             return false
         }
     }
@@ -129,14 +129,14 @@ enum PlayerSkinService {
             let profile = try await fetchPlayerProfileThrowing(player: player)
 
             guard !profile.skins.isEmpty else {
-                Logger.shared.warning("玩家没有皮肤信息")
+                AppLog.player.error("玩家没有皮肤信息")
                 return nil
             }
 
             let activeSkin = profile.skins.first { $0.state == "ACTIVE" } ?? profile.skins.first
 
             guard let skin = activeSkin else {
-                Logger.shared.warning("没有找到激活的皮肤")
+                AppLog.player.error("没有找到激活的皮肤")
                 return nil
             }
 
@@ -147,7 +147,7 @@ enum PlayerSkinService {
                 fetchedAt: Date(),
             )
         } catch {
-            Logger.shared.error("从 Minecraft Services API 获取皮肤信息失败: \(error.localizedDescription)")
+            AppLog.player.error("从 Minecraft Services API 获取皮肤信息失败: \(error.localizedDescription)")
             return nil
         }
     }
@@ -256,7 +256,7 @@ enum PlayerSkinService {
             body.append(part)
         }
         let variantValue = model == .slim ? "SLIM" : "CLASSIC"
-        Logger.shared.info("Uploading skin with variant: \(variantValue), data size: \(imageData.count) bytes")
+        AppLog.player.info("Uploading skin with variant: \(variantValue), data size: \(imageData.count) bytes")
 
         appendField(name: "variant", value: variantValue)
         appendFile(
@@ -290,7 +290,7 @@ enum PlayerSkinService {
                 try handleHTTPError(error, operation: "皮肤上传")
             }
         }
-        Logger.shared.info("Skin upload successful with variant: \(variantValue)")
+        AppLog.player.info("Skin upload successful with variant: \(variantValue)")
     }
 
     /// Resets the player's skin to the default.

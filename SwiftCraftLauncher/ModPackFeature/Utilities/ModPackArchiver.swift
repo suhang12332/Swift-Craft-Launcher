@@ -75,7 +75,7 @@ enum ModPackArchiver {
                     let filePath = (fileURL.path as NSString).standardizingPath
 
                     guard filePath.hasPrefix(overridesDirPathWithSlash) else {
-                        Logger.shared.warning("文件路径不在 overrides 目录内: \(filePath)")
+                        AppLog.modPack.error("文件路径不在 overrides 目录内: \(filePath)")
                         continue
                     }
 

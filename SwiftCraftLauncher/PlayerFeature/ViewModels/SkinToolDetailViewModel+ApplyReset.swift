@@ -78,9 +78,9 @@ extension SkinToolDetailViewModel {
                 try Task.checkCancellation()
                 if result {
                     persistSelectedSkinToLibrary()
-                    Logger.shared.info("Skin upload successful with model: \(currentModel.rawValue)")
+                    AppLog.player.info("Skin upload successful with model: \(currentModel.rawValue)")
                 } else {
-                    Logger.shared.error("Skin upload failed")
+                    AppLog.player.error("Skin upload failed")
                 }
                 return result
             } else if let original = originalModel, currentModel != original {
@@ -98,7 +98,7 @@ extension SkinToolDetailViewModel {
         } catch is CancellationError {
             return false
         } catch {
-            Logger.shared.error("Skin changes error: \(error)")
+            AppLog.player.error("Skin changes error: \(error)")
             return false
         }
     }
@@ -175,7 +175,7 @@ extension SkinToolDetailViewModel {
         } catch is CancellationError {
             return false
         } catch {
-            Logger.shared.error("Failed to re-upload skin with new model: \(error)")
+            AppLog.player.error("Failed to re-upload skin with new model: \(error)")
             return false
         }
     }

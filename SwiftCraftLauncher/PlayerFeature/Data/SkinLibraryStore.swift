@@ -66,7 +66,7 @@ final class SkinLibraryStore {
             }
             return items
         } catch {
-            Logger.shared.error("Failed to load skin library: \(error.localizedDescription)")
+            AppLog.player.error("Failed to load skin library: \(error.localizedDescription)")
             return []
         }
     }
@@ -108,7 +108,7 @@ final class SkinLibraryStore {
             try upsert(item)
             return item
         } catch {
-            Logger.shared.error("Failed to save skin into library: \(error.localizedDescription)")
+            AppLog.player.error("Failed to save skin into library: \(error.localizedDescription)")
             return nil
         }
     }
@@ -128,7 +128,7 @@ final class SkinLibraryStore {
             try deleteItemRecord(sha1: item.sha1)
             return true
         } catch {
-            Logger.shared.error("Failed to delete skin library item: \(error.localizedDescription)")
+            AppLog.player.error("Failed to delete skin library item: \(error.localizedDescription)")
             return false
         }
     }

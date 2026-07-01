@@ -211,7 +211,7 @@ final class GameLocalResourceViewModel: ObservableObject {
                 i18nKey: "error.configuration.resource_directory_not_found",
                 level: .notification,
             )
-            Logger.shared.error("初始化资源目录失败: \(globalError.chineseMessage)")
+            AppLog.game.error("初始化资源目录失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             error = globalError
         }

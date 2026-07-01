@@ -66,20 +66,20 @@ class ServerAddressService {
         let serversDatURL = profileDir.appendingPathComponent("servers.dat")
 
         guard FileManager.default.fileExists(atPath: serversDatURL.path) else {
-            Logger.shared.debug("servers.dat 文件不存在: \(serversDatURL.path)")
+            AppLog.game.debug("servers.dat 文件不存在: \(serversDatURL.path)")
             return []
         }
-        Logger.shared.debug("开始读取 servers.dat: \(serversDatURL.path)")
+        AppLog.game.debug("开始读取 servers.dat: \(serversDatURL.path)")
         do {
             let data = try await Task.detached(priority: .userInitiated) {
                 try Data(contentsOf: serversDatURL)
             }.value
-            Logger.shared.debug("servers.dat 文件大小: \(data.count) 字节")
+            AppLog.game.debug("servers.dat 文件大小: \(data.count) 字节")
             let servers = try parseServersDat(data: data)
-            Logger.shared.debug("成功解析 \(servers.count) 个服务器")
+            AppLog.game.debug("成功解析 \(servers.count) 个服务器")
             return servers
         } catch {
-            Logger.shared.warning("解析服务器地址 servers.dat 文件失败: \(error.localizedDescription)")
+            AppLog.game.error("解析服务器地址 servers.dat 文件失败: \(error.localizedDescription)")
             return []
         }
     }
@@ -88,14 +88,14 @@ class ServerAddressService {
         let parser = NBTParser(data: data)
         let nbtData = try parser.parse()
 
-        Logger.shared.debug("NBT 解析完成，根标签键: \(nbtData.keys.joined(separator: ", "))")
+        AppLog.game.debug("NBT 解析完成，根标签键: \(nbtData.keys.joined(separator: ", "))")
 
         guard let serversList = nbtData["servers"] as? [[String: Any]] else {
-            Logger.shared.debug("未找到 servers 列表，或类型不匹配")
+            AppLog.game.debug("未找到 servers 列表，或类型不匹配")
             return []
         }
 
-        Logger.shared.debug("找到 \(serversList.count) 个服务器条目")
+        AppLog.game.debug("找到 \(serversList.count) 个服务器条目")
 
         var servers: [ServerAddress] = []
 
@@ -207,7 +207,7 @@ class ServerAddressService {
         let serversDatURL = AppPaths.profileDirectory(gameName: gameName)
             .appendingPathComponent("servers.dat")
 
-        Logger.shared.debug("开始保存服务器地址列表到: \(serversDatURL.path)")
+        AppLog.game.debug("开始保存服务器地址列表到: \(serversDatURL.path)")
 
         var serversList: [[String: Any]] = []
 
@@ -244,6 +244,6 @@ class ServerAddressService {
 
         try encodedData.write(to: serversDatURL)
 
-        Logger.shared.debug("成功保存 \(servers.count) 个服务器地址到 servers.dat")
+        AppLog.game.debug("成功保存 \(servers.count) 个服务器地址到 servers.dat")
     }
 }

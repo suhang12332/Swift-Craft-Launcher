@@ -63,7 +63,7 @@ extension GameCreationViewModel {
 
     func handleImageDrop(_ providers: [NSItemProvider]) -> Bool {
         guard let provider = providers.first else {
-            Logger.shared.error("图片拖放失败：没有提供者")
+            AppLog.game.error("图片拖放失败：没有提供者")
             return false
         }
 
@@ -114,7 +114,7 @@ extension GameCreationViewModel {
             }
             return true
         }
-        Logger.shared.warning("图片拖放失败：不支持的类型")
+        AppLog.game.error("图片拖放失败：不支持的类型")
         return false
     }
 }

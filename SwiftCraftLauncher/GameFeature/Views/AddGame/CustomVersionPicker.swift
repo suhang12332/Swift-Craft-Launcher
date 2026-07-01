@@ -151,7 +151,7 @@ struct CustomVersionPicker: View {
             i18nKey: "error.resource.no_versions_available",
             level: .notification,
         )
-        Logger.shared.error("版本选择器错误: \(globalError.chineseMessage)")
+        AppLog.game.error("版本选择器错误: \(globalError.chineseMessage)")
         errorHandler.handle(globalError)
         error = globalError
     }

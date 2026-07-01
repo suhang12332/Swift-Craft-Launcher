@@ -72,11 +72,11 @@ class GameLogCollector {
                     }
 
                 if !crashFiles.isEmpty {
-                    Logger.shared.info("找到 \(crashFiles.count) 个崩溃报告文件")
+                    AppLog.game.info("找到 \(crashFiles.count) 个崩溃报告文件")
                     return crashFiles.sorted { $0.lastPathComponent < $1.lastPathComponent }
                 }
             } catch {
-                Logger.shared.warning("读取崩溃报告文件夹失败: \(error.localizedDescription)")
+                AppLog.game.error("读取崩溃报告文件夹失败: \(error.localizedDescription)")
             }
         }
 
@@ -84,11 +84,11 @@ class GameLogCollector {
         let latestLog = logsDir.appendingPathComponent("latest.log")
 
         if fileManager.fileExists(atPath: latestLog.path) {
-            Logger.shared.info("找到 latest.log 文件")
+            AppLog.game.info("找到 latest.log 文件")
             return [latestLog]
         }
 
-        Logger.shared.warning("未找到崩溃报告和 latest.log 文件")
+        AppLog.game.error("未找到崩溃报告和 latest.log 文件")
         return []
     }
 

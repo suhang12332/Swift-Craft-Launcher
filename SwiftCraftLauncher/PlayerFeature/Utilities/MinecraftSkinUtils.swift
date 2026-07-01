@@ -113,7 +113,7 @@ struct MinecraftSkinUtils: View {
             do {
                 try Task.checkCancellation()
 
-                Logger.shared.debug("Loading skin: \(src)")
+                AppLog.player.debug("Loading skin: \(src)")
 
                 let data = try await loadData()
 
@@ -162,7 +162,7 @@ struct MinecraftSkinUtils: View {
                     self.error = globalError.localizedDescription
                     isLoading = false
                 }
-                Logger.shared.error("❌ 皮肤加载失败: \(globalError.chineseMessage)")
+                AppLog.player.error("❌ 皮肤加载失败: \(globalError.chineseMessage)")
                 AppServices.errorHandler.handle(globalError)
             }
         }

@@ -83,7 +83,7 @@ extension SkinToolDetailViewModel {
             isCapeLoading = false
             capeLoadCompleted = false
         } catch {
-            Logger.shared.error("Failed to load current active cape: \(error)")
+            AppLog.player.error("Failed to load current active cape: \(error)")
             isCapeLoading = false
             capeLoadCompleted = false
         }
@@ -108,7 +108,7 @@ extension SkinToolDetailViewModel {
                 selectedCapeLocalPath = tempFile.path
             }
         } catch {
-            Logger.shared.error("Cape download error: \(error)")
+            AppLog.player.error("Cape download error: \(error)")
         }
     }
 
@@ -166,11 +166,11 @@ extension SkinToolDetailViewModel {
             } catch is CancellationError {
                 try? FileManager.default.removeItem(at: tempFile)
             } catch {
-                Logger.shared.error("Failed to save cape to temp file: \(error)")
+                AppLog.player.error("Failed to save cape to temp file: \(error)")
             }
         } catch is CancellationError {
         } catch {
-            Logger.shared.error("Cape download error: \(error.localizedDescription)")
+            AppLog.player.error("Cape download error: \(error.localizedDescription)")
         }
     }
 }

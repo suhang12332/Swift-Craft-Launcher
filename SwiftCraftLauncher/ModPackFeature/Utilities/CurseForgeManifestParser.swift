@@ -17,7 +17,7 @@ enum CurseForgeManifestParser {
         do {
             let manifestPath = extractedPath.appendingPathComponent("manifest.json")
 
-            Logger.shared.info("尝试解析 CurseForge manifest.json: \(manifestPath.path)")
+            AppLog.modPack.info("尝试解析 CurseForge manifest.json: \(manifestPath.path)")
 
             guard FileManager.default.fileExists(atPath: manifestPath.path) else {
                 do {
@@ -25,26 +25,26 @@ enum CurseForgeManifestParser {
                         at: extractedPath,
                         includingPropertiesForKeys: nil,
                     )
-                    Logger.shared.info("解压目录内容: \(contents.map(\.lastPathComponent))")
+                    AppLog.modPack.info("解压目录内容: \(contents.map(\.lastPathComponent))")
                 } catch {
-                    Logger.shared.error("无法列出解压目录内容: \(error.localizedDescription)")
+                    AppLog.modPack.error("无法列出解压目录内容: \(error.localizedDescription)")
                 }
 
-                Logger.shared.warning("CurseForge 整合包中未找到 manifest.json 文件")
+                AppLog.modPack.error("CurseForge 整合包中未找到 manifest.json 文件")
                 return nil
             }
 
             let fileAttributes = try FileManager.default.attributesOfItem(atPath: manifestPath.path)
             let fileSize = fileAttributes[.size] as? Int64 ?? 0
-            Logger.shared.info("manifest.json 文件大小: \(fileSize) 字节")
+            AppLog.modPack.info("manifest.json 文件大小: \(fileSize) 字节")
 
             guard fileSize > 0 else {
-                Logger.shared.error("manifest.json 文件为空")
+                AppLog.modPack.error("manifest.json 文件为空")
                 return nil
             }
 
             let manifestData = try Data(contentsOf: manifestPath)
-            Logger.shared.info("成功读取 manifest.json 数据，大小: \(manifestData.count) 字节")
+            AppLog.modPack.info("成功读取 manifest.json 数据，大小: \(manifestData.count) 字节")
 
             let manifest = try JSONDecoder().decode(CurseForgeManifest.self, from: manifestData)
 
@@ -62,19 +62,19 @@ enum CurseForgeManifestParser {
                 generatedVersion: modPackVersion,
             )
 
-            Logger.shared.info("解析 CurseForge manifest.json 成功: \(manifest.name) v\(modPackVersion)")
+            AppLog.modPack.info("解析 CurseForge manifest.json 成功: \(manifest.name) v\(modPackVersion)")
             if manifest.version == nil {
-                Logger.shared.info("⚠️ 整合包缺少version字段，已自动生成版本: \(modPackVersion)")
+                AppLog.modPack.info("⚠️ 整合包缺少version字段，已自动生成版本: \(modPackVersion)")
             }
-            Logger.shared.info("游戏版本: \(manifest.minecraft.version), 加载器: \(loaderInfo.type) \(loaderInfo.version)")
-            Logger.shared.info("文件数量: \(manifest.files.count)")
+            AppLog.modPack.info("游戏版本: \(manifest.minecraft.version), 加载器: \(loaderInfo.type) \(loaderInfo.version)")
+            AppLog.modPack.info("文件数量: \(manifest.files.count)")
 
             return modrinthInfo
         } catch {
-            Logger.shared.error("解析 CurseForge manifest.json 详细错误: \(error)")
+            AppLog.modPack.error("解析 CurseForge manifest.json 详细错误: \(error)")
 
             if let jsonError = error as? DecodingError {
-                Logger.shared.error("JSON 解析错误: \(jsonError)")
+                AppLog.modPack.error("JSON 解析错误: \(jsonError)")
             }
 
             return nil
@@ -150,7 +150,7 @@ enum CurseForgeManifestParser {
 
         let autoVersion = "\(gameVersion)-\(loaderInfo.type)-\(dateString)"
 
-        Logger.shared.info("自动生成整合包版本: \(autoVersion)")
+        AppLog.modPack.info("自动生成整合包版本: \(autoVersion)")
         return autoVersion
     }
 
@@ -165,7 +165,7 @@ enum CurseForgeManifestParser {
         loaderInfo: (type: String, version: String),
         generatedVersion: String,
     ) async -> ModrinthIndexInfo {
-        Logger.shared.info("转换 CurseForge 格式到 Modrinth 格式，模组数量: \(manifest.files.count)")
+        AppLog.modPack.info("转换 CurseForge 格式到 Modrinth 格式，模组数量: \(manifest.files.count)")
 
         var modrinthFiles: [ModrinthIndexFile] = []
 
@@ -184,7 +184,7 @@ enum CurseForgeManifestParser {
             ))
         }
 
-        Logger.shared.info("快速转换完成，将在下载阶段获取详细信息")
+        AppLog.modPack.info("快速转换完成，将在下载阶段获取详细信息")
 
         return ModrinthIndexInfo(
             gameVersion: manifest.minecraft.version,

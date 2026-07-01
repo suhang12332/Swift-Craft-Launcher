@@ -111,7 +111,7 @@ enum ProcessorExecutor {
                 if FileManager.default.fileExists(atPath: cpPath.path) {
                     classpath.append(cpPath.path)
                 } else {
-                    Logger.shared.warning("classpath文件不存在: \(cpPath.path)")
+                    AppLog.game.error("classpath文件不存在: \(cpPath.path)")
                 }
             }
         }
@@ -166,7 +166,7 @@ enum ProcessorExecutor {
         if let args {
             let processedArgs: [String] = args.compactMap { arg in
                 guard let extractedValue = CommonFileManager.extractClientValue(from: arg) else {
-                    Logger.shared.warning("无法提取客户端值: \(arg)")
+                    AppLog.game.error("无法提取客户端值: \(arg)")
                     return nil
                 }
                 return processPlaceholders(

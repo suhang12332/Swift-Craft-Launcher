@@ -40,7 +40,7 @@ enum InstanceFileCopier {
                 let filePath = standardizedFileURL.path
 
                 guard filePath.hasPrefix(sourcePath) else {
-                    Logger.shared.warning("文件路径不在源目录内: \(filePath) (源目录: \(sourcePath))")
+                    AppLog.modPack.error("文件路径不在源目录内: \(filePath) (源目录: \(sourcePath))")
                     return nil
                 }
 
@@ -58,7 +58,7 @@ enum InstanceFileCopier {
                 let filePath = standardizedFileURL.path
 
                 guard filePath.hasPrefix(sourcePath) else {
-                    Logger.shared.warning("文件路径不在源目录内: \(filePath) (源目录: \(sourcePath))")
+                    AppLog.modPack.error("文件路径不在源目录内: \(filePath) (源目录: \(sourcePath))")
                     return nil
                 }
 
@@ -72,9 +72,9 @@ enum InstanceFileCopier {
         let filteredCount = allFiles.count - totalFiles
 
         if filteredCount > 0 {
-            Logger.shared.info("开始合并目录: \(sourceDirectory.path) -> \(targetDirectory.path), 共 \(totalFiles) 个文件（已过滤 \(filteredCount) 个文件）")
+            AppLog.modPack.info("开始合并目录: \(sourceDirectory.path) -> \(targetDirectory.path), 共 \(totalFiles) 个文件（已过滤 \(filteredCount) 个文件）")
         } else {
-            Logger.shared.info("开始合并目录: \(sourceDirectory.path) -> \(targetDirectory.path), 共 \(totalFiles) 个文件")
+            AppLog.modPack.info("开始合并目录: \(sourceDirectory.path) -> \(targetDirectory.path), 共 \(totalFiles) 个文件")
         }
 
         var completed = 0
@@ -98,7 +98,7 @@ enum InstanceFileCopier {
             try await Task.sleep(nanoseconds: 1_000_000)
         }
 
-        Logger.shared.info("目录合并完成: \(completed)/\(totalFiles) 个文件")
+        AppLog.modPack.info("目录合并完成: \(completed)/\(totalFiles) 个文件")
     }
 
     /// Returns all regular files within a directory.

@@ -20,7 +20,7 @@ extension ModScanner {
                 completion(results)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("扫描资源目录失败: \(globalError.chineseMessage)")
+                AppLog.game.error("扫描资源目录失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
                 completion([])
             }
@@ -117,7 +117,7 @@ extension ModScanner {
             return try getAllResourceFilesThrowing(dir)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取资源文件列表失败: \(globalError.chineseMessage)")
+            AppLog.game.error("获取资源文件列表失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return []
         }
@@ -149,7 +149,7 @@ extension ModScanner {
                 completion(results, hasMore)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("分页扫描资源目录失败: \(globalError.chineseMessage)")
+                AppLog.game.error("分页扫描资源目录失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
                 completion([], false)
             }
@@ -173,7 +173,7 @@ extension ModScanner {
                 completion(results, hasMore)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("分页扫描资源文件失败: \(globalError.chineseMessage)")
+                AppLog.game.error("分页扫描资源文件失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
                 completion([], false)
             }

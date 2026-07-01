@@ -62,8 +62,8 @@ class PlayerListViewModel: ObservableObject {
     func loadPlayersThrowing() throws {
         players = try dataManager.loadPlayersThrowing()
         currentPlayer = players.first { $0.isCurrent }
-        Logger.shared.debug("玩家列表已加载，数量: \(players.count)")
-        Logger.shared.debug("当前玩家 (加载后): \(currentPlayer?.name ?? "无")")
+        AppLog.player.debug("玩家列表已加载，数量: \(players.count)")
+        AppLog.player.debug("当前玩家 (加载后): \(currentPlayer?.name ?? "无")")
     }
 
     private func loadPlayersSafely() {
@@ -72,7 +72,7 @@ class PlayerListViewModel: ObservableObject {
             hasLoadedPlayers = true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("加载玩家列表失败: \(globalError.chineseMessage)")
+            AppLog.player.error("加载玩家列表失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
         }
     }
@@ -87,7 +87,7 @@ class PlayerListViewModel: ObservableObject {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("添加玩家失败: \(globalError.chineseMessage)")
+            AppLog.player.error("添加玩家失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return false
         }
@@ -100,8 +100,8 @@ class PlayerListViewModel: ObservableObject {
     func addPlayerThrowing(name: String) throws {
         try dataManager.addPlayer(name: name, isOnline: false, avatarName: "")
         try loadPlayersThrowing()
-        Logger.shared.debug("玩家 \(name) 添加成功，列表已更新。")
-        Logger.shared.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
+        AppLog.player.debug("玩家 \(name) 添加成功，列表已更新。")
+        AppLog.player.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
     }
 
     /// Adds an online (Minecraft) player from a profile response.
@@ -114,7 +114,7 @@ class PlayerListViewModel: ObservableObject {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("添加在线玩家失败: \(globalError.chineseMessage)")
+            AppLog.player.error("添加在线玩家失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return false
         }
@@ -137,8 +137,8 @@ class PlayerListViewModel: ObservableObject {
             xuid: profile.authXuid,
         )
         try loadPlayersThrowing()
-        Logger.shared.debug("玩家 \(profile.name) 添加成功，列表已更新。")
-        Logger.shared.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
+        AppLog.player.debug("玩家 \(profile.name) 添加成功，列表已更新。")
+        AppLog.player.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
     }
 
     /// Adds a Yggdrasil-authenticated player from a profile.
@@ -151,7 +151,7 @@ class PlayerListViewModel: ObservableObject {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("添加 Yggdrasil 玩家失败: \(globalError.chineseMessage)")
+            AppLog.player.error("添加 Yggdrasil 玩家失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return false
         }
@@ -173,7 +173,7 @@ class PlayerListViewModel: ObservableObject {
             xuid: "",
         )
         try loadPlayersThrowing()
-        Logger.shared.debug("Yggdrasil 玩家 \(profile.name) 添加成功，列表已更新。")
+        AppLog.player.debug("Yggdrasil 玩家 \(profile.name) 添加成功，列表已更新。")
     }
 
     /// Deletes a player by identifier.
@@ -186,7 +186,7 @@ class PlayerListViewModel: ObservableObject {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("删除玩家失败: \(globalError.chineseMessage)")
+            AppLog.player.error("删除玩家失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return false
         }
@@ -199,8 +199,8 @@ class PlayerListViewModel: ObservableObject {
     func deletePlayerThrowing(byID id: String) throws {
         try dataManager.deletePlayer(byID: id)
         try loadPlayersThrowing()
-        Logger.shared.debug("玩家 (ID: \(id)) 删除成功，列表已更新。")
-        Logger.shared.debug("当前玩家 (删除后): \(currentPlayer?.name ?? "无")")
+        AppLog.player.debug("玩家 (ID: \(id)) 删除成功，列表已更新。")
+        AppLog.player.debug("当前玩家 (删除后): \(currentPlayer?.name ?? "无")")
     }
 
     /// Sets the current player by identifier, without propagating errors.
@@ -212,7 +212,7 @@ class PlayerListViewModel: ObservableObject {
                 try setCurrentPlayerThrowing(byID: playerId)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("设置当前玩家失败: \(globalError.chineseMessage)")
+                AppLog.player.error("设置当前玩家失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
             }
         }
@@ -238,7 +238,7 @@ class PlayerListViewModel: ObservableObject {
         currentPlayer = players[index]
 
         try dataManager.savePlayersThrowing(players)
-        Logger.shared.debug(
+        AppLog.player.debug(
             "已设置玩家 (ID: \(playerId), 姓名: \(currentPlayer?.name ?? "未知")) 为当前玩家，数据已保存。",
         )
     }
@@ -259,7 +259,7 @@ class PlayerListViewModel: ObservableObject {
             try updatePlayerInListThrowing(updatedPlayer)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("更新玩家列表失败: \(globalError.chineseMessage)")
+            AppLog.player.error("更新玩家列表失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
         }
     }
@@ -269,7 +269,7 @@ class PlayerListViewModel: ObservableObject {
     /// - Parameter updatedPlayer: The player with updated values.
     /// - Throws: A `GlobalError` if the update fails.
     func updatePlayerInListThrowing(_ updatedPlayer: Player) throws {
-        Logger.shared.info("[updatePlayerInListThrowing] 更新前当前玩家信息:")
+        AppLog.player.info("[updatePlayerInListThrowing] 更新前当前玩家信息:")
         if let index = players.firstIndex(where: { $0.id == updatedPlayer.id }) {
             players[index] = updatedPlayer
 
@@ -277,7 +277,7 @@ class PlayerListViewModel: ObservableObject {
                 self.currentPlayer = updatedPlayer
             }
 
-            Logger.shared.debug("玩家列表中的玩家信息已更新: \(updatedPlayer.name)")
+            AppLog.player.debug("玩家列表中的玩家信息已更新: \(updatedPlayer.name)")
         }
     }
 }

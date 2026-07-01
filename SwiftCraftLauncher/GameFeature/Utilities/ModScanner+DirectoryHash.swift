@@ -124,7 +124,7 @@ extension ModScanner {
                 completion(detailIds)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("扫描所有 detailId 失败: \(globalError.chineseMessage)")
+                AppLog.game.error("扫描所有 detailId 失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
                 completion(Set<String>())
             }
@@ -148,7 +148,7 @@ extension ModScanner {
         let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
 
         guard FileManager.default.fileExists(atPath: modsDir.path) else {
-            Logger.shared.debug("游戏 \(game.gameName) 的 mods 目录不存在，跳过扫描")
+            AppLog.game.debug("游戏 \(game.gameName) 的 mods 目录不存在，跳过扫描")
             return
         }
 
@@ -162,10 +162,10 @@ extension ModScanner {
             let detailIds = try await scanAllDetailIdsAfterWatcherRegisteredThrowing(
                 standardizedDirectory: standardizedModsDir,
             )
-            Logger.shared.debug("游戏 \(game.gameName) 扫描完成，发现 \(detailIds.count) 个 mod")
+            AppLog.game.debug("游戏 \(game.gameName) 扫描完成，发现 \(detailIds.count) 个 mod")
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.warning("扫描游戏 \(game.gameName) 的 mods 目录失败: \(globalError.chineseMessage)")
+            AppLog.game.error("扫描游戏 \(game.gameName) 的 mods 目录失败: \(globalError.chineseMessage)")
         }
     }
 
@@ -174,7 +174,7 @@ extension ModScanner {
         let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
 
         guard FileManager.default.fileExists(atPath: modsDir.path) else {
-            Logger.shared.debug("游戏 \(game.gameName) 的 mods 目录不存在，跳过扫描")
+            AppLog.game.debug("游戏 \(game.gameName) 的 mods 目录不存在，跳过扫描")
             return
         }
 
@@ -190,10 +190,10 @@ extension ModScanner {
                 let detailIds = try await self.scanAllDetailIdsAfterWatcherRegisteredThrowing(
                     standardizedDirectory: standardizedModsDir,
                 )
-                Logger.shared.debug("游戏 \(game.gameName) 扫描完成，发现 \(detailIds.count) 个 mod")
+                AppLog.game.debug("游戏 \(game.gameName) 扫描完成，发现 \(detailIds.count) 个 mod")
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.warning("扫描游戏 \(game.gameName) 的 mods 目录失败: \(globalError.chineseMessage)")
+                AppLog.game.error("扫描游戏 \(game.gameName) 的 mods 目录失败: \(globalError.chineseMessage)")
             }
         }
         semaphore.wait()

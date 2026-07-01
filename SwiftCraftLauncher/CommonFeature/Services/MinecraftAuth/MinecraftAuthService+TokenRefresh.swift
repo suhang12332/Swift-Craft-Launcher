@@ -16,7 +16,7 @@ extension MinecraftAuthService {
 
         do {
             let refreshedPlayer = try await validateAndRefreshPlayerTokenThrowing(for: player)
-            Logger.shared.info("成功刷新玩家 \(player.name) 的 Token")
+            AppLog.common.info("成功刷新玩家 \(player.name) 的 Token")
             return .success(refreshedPlayer)
         } catch let error as GlobalError {
             return .failure(error)
@@ -43,12 +43,12 @@ extension MinecraftAuthService {
 
         if !isTokenExpired {
             if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
-                Logger.shared.debug("玩家 \(player.name) 的Token尚未过期，无需刷新")
+                AppLog.common.debug("玩家 \(player.name) 的Token尚未过期，无需刷新")
             }
             return player
         }
 
-        Logger.shared.info("玩家 \(player.name) 的Token已过期，尝试刷新")
+        AppLog.common.info("玩家 \(player.name) 的Token已过期，尝试刷新")
 
         guard !player.authRefreshToken.isEmpty else {
             throw GlobalError.authentication(

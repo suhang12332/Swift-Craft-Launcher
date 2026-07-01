@@ -34,7 +34,7 @@ extension CurseForgeService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取 CurseForge 项目依赖失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("获取 CurseForge 项目依赖失败 (ID: \(id)): \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return ModrinthProjectDependency(projects: [])
         }
@@ -132,7 +132,7 @@ extension CurseForgeService {
                             return depVersion
                         } catch {
                             let globalError = GlobalError.from(error)
-                            Logger.shared.error("获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)")
+                            AppLog.common.error("获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)")
                             return nil
                         }
                     }

@@ -41,7 +41,7 @@ class CommonFileManager {
             try await downloadForgeJarsThrowing(libraries: libraries)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("下载 Forge JAR 文件失败: \(globalError.chineseMessage)")
+            AppLog.game.error("下载 Forge JAR 文件失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
         }
     }
@@ -95,7 +95,7 @@ class CommonFileManager {
             try await downloadFabricJarsThrowing(libraries: libraries)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("下载 JAR 文件失败: \(globalError.chineseMessage)")
+            AppLog.game.error("下载 JAR 文件失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
         }
     }
@@ -148,11 +148,11 @@ class CommonFileManager {
         }
 
         guard !clientProcessors.isEmpty else {
-            Logger.shared.info("没有找到client端的processor，跳过执行")
+            AppLog.game.info("没有找到client端的processor，跳过执行")
             return
         }
 
-        Logger.shared.info("找到 \(clientProcessors.count) 个client端processor，开始执行")
+        AppLog.game.info("找到 \(clientProcessors.count) 个client端processor，开始执行")
 
         var processorData: [String: String] = [:]
 
@@ -194,7 +194,7 @@ class CommonFileManager {
                     onProgressUpdate: onProgressUpdate,
                 )
             } catch {
-                Logger.shared.error("执行处理器失败: \(error.localizedDescription)")
+                AppLog.game.error("执行处理器失败: \(error.localizedDescription)")
                 throw GlobalError.download(
                     chineseMessage: "执行处理器失败: \(error.localizedDescription)",
                     i18nKey: "error.download.processor_start_failed",

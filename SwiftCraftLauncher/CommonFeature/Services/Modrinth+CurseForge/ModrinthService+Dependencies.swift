@@ -26,7 +26,7 @@ extension ModrinthService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取项目依赖失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("获取项目依赖失败 (ID: \(id)): \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return ModrinthProjectDependency(projects: [])
         }
@@ -90,7 +90,7 @@ extension ModrinthService {
                                     type: type,
                                 )
                                 guard let firstDepVersion = depVersions.first else {
-                                    Logger.shared.warning("未找到兼容的依赖版本 (ID: \(projectId))")
+                                    AppLog.common.error("未找到兼容的依赖版本 (ID: \(projectId))")
                                     return nil
                                 }
                                 depVersion = firstDepVersion
@@ -99,7 +99,7 @@ extension ModrinthService {
                             return depVersion
                         } catch {
                             let globalError = GlobalError.from(error)
-                            Logger.shared.error(
+                            AppLog.common.error(
                                 "获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)",
                             )
                             return nil
@@ -188,7 +188,7 @@ extension ModrinthService {
             }
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("检查项目安装状态失败 (ID: \(projectId)): \(globalError.chineseMessage)")
+            AppLog.common.error("检查项目安装状态失败 (ID: \(projectId)): \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
         }
 

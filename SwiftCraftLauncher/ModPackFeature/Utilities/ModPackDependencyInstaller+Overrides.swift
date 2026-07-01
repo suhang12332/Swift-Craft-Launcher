@@ -53,7 +53,7 @@ extension ModPackDependencyInstaller {
 
             return true
         } catch {
-            Logger.shared.error("处理 overrides 文件夹失败: \(error.localizedDescription)")
+            AppLog.modPack.error("处理 overrides 文件夹失败: \(error.localizedDescription)")
             return false
         }
     }

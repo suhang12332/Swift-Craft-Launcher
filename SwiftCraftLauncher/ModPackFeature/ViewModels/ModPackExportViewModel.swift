@@ -80,13 +80,13 @@ class ModPackExportViewModel: ObservableObject {
                 if result.success {
                     self.exportState = .completed
                     self.tempExportPath = result.outputPath
-                    Logger.shared.info("整合包导出到临时位置成功: \(result.outputPath?.path ?? "未知路径")")
+                    AppLog.modPack.info("整合包导出到临时位置成功: \(result.outputPath?.path ?? "未知路径")")
                 } else {
                     self.cleanupTempFile()
                     self.exportState = .idle
                     self.exportError = result.message
                     self.exportProgress = ModPackExporter.ExportProgress()
-                    Logger.shared.error("整合包导出失败: \(result.message)")
+                    AppLog.modPack.error("整合包导出失败: \(result.message)")
                 }
             }
         }
@@ -169,10 +169,10 @@ class ModPackExportViewModel: ObservableObject {
         do {
             if FileManager.default.fileExists(atPath: tempPath.path) {
                 try FileManager.default.removeItem(at: tempPath)
-                Logger.shared.info("已清理临时文件: \(tempPath.path)")
+                AppLog.modPack.info("已清理临时文件: \(tempPath.path)")
             }
         } catch {
-            Logger.shared.warning("清理临时文件失败: \(error.localizedDescription)")
+            AppLog.modPack.error("清理临时文件失败: \(error.localizedDescription)")
         }
         tempExportPath = nil
     }
@@ -183,9 +183,9 @@ class ModPackExportViewModel: ObservableObject {
         guard FileManager.default.fileExists(atPath: exportDir.path) else { return }
         do {
             try FileManager.default.removeItem(at: exportDir)
-            Logger.shared.info("已清理临时导出目录: \(exportDir.path)")
+            AppLog.modPack.info("已清理临时导出目录: \(exportDir.path)")
         } catch {
-            Logger.shared.warning("清理临时导出目录失败: \(error.localizedDescription)")
+            AppLog.modPack.error("清理临时导出目录失败: \(error.localizedDescription)")
         }
     }
 

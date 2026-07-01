@@ -35,7 +35,7 @@ enum NotificationManager {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             UNUserNotificationCenter.current().add(request) { error in
                 if let error {
-                    Logger.shared.error("添加通知请求时出错：\(error.localizedDescription)")
+                    AppLog.common.error("添加通知请求时出错：\(error.localizedDescription)")
                     continuation.resume(
                         throwing: GlobalError.resource(
                             chineseMessage: "发送通知失败: \(error.localizedDescription)",
@@ -59,7 +59,7 @@ enum NotificationManager {
             try await send(title: title, body: body)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("发送通知失败: \(globalError.chineseMessage)")
+            AppLog.common.error("发送通知失败: \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
         }
     }
@@ -72,7 +72,7 @@ enum NotificationManager {
                 .requestAuthorization(options: [.alert, .sound, .badge])
 
             if granted {
-                Logger.shared.info("通知权限已授予")
+                AppLog.common.info("通知权限已授予")
             } else {
                 throw GlobalError.configuration(
                     chineseMessage: "用户拒绝了通知权限",
@@ -99,7 +99,7 @@ enum NotificationManager {
             try await requestAuthorization()
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("请求通知权限失败: \(globalError.chineseMessage)")
+            AppLog.common.error("请求通知权限失败: \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
         }
     }

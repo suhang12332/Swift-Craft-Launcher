@@ -51,14 +51,14 @@ class MinecraftAuthService: NSObject, ObservableObject {
                     if let error {
                         if let authError = error as? ASWebAuthenticationSessionError {
                             if authError.code == .canceledLogin {
-                                Logger.shared.info("用户取消了 Microsoft 认证")
+                                AppLog.common.info("用户取消了 Microsoft 认证")
                                 self?.authState = .notAuthenticated
                             } else {
-                                Logger.shared.error("Microsoft 认证失败: \(authError.localizedDescription)")
+                                AppLog.common.error("Microsoft 认证失败: \(authError.localizedDescription)")
                                 self?.authState = .error("minecraft.auth.error.authentication_failed".localized())
                             }
                         } else {
-                            Logger.shared.error("Microsoft 认证发生未知错误: \(error.localizedDescription)")
+                            AppLog.common.error("Microsoft 认证发生未知错误: \(error.localizedDescription)")
                             self?.authState = .error("minecraft.auth.error.authentication_failed".localized())
                         }
                         self?.isLoading = false
@@ -68,7 +68,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
                     guard let callbackURL,
                           let authResponse = AuthorizationCodeResponse(from: callbackURL) else {
-                        Logger.shared.error("Microsoft 无效的回调 URL")
+                        AppLog.common.error("Microsoft 无效的回调 URL")
                         self?.authState = .error("minecraft.auth.error.invalid_callback_url".localized())
                         self?.isLoading = false
                         continuation.resume()
@@ -76,7 +76,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
                     }
 
                     if authResponse.isUserDenied {
-                        Logger.shared.info("用户拒绝了 Microsoft 授权")
+                        AppLog.common.info("用户拒绝了 Microsoft 授权")
                         self?.authState = .notAuthenticated
                         self?.isLoading = false
                         continuation.resume()
@@ -85,7 +85,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
                     if let error = authResponse.error {
                         let description = authResponse.errorDescription ?? error
-                        Logger.shared.error("Microsoft 授权失败: \(description)")
+                        AppLog.common.error("Microsoft 授权失败: \(description)")
                         self?.authState = .error("授权失败: \(description)")
                         self?.isLoading = false
                         continuation.resume()
@@ -93,7 +93,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
                     }
 
                     guard authResponse.isSuccess, let code = authResponse.code else {
-                        Logger.shared.error("未获取到授权码")
+                        AppLog.common.error("未获取到授权码")
                         self?.authState = .error("minecraft.auth.error.no_authorization_code".localized())
                         self?.isLoading = false
                         continuation.resume()
@@ -113,7 +113,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
     private func buildAuthorizationURL() -> URL? {
         guard var components = URLComponents(url: URLConfig.API.Authentication.authorize, resolvingAgainstBaseURL: false) else {
-            Logger.shared.error("Invalid authorization URL configuration")
+            AppLog.common.error("Invalid authorization URL configuration")
             return nil
         }
         components.queryItems = [
@@ -125,7 +125,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
             URLQueryItem(name: "state", value: UUID().uuidString),
         ]
         guard let url = components.url else {
-            Logger.shared.error("Failed to build authorization URL")
+            AppLog.common.error("Failed to build authorization URL")
             return nil
         }
         return url
@@ -146,7 +146,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
             try await checkMinecraftOwnership(accessToken: minecraftToken)
 
             let minecraftTokenExpiration = JWTDecoder.getMinecraftTokenExpiration(from: minecraftToken)
-            Logger.shared.info("Minecraft token过期时间: \(minecraftTokenExpiration)")
+            AppLog.common.info("Minecraft token过期时间: \(minecraftTokenExpiration)")
 
             let profile = try await getMinecraftProfileThrowing(
                 accessToken: minecraftToken,
@@ -154,12 +154,12 @@ class MinecraftAuthService: NSObject, ObservableObject {
                 refreshToken: tokenResponse.refreshToken ?? "",
             )
 
-            Logger.shared.info("Minecraft 认证成功，用户: \(profile.name)")
+            AppLog.common.info("Minecraft 认证成功，用户: \(profile.name)")
             isLoading = false
             authState = .authenticated(profile: profile)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("Minecraft 认证失败: \(globalError.chineseMessage)")
+            AppLog.common.error("Minecraft 认证失败: \(globalError.chineseMessage)")
             isLoading = false
             authState = .error(globalError.localizedDescription)
         }

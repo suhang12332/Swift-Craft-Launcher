@@ -16,7 +16,7 @@ extension CurseForgeService {
             return try await fetchCategoriesThrowing()
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取 CurseForge 分类列表失败: \(globalError.chineseMessage)")
+            AppLog.common.error("获取 CurseForge 分类列表失败: \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return []
         }
@@ -39,7 +39,7 @@ extension CurseForgeService {
             return try await fetchGameVersionsThrowing()
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取 CurseForge 游戏版本列表失败: \(globalError.chineseMessage)")
+            AppLog.common.error("获取 CurseForge 游戏版本列表失败: \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return []
         }

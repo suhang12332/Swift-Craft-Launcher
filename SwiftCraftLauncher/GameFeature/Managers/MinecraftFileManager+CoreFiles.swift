@@ -261,7 +261,7 @@ extension MinecraftFileManager {
                     minecraftVersion: minecraftVersion,
                 )
             } catch {
-                Logger.shared.error("下载原生库失败")
+                AppLog.game.error("下载原生库失败")
             }
         }
     }

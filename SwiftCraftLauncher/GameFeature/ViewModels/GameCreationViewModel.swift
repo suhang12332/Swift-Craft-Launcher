@@ -94,13 +94,13 @@ class GameCreationViewModel: BaseGameFormViewModel {
 
                     if FileManager.default.fileExists(atPath: profileDir.path) {
                         try FileManager.default.removeItem(at: profileDir)
-                        Logger.shared.info("已删除取消创建的游戏文件夹: \(profileDir.path)")
+                        AppLog.game.info("已删除取消创建的游戏文件夹: \(profileDir.path)")
                     }
                 } catch {
-                    Logger.shared.error("删除游戏文件夹失败: \(error.localizedDescription)")
+                    AppLog.game.error("删除游戏文件夹失败: \(error.localizedDescription)")
                 }
             } else {
-                Logger.shared.info("游戏已成功保存，跳过删除文件夹: \(gameName)")
+                AppLog.game.info("游戏已成功保存，跳过删除文件夹: \(gameName)")
             }
         }
 

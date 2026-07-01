@@ -60,7 +60,7 @@ final class GeneralSettingsViewModel: ObservableObject {
 
             try FileManager.default.createDirectory(at: supportDir, withIntermediateDirectories: true)
             generalSettings.launcherWorkingDirectory = supportDir.path
-            Logger.shared.info("工作目录已重置为: \(supportDir.path)")
+            AppLog.common.info("工作目录已重置为: \(supportDir.path)")
         } catch {
             present(GlobalError.from(error))
         }
@@ -82,7 +82,7 @@ final class GeneralSettingsViewModel: ObservableObject {
                 }
 
                 generalSettings.launcherWorkingDirectory = url.path
-                Logger.shared.info("工作目录已设置为: \(url.path)")
+                AppLog.common.info("工作目录已设置为: \(url.path)")
             } catch {
                 present(GlobalError.from(error))
             }

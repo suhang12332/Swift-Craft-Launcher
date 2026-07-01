@@ -59,7 +59,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
                 try await loadDependenciesThrowing()
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("加载依赖项失败: \(globalError.chineseMessage)")
+                AppLog.game.error("加载依赖项失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
                 dependencyState = DependencyState()
             }
@@ -110,7 +110,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
                 try await downloadAllManualThrowing(onSuccess: onSuccess, dismiss: dismiss)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("手动下载所有依赖项失败: \(globalError.chineseMessage)")
+                AppLog.game.error("手动下载所有依赖项失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
                 isDownloadingAll = false
             }
@@ -177,7 +177,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
                 try await downloadResourceThrowing(onSuccess: onSuccess, dismiss: dismiss)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("下载资源失败: \(globalError.chineseMessage)")
+                AppLog.game.error("下载资源失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
                 isDownloadingAll = false
             }

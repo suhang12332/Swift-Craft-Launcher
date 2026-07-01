@@ -17,7 +17,7 @@ extension CurseForgeService {
             return try await fetchProjectDetailsAsModrinthThrowing(id: id)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取项目详情失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("获取项目详情失败 (ID: \(id)): \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }
@@ -59,7 +59,7 @@ extension CurseForgeService {
         do {
             return try await fetchProjectDetailsAsModrinthByFingerprintThrowing(fingerprint: fingerprint)
         } catch {
-            Logger.shared.error("通过 fingerprint 获取 CurseForge 项目详情失败: \(error.localizedDescription)")
+            AppLog.common.error("通过 fingerprint 获取 CurseForge 项目详情失败: \(error.localizedDescription)")
             return nil
         }
     }
@@ -95,7 +95,7 @@ extension CurseForgeService {
             if error is CancellationError {
                 return nil
             }
-            Logger.shared.warning("通过 fingerprint 获取 CurseForge 文件信息失败: \(error.localizedDescription)")
+            AppLog.common.error("通过 fingerprint 获取 CurseForge 文件信息失败: \(error.localizedDescription)")
             return nil
         }
     }
@@ -108,7 +108,7 @@ extension CurseForgeService {
             return try await fetchProjectVersionsAsModrinthThrowing(id: id)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取项目版本列表失败 (ID: \(id)): \(globalError.chineseMessage)")
+            AppLog.common.error("获取项目版本列表失败 (ID: \(id)): \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return []
         }

@@ -48,14 +48,10 @@ final class ContributorsStaticViewModel: ObservableObject {
                 }
                 loaded = true
                 loadFailed = false
-                Logger.shared.info(
-                    "Successfully loaded",
-                    contributors.count,
-                    "contributors from GitHubService",
-                )
+                AppLog.common.info("Successfully loaded \(contributors.count) libraries from GitHubService")
             } catch {
                 guard !Task.isCancelled else { return }
-                Logger.shared.error("Failed to load contributors from GitHubService:", error)
+                AppLog.common.error("Failed to load contributors from GitHubService: \(error)")
                 loadFailed = true
                 loaded = false
             }

@@ -30,7 +30,7 @@ extension GameAdvancedSettingsViewModel {
         if gc.isSupported(by: currentJavaVersion) {
             selectedGarbageCollector = gc
         } else {
-            Logger.shared.warning("检测到不兼容的垃圾回收器 \(gc.displayName)（需要 Java \(gc.minimumJavaVersion)+，当前 Java \(currentJavaVersion)），自动切换到兼容选项")
+            AppLog.game.error("检测到不兼容的垃圾回收器 \(gc.displayName)（需要 Java \(gc.minimumJavaVersion)+，当前 Java \(currentJavaVersion)），自动切换到兼容选项")
             selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
             optimizationPreset = .balanced
             applyOptimizationPreset(.balanced)

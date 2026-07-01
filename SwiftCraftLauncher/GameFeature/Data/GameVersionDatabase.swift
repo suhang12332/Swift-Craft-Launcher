@@ -62,7 +62,7 @@ class GameVersionDatabase {
             try? db.execute(createIndexSQL)
         }
 
-        Logger.shared.debug("游戏版本表已创建或已存在")
+        AppLog.game.debug("游戏版本表已创建或已存在")
     }
 
     /// Saves a game version to the database.
@@ -197,7 +197,7 @@ class GameVersionDatabase {
                 let game = try decoder.decode(GameVersionInfo.self, from: jsonData)
                 games.append(game)
             } catch {
-                Logger.shared.warning("解码游戏数据失败: \(error.localizedDescription)")
+                AppLog.game.error("解码游戏数据失败: \(error.localizedDescription)")
                 continue
             }
         }
@@ -235,7 +235,7 @@ class GameVersionDatabase {
                 }
                 gamesByPath[workingPath]?.append(game)
             } catch {
-                Logger.shared.warning("解码游戏数据失败: \(error.localizedDescription)")
+                AppLog.game.error("解码游戏数据失败: \(error.localizedDescription)")
                 continue
             }
         }

@@ -144,6 +144,6 @@ public struct ContributorsView: View {
     private func clearAllData() {
         staticViewModel.clearAllData()
         viewModel.clearContributors()
-        Logger.shared.info("All contributors data cleared")
+        AppLog.common.info("All contributors data cleared")
     }
 }

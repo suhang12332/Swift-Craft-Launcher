@@ -40,7 +40,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
             return try await modScanner.scanAllDetailIdsThrowing(in: resourceDir)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("扫描所有资源失败: \(globalError.chineseMessage)")
+            AppLog.game.error("扫描所有资源失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return []
         }
@@ -85,11 +85,11 @@ final class GameInfoDetailIOViewModel: ObservableObject {
                     try optimizedImageData.write(to: iconURL)
                 }.value
 
-                Logger.shared.info("成功更新游戏图标: \(gameName)")
+                AppLog.game.info("成功更新游戏图标: \(gameName)")
                 return true
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("更新游戏图标失败: \(globalError.chineseMessage)")
+                AppLog.game.error("更新游戏图标失败: \(globalError.chineseMessage)")
                 errorHandler.handle(globalError)
                 return false
             }

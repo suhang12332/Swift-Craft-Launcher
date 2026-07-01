@@ -43,7 +43,7 @@ enum PlayerUtils {
         bytes[8] = (bytes[8] & 0x3F) | 0x80
         let uuid = bytes.withUnsafeBytes { UUID(uuid: $0.load(as: uuid_t.self)) }
         let uuidString = uuid.uuidString.lowercased()
-        Logger.shared.debug("生成离线 UUID - 用户名：\(username), UUID：\(uuidString)")
+        AppLog.player.debug("生成离线 UUID - 用户名：\(username), UUID：\(uuidString)")
         return uuidString.replacingOccurrences(of: "-", with: "")
     }
 
@@ -53,7 +53,7 @@ enum PlayerUtils {
     /// - Returns: An avatar asset name, or `nil` if the UUID is invalid.
     static func avatarName(for uuid: String) -> String? {
         guard let index = nameIndex(for: uuid) else {
-            Logger.shared.warning("无法获取头像名称 - 无效的UUID: \(uuid)")
+            AppLog.player.error("无法获取头像名称 - 无效的UUID: \(uuid)")
             return nil
         }
         return names[index]

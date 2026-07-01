@@ -70,7 +70,7 @@ struct ModrinthIndexAdapter: ModPackIndexAdapter {
             return nil
         } catch {
             if error is DecodingError {
-                Logger.shared.error("解析 modrinth.index.json 失败: JSON 格式错误")
+                AppLog.modPack.error("解析 modrinth.index.json 失败: JSON 格式错误")
             }
             return nil
         }

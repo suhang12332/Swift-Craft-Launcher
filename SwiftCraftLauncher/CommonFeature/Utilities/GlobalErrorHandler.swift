@@ -324,7 +324,7 @@ class GlobalErrorHandler: ObservableObject {
     private func handleErrorByLevel(_ error: GlobalError) {
         switch error.level {
         case .popup:
-            Logger.shared.error("[GlobalError-Popup] \(error.chineseMessage)")
+            AppLog.common.error("[GlobalError-Popup] \(error.chineseMessage)")
 
         case .notification:
             Task {
@@ -335,7 +335,7 @@ class GlobalErrorHandler: ObservableObject {
             }
 
         case .silent:
-            Logger.shared.error("[GlobalError-Silent] \(error.chineseMessage)")
+            AppLog.common.error("[GlobalError-Silent] \(error.chineseMessage)")
 
         case .disabled:
             break
@@ -373,7 +373,7 @@ class GlobalErrorHandler: ObservableObject {
     }
 
     private func logError(_ error: GlobalError) {
-        Logger.shared.error("[GlobalError] \(error.chineseMessage) | Key: \(error.i18nKey) | Level: \(error.level.rawValue)")
+        AppLog.common.error("[GlobalError] \(error.chineseMessage) | Key: \(error.i18nKey) | Level: \(error.level.rawValue)")
     }
 }
 
@@ -388,7 +388,7 @@ struct GlobalErrorHandlerModifier: ViewModifier {
         content
             .onReceive(errorHandler.$currentError) { error in
                 if let error {
-                    Logger.shared.error("Global error occurred: \(error.chineseMessage)")
+                    AppLog.common.error("Global error occurred: \(error.chineseMessage)")
                 }
             }
     }

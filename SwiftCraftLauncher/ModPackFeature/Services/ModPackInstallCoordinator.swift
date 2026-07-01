@@ -301,7 +301,7 @@ final class ModPackInstallCoordinator {
                     },
                     onError: { error, message in
                         Task { @MainActor in
-                            Logger.shared.error("游戏设置失败: \(message)")
+                            AppLog.modPack.error("游戏设置失败: \(message)")
                             self.errorHandler.handle(error)
                         }
                         continuation.resume(returning: false)
@@ -350,7 +350,7 @@ final class ModPackInstallCoordinator {
             let allFiles = try InstanceFileCopier.getAllFiles(in: overridesPath)
             return allFiles.count
         } catch {
-            Logger.shared.error("计算 overrides 文件总数失败: \(error.localizedDescription)")
+            AppLog.modPack.error("计算 overrides 文件总数失败: \(error.localizedDescription)")
             return 0
         }
     }
@@ -368,7 +368,7 @@ final class ModPackInstallCoordinator {
                     withIntermediateDirectories: true,
                 )
             } catch {
-                Logger.shared.error(
+                AppLog.modPack.error(
                     "创建目录失败: \(dir.path), 错误: \(error.localizedDescription)",
                 )
                 errorHandler.handle(
@@ -446,9 +446,9 @@ final class ModPackInstallCoordinator {
         }
 
         if success {
-            Logger.shared.info("整合包依赖安装完成: \(gameName)")
+            AppLog.modPack.info("整合包依赖安装完成: \(gameName)")
         } else {
-            Logger.shared.error("整合包依赖安装失败: \(gameName)")
+            AppLog.modPack.error("整合包依赖安装失败: \(gameName)")
             await cleanupGameDirectories(gameName: gameName)
             errorHandler.handle(
                 GlobalError.resource(
@@ -467,7 +467,7 @@ final class ModPackInstallCoordinator {
         gameSetupService: GameSetupUtil,
         modPackInstallState: ModPackInstallState,
     ) async {
-        Logger.shared.info("整合包安装已取消: \(gameName)")
+        AppLog.modPack.info("整合包安装已取消: \(gameName)")
         await cleanupGameDirectories(gameName: gameName)
         modPackInstallState.reset()
         gameSetupService.downloadState.reset()
@@ -478,7 +478,7 @@ final class ModPackInstallCoordinator {
             let fileManager = MinecraftFileManager()
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
-            Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
+            AppLog.modPack.error("清理游戏文件夹失败: \(error.localizedDescription)")
         }
     }
 }

@@ -77,9 +77,9 @@ public struct ContentToolbarView: ToolbarContent {
                     isPlayerNameValid: $isPlayerNameValid,
                     onAdd: {
                         if playerListViewModel.addPlayer(name: playerName) {
-                            Logger.shared.debug("玩家 \(playerName) 添加成功 (通过 ViewModel)。")
+                            AppLog.main.debug("玩家 \(playerName) 添加成功 (通过 ViewModel)。")
                         } else {
-                            Logger.shared.debug("添加玩家 \(playerName) 失败 (通过 ViewModel)。")
+                            AppLog.main.debug("添加玩家 \(playerName) 失败 (通过 ViewModel)。")
                         }
                         isPlayerNameValid = true
                         showingAddPlayerSheet = false
@@ -94,7 +94,7 @@ public struct ContentToolbarView: ToolbarContent {
                         }
                     },
                     onLogin: { profile in
-                        Logger.shared.debug("正版登录成功，用户: \(profile.name)")
+                        AppLog.main.debug("正版登录成功，用户: \(profile.name)")
                         _ = playerListViewModel.addOnlinePlayer(profile: profile)
                         premiumAccountFlagManager.setPremiumAccountAdded()
                         showingAddPlayerSheet = false
@@ -103,7 +103,7 @@ public struct ContentToolbarView: ToolbarContent {
                         }
                     },
                     onYggdrasilLogin: { profile in
-                        Logger.shared.debug("Yggdrasil 登录成功，用户: \(profile.name)")
+                        AppLog.main.debug("Yggdrasil 登录成功，用户: \(profile.name)")
                         OfflineUserServerMap.setServer(profile, for: profile.id)
                         _ = playerListViewModel.addOnlinePlayer(profile: profile)
                         showingAddPlayerSheet = false

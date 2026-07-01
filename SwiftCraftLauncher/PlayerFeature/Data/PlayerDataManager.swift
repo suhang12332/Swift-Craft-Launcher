@@ -92,7 +92,7 @@ class PlayerDataManager {
                 }
             }
 
-            Logger.shared.debug("已添加新玩家: \(name)")
+            AppLog.player.debug("已添加新玩家: \(name)")
         } catch {
             throw GlobalError.player(
                 chineseMessage: "玩家创建失败: \(error.localizedDescription)",
@@ -135,7 +135,7 @@ class PlayerDataManager {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("添加玩家失败: \(globalError.chineseMessage)")
+            AppLog.player.error("添加玩家失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return false
         }
@@ -149,7 +149,7 @@ class PlayerDataManager {
             return try loadPlayersThrowing()
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("加载玩家数据失败: \(globalError.chineseMessage)")
+            AppLog.player.error("加载玩家数据失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return []
         }
@@ -185,7 +185,7 @@ class PlayerDataManager {
             return players.contains { $0.name.lowercased() == name.lowercased() }
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("检查玩家存在性失败: \(globalError.chineseMessage)")
+            AppLog.player.error("检查玩家存在性失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return false
         }
@@ -213,10 +213,10 @@ class PlayerDataManager {
                     var firstPlayer = remainingPlayers[0]
                     firstPlayer.isCurrent = true
                     try updatePlayer(firstPlayer)
-                    Logger.shared.debug("当前玩家被删除，已设置第一个玩家为当前玩家: \(firstPlayer.name)")
+                    AppLog.player.debug("当前玩家被删除，已设置第一个玩家为当前玩家: \(firstPlayer.name)")
                 }
             }
-            Logger.shared.debug("已删除玩家 (ID: \(id))")
+            AppLog.player.debug("已删除玩家 (ID: \(id))")
         }
     }
 
@@ -230,7 +230,7 @@ class PlayerDataManager {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("删除玩家失败: \(globalError.chineseMessage)")
+            AppLog.player.error("删除玩家失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return false
         }
@@ -244,7 +244,7 @@ class PlayerDataManager {
             try savePlayersThrowing(players)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("保存玩家数据失败: \(globalError.chineseMessage)")
+            AppLog.player.error("保存玩家数据失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
         }
     }
@@ -283,7 +283,7 @@ class PlayerDataManager {
             _ = credentialStore.deleteCredential(userId: credential.userId)
         }
 
-        Logger.shared.debug("玩家数据已保存")
+        AppLog.player.debug("玩家数据已保存")
     }
 
     /// Updates an existing player's profile and credential.
@@ -302,10 +302,10 @@ class PlayerDataManager {
                 )
             }
         } else {
-            Logger.shared.debug("未提供新的认证凭据，保留现有 Keychain 状态 - userId: \(updatedPlayer.id)")
+            AppLog.player.debug("未提供新的认证凭据，保留现有 Keychain 状态 - userId: \(updatedPlayer.id)")
         }
 
-        Logger.shared.debug("已更新玩家信息: \(updatedPlayer.name)")
+        AppLog.player.debug("已更新玩家信息: \(updatedPlayer.name)")
     }
 
     /// Updates an existing player without propagating errors.
@@ -318,7 +318,7 @@ class PlayerDataManager {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("更新玩家信息失败: \(globalError.chineseMessage)")
+            AppLog.player.error("更新玩家信息失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return false
         }

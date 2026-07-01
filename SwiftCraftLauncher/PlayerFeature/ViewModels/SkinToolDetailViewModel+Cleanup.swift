@@ -59,9 +59,9 @@ extension SkinToolDetailViewModel {
             if skinURL.path.hasPrefix(fileManager.temporaryDirectory.path) {
                 do {
                     try fileManager.removeItem(at: skinURL)
-                    Logger.shared.info("Deleted temporary skin file: \(skinPath)")
+                    AppLog.player.info("Deleted temporary skin file: \(skinPath)")
                 } catch {
-                    Logger.shared.warning("Failed to delete temporary skin file: \(error.localizedDescription)")
+                    AppLog.player.error("Failed to delete temporary skin file: \(error.localizedDescription)")
                 }
             }
         }
@@ -72,7 +72,7 @@ extension SkinToolDetailViewModel {
                 do {
                     try fileManager.removeItem(at: capeURL)
                 } catch {
-                    Logger.shared.warning("Failed to delete temporary cape file: \(error.localizedDescription)")
+                    AppLog.player.error("Failed to delete temporary cape file: \(error.localizedDescription)")
                 }
             }
         }

@@ -32,7 +32,7 @@ extension SkinToolDetailViewModel {
                 self.currentSkinRenderImage = image
             } catch is CancellationError {
             } catch {
-                Logger.shared.error("Failed to load current skin image for renderer: \(error)")
+                AppLog.player.error("Failed to load current skin image for renderer: \(error)")
             }
         }
     }
@@ -45,12 +45,12 @@ extension SkinToolDetailViewModel {
               let bitmap = NSBitmapImageRep(data: tiff),
               let data = bitmap.representation(using: .png, properties: [:])
         else {
-            Logger.shared.error("Failed to convert dropped image to PNG data")
+            AppLog.player.error("Failed to convert dropped image to PNG data")
             return
         }
 
         guard data.isPNG else {
-            Logger.shared.error("Converted data is not valid PNG format")
+            AppLog.player.error("Converted data is not valid PNG format")
             return
         }
 
@@ -64,7 +64,7 @@ extension SkinToolDetailViewModel {
             self.updateHasChanges()
         }
 
-        Logger.shared.info("Skin image dropped and processed successfully. Model: \(currentModel.rawValue)")
+        AppLog.player.info("Skin image dropped and processed successfully. Model: \(currentModel.rawValue)")
     }
 
     /// Handles the result of a file importer selection.
@@ -83,11 +83,11 @@ extension SkinToolDetailViewModel {
                 if let data {
                     self.processSkinData(data, filePath: urlForBackground.path)
                 } else {
-                    Logger.shared.error("Failed to read skin file")
+                    AppLog.player.error("Failed to read skin file")
                 }
             }
         case let .failure(error):
-            Logger.shared.error("File selection failed: \(error)")
+            AppLog.player.error("File selection failed: \(error)")
         }
     }
 
@@ -110,7 +110,7 @@ extension SkinToolDetailViewModel {
                         try data.write(to: tempURL)
                         return tempURL
                     } catch {
-                        Logger.shared.error("Failed to save temporary skin file: \(error)")
+                        AppLog.player.error("Failed to save temporary skin file: \(error)")
                         return nil
                     }
                 }.value
@@ -138,7 +138,7 @@ extension SkinToolDetailViewModel {
             try data.write(to: tempURL)
             return tempURL
         } catch {
-            Logger.shared.error("Failed to save temporary skin file: \(error)")
+            AppLog.player.error("Failed to save temporary skin file: \(error)")
             return nil
         }
     }

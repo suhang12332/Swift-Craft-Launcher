@@ -52,7 +52,7 @@ extension CurseForgeService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("搜索 CurseForge 项目失败: \(globalError.chineseMessage)")
+            AppLog.common.error("搜索 CurseForge 项目失败: \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return CurseForgeSearchResult(data: [], pagination: nil)
         }

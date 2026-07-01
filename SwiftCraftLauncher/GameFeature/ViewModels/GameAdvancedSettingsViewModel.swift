@@ -187,7 +187,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
             if javaManager.canJavaRun(at: url.path) {
                 javaPath = url.path
                 autoSave()
-                Logger.shared.info("Java路径已设置为: \(url.path)")
+                AppLog.game.info("Java路径已设置为: \(url.path)")
             } else {
                 error = GlobalError.validation(
                     chineseMessage: "选择的文件不是有效的Java可执行文件",

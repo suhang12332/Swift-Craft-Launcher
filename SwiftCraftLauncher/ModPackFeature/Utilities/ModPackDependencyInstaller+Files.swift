@@ -50,7 +50,7 @@ extension ModPackDependencyInstaller {
         let failedCount = results.count - successCount
 
         if failedCount > 0 {
-            Logger.shared.error("有 \(failedCount) 个文件下载失败")
+            AppLog.modPack.error("有 \(failedCount) 个文件下载失败")
             return false
         }
 
@@ -150,7 +150,7 @@ extension ModPackDependencyInstaller {
 
             return true
         } catch {
-            Logger.shared.error("下载 CurseForge 文件失败: \(fileDetail.fileName)")
+            AppLog.modPack.error("下载 CurseForge 文件失败: \(fileDetail.fileName)")
             return false
         }
     }
@@ -220,7 +220,7 @@ extension ModPackDependencyInstaller {
 
     private static func downloadModrinthFile(file: ModrinthIndexFile, resourceDir: URL) async -> Bool {
         guard let urlString = file.downloads.first, !urlString.isEmpty else {
-            Logger.shared.error("文件无可用下载链接: \(file.path)")
+            AppLog.modPack.error("文件无可用下载链接: \(file.path)")
             return false
         }
 
@@ -236,7 +236,7 @@ extension ModPackDependencyInstaller {
                 expectedSha1: file.hashes["sha1"],
             )
         } catch {
-            Logger.shared.error("下载文件失败: \(file.path)")
+            AppLog.modPack.error("下载文件失败: \(file.path)")
             return false
         }
 

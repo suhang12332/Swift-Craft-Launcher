@@ -25,7 +25,7 @@ extension ModrinthService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("搜索 Modrinth 项目失败: \(globalError.chineseMessage)")
+            AppLog.common.error("搜索 Modrinth 项目失败: \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return ModrinthResult(hits: [], offset: offset, limit: limit, totalHits: 0)
         }

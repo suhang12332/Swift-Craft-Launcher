@@ -20,7 +20,7 @@ enum CommonService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error(
+            AppLog.game.error(
                 "获取 \(loader) 版本失败: \(globalError.chineseMessage)",
             )
             AppServices.errorHandler.handle(globalError)
@@ -98,7 +98,7 @@ enum CommonService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取加载器版本失败: \(globalError.chineseMessage)")
+            AppLog.game.error("获取加载器版本失败: \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return nil
         }

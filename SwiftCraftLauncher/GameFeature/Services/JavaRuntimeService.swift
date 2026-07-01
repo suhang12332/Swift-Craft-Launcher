@@ -69,7 +69,7 @@ class JavaRuntimeService {
     func getMacJavaRuntimeData(for version: String) async throws -> [[String: Any]] {
         let platformData = try await getMacJavaRuntimeData()
         guard let versionData = platformData[version] as? [[String: Any]] else {
-            Logger.shared.error("版本 \(version) 的数据类型不正确，期望 [[String: Any]]，实际: \(type(of: platformData[version]))")
+            AppLog.game.error("版本 \(version) 的数据类型不正确，期望 [[String: Any]]，实际: \(type(of: platformData[version]))")
             throw GlobalError.validation(
                 chineseMessage: "未找到版本 \(version) 的数据",
                 i18nKey: "error.validation.version_data_not_found",
@@ -85,7 +85,7 @@ class JavaRuntimeService {
         guard let firstVersion = versionData.first,
               let manifest = firstVersion["manifest"] as? [String: Any],
               let manifestURL = manifest["url"] as? String else {
-            Logger.shared.error("无法解析版本 \(version) 的数据结构")
+            AppLog.game.error("无法解析版本 \(version) 的数据结构")
             throw GlobalError.validation(
                 chineseMessage: "未找到版本 \(version) 的manifest URL",
                 i18nKey: "error.validation.manifest_url_not_found",
@@ -93,7 +93,7 @@ class JavaRuntimeService {
             )
         }
 
-        Logger.shared.info("找到版本 \(version) 的manifest URL: \(manifestURL)")
+        AppLog.game.info("找到版本 \(version) 的manifest URL: \(manifestURL)")
         return manifestURL
     }
 

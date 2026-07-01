@@ -66,7 +66,7 @@ class JavaDownloadManager: ObservableObject {
             try await task.value
 
             if downloadState.isCancelled || cancelRequested {
-                Logger.shared.info("Java下载已被取消")
+                AppLog.game.info("Java下载已被取消")
                 cleanupCancelledDownload()
                 return
             }
@@ -76,7 +76,7 @@ class JavaDownloadManager: ObservableObject {
             closeWindow()
         } catch {
             if error is CancellationError || downloadState.isCancelled || cancelRequested {
-                Logger.shared.info("Java下载任务已取消")
+                AppLog.game.info("Java下载任务已取消")
                 cleanupCancelledDownload()
                 return
             }
@@ -120,7 +120,7 @@ class JavaDownloadManager: ObservableObject {
 
     /// Cleans up resources after a cancelled download.
     func cleanupCancelledDownload() {
-        Logger.shared.info("Cleaning up cancelled Java download for version: \(downloadState.version)")
+        AppLog.game.info("Cleaning up cancelled Java download for version: \(downloadState.version)")
         closeWindow()
     }
 }

@@ -46,7 +46,7 @@ extension ModPackExporter {
                         )
                         progressCallback?(updatedProgress)
                     } catch {
-                        Logger.shared.warning(
+                        AppLog.modPack.error(
                             "复制资源文件失败: \(file.lastPathComponent), 错误: \(error.localizedDescription)",
                         )
 

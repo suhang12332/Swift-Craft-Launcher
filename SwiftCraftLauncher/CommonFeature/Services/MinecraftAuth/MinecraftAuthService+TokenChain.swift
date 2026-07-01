@@ -112,7 +112,7 @@ extension MinecraftAuthService {
             )
         }
 
-        Logger.shared.debug("开始获取 Minecraft 访问令牌")
+        AppLog.common.debug("开始获取 Minecraft 访问令牌")
         let minecraftUrl = URLConfig.API.Authentication.minecraftLogin
 
         let minecraftBody: [String: Any] = [

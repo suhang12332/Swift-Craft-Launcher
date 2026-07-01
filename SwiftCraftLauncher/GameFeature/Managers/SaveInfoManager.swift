@@ -276,7 +276,7 @@ final class SaveInfoManager: ObservableObject {
         do {
             servers = try await serverAddressService.loadServerAddresses(for: gameName)
         } catch {
-            Logger.shared.error("加载服务器地址信息失败: \(error.localizedDescription)")
+            AppLog.game.error("加载服务器地址信息失败: \(error.localizedDescription)")
             servers = []
         }
     }
@@ -288,7 +288,7 @@ final class SaveInfoManager: ObservableObject {
         do {
             litematicaFiles = try await litematicaService.loadLitematicaFiles(for: gameName)
         } catch {
-            Logger.shared.error("加载 Litematica 文件信息失败: \(error.localizedDescription)")
+            AppLog.game.error("加载 Litematica 文件信息失败: \(error.localizedDescription)")
             litematicaFiles = []
         }
     }
@@ -409,14 +409,14 @@ final class SaveInfoManager: ObservableObject {
                         ),
                     )
                 } catch {
-                    Logger.shared.error("解析 level.dat 失败 (\(worldName)): \(error.localizedDescription)")
+                    AppLog.game.error("解析 level.dat 失败 (\(worldName)): \(error.localizedDescription)")
                     loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil))
                 }
             }
             loadedWorlds.sort { ($0.lastPlayed ?? .distantPast) > ($1.lastPlayed ?? .distantPast) }
             return loadedWorlds
         } catch {
-            Logger.shared.error("加载世界信息失败: \(error.localizedDescription)")
+            AppLog.game.error("加载世界信息失败: \(error.localizedDescription)")
             return []
         }
     }
@@ -445,7 +445,7 @@ final class SaveInfoManager: ObservableObject {
             loaded.sort { ($0.createdDate ?? .distantPast) > ($1.createdDate ?? .distantPast) }
             return loaded
         } catch {
-            Logger.shared.error("加载截图信息失败: \(error.localizedDescription)")
+            AppLog.game.error("加载截图信息失败: \(error.localizedDescription)")
             return []
         }
     }
@@ -476,7 +476,7 @@ final class SaveInfoManager: ObservableObject {
             loaded.sort { if $0.isCrashLog != $1.isCrashLog { return $0.isCrashLog }; return ($0.createdDate ?? .distantPast) > ($1.createdDate ?? .distantPast) }
             return loaded
         } catch {
-            Logger.shared.error("加载日志信息失败: \(error.localizedDescription)")
+            AppLog.game.error("加载日志信息失败: \(error.localizedDescription)")
             return []
         }
     }

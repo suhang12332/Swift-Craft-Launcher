@@ -14,7 +14,7 @@ extension ModrinthService {
             return try await fetchLoadersThrowing()
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取 Modrinth 加载器列表失败: \(globalError.chineseMessage)")
+            AppLog.common.error("获取 Modrinth 加载器列表失败: \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return []
         }
@@ -30,7 +30,7 @@ extension ModrinthService {
             return try await fetchCategoriesThrowing()
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取 Modrinth 分类列表失败: \(globalError.chineseMessage)")
+            AppLog.common.error("获取 Modrinth 分类列表失败: \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return []
         }
@@ -46,7 +46,7 @@ extension ModrinthService {
             return try await fetchGameVersionsThrowing(includeSnapshots: includeSnapshots)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("获取 Modrinth 游戏版本列表失败: \(globalError.chineseMessage)")
+            AppLog.common.error("获取 Modrinth 游戏版本列表失败: \(globalError.chineseMessage)")
             AppServices.errorHandler.handle(globalError)
             return []
         }
