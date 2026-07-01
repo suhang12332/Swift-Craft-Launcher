@@ -14,10 +14,10 @@ final class GlobalErrorHandlerTests: XCTestCase {
     }
 
     func testErrorLevel_displayName() {
-        XCTAssertEqual(ErrorLevel.popup.displayName, "弹窗")
-        XCTAssertEqual(ErrorLevel.notification.displayName, "通知")
-        XCTAssertEqual(ErrorLevel.silent.displayName, "静默")
-        XCTAssertEqual(ErrorLevel.disabled.displayName, "无操作")
+        XCTAssertEqual(ErrorLevel.popup.displayName, "Popup")
+        XCTAssertEqual(ErrorLevel.notification.displayName, "Notification")
+        XCTAssertEqual(ErrorLevel.silent.displayName, "Silent")
+        XCTAssertEqual(ErrorLevel.disabled.displayName, "Disabled")
     }
 
     func testErrorLevel_rawValues() {
@@ -66,91 +66,89 @@ final class GlobalErrorHandlerTests: XCTestCase {
     }
 
     func testGlobalError_init_defaultLevel() {
-        let error = GlobalError(kind: .network, chineseMessage: "test", i18nKey: "test.key")
+        let error = GlobalError(kind: .network, i18nKey: "test.key")
         XCTAssertEqual(error.level, .notification)
     }
 
     func testGlobalError_init_customLevel() {
-        let error = GlobalError(kind: .network, chineseMessage: "test", i18nKey: "test.key", level: .popup)
+        let error = GlobalError(kind: .network, i18nKey: "test.key", level: .popup)
         XCTAssertEqual(error.level, .popup)
     }
 
     func testGlobalError_id_containsPrefixAndKey() {
-        let error = GlobalError(kind: .network, chineseMessage: "msg", i18nKey: "error.test")
+        let error = GlobalError(kind: .network, i18nKey: "error.test")
         XCTAssertTrue(error.id.hasPrefix("network_"))
         XCTAssertTrue(error.id.contains("error.test"))
     }
 
     func testGlobalError_errorDescription_returnsI18nKey() {
-        let error = GlobalError(kind: .validation, chineseMessage: "test", i18nKey: "error.validation.test")
+        let error = GlobalError(kind: .validation, i18nKey: "error.validation.test")
         XCTAssertEqual(error.errorDescription, "error.validation.test".localized())
     }
 
     func testGlobalError_network() {
-        let error = GlobalError.network(chineseMessage: "网络错误", i18nKey: "error.network.test")
+        let error = GlobalError.network(i18nKey: "error.network.test")
         XCTAssertEqual(error.kind, .network)
-        XCTAssertEqual(error.chineseMessage, "网络错误")
         XCTAssertEqual(error.level, .notification)
     }
 
     func testGlobalError_fileSystem() {
-        let error = GlobalError.fileSystem(chineseMessage: "文件错误", i18nKey: "error.fs.test")
+        let error = GlobalError.fileSystem(i18nKey: "error.fs.test")
         XCTAssertEqual(error.kind, .fileSystem)
     }
 
     func testGlobalError_authentication() {
-        let error = GlobalError.authentication(chineseMessage: "认证错误", i18nKey: "error.auth.test")
+        let error = GlobalError.authentication(i18nKey: "error.auth.test")
         XCTAssertEqual(error.kind, .authentication)
         XCTAssertEqual(error.level, .popup)
     }
 
     func testGlobalError_validation() {
-        let error = GlobalError.validation(chineseMessage: "验证错误", i18nKey: "error.val.test")
+        let error = GlobalError.validation(i18nKey: "error.val.test")
         XCTAssertEqual(error.kind, .validation)
     }
 
     func testGlobalError_download() {
-        let error = GlobalError.download(chineseMessage: "下载错误", i18nKey: "error.dl.test")
+        let error = GlobalError.download(i18nKey: "error.dl.test")
         XCTAssertEqual(error.kind, .download)
     }
 
     func testGlobalError_installation() {
-        let error = GlobalError.installation(chineseMessage: "安装错误", i18nKey: "error.inst.test")
+        let error = GlobalError.installation(i18nKey: "error.inst.test")
         XCTAssertEqual(error.kind, .installation)
     }
 
     func testGlobalError_gameLaunch() {
-        let error = GlobalError.gameLaunch(chineseMessage: "启动错误", i18nKey: "error.launch.test")
+        let error = GlobalError.gameLaunch(i18nKey: "error.launch.test")
         XCTAssertEqual(error.kind, .gameLaunch)
         XCTAssertEqual(error.level, .popup)
     }
 
     func testGlobalError_resource() {
-        let error = GlobalError.resource(chineseMessage: "资源错误", i18nKey: "error.res.test")
+        let error = GlobalError.resource(i18nKey: "error.res.test")
         XCTAssertEqual(error.kind, .resource)
     }
 
     func testGlobalError_player() {
-        let error = GlobalError.player(chineseMessage: "玩家错误", i18nKey: "error.player.test")
+        let error = GlobalError.player(i18nKey: "error.player.test")
         XCTAssertEqual(error.kind, .player)
     }
 
     func testGlobalError_configuration() {
-        let error = GlobalError.configuration(chineseMessage: "配置错误", i18nKey: "error.config.test")
+        let error = GlobalError.configuration(i18nKey: "error.config.test")
         XCTAssertEqual(error.kind, .configuration)
     }
 
     func testGlobalError_unknown() {
-        let error = GlobalError.unknown(chineseMessage: "未知错误", i18nKey: "error.unknown.test")
+        let error = GlobalError.unknown(i18nKey: "error.unknown.test")
         XCTAssertEqual(error.kind, .unknown)
         XCTAssertEqual(error.level, .silent)
     }
 
     func testFrom_globalError_passthrough() {
-        let original = GlobalError.network(chineseMessage: "test", i18nKey: "test.key")
+        let original = GlobalError.network(i18nKey: "test.key")
         let converted = GlobalError.from(original)
         XCTAssertEqual(converted.kind, original.kind)
-        XCTAssertEqual(converted.chineseMessage, original.chineseMessage)
     }
 
     func testFrom_urlError() {
