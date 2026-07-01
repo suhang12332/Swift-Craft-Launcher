@@ -120,7 +120,8 @@ class JavaDownloadManager: ObservableObject {
 
     /// Cleans up resources after a cancelled download.
     func cleanupCancelledDownload() {
-        AppLog.game.info("Cleaning up cancelled Java download for version: \(self.downloadState.version)")
+        let version = downloadState.version
+        AppLog.game.info("Cleaning up cancelled Java download for version: \(version)")
         closeWindow()
     }
 }

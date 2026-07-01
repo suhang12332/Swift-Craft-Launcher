@@ -78,7 +78,8 @@ extension SkinToolDetailViewModel {
                 try Task.checkCancellation()
                 if result {
                     persistSelectedSkinToLibrary()
-                    AppLog.player.info("Skin upload successful with model: \(self.currentModel.rawValue)")
+                    let model = currentModel.rawValue
+                    AppLog.player.info("Skin upload successful with model: \(model)")
                 } else {
                     AppLog.player.error("Skin upload failed")
                 }

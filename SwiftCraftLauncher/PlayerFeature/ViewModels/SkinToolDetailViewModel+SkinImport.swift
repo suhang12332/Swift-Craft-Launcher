@@ -56,6 +56,7 @@ extension SkinToolDetailViewModel {
 
         selectedSkinData = data
         selectedSkinImage = image
+        let model = currentModel.rawValue
         Task {
             let path = await Task.detached(priority: .userInitiated) {
                 self.saveTempSkinFile(data: data)?.path
@@ -64,7 +65,7 @@ extension SkinToolDetailViewModel {
             self.updateHasChanges()
         }
 
-        AppLog.player.info("Skin image dropped and processed successfully. Model: \(self.currentModel.rawValue)")
+        AppLog.player.info("Skin image dropped and processed successfully. Model: \(model)")
     }
 
     /// Handles the result of a file importer selection.
