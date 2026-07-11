@@ -12,15 +12,6 @@ import UniformTypeIdentifiers
 enum GameFormMode {
     case creation
     case modPackImport(file: URL, shouldProcess: Bool)
-
-    var isImportMode: Bool {
-        switch self {
-        case .creation:
-            return false
-        case .modPackImport:
-            return true
-        }
-    }
 }
 
 struct GameFormView: View {
