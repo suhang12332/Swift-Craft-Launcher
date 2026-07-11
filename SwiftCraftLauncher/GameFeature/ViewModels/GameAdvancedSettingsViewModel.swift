@@ -159,6 +159,17 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
         }
     }
 
+    func resetGameXms() {
+        guard let game = currentGame else { return }
+        var updatedGame = game
+        updatedGame.xms = 0
+        updatedGame.xmx = 0
+        memoryRange = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
+        Task {
+            try? await gameRepository?.updateGame(updatedGame)
+        }
+    }
+
     func handleJavaPathSelection(_ result: Result<[URL], Error>) {
         switch result {
         case let .success(urls):

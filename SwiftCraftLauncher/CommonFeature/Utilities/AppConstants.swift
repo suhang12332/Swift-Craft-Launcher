@@ -207,6 +207,12 @@ enum AppConstants {
         "java-runtime-beta",
     ]
 
+    /// Default memory allocation constants (in megabytes).
+    enum MemoryDefaults {
+        static let xms = 512
+        static let xmx = 4096
+    }
+
     enum SystemSettingsDeepLinks {
         static let localizationApps = [
             "x-apple.systempreferences:com.apple.Localization-Settings.extension?Apps",

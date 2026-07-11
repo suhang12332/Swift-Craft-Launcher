@@ -84,7 +84,7 @@ struct GameAdvancedSettingsView: View {
                 HStack {
                     MiniRangeSlider(
                         range: $viewModel.memoryRange,
-                        bounds: 512 ... Double(container.ui.gameSettingsManager.maximumMemoryAllocation),
+                        bounds: Double(AppConstants.MemoryDefaults.xms) ... Double(container.ui.gameSettingsManager.maximumMemoryAllocation),
                     )
                     .frame(width: 200)
                     .controlSize(.mini)
@@ -93,6 +93,10 @@ struct GameAdvancedSettingsView: View {
                         .font(.subheadline)
                         .lineLimit(1)
                         .truncationMode(.tail)
+                    Button("common.reset".localized()) {
+                        viewModel.resetGameXms()
+                    }
+                    .padding(.leading, 8)
                 }
             }
             .labeledContentStyle(.custom)
