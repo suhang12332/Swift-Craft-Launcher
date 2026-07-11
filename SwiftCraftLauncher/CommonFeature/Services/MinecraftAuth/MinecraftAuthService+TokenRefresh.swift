@@ -134,13 +134,13 @@ extension MinecraftAuthService {
                 case "invalid_grant":
                     throw GlobalError.authentication(
                         i18nKey: "error.authentication.invalid_refresh_token",
-                        level: .notification,
+                        level: .popup,
                         message: "Refresh token rejected as invalid_grant for client \(clientId)",
                     )
                 default:
                     throw GlobalError.authentication(
                         i18nKey: "error.authentication.refresh_token_error",
-                        level: .notification,
+                        level: .popup,
                         message: "Refresh token error '\(error)' (HTTP \(statusCode)) for client \(clientId)",
                     )
                 }
