@@ -112,7 +112,7 @@ struct SkinUploadSectionView: View {
                     openSkinPreviewWindow()
                 } label: {
                     Image(systemName: "eye")
-                        .font(.system(size: 14))
+                        .font(.body)
                 }
                 .buttonStyle(.bordered)
                 .disabled(selectedSkinImage == nil && currentSkinRenderImage == nil && selectedSkinPath == nil)

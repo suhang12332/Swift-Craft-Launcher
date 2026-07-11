@@ -44,7 +44,7 @@ struct StaticContributorCardView: View {
 
             if !contributor.url.isEmpty {
                 Image(systemName: "globe")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.title3)
                     .foregroundColor(.secondary)
             }
         }

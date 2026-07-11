@@ -19,7 +19,6 @@ struct AIChatInputAreaView: View {
     let onAttachFile: () -> Void
 
     private enum Constants {
-        static let inputFontSize: CGFloat = 14
         static let inputHorizontalPadding: CGFloat = 16
         static let inputVerticalPadding: CGFloat = 12
         static let messageSpacing: CGFloat = 16
@@ -71,7 +70,7 @@ struct AIChatInputAreaView: View {
     private var attachFileButton: some View {
         Button(action: onAttachFile) {
             Image(systemName: "paperclip")
-                .font(.system(size: Constants.inputFontSize))
+                .font(.body)
                 .foregroundStyle(.secondary)
         }
         .buttonStyle(.plain)
@@ -94,7 +93,7 @@ struct AIChatInputAreaView: View {
     private var sendButton: some View {
         Button(action: onSend) {
             Image(systemName: "arrow.up.circle")
-                .font(.system(size: Constants.inputFontSize))
+                .font(.title3)
                 .foregroundStyle(canSend ? Color.accentColor : Color.secondary)
         }
         .buttonStyle(.plain)

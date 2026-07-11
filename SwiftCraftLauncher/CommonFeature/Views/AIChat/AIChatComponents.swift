@@ -34,7 +34,6 @@ struct MessageBubble: View {
     private enum Constants {
         static let avatarSize: CGFloat = 32
         static let messageFontSize: CGFloat = 13
-        static let timestampFontSize: CGFloat = 10
         static let messageCornerRadius: CGFloat = 10
         static let messageMaxWidth: CGFloat = 500
         static let messageSpacing: CGFloat = 16
@@ -109,7 +108,7 @@ struct MessageBubble: View {
 
     private var timestampView: some View {
         Text(message.timestamp, style: .time)
-            .font(.system(size: Constants.timestampFontSize))
+            .font(.caption2)
             .foregroundStyle(.tertiary)
             .padding(.horizontal, Constants.timestampHorizontalPadding)
             .padding(.top, Constants.timestampTopPadding)
@@ -126,7 +125,7 @@ struct MessageBubble: View {
             )
         } else {
             Image(systemName: "person.fill")
-                .font(.system(size: Constants.avatarSize))
+                .font(.largeTitle)
                 .foregroundStyle(.secondary)
         }
     }
@@ -150,7 +149,7 @@ struct AttachmentPreview: View {
             switch attachment {
             case let .file(_, fileName):
                 Image(systemName: "doc.fill")
-                    .font(.system(size: 16))
+                    .font(.title3)
                     .foregroundStyle(.blue)
                     .frame(width: Constants.previewSize, height: Constants.previewSize)
                     .background(Color(nsColor: .controlBackgroundColor))
@@ -164,7 +163,7 @@ struct AttachmentPreview: View {
 
             Button(action: onRemove) {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 14))
+                    .font(.body)
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
@@ -210,13 +209,13 @@ struct AttachmentView: View {
     ) -> some View {
         HStack(spacing: Constants.fileSpacing) {
             Image(systemName: iconName)
-                .font(.system(size: 18))
+                .font(.title3)
                 .foregroundStyle(.blue)
                 .frame(width: Constants.fileIconSize, height: Constants.fileIconSize)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(fileName)
-                    .font(.system(size: 12))
+                    .font(.subheadline)
                     .fontWeight(.medium)
                     .lineLimit(1)
                     .truncationMode(.middle)

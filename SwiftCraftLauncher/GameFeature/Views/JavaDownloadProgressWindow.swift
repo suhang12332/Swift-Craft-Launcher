@@ -44,16 +44,6 @@ struct JavaDownloadProgressWindow: View {
                     },
                     downloadState: downloadState,
                 )
-            } else {
-                VStack(spacing: 16) {
-                    Image(systemName: "tray")
-                        .font(.system(size: 24))
-                        .foregroundColor(.secondary)
-                    Text("download.no.tasks".localized())
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .padding()
@@ -79,7 +69,7 @@ struct DownloadItemView: View {
         HStack(spacing: 12) {
             ZStack {
                 Image(systemName: icon)
-                    .font(.system(size: 24))
+                    .font(.title)
                     .foregroundColor(iconColor)
             }
 

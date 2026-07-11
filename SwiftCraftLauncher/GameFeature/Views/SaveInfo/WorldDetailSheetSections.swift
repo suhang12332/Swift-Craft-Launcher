@@ -18,13 +18,14 @@ struct SeedCopyRow: View {
             Text("saveinfo.world.detail.label.seed".localized() + ":")
                 .font(.headline)
             Text(seed, format: .number.grouping(.never))
+                .font(.subheadline)
             Button {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString("\(seed)", forType: .string)
                 isCopied = true
             } label: {
                 Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
-                    .font(.system(size: 12))
+                    .font(.subheadline)
                     .applyReplaceTransition()
             }
             .task(id: isCopied) {

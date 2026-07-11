@@ -91,7 +91,7 @@ public struct AcknowledgementsView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             Image(systemName: "globe")
-                .font(.system(size: 16, weight: .medium))
+                .font(.title3)
                 .foregroundColor(.secondary)
         }
         .padding(.horizontal, 16)

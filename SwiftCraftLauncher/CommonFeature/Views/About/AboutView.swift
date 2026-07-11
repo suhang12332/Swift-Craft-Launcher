@@ -40,8 +40,8 @@ public struct AboutView: View {
     private var footerSection: some View {
         VStack(spacing: 4) {
             Text(copyright)
-                .foregroundColor(.primary)
-                .font(.system(size: 10))
+                .foregroundColor(.secondary)
+                .font(.caption2)
         }
     }
 
@@ -54,12 +54,12 @@ public struct AboutView: View {
     private var titleSection: some View {
         VStack(spacing: 4) {
             Text(appName)
-                .font(.system(size: 14, weight: .bold))
+                .font(.headline)
                 .multilineTextAlignment(.center)
 
             Text(String(format: "about.version.format".localized(), appVersion, buildNumber))
                 .foregroundColor(.primary)
-                .font(.system(size: 10))
+                .font(.caption2)
         }
     }
 

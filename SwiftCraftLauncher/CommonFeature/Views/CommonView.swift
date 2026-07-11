@@ -270,7 +270,7 @@ extension InfoIconWithPopover {
         self.init(delay: delay) {
             AnyView(
                 Text(text)
-                    .font(.system(size: 12))
+                    .font(.subheadline)
                     .foregroundColor(.primary)
                     .lineLimit(nil)
                     .multilineTextAlignment(.leading),
@@ -286,7 +286,7 @@ extension InfoIconWithPopover {
         self.init(delay: delay) {
             AnyView(
                 Text(text)
-                    .font(.system(size: 12))
+                    .font(.subheadline)
                     .foregroundColor(.primary)
                     .lineLimit(nil)
                     .multilineTextAlignment(.leading),

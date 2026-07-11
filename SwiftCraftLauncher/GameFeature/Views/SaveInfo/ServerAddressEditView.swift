@@ -79,7 +79,7 @@ struct ServerAddressEditView: View {
             if let shareTextForServer, !shareTextForServer.isEmpty {
                 ShareLink(item: shareTextForServer) {
                     Image(systemName: "square.and.arrow.up")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.headline)
                 }
                 .buttonStyle(.borderless)
             }

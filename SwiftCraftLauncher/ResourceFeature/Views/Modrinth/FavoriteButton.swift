@@ -31,7 +31,7 @@ struct FavoriteButton: View {
                         .scaleEffect(1.3)
                 } else {
                     Image(systemName: isFavorited ? "heart.fill" : "heart")
-                        .font(.system(size: 12))
+                        .font(.subheadline)
                         .foregroundColor(isFavorited ? .red : .secondary)
                 }
             }

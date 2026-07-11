@@ -38,7 +38,7 @@ struct StaticContributorAvatarView: View {
             AvatarRemoteImageView(rawValue: avatar, size: size)
         } else {
             Text(avatar)
-                .font(.system(size: 24))
+                .font(.title)
                 .frame(width: size, height: size)
                 .background(Color.gray.opacity(0.1))
                 .clipShape(Circle())

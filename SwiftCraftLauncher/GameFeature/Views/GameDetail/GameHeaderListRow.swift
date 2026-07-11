@@ -169,7 +169,7 @@ struct GameHeaderListRow: View {
                 Image(systemName: "photo.badge.plus")
                     .symbolRenderingMode(.multicolor)
                     .symbolVariant(.none)
-                    .font(.system(size: 18, weight: .regular))
+                    .font(.title3)
                     .foregroundColor(.secondary)
             }
             .frame(width: innerSize, height: innerSize)

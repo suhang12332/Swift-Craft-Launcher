@@ -77,7 +77,7 @@ struct GameIconView: View {
                 Image(systemName: "photo.badge.plus")
                     .symbolRenderingMode(.multicolor)
                     .symbolVariant(.none)
-                    .font(.system(size: 6, weight: .regular))
+                    .font(.caption2)
                     .foregroundColor(.secondary)
             }
             .frame(width: 16, height: 16)
