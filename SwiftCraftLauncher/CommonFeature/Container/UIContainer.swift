@@ -29,6 +29,11 @@ final class UIContainer {
         _authlibInjectorMissingPresenter.value()
     }
 
+    private let _memoryPressureAlertPresenter = MainActorLazyContainer { MemoryPressureAlertPresenter() }
+    @MainActor var memoryPressureAlertPresenter: MemoryPressureAlertPresenter {
+        _memoryPressureAlertPresenter.value()
+    }
+
     private let _openURLModPackImportPresenter = MainActorLazyContainer { OpenURLModPackImportPresenter() }
     @MainActor var openURLModPackImportPresenter: OpenURLModPackImportPresenter {
         _openURLModPackImportPresenter.value()

@@ -74,6 +74,18 @@ public struct GameSettingsView: View {
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
 
+                LabeledContent("settings.memory_pressure_warning.label".localized()) {
+                    HStack {
+                        Toggle(
+                            "",
+                            isOn: $gameSettingsManager.enableMemoryPressureWarning,
+                        ).labelsHidden()
+                        Text("settings.memory_pressure_warning.description".localized())
+                    }
+                }
+                .labeledContentStyle(.custom)
+                .padding(.bottom, 10)
+
                 LabeledContent("settings.game.language.label".localized()) {
                     HStack {
                         Toggle(
