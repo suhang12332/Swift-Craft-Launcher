@@ -40,6 +40,7 @@ enum AppConstants {
         static let globalXms = "globalXms"
         static let globalXmx = "globalXmx"
         static let enableAICrashAnalysis = "enableAICrashAnalysis"
+        static let enableMemoryPressureWarning = "enableMemoryPressureWarning"
         static let defaultAPISource = "defaultAPISource"
         static let includeSnapshotsForGameVersions = "includeSnapshotsForGameVersions"
         static let syncLanguageForNewGames = "syncLanguageForNewGames"

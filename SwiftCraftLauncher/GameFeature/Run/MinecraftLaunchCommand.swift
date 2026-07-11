@@ -28,6 +28,10 @@ struct MinecraftLaunchCommand {
     func launchGameThrowing() async throws {
         let validatedPlayer = try await validatePlayerTokenBeforeLaunch()
 
+        if DIContainer.shared.ui.gameSettingsManager.enableMemoryPressureWarning {
+            guard await checkMemoryPressure() else { return }
+        }
+
         let command = game.launchCommand
         try await launchGameProcess(
             command: try await replaceAuthParameters(command: command, with: validatedPlayer),
@@ -77,6 +81,16 @@ struct MinecraftLaunchCommand {
                 userInfo: ["updatedPlayer": updatedPlayer],
             )
         }
+    }
+
+    private func checkMemoryPressure() async -> Bool {
+        let level = MemoryPressureChecker.check()
+        guard level.isElevated else { return true }
+
+        AppLog.game.warning("Memory pressure is \(String(describing: level)) before launching \(game.gameName)")
+
+        let choice = await DIContainer.shared.ui.memoryPressureAlertPresenter.requestUserChoice(for: level)
+        return choice == .continueAnyway
     }
 
     private func replaceAuthParameters(command: [String], with validatedPlayer: Player) async throws -> [String] {

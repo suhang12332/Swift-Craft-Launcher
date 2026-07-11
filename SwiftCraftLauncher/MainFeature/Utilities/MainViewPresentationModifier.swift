@@ -52,6 +52,7 @@ struct MainViewPresentationModifier: ViewModifier {
                 detailState: detailState,
             )
             .authlibInjectorMissingAlert(container)
+            .memoryPressureAlert(container)
     }
 }
 

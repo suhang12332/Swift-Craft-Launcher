@@ -46,6 +46,11 @@ class GameSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    @AppStorage(AppConstants.UserDefaultsKeys.enableMemoryPressureWarning)
+    var enableMemoryPressureWarning: Bool = true {
+        didSet { objectWillChange.send() }
+    }
+
     @AppStorage(AppConstants.UserDefaultsKeys.defaultAPISource)
     var defaultAPISource: DataSource = .modrinth {
         didSet { objectWillChange.send() }
