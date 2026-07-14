@@ -1612,7 +1612,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 플레이어 이름 길이는1-16자로 권장되며 문자, 숫자, 밑줄만 포함할 수 있습니다"
+            "value" : "• 플레이어 이름 길이는 1-16자로 권장되며 문자, 숫자, 밑줄만 포함할 수 있습니다"
           }
         },
         "nb" : {
@@ -2571,7 +2571,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft구매"
+            "value" : "Minecraft 구매"
           }
         },
         "nb" : {
@@ -2845,7 +2845,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI어시스턴트"
+            "value" : "AI 어시스턴트"
           }
         },
         "nb" : {
@@ -7646,7 +7646,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub기여자"
+            "value" : "GitHub 기여자"
           }
         },
         "nb" : {
@@ -9706,7 +9706,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이Microsoft계정은Minecraft를 구매하지 않았거나 권한이 부족합니다. Minecraft를 구매한 계정으로 로그인하세요"
+            "value" : "이 Microsoft 계정은 Minecraft를 구매하지 않았거나 권한이 부족합니다. Minecraft를 구매한 계정으로 로그인하세요"
           }
         },
         "nb" : {
@@ -9843,7 +9843,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft액세스 토큰이 유효하지 않거나 만료되었습니다"
+            "value" : "Minecraft 액세스 토큰이 유효하지 않거나 만료되었습니다"
           }
         },
         "nb" : {
@@ -10117,7 +10117,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft인증 실패: Xbox Live토큰이 유효하지 않거나 만료되었습니다"
+            "value" : "Minecraft 인증 실패: Xbox Live 토큰이 유효하지 않거나 만료되었습니다"
           }
         },
         "nb" : {
@@ -10255,7 +10255,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft인증 오류"
+            "value" : "Minecraft 인증 오류"
           }
         },
         "nb" : {
@@ -10392,7 +10392,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft인증 실패: 이Microsoft계정은Minecraft를 소유하지 않습니다"
+            "value" : "Minecraft 인증 실패: 이 Microsoft 계정은 Minecraft를 소유하지 않습니다"
           }
         },
         "nb" : {
@@ -10529,7 +10529,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 계정은Minecraft를 구매하지 않았습니다. Minecraft를 소유한Microsoft계정으로 로그인하세요"
+            "value" : "이 계정은 Minecraft를 구매하지 않았습니다. Minecraft를 소유한 Microsoft 계정으로 로그인하세요"
           }
         },
         "nb" : {
@@ -11762,7 +11762,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI모델이 구성되지 않았습니다. 설정에서 모델 이름을 입력하세요"
+            "value" : "AI 모델이 구성되지 않았습니다. 설정에서 모델 이름을 입력하세요"
           }
         },
         "nb" : {
@@ -11899,7 +11899,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OpenAI서비스가 구성되지 않았습니다. API키를 확인하세요"
+            "value" : "OpenAI 서비스가 구성되지 않았습니다. API 키를 확인하세요"
           }
         },
         "nb" : {
@@ -12312,7 +12312,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java경로가 설정되지 않았습니다"
+            "value" : "Java 경로가 설정되지 않았습니다"
           }
         },
         "nb" : {
@@ -13272,7 +13272,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector다운로드에 실패했습니다"
+            "value" : "Authlib Injector 다운로드에 실패했습니다"
           }
         },
         "nb" : {
@@ -13546,7 +13546,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "클라이언트JAR파일 다운로드에 실패했습니다"
+            "value" : "클라이언트 JAR 파일 다운로드에 실패했습니다"
           }
         },
         "nb" : {
@@ -14094,7 +14094,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HTTP상태 오류"
+            "value" : "HTTP 상태 오류"
           }
         },
         "nb" : {
@@ -14231,7 +14231,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JAR파일 다운로드에 실패했습니다"
+            "value" : "JAR 파일 다운로드에 실패했습니다"
           }
         },
         "nb" : {
@@ -14368,7 +14368,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JAR파일 열기 실패"
+            "value" : "JAR 파일 열기 실패"
           }
         },
         "nb" : {
@@ -14916,7 +14916,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MANIFEST.MF내용을 파싱할 수 없습니다"
+            "value" : "MANIFEST.MF 내용을 파싱할 수 없습니다"
           }
         },
         "nb" : {
@@ -15190,7 +15190,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft액세스 토큰 가져오기에 실패했습니다"
+            "value" : "Minecraft 액세스 토큰 가져오기에 실패했습니다"
           }
         },
         "nb" : {
@@ -15327,7 +15327,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "누락된 라이브러리URL"
+            "value" : "누락된 라이브러리 URL"
           }
         },
         "nb" : {
@@ -15464,7 +15464,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "누락된 네이티브URL"
+            "value" : "누락된 네이티브 URL"
           }
         },
         "nb" : {
@@ -16149,7 +16149,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "프로세서JAR파일에서 메인 클래스 가져오기 실패: %@"
+            "value" : "프로세서 JAR 파일에서 메인 클래스 가져오기 실패: %@"
           }
         },
         "nb" : {
@@ -19714,7 +19714,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java경로 선택 실패"
+            "value" : "Java 경로 선택 실패"
           }
         },
         "nb" : {
@@ -19851,7 +19851,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Litematica파일 목록 읽기 실패"
+            "value" : "Litematica 파일 목록 읽기 실패"
           }
         },
         "nb" : {
@@ -20262,7 +20262,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "파일SHA1계산에 실패했습니다"
+            "value" : "파일 SHA1 계산에 실패했습니다"
           }
         },
         "nb" : {
@@ -21498,7 +21498,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "IP위치 감지 실패"
+            "value" : "IP 위치 감지 실패"
           }
         },
         "nb" : {
@@ -21635,7 +21635,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft인증 서비스가 일시적으로 사용할 수 없습니다. 나중에 다시 시도해 주세요"
+            "value" : "Minecraft 인증 서비스가 일시적으로 사용할 수 없습니다. 나중에 다시 시도해 주세요"
           }
         },
         "nb" : {
@@ -22046,7 +22046,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "네트워크URL오류"
+            "value" : "네트워크 URL 오류"
           }
         },
         "nb" : {
@@ -24926,7 +24926,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "클라이언트JAR파일을 찾을 수 없습니다"
+            "value" : "클라이언트 JAR 파일을 찾을 수 없습니다"
           }
         },
         "nb" : {
@@ -25338,7 +25338,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Forge로더 버전을 찾을 수 없습니다"
+            "value" : "Forge 로더 버전을 찾을 수 없습니다"
           }
         },
         "nb" : {
@@ -26024,7 +26024,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "누락된Forge버전"
+            "value" : "누락된 Forge 버전"
           }
         },
         "nb" : {
@@ -26574,7 +26574,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NeoForge로더 버전을 찾을 수 없음"
+            "value" : "NeoForge 로더 버전을 찾을 수 없음"
           }
         },
         "nb" : {
@@ -26711,7 +26711,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "누락된NeoForge버전"
+            "value" : "누락된 NeoForge 버전"
           }
         },
         "nb" : {
@@ -27398,7 +27398,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "프로세서JAR을 찾을 수 없음: %@"
+            "value" : "프로세서 JAR을 찾을 수 없음: %@"
           }
         },
         "nb" : {
@@ -27673,7 +27673,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "누락된Quilt버전"
+            "value" : "누락된 Quilt 버전"
           }
         },
         "nb" : {
@@ -28221,7 +28221,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ZIP파일을 열 수 없습니다"
+            "value" : "ZIP 파일을 열 수 없습니다"
           }
         },
         "nb" : {
@@ -28358,7 +28358,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "유효하지 않은 망토ID또는 요청"
+            "value" : "유효하지 않은 망토 ID 또는 요청"
           }
         },
         "nb" : {
@@ -29043,7 +29043,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "카테고리ID인코딩 실패"
+            "value" : "카테고리 ID 인코딩 실패"
           }
         },
         "nb" : {
@@ -29865,7 +29865,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fabric로더 버전 데이터 분석 실패: %@"
+            "value" : "Fabric 로더 버전 데이터 분석 실패: %@"
           }
         },
         "nb" : {
@@ -30002,7 +30002,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fabric로더 버전이 누락됨"
+            "value" : "Fabric 로더 버전이 누락됨"
           }
         },
         "nb" : {
@@ -30550,7 +30550,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java경로를 업데이트할 게임을 찾을 수 없습니다"
+            "value" : "Java 경로를 업데이트할 게임을 찾을 수 없습니다"
           }
         },
         "nb" : {
@@ -30687,7 +30687,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JVM매개변수를 업데이트할 게임을 찾을 수 없습니다"
+            "value" : "JVM 매개변수를 업데이트할 게임을 찾을 수 없습니다"
           }
         },
         "nb" : {
@@ -31372,7 +31372,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gamecore플랫폼 데이터를 찾을 수 없습니다"
+            "value" : "Gamecore 플랫폼 데이터를 찾을 수 없습니다"
           }
         },
         "nb" : {
@@ -31783,7 +31783,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "유효하지 않은 다운로드URL"
+            "value" : "유효하지 않은 다운로드 URL"
           }
         },
         "nb" : {
@@ -32058,7 +32058,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "선택한 파일이 유효한Java실행 파일이 아닙니다"
+            "value" : "선택한 파일이 유효한 Java 실행 파일이 아닙니다"
           }
         },
         "nb" : {
@@ -32195,7 +32195,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "유효하지 않은Maven좌표: %@"
+            "value" : "유효하지 않은 Maven 좌표: %@"
           }
         },
         "nb" : {
@@ -32469,7 +32469,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "잘못된 프로젝트ID"
+            "value" : "잘못된 프로젝트 ID"
           }
         },
         "nb" : {
@@ -32743,7 +32743,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "잘못된URL"
+            "value" : "잘못된 URL"
           }
         },
         "nb" : {
@@ -32880,7 +32880,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "IP위치 응답 파싱 실패"
+            "value" : "IP 위치 응답 파싱 실패"
           }
         },
         "nb" : {
@@ -33017,7 +33017,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 데이터를JSON으로 인코딩하지 못했습니다"
+            "value" : "게임 데이터를 JSON으로 인코딩하지 못했습니다"
           }
         },
         "nb" : {
@@ -33154,7 +33154,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JSON파싱 실패"
+            "value" : "JSON 파싱 실패"
           }
         },
         "nb" : {
@@ -33428,7 +33428,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "manifest.json파싱 실패"
+            "value" : "manifest.json 파싱 실패"
           }
         },
         "nb" : {
@@ -33565,7 +33565,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "매니페스트URL을 찾을 수 없습니다"
+            "value" : "매니페스트 URL을 찾을 수 없습니다"
           }
         },
         "nb" : {
@@ -33702,7 +33702,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft프로필 파싱 실패: %@"
+            "value" : "Minecraft 프로필 파싱 실패: %@"
           }
         },
         "nb" : {
@@ -33839,7 +33839,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft요청 직렬화 실패: %@"
+            "value" : "Minecraft 요청 직렬화 실패: %@"
           }
         },
         "nb" : {
@@ -33976,7 +33976,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft토큰 파싱 실패: %@"
+            "value" : "Minecraft 토큰 파싱 실패: %@"
           }
         },
         "nb" : {
@@ -34113,7 +34113,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mmap활성화 실패: %@"
+            "value" : "mmap 활성화 실패: %@"
           }
         },
         "nb" : {
@@ -35209,7 +35209,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "프로세서에JAR파일이 없습니다"
+            "value" : "프로세서에 JAR 파일이 없습니다"
           }
         },
         "nb" : {
@@ -35484,7 +35484,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "프로젝트ID가 비어있습니다"
+            "value" : "프로젝트 ID가 비어있습니다"
           }
         },
         "nb" : {
@@ -36034,7 +36034,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "검색URL구축 실패"
+            "value" : "검색 URL 구축 실패"
           }
         },
         "nb" : {
@@ -36171,7 +36171,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SHA1검사 실패"
+            "value" : "SHA1 검사 실패"
           }
         },
         "nb" : {
@@ -36445,7 +36445,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SQL실행 실패: %@"
+            "value" : "SQL 실행 실패: %@"
           }
         },
         "nb" : {
@@ -36582,7 +36582,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SQL문 준비 실패: %@"
+            "value" : "SQL 문 준비 실패: %@"
           }
         },
         "nb" : {
@@ -37815,7 +37815,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "WAL모드 활성화 실패: %@"
+            "value" : "WAL 모드 활성화 실패: %@"
           }
         },
         "nb" : {
@@ -37952,7 +37952,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Xbox Live요청 직렬화 실패: %@"
+            "value" : "Xbox Live 요청 직렬화 실패: %@"
           }
         },
         "nb" : {
@@ -38089,7 +38089,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Xbox Live토큰 파싱 실패: %@"
+            "value" : "Xbox Live 토큰 파싱 실패: %@"
           }
         },
         "nb" : {
@@ -38226,7 +38226,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "XSTS요청 직렬화 실패: %@"
+            "value" : "XSTS 요청 직렬화 실패: %@"
           }
         },
         "nb" : {
@@ -38363,7 +38363,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "XSTS토큰 파싱 실패: %@"
+            "value" : "XSTS 토큰 파싱 실패: %@"
           }
         },
         "nb" : {
@@ -38774,7 +38774,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "플레이어 프로필URL이 올바르지 않습니다."
+            "value" : "플레이어 프로필 URL이 올바르지 않습니다."
           }
         },
         "nb" : {
@@ -38911,7 +38911,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "리프레시 토큰URL이 올바르지 않습니다."
+            "value" : "리프레시 토큰 URL이 올바르지 않습니다."
           }
         },
         "nb" : {
@@ -39048,7 +39048,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yggdrasil토큰 응답을 해석하지 못했습니다."
+            "value" : "Yggdrasil 토큰 응답을 해석하지 못했습니다."
           }
         },
         "nb" : {
@@ -39185,7 +39185,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "토큰URL이 올바르지 않습니다."
+            "value" : "토큰 URL이 올바르지 않습니다."
           }
         },
         "nb" : {
@@ -39322,7 +39322,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ZIP파일에서Zulu폴더를 찾을 수 없습니다"
+            "value" : "ZIP 파일에서 Zulu 폴더를 찾을 수 없습니다"
           }
         },
         "nb" : {
@@ -39597,7 +39597,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fabric로더"
+            "value" : "Fabric 로더"
           }
         },
         "nb" : {
@@ -41520,7 +41520,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Forge로더"
+            "value" : "Forge 로더"
           }
         },
         "nb" : {
@@ -41657,7 +41657,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "서드파티 계정을 사용 중입니다. 게임 실행 시 인증 서버에 연결하려면authlib-injector가 필요합니다.\n\n계속을 누르면authlib-injector없이 실행됩니다. 로그인 또는 스킨 동기화가 실패할 수 있습니다.\n\nauthlib-injector를 사용하려면 런처 설정의 플레이어 설정에서 다운로드하세요."
+            "value" : "서드파티 계정을 사용 중입니다. 게임 실행 시 인증 서버에 연결하려면 authlib-injector가 필요합니다.\n\n계속을 누르면 authlib-injector 없이 실행됩니다. 로그인 또는 스킨 동기화가 실패할 수 있습니다.\n\nauthlib-injector를 사용하려면 런처 설정의 플레이어 설정에서 다운로드하세요."
           }
         },
         "nb" : {
@@ -48122,7 +48122,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI문서 (zread)"
+            "value" : "AI 문서 (zread)"
           }
         },
         "nb" : {
@@ -48674,7 +48674,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub토론"
+            "value" : "GitHub 토론"
           }
         },
         "nb" : {
@@ -48812,7 +48812,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QQ그룹"
+            "value" : "QQ 그룹"
           }
         },
         "nb" : {
@@ -50186,7 +50186,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "잘못된 콜백URL"
+            "value" : "잘못된 콜백 URL"
           }
         },
         "nb" : {
@@ -51283,7 +51283,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Microsoft계정으로Minecraft에 로그인"
+            "value" : "Microsoft 계정으로 Minecraft에 로그인"
           }
         },
         "nb" : {
@@ -51831,7 +51831,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft친구 열기 (Mojang서비스)"
+            "value" : "Minecraft 친구 열기 (Mojang 서비스)"
           }
         },
         "nb" : {
@@ -56634,7 +56634,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NeoForge로더"
+            "value" : "NeoForge 로더"
           }
         },
         "nb" : {
@@ -58832,7 +58832,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PNG 64×64또는 레거시64×32"
+            "value" : "PNG 64×64 또는 레거시 64×32"
           }
         },
         "nb" : {
@@ -59929,7 +59929,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Discord참여"
+            "value" : "Discord 참여"
           }
         },
         "nb" : {
@@ -60340,7 +60340,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wiki방문"
+            "value" : "Wiki 방문"
           }
         },
         "nb" : {
@@ -60888,7 +60888,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QuiltMC로더"
+            "value" : "QuiltMC 로더"
           }
         },
         "nb" : {
@@ -66097,7 +66097,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "level.dat구조가 유효하지 않습니다 (Data태그 누락)"
+            "value" : "level.dat 구조가 유효하지 않습니다 (Data 태그 누락)"
           }
         },
         "nb" : {
@@ -66234,7 +66234,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "level.dat파일을 찾을 수 없습니다"
+            "value" : "level.dat 파일을 찾을 수 없습니다"
           }
         },
         "nb" : {
@@ -68289,7 +68289,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "버전ID"
+            "value" : "버전 ID"
           }
         },
         "nb" : {
@@ -71440,7 +71440,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI크래시 분석"
+            "value" : "AI 크래시 분석"
           }
         },
         "nb" : {
@@ -71577,7 +71577,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 옵션은 게임이 크래시될 때AI분석을 활성화할지 여부를 제어합니다"
+            "value" : "이 옵션은 게임이 크래시될 때 AI 분석을 활성화할지 여부를 제어합니다"
           }
         },
         "nb" : {
@@ -71989,7 +71989,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API키는 로컬에만 저장됩니다"
+            "value" : "API 키는 로컬에만 저장됩니다"
           }
         },
         "nb" : {
@@ -72127,7 +72127,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API키"
+            "value" : "API 키"
           }
         },
         "nb" : {
@@ -72265,7 +72265,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API유형"
+            "value" : "API 유형"
           }
         },
         "nb" : {
@@ -72541,7 +72541,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft스킨 직접 링크, 64x64픽셀이어야 합니다"
+            "value" : "Minecraft 스킨 직접 링크, 64x64 픽셀이어야 합니다"
           }
         },
         "nb" : {
@@ -72679,7 +72679,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI아바타"
+            "value" : "AI 아바타"
           }
         },
         "nb" : {
@@ -72817,7 +72817,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft스킨URL입력 (64x64)"
+            "value" : "Minecraft 스킨 URL 입력 (64x64)"
           }
         },
         "nb" : {
@@ -74054,7 +74054,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기본API소스"
+            "value" : "기본 API 소스"
           }
         },
         "nb" : {
@@ -76112,7 +76112,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "G1가비지 컬렉터, 성능과 지연시간의 균형을 맞추며 대부분의 시나리오에 적합"
+            "value" : "G1 가비지 컬렉터, 성능과 지연시간의 균형을 맞추며 대부분의 시나리오에 적합"
           }
         },
         "nb" : {
@@ -76934,7 +76934,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shenandoah가비지 컬렉터, 낮은 일시정지 시간, 안정적인 성능을 요구하는 시나리오에 적합"
+            "value" : "Shenandoah 가비지 컬렉터, 낮은 일시정지 시간, 안정적인 성능을 요구하는 시나리오에 적합"
           }
         },
         "nb" : {
@@ -77208,7 +77208,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ZGC가비지 컬렉터, 극도로 낮은 지연시간, 극도로 높은 응답시간 요구사항이 있는 시나리오에 적합"
+            "value" : "ZGC 가비지 컬렉터, 극도로 낮은 지연시간, 극도로 높은 응답시간 요구사항이 있는 시나리오에 적합"
           }
         },
         "nb" : {
@@ -77898,7 +77898,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "성능 향상을 위한 기본JVM최적화"
+            "value" : "성능 향상을 위한 기본 JVM 최적화"
           }
         },
         "nb" : {
@@ -78174,7 +78174,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최고 성능을 위한Aikar플래그를 포함한 최대 최적화"
+            "value" : "최고 성능을 위한 Aikar 플래그를 포함한 최대 최적화"
           }
         },
         "nb" : {
@@ -78450,7 +78450,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JVM최적화가 활성화되지 않음"
+            "value" : "JVM 최적화가 활성화되지 않음"
           }
         },
         "nb" : {
@@ -78588,7 +78588,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java경로"
+            "value" : "Java 경로"
           }
         },
         "nb" : {
@@ -78726,7 +78726,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java실행 파일의 경로입니다. 클릭하여 선택하거나 기본 경로로 재설정합니다."
+            "value" : "Java 실행 파일의 경로입니다. 클릭하여 선택하거나 기본 경로로 재설정합니다."
           }
         },
         "nb" : {
@@ -79001,7 +79001,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JRE없음"
+            "value" : "JRE 없음"
           }
         },
         "nb" : {
@@ -79277,7 +79277,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java런타임"
+            "value" : "Java 런타임"
           }
         },
         "nb" : {
@@ -79962,7 +79962,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "활성화되면github.com및raw.githubusercontent.com에 대한 요청에 프록시 접두사를 추가합니다."
+            "value" : "활성화되면 github.com 및 raw.githubusercontent.com에 대한 요청에 프록시 접두사를 추가합니다."
           }
         },
         "nb" : {
@@ -80236,7 +80236,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub프록시"
+            "value" : "GitHub 프록시"
           }
         },
         "nb" : {
@@ -81882,7 +81882,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "활성화하면 서드파티 로그인과Microsoft로그인 시 시스템 브라우저와 쿠키를 공유하지 않는 비공개 브라우저 세션을 사용합니다. 매번 다시 로그인해야 할 수 있습니다."
+            "value" : "활성화하면 서드파티 로그인과 Microsoft 로그인 시 시스템 브라우저와 쿠키를 공유하지 않는 비공개 브라우저 세션을 사용합니다. 매번 다시 로그인해야 할 수 있습니다."
           }
         },
         "nb" : {
@@ -82430,7 +82430,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기록 스킨 라이브러리 사용 (Microsoft계정 전용)"
+            "value" : "기록 스킨 라이브러리 사용 (Microsoft 계정 전용)"
           }
         },
         "nb" : {
@@ -82567,7 +82567,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 항목은Microsoft Minecraft계정에 저장됩니다. 이 탭을 열거나 계정에서 다시 불러오기를 누르면 런처가 네트워크에서 불러옵니다."
+            "value" : "이 항목은 Microsoft Minecraft 계정에 저장됩니다. 이 탭을 열거나 계정에서 다시 불러오기를 누르면 런처가 네트워크에서 불러옵니다."
           }
         },
         "nb" : {
@@ -83115,7 +83115,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft계정 친구"
+            "value" : "Minecraft 계정 친구"
           }
         },
         "nb" : {
@@ -89983,7 +89983,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "인가URL을 생성하지 못했습니다. 서버 구성을 확인하세요."
+            "value" : "인가 URL을 생성하지 못했습니다. 서버 구성을 확인하세요."
           }
         },
         "nb" : {
@@ -90120,7 +90120,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "콜백URL이 올바르지 않습니다."
+            "value" : "콜백 URL이 올바르지 않습니다."
           }
         },
         "nb" : {
@@ -90531,7 +90531,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "선택된Yggdrasil서버가 없습니다."
+            "value" : "선택된 Yggdrasil 서버가 없습니다."
           }
         },
         "nb" : {
@@ -90942,7 +90942,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "로그인에 사용할Yggdrasil스킨 서버를 선택하세요"
+            "value" : "로그인에 사용할 Yggdrasil 스킨 서버를 선택하세요"
           }
         },
         "nb" : {
