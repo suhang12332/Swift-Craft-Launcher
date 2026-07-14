@@ -1672,7 +1672,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 建议玩家名称长度为 1-16 个字符，仅可包含字母、数字和下划线"
+            "value" : "• 建议玩家名称长度为1～16个字符，仅可包含字母、数字和下划线"
           }
         },
         "zh-Hant" : {
@@ -1946,7 +1946,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 每个玩家名只能创建一个离线账户"
+            "value" : "• 每个玩家名只能用于创建一个离线账户"
           }
         },
         "zh-Hant" : {
@@ -2083,7 +2083,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "离线账户说明:"
+            "value" : "离线账户说明："
           }
         },
         "zh-Hant" : {
@@ -2494,7 +2494,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请输入玩家名将用作您在游戏中的显示名称"
+            "value" : "请键入玩家名作为您在游戏中的显示名称"
           }
         },
         "zh-Hant" : {
@@ -2905,7 +2905,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 助手"
+            "value" : "AI助手"
           }
         },
         "zh-Hant" : {
@@ -3043,7 +3043,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在此输入您的消息..."
+            "value" : "在此键入您的消息…"
           }
         },
         "zh-Hant" : {
@@ -3181,7 +3181,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在思考..."
+            "value" : "正在思考…"
           }
         },
         "zh-Hant" : {
@@ -3594,7 +3594,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件: %@ (无法读取)"
+            "value" : "文件：%@（无法读取）"
           }
         },
         "zh-Hant" : {
@@ -3731,7 +3731,144 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件: %@ (无法读取文本内容)"
+            "value" : "文件：%@（无法读取文本内容）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檔案: %@ (無法讀取文字內容)"
+          }
+        }
+      }
+    },
+    "ai.file.cannot_read_text 1" : {
+      "extractionState" : "pasted",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ملف: %@ (لا يمكن قراءة محتوى النص)"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fil: %@ (kan ikke læse tekstindhold)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datei: %@ (Textinhalt kann nicht gelesen werden)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File: %@ (cannot read text content)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivo: %@ (no se puede leer el contenido de texto)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiedosto: %@ (ei voi lukea tekstisisältöä)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichier : %@ (impossible de lire le contenu texte)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "फ़ाइल: %@ (पाठ सामग्री नहीं पढ़ सकता)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File: %@ (impossibile leggere il contenuto del testo)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイル: %@ (テキストコンテンツを読み取れません)"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일: %@ (텍스트 내용을 읽을 수 없음)"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fil: %@ (kan ikke lese tekstinnhold)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bestand: %@ (kan tekstinhoud niet lezen)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plik: %@ (nie można odczytać zawartości tekstowej)"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivo: %@ (não é possível ler o conteúdo do texto)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файл: %@ (не удалось прочитать текстовое содержимое)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fil: %@ (kan inte läsa textinnehåll)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ไฟล์: %@ (อ่านเนื้อหาข้อความไม่ได้)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosya: %@ (metin içeriği okunamıyor)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tệp: %@ (không thể đọc nội dung văn bản)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件：%@（无法读取文本内容）"
           }
         },
         "zh-Hant" : {
@@ -3868,7 +4005,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件: %@\n内容:\n%@"
+            "value" : "文件：%@\n内容：\n%@"
           }
         },
         "zh-Hant" : {
@@ -4005,7 +4142,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(内容已截断)"
+            "value" : "（内容已截断）"
           }
         },
         "zh-Hant" : {
@@ -4142,7 +4279,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 制作"
+            "value" : "%@制作"
           }
         },
         "zh-Hant" : {
@@ -4827,7 +4964,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "确认"
+            "value" : "确定"
           }
         },
         "zh-Hant" : {
@@ -5512,7 +5649,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在加载..."
+            "value" : "正在加载…"
           }
         },
         "zh-Hant" : {
@@ -5786,7 +5923,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "好的"
+            "value" : "好"
           }
         },
         "zh-Hant" : {
@@ -7432,7 +7569,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 次贡献"
+            "value" : "%@次贡献"
           }
         },
         "zh-Hant" : {
@@ -7706,7 +7843,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub 贡献者"
+            "value" : "GitHub贡献者"
           }
         },
         "zh-Hant" : {
@@ -7843,7 +7980,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "确定要删除游戏\"%@\"及其所有数据吗？(真的很久)"
+            "value" : "确定要删除这个及其所有数据游戏吗？“%@”将会永远消失！（真的很久！）"
           }
         },
         "zh-Hant" : {
@@ -8256,7 +8393,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "待下载的前置Mod(必须)"
+            "value" : "需要下载的前置Mod"
           }
         },
         "zh-Hant" : {
@@ -8393,7 +8530,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择版本:"
+            "value" : "选择版本："
           }
         },
         "zh-Hant" : {
@@ -8668,7 +8805,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前步骤:%@"
+            "value" : "当前步骤：%@"
           }
         },
         "zh-Hant" : {
@@ -8805,7 +8942,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件:%d/%d"
+            "value" : "文件：%d/%d"
           }
         },
         "zh-Hant" : {
@@ -9217,7 +9354,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将皮肤文件拖放到此处或点击选择"
+            "value" : "将皮肤文件拖移到此处或点按选择"
           }
         },
         "zh-Hant" : {
@@ -9629,7 +9766,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没有装备斗篷的权限 (403)"
+            "value" : "没有装备斗篷的权限（403）"
           }
         },
         "zh-Hant" : {
@@ -9766,7 +9903,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该 Microsoft 账户未购买 Minecraft 或权限不足，请使用已购买 Minecraft 的账户登录"
+            "value" : "此Microsoft账户未购买Minecraft或权限不足，请使用已购买Minecraft的账户登录"
           }
         },
         "zh-Hant" : {
@@ -9903,7 +10040,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 访问令牌无效或已过期"
+            "value" : "Minecraft访问令牌无效或已过期"
           }
         },
         "zh-Hant" : {
@@ -10177,7 +10314,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 认证失败: Xbox Live 令牌无效或已过期"
+            "value" : "Minecraft认证失败：Xbox Live令牌无效或已过期"
           }
         },
         "zh-Hant" : {
@@ -10315,7 +10452,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 认证错误"
+            "value" : "Minecraft认证错误"
           }
         },
         "zh-Hant" : {
@@ -10452,7 +10589,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 认证失败: 该Microsoft账户未购买Minecraft"
+            "value" : "Minecraft认证失败：此Microsoft账户未购买Minecraft"
           }
         },
         "zh-Hant" : {
@@ -10589,7 +10726,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该账户未购买 Minecraft，请使用已购买 Minecraft 的 Microsoft 账户登录"
+            "value" : "此账户未购买Minecraft，请使用已购买Minecraft的Microsoft账户登录"
           }
         },
         "zh-Hant" : {
@@ -10863,7 +11000,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "登录已过期，请在玩家管理中重新登录该账户后再启动游戏"
+            "value" : "登录已过期，请在玩家管理中重新登录此账户后再启动游戏"
           }
         },
         "zh-Hant" : {
@@ -11274,7 +11411,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "登录已过期，请重新登录该账户"
+            "value" : "登录已过期，请重新登录此账户"
           }
         },
         "zh-Hant" : {
@@ -11685,7 +11822,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刷新 Token 时发生未知错误: %@"
+            "value" : "刷新令牌时发生未知错误：%@"
           }
         },
         "zh-Hant" : {
@@ -11822,7 +11959,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 模型未配置，请在设置中填写模型名称"
+            "value" : "AI模型未配置，请在设置中填写模型名称"
           }
         },
         "zh-Hant" : {
@@ -11959,7 +12096,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OpenAI 服务未配置，请检查 API Key"
+            "value" : "OpenAI服务未配置，请检查API Key"
           }
         },
         "zh-Hant" : {
@@ -12235,7 +12372,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法删除文件:游戏信息或资源目录无效"
+            "value" : "无法删除文件：游戏信息或资源目录无效"
           }
         },
         "zh-Hant" : {
@@ -12509,7 +12646,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没有选择当前玩家"
+            "value" : "没有当前玩家"
           }
         },
         "zh-Hant" : {
@@ -12646,7 +12783,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "用户拒绝了通知权限"
+            "value" : "用户已关闭通知权限"
           }
         },
         "zh-Hant" : {
@@ -13332,7 +13469,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下载 Authlib Injector 失败"
+            "value" : "下载Authlib Injector失败"
           }
         },
         "zh-Hant" : {
@@ -14428,7 +14565,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法打开JAR文件: %@"
+            "value" : "无法打开JAR文件：%@"
           }
         },
         "zh-Hant" : {
@@ -16072,7 +16209,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "处理器执行失败 (退出码: %d)"
+            "value" : "处理器执行失败（退出码：%d）"
           }
         },
         "zh-Hant" : {
@@ -16209,7 +16346,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法从processor JAR文件中获取主类: %@"
+            "value" : "无法从processor JAR文件中获取主类：%@"
           }
         },
         "zh-Hant" : {
@@ -17579,7 +17716,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件复制失败"
+            "value" : "文件拷贝失败"
           }
         },
         "zh-Hant" : {
@@ -19911,7 +20048,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "读取 Litematica 文件列表失败"
+            "value" : "读取Litematica文件列表失败"
           }
         },
         "zh-Hant" : {
@@ -20873,7 +21010,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加载拖拽图片失败"
+            "value" : "加载拖移图片失败"
           }
         },
         "zh-Hant" : {
@@ -21284,7 +21421,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隐藏斗篷失败: HTTP %@"
+            "value" : "隐藏斗篷失败：HTTP %@"
           }
         },
         "zh-Hant" : {
@@ -21421,7 +21558,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示斗篷失败: HTTP %@"
+            "value" : "显示斗篷失败：HTTP %@"
           }
         },
         "zh-Hant" : {
@@ -21695,7 +21832,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 认证服务暂时不可用，请稍后重试"
+            "value" : "Minecraft认证服务暂时不可用，请稍后重试"
           }
         },
         "zh-Hant" : {
@@ -21969,7 +22106,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "皮肤重置失败: HTTP %@"
+            "value" : "皮肤重置失败：HTTP %@"
           }
         },
         "zh-Hant" : {
@@ -22106,7 +22243,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络 URL 错误"
+            "value" : "网络URL错误"
           }
         },
         "zh-Hant" : {
@@ -22243,7 +22380,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没有选择当前玩家"
+            "value" : "没有已选择的玩家"
           }
         },
         "zh-Hant" : {
@@ -24163,7 +24300,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无效的用户名:用户名不能为空"
+            "value" : "无效的用户名：用户名不能为空"
           }
         },
         "zh-Hant" : {
@@ -24437,7 +24574,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "要更新的用户不存在: %@"
+            "value" : "要更新的用户不存在：%@"
           }
         },
         "zh-Hant" : {
@@ -24574,7 +24711,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Asset资源未找到"
+            "value" : "资源未找到"
           }
         },
         "zh-Hant" : {
@@ -26084,7 +26221,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 Forge 版本"
+            "value" : "缺少Forge版本"
           }
         },
         "zh-Hant" : {
@@ -26359,7 +26496,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "游戏版本不受支持（需要 %@ 及以上）"
+            "value" : "游戏版本不受支持（需要%@及以上）"
           }
         },
         "zh-Hant" : {
@@ -26771,7 +26908,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 NeoForge 版本"
+            "value" : "缺少NeoForge版本"
           }
         },
         "zh-Hant" : {
@@ -27733,7 +27870,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 Quilt 版本"
+            "value" : "缺少Quilt版本"
           }
         },
         "zh-Hant" : {
@@ -28555,7 +28692,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存认证凭据失败: %@"
+            "value" : "保存认证凭据失败：%@"
           }
         },
         "zh-Hant" : {
@@ -28966,7 +29103,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法打开数据库: %@"
+            "value" : "无法打开数据库：%@"
           }
         },
         "zh-Hant" : {
@@ -29103,7 +29240,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编码 categoryIds 失败"
+            "value" : "编码categoryIds失败"
           }
         },
         "zh-Hant" : {
@@ -29240,7 +29377,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编码 gameVersions 失败"
+            "value" : "编码gameVersions失败"
           }
         },
         "zh-Hant" : {
@@ -29377,7 +29514,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编码 modLoaderTypes 失败"
+            "value" : "编码modLoaderTypes失败"
           }
         },
         "zh-Hant" : {
@@ -29514,7 +29651,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "检查游戏拥有情况时发生未知错误: %@"
+            "value" : "检查游戏拥有情况时发生未知错误：%@"
           }
         },
         "zh-Hant" : {
@@ -29651,7 +29788,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析游戏权限响应失败: %@"
+            "value" : "解析游戏权限响应失败：%@"
           }
         },
         "zh-Hant" : {
@@ -29925,7 +30062,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Fabric 加载器版本数据失败: %@"
+            "value" : "解析Fabric加载器版本数据失败：%@"
           }
         },
         "zh-Hant" : {
@@ -30062,7 +30199,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 Fabric 加载器版本"
+            "value" : "缺少Fabric加载器版本"
           }
         },
         "zh-Hant" : {
@@ -30336,7 +30473,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除游戏失败: %@"
+            "value" : "删除游戏失败：%@"
           }
         },
         "zh-Hant" : {
@@ -31158,7 +31295,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "游戏运行中，无法删除"
+            "value" : "游戏正在运行，无法删除"
           }
         },
         "zh-Hant" : {
@@ -31295,7 +31432,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存游戏失败: %@"
+            "value" : "保存游戏失败：%@"
           }
         },
         "zh-Hant" : {
@@ -31569,7 +31706,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批量保存游戏失败: %@"
+            "value" : "批量保存游戏失败：%@"
           }
         },
         "zh-Hant" : {
@@ -31706,7 +31843,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除工作路径游戏失败: %@"
+            "value" : "删除工作路径游戏失败：%@"
           }
         },
         "zh-Hant" : {
@@ -32255,7 +32392,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无效的Maven坐标: %@"
+            "value" : "无效的Maven坐标：%@"
           }
         },
         "zh-Hant" : {
@@ -32529,7 +32666,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无效的项目 ID"
+            "value" : "无效的项目ID"
           }
         },
         "zh-Hant" : {
@@ -33077,7 +33214,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法编码游戏数据为 JSON"
+            "value" : "无法编码游戏数据为JSON"
           }
         },
         "zh-Hant" : {
@@ -33351,7 +33488,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新最后游玩时间失败: %@"
+            "value" : "更新最后游玩时间失败：%@"
           }
         },
         "zh-Hant" : {
@@ -33762,7 +33899,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Minecraft 用户资料响应失败: %@"
+            "value" : "解析Minecraft用户资料响应失败：%@"
           }
         },
         "zh-Hant" : {
@@ -33899,7 +34036,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "序列化 Minecraft 认证请求失败: %@"
+            "value" : "序列化Minecraft认证请求失败：%@"
           }
         },
         "zh-Hant" : {
@@ -34036,7 +34173,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Minecraft 访问令牌响应失败: %@"
+            "value" : "解析Minecraft访问令牌响应失败: %@"
           }
         },
         "zh-Hant" : {
@@ -34173,7 +34310,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法启用 mmap: %@"
+            "value" : "无法启用mmap：%@"
           }
         },
         "zh-Hant" : {
@@ -34310,7 +34447,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批量删除 mod 缓存失败: %@"
+            "value" : "批量删除mod缓存失败：%@"
           }
         },
         "zh-Hant" : {
@@ -34447,7 +34584,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批量保存 mod 缓存失败: %@"
+            "value" : "批量保存mod缓存失败：%@"
           }
         },
         "zh-Hant" : {
@@ -34584,7 +34721,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除 mod 缓存失败: %@"
+            "value" : "删除mod缓存失败：%@"
           }
         },
         "zh-Hant" : {
@@ -34721,7 +34858,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存 mod 缓存失败: %@"
+            "value" : "保存mod缓存失败：%@"
           }
         },
         "zh-Hant" : {
@@ -34858,7 +34995,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存 mod 缓存失败: %@"
+            "value" : "保存mod缓存失败：%@"
           }
         },
         "zh-Hant" : {
@@ -36505,7 +36642,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SQL 执行失败: %@"
+            "value" : "SQL 执行失败：%@"
           }
         },
         "zh-Hant" : {
@@ -36642,7 +36779,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法准备 SQL 语句: %@"
+            "value" : "无法准备 SQL 语句：%@"
           }
         },
         "zh-Hant" : {
@@ -36779,7 +36916,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法开始事务: %@"
+            "value" : "无法开始事务：%@"
           }
         },
         "zh-Hant" : {
@@ -36916,7 +37053,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法提交事务: %@"
+            "value" : "无法提交事务：%@"
           }
         },
         "zh-Hant" : {
@@ -37190,7 +37327,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加载用户基本信息失败: %@"
+            "value" : "加载用户基本信息失败：%@"
           }
         },
         "zh-Hant" : {
@@ -37327,7 +37464,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存用户基本信息失败: %@"
+            "value" : "保存用户基本信息失败：%@"
           }
         },
         "zh-Hant" : {
@@ -37738,7 +37875,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 %@ 版本清单失败: %@"
+            "value" : "解析%@版本清单失败：%@"
           }
         },
         "zh-Hant" : {
@@ -37875,7 +38012,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法启用 WAL 模式: %@"
+            "value" : "无法启用WAL模式：%@"
           }
         },
         "zh-Hant" : {
@@ -38012,7 +38149,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "序列化 Xbox Live 认证请求失败: %@"
+            "value" : "序列化Xbox Live认证请求失败：%@"
           }
         },
         "zh-Hant" : {
@@ -38149,7 +38286,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Xbox Live 令牌响应失败: %@"
+            "value" : "解析Xbox Live令牌响应失败：%@"
           }
         },
         "zh-Hant" : {
@@ -38286,7 +38423,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "序列化 XSTS 认证请求失败: %@"
+            "value" : "序列化XSTS认证请求失败：%@"
           }
         },
         "zh-Hant" : {
@@ -38423,7 +38560,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 XSTS 令牌响应失败: %@"
+            "value" : "解析XSTS令牌响应失败：%@"
           }
         },
         "zh-Hant" : {
@@ -38697,7 +38834,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Yggdrasil 玩家资料失败：格式无法识别"
+            "value" : "解析Yggdrasil玩家资料失败：格式无法识别"
           }
         },
         "zh-Hant" : {
@@ -38971,7 +39108,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刷新 Token 地址无效"
+            "value" : "刷新令牌地址无效"
           }
         },
         "zh-Hant" : {
@@ -39108,7 +39245,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Yggdrasil Token 响应失败"
+            "value" : "解析Yggdrasil令牌响应失败"
           }
         },
         "zh-Hant" : {
@@ -39245,7 +39382,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Token 地址无效"
+            "value" : "令牌地址无效"
           }
         },
         "zh-Hant" : {
@@ -39519,7 +39656,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例如:`JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
+            "value" : "例如：`JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "zh-Hant" : {
@@ -39657,7 +39794,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fabric 加载器"
+            "value" : "Fabric加载器"
           }
         },
         "zh-Hant" : {
@@ -41580,7 +41717,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Forge 加载器"
+            "value" : "Forge加载器"
           }
         },
         "zh-Hant" : {
@@ -41717,7 +41854,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前为第三方账号，启动游戏时需要 authlib-injector 才能连接认证服务器。\n\n点击继续则不使用 authlib-injector 启动游戏，可能无法登录或同步皮肤。\n\n如果要使用 authlib-injector，则前往启动器设置的玩家设置中进行下载"
+            "value" : "当前为第三方账号，启动游戏时需要authlib-injector才能连接认证服务器。\n\n点按继续则不使用authlib-injector启动游戏，可能无法登录或同步皮肤。\n\n如果要使用authlib-injector，则前往启动器设置的玩家设置中进行下载"
           }
         },
         "zh-Hant" : {
@@ -41854,7 +41991,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未找到 Authlib Injector"
+            "value" : "未找到Authlib Injector"
           }
         },
         "zh-Hant" : {
@@ -42815,7 +42952,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该游戏名已存在，请更换"
+            "value" : "此游戏名已存在，请更换"
           }
         },
         "zh-Hant" : {
@@ -42952,7 +43089,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请输入游戏名称"
+            "value" : "请键入游戏名称"
           }
         },
         "zh-Hant" : {
@@ -44875,7 +45012,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暂无可用版本"
+            "value" : "无可用版本"
           }
         },
         "zh-Hant" : {
@@ -45563,7 +45700,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加载投影信息失败: %@"
+            "value" : "加载投影信息失败：%@"
           }
         },
         "zh-Hant" : {
@@ -47771,7 +47908,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 文档 (zread)"
+            "value" : "AI文档（zread）"
           }
         },
         "zh-Hant" : {
@@ -48323,7 +48460,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub 讨论区"
+            "value" : "GitHub讨论区"
           }
         },
         "zh-Hant" : {
@@ -48461,7 +48598,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QQ 群"
+            "value" : "QQ群"
           }
         },
         "zh-Hant" : {
@@ -49561,7 +49698,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请点击下方的\"添加\"按钮确认使用此账户"
+            "value" : "请点按下方的“添加”按钮确认使用此账户"
           }
         },
         "zh-Hant" : {
@@ -49835,7 +49972,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无效的回调 URL"
+            "value" : "无效的回调URL"
           }
         },
         "zh-Hant" : {
@@ -50246,7 +50383,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在完成认证流程，请稍候..."
+            "value" : "正在完成认证流程，请稍候…"
           }
         },
         "zh-Hant" : {
@@ -50520,7 +50657,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请点击下方的\"重试\"按钮重新开始认证"
+            "value" : "请点按下方的“重试”按钮重新开始认证"
           }
         },
         "zh-Hant" : {
@@ -50657,7 +50794,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请点击下方的\"开始登录\"按钮开始认证流程"
+            "value" : "请点按下方的“开始登录”按钮开始认证流程"
           }
         },
         "zh-Hant" : {
@@ -50932,7 +51069,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用 Microsoft 账户登录 Minecraft"
+            "value" : "使用Microsoft账户登录Minecraft"
           }
         },
         "zh-Hant" : {
@@ -51069,7 +51206,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "UUID:%@"
+            "value" : "UUID: %@"
           }
         },
         "zh-Hant" : {
@@ -51480,7 +51617,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Minecraft 好友（Mojang 服务）"
+            "value" : "打开Minecraft好友（Mojang 服务）"
           }
         },
         "zh-Hant" : {
@@ -52440,7 +52577,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "复制文件"
+            "value" : "拷贝文件"
           }
         },
         "zh-Hant" : {
@@ -53126,7 +53263,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "复制文件"
+            "value" : "拷贝文件"
           }
         },
         "zh-Hant" : {
@@ -55183,7 +55320,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在处理整合包..."
+            "value" : "正在处理整合包…"
           }
         },
         "zh-Hant" : {
@@ -56283,7 +56420,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NeoForge 加载器"
+            "value" : "NeoForge加载器"
           }
         },
         "zh-Hant" : {
@@ -56695,7 +56832,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ (版本: %@, 加载器: %@) 已成功下载。"
+            "value" : "%@（版本：%@，加载器：%@）已成功下载。"
           }
         },
         "zh-Hant" : {
@@ -58343,7 +58480,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "确定要移除 %@ 吗？"
+            "value" : "确定要移除%@吗？"
           }
         },
         "zh-Hant" : {
@@ -58481,7 +58618,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PNG 64×64 或旧版 64×32"
+            "value" : "PNG 64×64或旧版64×32"
           }
         },
         "zh-Hant" : {
@@ -58619,7 +58756,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "执行处理器 %d/%d: %@"
+            "value" : "执行处理器%d/%d: %@"
           }
         },
         "zh-Hant" : {
@@ -59578,7 +59715,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加入 Discord"
+            "value" : "加入Discord"
           }
         },
         "zh-Hant" : {
@@ -60126,7 +60263,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod 加载器"
+            "value" : "Mod加载器"
           }
         },
         "zh-Hant" : {
@@ -60537,7 +60674,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QuiltMc 加载器"
+            "value" : "QuiltMc加载器"
           }
         },
         "zh-Hant" : {
@@ -60675,7 +60812,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "发布于: "
+            "value" : "发布于："
           }
         },
         "zh-Hant" : {
@@ -60813,7 +60950,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "点击查看此版本的发布详情"
+            "value" : "点按查看此版本的发布详情"
           }
         },
         "zh-Hant" : {
@@ -62321,7 +62458,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "确定要删除\"%@\"吗？删除可能会导致游戏启动失败"
+            "value" : "确定要删除“%@”吗？删除可能会导致游戏启动失败"
           }
         },
         "zh-Hant" : {
@@ -64102,7 +64239,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "为 %@ 添加服务器"
+            "value" : "为%@添加服务器"
           }
         },
         "zh-Hant" : {
@@ -64376,7 +64513,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "确定要删除服务器 \"%@\" 吗？此操作无法撤销。"
+            "value" : "确定要删除服务器“%@” 吗？此操作无法撤销。"
           }
         },
         "zh-Hant" : {
@@ -65746,7 +65883,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "level.dat 结构不符合预期（缺少 Data 标签）"
+            "value" : "level.dat结构不符合预期（缺少 Data 标签）"
           }
         },
         "zh-Hant" : {
@@ -65883,7 +66020,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未找到 level.dat 文件"
+            "value" : "未找到level.dat文件"
           }
         },
         "zh-Hant" : {
@@ -66020,7 +66157,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加载世界信息失败: %@"
+            "value" : "加载世界信息失败：%@"
           }
         },
         "zh-Hant" : {
@@ -67938,7 +68075,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "版本 ID"
+            "value" : "版本ID"
           }
         },
         "zh-Hant" : {
@@ -68968,7 +69105,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "簡単"
+            "value" : "イージー"
           }
         },
         "ko" : {
@@ -69105,7 +69242,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "難しい"
+            "value" : "ハード"
           }
         },
         "ko" : {
@@ -69242,7 +69379,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "普通"
+            "value" : "ノーマル"
           }
         },
         "ko" : {
@@ -71226,7 +71363,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该选项用于是否在游戏崩溃的时候启用AI分析"
+            "value" : "此选项用于是否在游戏崩溃的时候启用AI分析"
           }
         },
         "zh-Hant" : {
@@ -71364,7 +71501,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 密钥仅在本地存储"
+            "value" : "API密钥仅在本地存储"
           }
         },
         "zh-Hant" : {
@@ -71502,7 +71639,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 密钥"
+            "value" : "API密钥"
           }
         },
         "zh-Hant" : {
@@ -71640,7 +71777,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 类型"
+            "value" : "API类型"
           }
         },
         "zh-Hant" : {
@@ -71778,7 +71915,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 地址"
+            "value" : "API地址"
           }
         },
         "zh-Hant" : {
@@ -71916,7 +72053,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 皮肤直链，必须是 64x64 像素"
+            "value" : "Minecraft皮肤直链，必须是64x64像素"
           }
         },
         "zh-Hant" : {
@@ -72054,7 +72191,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 头像"
+            "value" : "AI头像"
           }
         },
         "zh-Hant" : {
@@ -72192,7 +72329,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入 Minecraft 皮肤直链 (64x64)"
+            "value" : "键入Minecraft皮肤直链（64x64）"
           }
         },
         "zh-Hant" : {
@@ -72468,7 +72605,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例如：gpt-4o, deepseek-chat"
+            "value" : "例如：gpt-4o、deepseek-chat"
           }
         },
         "zh-Hant" : {
@@ -72606,7 +72743,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama 地址"
+            "value" : "Ollama地址"
           }
         },
         "zh-Hant" : {
@@ -73703,7 +73840,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置 Minecraft 的最小和最大内存分配。最小值（Xms）是游戏启动时分配的初始内存，最大值（Xmx）是游戏可以使用的最大内存。"
+            "value" : "设置Minecraft的最小和最大内存分配。最小值（Xms）是游戏启动时分配的初始内存，最大值（Xmx）是游戏可以使用的最大内存。"
           }
         },
         "zh-Hant" : {
@@ -74527,7 +74664,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "清理扫描失败的本地 mod 缓存，用于重新触发扫描，以尽可能获取详情"
+            "value" : "清理扫描失败的本地mod缓存，用于重新触发扫描，以尽可能获取详情"
           }
         },
         "zh-Hant" : {
@@ -74938,7 +75075,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "注意: 自定义参数会覆盖上面的优化设置"
+            "value" : "注意：自定义参数会覆盖上面的优化设置"
           }
         },
         "zh-Hant" : {
@@ -75350,7 +75487,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "G1GC (推荐)"
+            "value" : "G1GC（推荐）"
           }
         },
         "zh-Hant" : {
@@ -75624,7 +75761,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ParallelGC (高吞吐量)"
+            "value" : "ParallelGC（高吞吐量）"
           }
         },
         "zh-Hant" : {
@@ -75898,7 +76035,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SerialGC (单线程)"
+            "value" : "SerialGC（单线程）"
           }
         },
         "zh-Hant" : {
@@ -76172,7 +76309,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shenandoah (低暂停)"
+            "value" : "Shenandoah（低暂停）"
           }
         },
         "zh-Hant" : {
@@ -76446,7 +76583,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ZGC (低延迟)"
+            "value" : "ZGC（低延迟）"
           }
         },
         "zh-Hant" : {
@@ -77273,7 +77410,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "基础 JVM 优化，提升性能"
+            "value" : "基础JVM优化，提升性能"
           }
         },
         "zh-Hant" : {
@@ -77549,7 +77686,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最大优化，包括 Aikar 标志，获得最佳性能"
+            "value" : "最大优化，包括Aikar标志，获得最佳性能"
           }
         },
         "zh-Hant" : {
@@ -77825,7 +77962,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不启用任何 JVM 优化"
+            "value" : "不启用任何JVM优化"
           }
         },
         "zh-Hant" : {
@@ -78101,7 +78238,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java可执行文件的路径。点击选择或重置为默认路径。"
+            "value" : "Java可执行文件的路径。点按选择或重置为默认路径。"
           }
         },
         "zh-Hant" : {
@@ -78376,7 +78513,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暂无 JRE"
+            "value" : "暂无JRE"
           }
         },
         "zh-Hant" : {
@@ -78652,7 +78789,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java 运行时"
+            "value" : "Java运行时"
           }
         },
         "zh-Hant" : {
@@ -79337,7 +79474,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启后会对 github.com 与 raw.githubusercontent.com 的请求添加代理前缀。"
+            "value" : "启用后会对github.com与raw.githubusercontent.com的请求添加代理前缀。"
           }
         },
         "zh-Hant" : {
@@ -79611,7 +79748,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub 代理"
+            "value" : "GitHub代理"
           }
         },
         "zh-Hant" : {
@@ -80435,7 +80572,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "前往系统设置 -> 通用 -> 语言与地区 -> 应用程序 处修改。翻译由机器生成，未经人工审核，可能不准确。如果你发现问题，请使用“帮助/报告问题”。"
+            "value" : "前往系统设置>通用>语言与地区>应用程序修改。翻译由机器生成，未经人工审核，可能不准确。如果你发现问题，请使用“帮助/报告问题”。"
           }
         },
         "zh-Hant" : {
@@ -81257,7 +81394,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启后，三方登录和微软登录将使用独立的无痕浏览器会话，不会共享系统浏览器的 Cookie，每次登录可能需要重新输入账号密码。"
+            "value" : "启用后，三方登录和微软登录将使用独立的无痕浏览器会话，不会共享系统浏览器的 Cookie，每次登录可能需要重新键入账号密码。"
           }
         },
         "zh-Hant" : {
@@ -81668,7 +81805,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前开关仅限于是否显示皮肤库开关入口按钮。对于之前开启过且已经存储了历史皮肤的，关闭此开关不会清理历史皮肤库。如需清理，请开启此开关后手动清理。"
+            "value" : "此设置仅控制是否显示皮肤库开关入口的按钮。对于之前启用过且已经存储了历史皮肤的，禁用不会清理历史皮肤库。如需清理，请启用此设置后手动清理。"
           }
         },
         "zh-Hant" : {
@@ -81805,7 +81942,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启历史皮肤库(仅限Microsoft帐户)"
+            "value" : "启用历史皮肤库(仅限Microsoft帐户)"
           }
         },
         "zh-Hant" : {
@@ -81942,7 +82079,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "以下开关保存在 Microsoft Minecraft 账号侧。打开本页或点击「从账号同步」时会从网络加载最新状态。"
+            "value" : "以下设置保存在Microsoft Minecraft账号侧。打开此页或点按“从账户同步”时会通过网络加载最新状态。"
           }
         },
         "zh-Hant" : {
@@ -82353,7 +82490,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "从账号同步"
+            "value" : "从账户同步"
           }
         },
         "zh-Hant" : {
@@ -82490,7 +82627,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 账号好友"
+            "value" : "Minecraft账号好友"
           }
         },
         "zh-Hant" : {
@@ -82764,7 +82901,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "启用后，启动器会在后台检查好友状态，并在好友上线、离线或发送邀请时通知你。同时需要在系统设置中为此应用启用通知，并将通知类型设为「提醒」。"
+            "value" : "启用后，启动器会在后台检查好友状态，并在好友上线、离线或发送邀请时通知你。同时需要在系统设置中为此应用启用通知，并将通知类型设为“提醒”。"
           }
         },
         "zh-Hant" : {
@@ -84273,7 +84410,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该路径的设置只会影响到游戏存档、mod、光影等其他资源的存储位置。"
+            "value" : "此路径的设置只会影响到游戏存档、mod与光影等其他资源的存储位置。"
           }
         },
         "zh-Hant" : {
@@ -84410,7 +84547,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d 个游戏"
+            "value" : "%d个游戏"
           }
         },
         "zh-Hant" : {
@@ -84547,7 +84684,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没有玩家信息，先添加玩家信息后，才可以运行游戏"
+            "value" : "没有玩家信息，添加玩家信息后才可以运行游戏"
           }
         },
         "zh-Hant" : {
@@ -84684,7 +84821,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没有玩家信息，先添加玩家信息后，才可以添加游戏"
+            "value" : "没有玩家信息，添加玩家信息后才可以添加游戏"
           }
         },
         "zh-Hant" : {
@@ -88947,7 +89084,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "点击下方按钮在浏览器中完成登录。"
+            "value" : "点按下方按钮在浏览器中完成登录。"
           }
         },
         "zh-Hant" : {
@@ -89906,7 +90043,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未选择 Yggdrasil 服务器"
+            "value" : "未选择Yggdrasil服务器"
           }
         },
         "zh-Hant" : {
@@ -90317,7 +90454,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择 Yggdrasil 登录皮肤站"
+            "value" : "选择Yggdrasil登录皮肤站"
           }
         },
         "zh-Hant" : {
@@ -90329,5 +90466,5 @@
       }
     }
   },
-  "version" : "1.1"
+  "version" : "1.2"
 }
