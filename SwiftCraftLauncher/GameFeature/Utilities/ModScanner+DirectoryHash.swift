@@ -83,6 +83,10 @@ extension ModScanner {
             }
         }
 
+        await MainActor.run {
+            NotificationCenter.default.post(name: .localResourceImported, object: nil)
+        }
+
         return hashes
     }
 
