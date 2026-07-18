@@ -43,13 +43,26 @@ jobs:
       # =========================
       - name: Install SwiftFormat 0.61.1
         run: |
-          curl -sL https://github.com/nicklockwood/SwiftFormat/releases/download/0.61.1/swiftformat.zip -o swiftformat.zip
-          unzip -o swiftformat.zip -d /usr/local/bin
-          chmod +x /usr/local/bin/swiftformat
-          swiftformat --version
+          set -euo pipefail
+          TOOL_DIR="${RUNNER_TEMP}/swiftformat-0.61.1"
+          mkdir -p "$TOOL_DIR"
+          curl -fsSL \
+            "https://github.com/nicklockwood/SwiftFormat/releases/download/0.61.1/swiftformat.zip" \
+            -o "${TOOL_DIR}/swiftformat.zip"
+          unzip -o "${TOOL_DIR}/swiftformat.zip" -d "$TOOL_DIR"
+          chmod +x "${TOOL_DIR}/swiftformat"
+          echo "SWIFTFORMAT_BIN=${TOOL_DIR}/swiftformat" >> "$GITHUB_ENV"
+          VERSION="$("${TOOL_DIR}/swiftformat" --version)"
+          echo "SwiftFormat version: ${VERSION}"
+          if [[ "${VERSION}" != "0.61.1" ]]; then
+            echo "::error::Expected SwiftFormat 0.61.1, got ${VERSION}"
+            exit 1
+          fi
 
       - name: Run SwiftFormat lint
-        run: swiftformat . --swift-version 6.1 --lint
+        run: |
+          set -euo pipefail
+          "${SWIFTFORMAT_BIN}" . --swift-version 6.1 --lint
 
       # =========================
       # Code Rules Check
