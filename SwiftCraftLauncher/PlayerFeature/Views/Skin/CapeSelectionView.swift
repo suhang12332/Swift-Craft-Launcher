@@ -17,7 +17,7 @@ struct CapeTextureView: View {
         AsyncImage(url: url) { phase in
             switch phase {
             case .empty:
-                ProgressView().controlSize(.mini)
+                ProgressView().controlSize(.small)
             case let .success(image):
                 capeImageContent(image: image)
             case .failure:
