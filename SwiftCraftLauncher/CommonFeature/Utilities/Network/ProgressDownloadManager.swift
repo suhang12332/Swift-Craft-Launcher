@@ -195,19 +195,16 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
     }
 
     func invalidateAndCancel() {
-        lock.lock()
-        let pendingHandlers = handlers
-        handlers.removeAll()
-        lock.unlock()
-
-        for (_, tracker) in pendingHandlers {
-            tracker.complete(.failure(CancellationError()))
-        }
-
+        cancelPendingHandlers()
         session.invalidateAndCancel()
     }
 
     func finishTasksAndInvalidate() {
+        cancelPendingHandlers()
+        session.finishTasksAndInvalidate()
+    }
+
+    private func cancelPendingHandlers() {
         lock.lock()
         let pendingHandlers = handlers
         handlers.removeAll()
@@ -216,8 +213,6 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
         for (_, tracker) in pendingHandlers {
             tracker.complete(.failure(CancellationError()))
         }
-
-        session.finishTasksAndInvalidate()
     }
 
     func urlSession(

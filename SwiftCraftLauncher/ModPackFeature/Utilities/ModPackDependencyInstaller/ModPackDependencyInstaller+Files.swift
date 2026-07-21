@@ -28,7 +28,7 @@ extension ModPackDependencyInstaller {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
 
-                    let success = await downloadSingleFile(file: file, resourceDir: resourceDir, gameInfo: gameInfo)
+                    let success = await downloadSingleFile(file: file, resourceDir: resourceDir)
 
                     if success {
                         let currentCount = completedCount.increment()
@@ -71,7 +71,6 @@ extension ModPackDependencyInstaller {
     private static func downloadSingleFile(
         file: ModrinthIndexFile,
         resourceDir: URL,
-        gameInfo: GameVersionInfo? = nil,
     ) async -> Bool {
         if file.source == .curseforge,
            let projectId = file.curseForgeProjectId,
@@ -80,7 +79,6 @@ extension ModPackDependencyInstaller {
                 projectId: projectId,
                 fileId: fileId,
                 resourceDir: resourceDir,
-                gameInfo: gameInfo,
             )
         }
         return await downloadModrinthFile(file: file, resourceDir: resourceDir)
@@ -90,20 +88,17 @@ extension ModPackDependencyInstaller {
         projectId: Int,
         fileId: Int,
         resourceDir: URL,
-        gameInfo _: GameVersionInfo? = nil,
     ) async -> Bool {
-        let fileDetail = await CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId)
-
-        if let fileDetail {
-            if await downloadCurseForgeFileWithDetail(
-                fileDetail: fileDetail,
-                projectId: projectId,
-                resourceDir: resourceDir,
-            ) {
-                return true
-            }
+        guard let fileDetail = await CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId) else {
+            AppLog.modPack.error("Failed to fetch CurseForge file detail for project \(projectId), file \(fileId)")
+            return false
         }
-        return false
+
+        return await downloadCurseForgeFileWithDetail(
+            fileDetail: fileDetail,
+            projectId: projectId,
+            resourceDir: resourceDir,
+        )
     }
 
     private static func downloadCurseForgeFileWithDetail(
@@ -162,9 +157,7 @@ extension ModPackDependencyInstaller {
             return false
         }
 
-        let destinationPath = autoreleasepool {
-            resourceDir.appendingPathComponent(file.path)
-        }
+        let destinationPath = resourceDir.appendingPathComponent(file.path)
 
         let downloadedFile: URL
         do {

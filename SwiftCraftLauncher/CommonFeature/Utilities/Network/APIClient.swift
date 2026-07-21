@@ -90,19 +90,14 @@ enum APIClient {
         body: Data? = nil,
         headers: [String: String]? = nil,
     ) async throws -> Data {
-        var request = URLRequest(url: url)
-            .methods(HTTPMethods.post)
-            .headers(headers)
-            .bodys(body)
-
-        if body != nil {
-            let hasContentType = headers?.keys.contains { key in
-                key.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame
-            } ?? false
-            if !hasContentType {
-                request = request.headers([Header.contentType: MimeType.json])
-            }
+        var postHeaders = headers ?? [:]
+        if body != nil, !postHeaders.keys.contains(where: { $0.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame }) {
+            postHeaders[Header.contentType] = MimeType.json
         }
+        let request = URLRequest(url: url)
+            .methods(HTTPMethods.post)
+            .headers(postHeaders)
+            .bodys(body)
 
         return try await performRequest(request: request)
     }
@@ -143,19 +138,14 @@ enum APIClient {
         body: Data? = nil,
         headers: [String: String]? = nil,
     ) async throws -> (Data, Int) {
-        var request = URLRequest(url: url)
-            .methods(HTTPMethods.post)
-            .headers(headers)
-            .bodys(body)
-
-        if body != nil {
-            let hasContentType = headers?.keys.contains { key in
-                key.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame
-            } ?? false
-            if !hasContentType {
-                request = request.headers([Header.contentType: MimeType.json])
-            }
+        var postHeaders = headers ?? [:]
+        if body != nil, !postHeaders.keys.contains(where: { $0.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame }) {
+            postHeaders[Header.contentType] = MimeType.json
         }
+        let request = URLRequest(url: url)
+            .methods(HTTPMethods.post)
+            .headers(postHeaders)
+            .bodys(body)
 
         return try await performRequestUnchecked(request: request)
     }
@@ -171,7 +161,7 @@ enum APIClient {
     /// - Throws: A ``GlobalError`` if the request fails, or a ``DecodingError`` if decoding fails.
     static func request<T: Decodable>(
         url: URL,
-        method: String = "GET",
+        method: String = HTTPMethods.get,
         body: Data? = nil,
         headers: [String: String]? = nil,
         decoder: JSONDecoder? = nil,
@@ -199,14 +189,10 @@ enum APIClient {
         body: Data? = nil,
         headers: [String: String]? = nil,
     ) async throws -> Data {
-        var request = URLRequest(url: url)
+        let request = URLRequest(url: url)
             .methods(method)
             .headers(headers)
             .bodys(body)
-
-        if body != nil, method == HTTPMethods.post {
-            request = request.headers([Header.contentType: MimeType.json])
-        }
 
         return try await performRequest(request: request)
     }

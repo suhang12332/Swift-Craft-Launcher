@@ -21,14 +21,7 @@ enum DownloadManager {
         }
 
         init?(from string: String) {
-            let lowercased = string.lowercased()
-            switch lowercased {
-            case Self.mod.rawValue: self = .mod
-            case Self.datapack.rawValue: self = .datapack
-            case Self.shader.rawValue: self = .shader
-            case Self.resourcepack.rawValue: self = .resourcepack
-            default: return nil
-            }
+            self.init(rawValue: string.lowercased())
         }
     }
 
@@ -148,21 +141,7 @@ enum DownloadManager {
         do {
             return try await APIClient.get(url: url)
         } catch {
-            if let globalError = error as? GlobalError {
-                throw globalError
-            } else if error is URLError {
-                throw GlobalError.download(
-                    i18nKey: "error.download.network_request_failed",
-                    level: .notification,
-                    message: "Failed to download data from \(url.absoluteString): \(error.localizedDescription)",
-                )
-            } else {
-                throw GlobalError.download(
-                    i18nKey: "error.download.general_failure",
-                    level: .notification,
-                    message: "Unexpected error downloading data from \(url.absoluteString): \(error.localizedDescription)",
-                )
-            }
+            throw mapDownloadError(error)
         }
     }
 }
