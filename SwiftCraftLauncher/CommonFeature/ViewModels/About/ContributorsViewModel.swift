@@ -22,7 +22,9 @@ public class ContributorsViewModel: ObservableObject {
 
         do {
             contributors = try await DIContainer.shared.system.gitHubService.fetchContributors()
-        } catch { }
+        } catch {
+            DIContainer.shared.core.errorHandler.handle(error)
+        }
     }
 
     /// Returns the profile URL for a contributor.
