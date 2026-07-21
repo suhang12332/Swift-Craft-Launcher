@@ -86,8 +86,9 @@ extension CurseForgeService {
         index: Int = 0,
         pageSize: Int = 20,
     ) async throws -> CurseForgeSearchResult {
-        let effectiveSortField = 6
-        let effectiveSortOrder = "desc"
+        // CurseForge sort field: 6 = Last Updated
+        let sortField = 6
+        let sortOrder = "desc"
 
         var components = URLComponents(
             url: URLConfig.API.CurseForge.search,
@@ -145,8 +146,8 @@ extension CurseForgeService {
             queryItems.append(URLQueryItem(name: "searchFilter", value: normalizedSearchFilter))
         }
 
-        queryItems.append(URLQueryItem(name: "sortField", value: String(effectiveSortField)))
-        queryItems.append(URLQueryItem(name: "sortOrder", value: effectiveSortOrder))
+        queryItems.append(URLQueryItem(name: "sortField", value: String(sortField)))
+        queryItems.append(URLQueryItem(name: "sortOrder", value: sortOrder))
 
         if let modLoaderTypes, !modLoaderTypes.isEmpty {
             let limitedModLoaderTypes = Array(modLoaderTypes.prefix(5))

@@ -17,9 +17,7 @@ extension ServerConnectionStatus {
             return .blue.opacity(0.5)
         case .success:
             return .green
-        case .timeout:
-            return .red
-        case .failed:
+        case .timeout, .failed:
             return .red
         }
     }
@@ -132,25 +130,13 @@ enum CommonUtil {
             return ("", nil)
         }
 
-        if parts.count == 1 {
-            return (address, nil)
-        }
-
-        if parts.count == 2 {
-            let online = parts[1]
-            guard !online.isEmpty else {
-                return (address, nil)
-            }
-            return (address, "\(online)")
-        }
-
-        let online = parts[1]
-        let max = parts[2]
+        let online = parts.count > 1 ? parts[1] : ""
+        let max = parts.count > 2 ? parts[2] : ""
 
         if !online.isEmpty, !max.isEmpty {
             return (address, "\(online) / \(max)")
         } else if !online.isEmpty {
-            return (address, "\(online)")
+            return (address, online)
         } else {
             return (address, nil)
         }
@@ -250,72 +236,42 @@ enum CommonUtil {
     /// - Parameter launcherLang: The launcher language code (e.g., `zh-Hans`, `en`).
     /// - Returns: The Minecraft language code, defaulting to `en_us`.
     static func minecraftLanguageCode(from launcherLang: String) -> String {
-        let code = launcherLang.lowercased()
-
-        switch code {
-        case "zh-hans":
-            return "zh_cn"
-        case "zh-hant":
-            return "zh_tw"
-        case "ar":
-            return "ar_sa"
-        case "da":
-            return "da_dk"
-        case "en":
-            return "en_us"
-        case "de":
-            return "de_de"
-        case "es":
-            return "es_es"
-        case "fr":
-            return "fr_fr"
-        case "fi":
-            return "fi_fi"
-        case "hi":
-            return "hi_in"
-        case "it":
-            return "it_it"
-        case "ja":
-            return "ja_jp"
-        case "ko":
-            return "ko_kr"
-        case "nb":
-            return "nb_no"
-        case "nl":
-            return "nl_nl"
-        case "pl":
-            return "pl_pl"
-        case "pt":
-            return "pt_br"
-        case "ru":
-            return "ru_ru"
-        case "sv":
-            return "sv_se"
-        case "th":
-            return "th_th"
-        case "tr":
-            return "tr_tr"
-        case "vi":
-            return "vi_vn"
-        default:
-            return "en_us"
-        }
+        let languageMap: [String: String] = [
+            "zh-hans": "zh_cn",
+            "zh-hant": "zh_tw",
+            "ar": "ar_sa",
+            "da": "da_dk",
+            "en": "en_us",
+            "de": "de_de",
+            "es": "es_es",
+            "fr": "fr_fr",
+            "fi": "fi_fi",
+            "hi": "hi_in",
+            "it": "it_it",
+            "ja": "ja_jp",
+            "ko": "ko_kr",
+            "nb": "nb_no",
+            "nl": "nl_nl",
+            "pl": "pl_pl",
+            "pt": "pt_br",
+            "ru": "ru_ru",
+            "sv": "sv_se",
+            "th": "th_th",
+            "tr": "tr_tr",
+            "vi": "vi_vn",
+        ]
+        return languageMap[launcherLang.lowercased()] ?? "en_us"
     }
 
     /// Returns the instance directory for a game ID, or `nil` if the game is not found.
     static func gameDirectory(for gameId: String) -> URL? {
         let gameDatabase = GameVersionDatabase(dbPath: AppPaths.gameVersionDatabase.path)
-        do {
-            try? gameDatabase.initialize()
-            guard let game = try gameDatabase.getGame(by: gameId) else {
-                AppLog.common.error("Unable to find game in database, cannot get game directory: \(gameId)")
-                return nil
-            }
-            return AppPaths.profileDirectory(gameName: game.gameName)
-        } catch {
-            AppLog.common.error("Failed to query game from database, cannot get game directory: \(error.localizedDescription)")
+        try? gameDatabase.initialize()
+        guard let game = try? gameDatabase.getGame(by: gameId) else {
+            AppLog.common.error("Unable to find game in database, cannot get game directory: \(gameId)")
             return nil
         }
+        return AppPaths.profileDirectory(gameName: game.gameName)
     }
 
     /// Inserts or updates a key-value entry in a game instance's `options.txt` file.

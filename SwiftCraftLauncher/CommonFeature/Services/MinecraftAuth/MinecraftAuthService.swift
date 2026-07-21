@@ -47,19 +47,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
             ) { [weak self] callbackURL, error in
                 Task { @MainActor in
                     if let error {
-                        if let authError = error as? ASWebAuthenticationSessionError {
-                            if authError.code == .canceledLogin {
-                                AppLog.common.info("User cancelled Microsoft authentication")
-                                self?.authState = .notAuthenticated
-                            } else {
-                                AppLog.common.error("Microsoft authentication failed: \(authError.localizedDescription)")
-                                self?.authState = .error("minecraft.auth.error.authentication_failed".localized())
-                            }
-                        } else {
-                            AppLog.common.error("Unknown Microsoft authentication error: \(error.localizedDescription)")
-                            self?.authState = .error("minecraft.auth.error.authentication_failed".localized())
-                        }
-                        self?.isLoading = false
+                        self?.handleAuthCallbackError(error)
                         continuation.resume()
                         return
                     }
@@ -173,9 +161,19 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
     @MainActor
     func clearAuthenticationData() {
-        authState = .notAuthenticated
+        logout()
+    }
+
+    @MainActor
+    private func handleAuthCallbackError(_ error: Error) {
+        if let authError = error as? ASWebAuthenticationSessionError,
+           authError.code == .canceledLogin {
+            AppLog.common.info("User cancelled Microsoft authentication")
+            authState = .notAuthenticated
+        } else {
+            AppLog.common.error("Microsoft authentication failed: \(error.localizedDescription)")
+            authState = .error("minecraft.auth.error.authentication_failed".localized())
+        }
         isLoading = false
-        webAuthSession?.cancel()
-        webAuthSession = nil
     }
 }

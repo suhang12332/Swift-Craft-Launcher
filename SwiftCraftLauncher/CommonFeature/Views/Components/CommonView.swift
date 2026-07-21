@@ -145,11 +145,7 @@ struct PathBreadcrumbView: View {
                         .foregroundColor(.primary)
                         .padding(.horizontal, 6)
                 }
-                if idx == count - 1 {
-                    segmentView(idx: idx)
-                } else {
-                    segmentView(idx: idx)
-                }
+                segmentView(idx: idx)
             }
         }
     }
@@ -197,11 +193,7 @@ extension Scene {
     }
 
     func applyRestorationBehaviorDisabled() -> some Scene {
-        if #available(macOS 15.0, *) {
-            return restorationBehavior(.disabled)
-        } else {
-            return self
-        }
+        conditionalRestorationBehavior()
     }
 }
 

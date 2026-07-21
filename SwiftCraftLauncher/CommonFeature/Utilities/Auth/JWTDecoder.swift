@@ -13,54 +13,33 @@ enum JWTDecoder {
     /// - Parameter jwt: A JWT token string.
     /// - Returns: The expiration date, or `nil` if parsing fails.
     static func extractExpirationTime(from jwt: String) -> Date? {
-        let components = jwt.components(separatedBy: ".")
-
-        guard components.count == 3 else {
-            AppLog.common.error("Invalid JWT format: not standard 3-part format")
+        guard let payload = decodePayload(from: jwt),
+              let exp = payload["exp"] as? TimeInterval else {
             return nil
         }
-
-        let payload = components[1]
-        let paddedPayload = addPadding(to: payload)
-
-        guard let payloadData = Data(base64Encoded: paddedPayload) else {
-            AppLog.common.error("JWT payload base64 decode failed")
-            return nil
+        let expirationDate = Date(timeIntervalSince1970: exp)
+        if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
+            AppLog.common.debug("Parsed expiration time from JWT: \(expirationDate)")
         }
-
-        do {
-            let payloadJSON = try JSONSerialization.jsonObject(with: payloadData) as? [String: Any]
-
-            if let exp = payloadJSON?["exp"] as? TimeInterval {
-                let expirationDate = Date(timeIntervalSince1970: exp)
-                if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
-                    AppLog.common.debug("Parsed expiration time from JWT: \(expirationDate)")
-                }
-                return expirationDate
-            } else {
-                AppLog.common.error("exp field not found in JWT payload")
-                return nil
-            }
-        } catch {
-            AppLog.common.error("JWT payload JSON parsing failed: \(error.localizedDescription)")
-            return nil
-        }
+        return expirationDate
     }
 
     /// Extracts all claims from a JWT token payload.
     /// - Parameter jwt: A JWT token string.
     /// - Returns: A dictionary of claims, or `nil` if parsing fails.
     static func extractAllInfo(from jwt: String) -> [String: Any]? {
-        let components = jwt.components(separatedBy: ".")
+        decodePayload(from: jwt)
+    }
 
+    /// Decodes the payload section of a JWT token into a dictionary.
+    private static func decodePayload(from jwt: String) -> [String: Any]? {
+        let components = jwt.components(separatedBy: ".")
         guard components.count == 3 else {
             AppLog.common.error("Invalid JWT format: not standard 3-part format")
             return nil
         }
 
-        let payload = components[1]
-        let paddedPayload = addPadding(to: payload)
-
+        let paddedPayload = addPadding(to: components[1])
         guard let payloadData = Data(base64Encoded: paddedPayload) else {
             AppLog.common.error("JWT payload base64 decode failed")
             return nil

@@ -32,67 +32,24 @@ final class DIContainer: ObservableObject {
     init() {
         // Forward objectWillChange from nested ObservableObject instances so that
         // @EnvironmentObject consumers pick up state changes (e.g. game running/launching).
-        core.gameStatusManager.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-
-        ui.themeManager.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-
-        ui.generalSettingsManager.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-
-        system.minecraftAuthService.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-
-        system.yggdrasilAuthService.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-
-        system.sparkleUpdateService.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
+        forwardObjectWillChange(from: core.gameStatusManager)
+        forwardObjectWillChange(from: ui.themeManager)
+        forwardObjectWillChange(from: ui.generalSettingsManager)
+        forwardObjectWillChange(from: system.minecraftAuthService)
+        forwardObjectWillChange(from: system.yggdrasilAuthService)
+        forwardObjectWillChange(from: system.sparkleUpdateService)
+        forwardObjectWillChange(from: core.errorHandler)
+        forwardObjectWillChange(from: core.cacheInfoManager)
 
         MainActor.assumeIsolated { [weak self] in
             guard let self else { return }
-            ui.openURLModPackImportPresenter.objectWillChange
-                .sink { [weak self] _ in
-                    self?.objectWillChange.send()
-                }
-                .store(in: &cancellables)
+            forwardObjectWillChange(from: ui.openURLModPackImportPresenter)
+            forwardObjectWillChange(from: ui.windowDataStore)
         }
+    }
 
-        MainActor.assumeIsolated { [weak self] in
-            guard let self else { return }
-            ui.windowDataStore.objectWillChange
-                .sink { [weak self] _ in
-                    self?.objectWillChange.send()
-                }
-                .store(in: &cancellables)
-        }
-
-        core.errorHandler.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-
-        core.cacheInfoManager.objectWillChange
+    private func forwardObjectWillChange(from object: some ObservableObject) {
+        object.objectWillChange
             .sink { [weak self] _ in
                 self?.objectWillChange.send()
             }

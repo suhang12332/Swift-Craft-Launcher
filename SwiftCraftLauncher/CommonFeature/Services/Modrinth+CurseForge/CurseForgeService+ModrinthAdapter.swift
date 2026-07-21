@@ -184,11 +184,7 @@ extension CurseForgeService {
         }
 
         let filteredFiles = cfFiles.filter { file in
-            let versionMatch = selectedVersions.isEmpty || !Set(file.gameVersions).isDisjoint(with: selectedVersions)
-
-            let loaderMatch = !shouldFilterByLoader || modLoaderTypes.isEmpty || true
-
-            return versionMatch && loaderMatch
+            selectedVersions.isEmpty || !Set(file.gameVersions).isDisjoint(with: selectedVersions)
         }
 
         return filteredFiles.compactMap { CFToModrinthAdapter.convertFile($0, projectId: normalizedId) }
