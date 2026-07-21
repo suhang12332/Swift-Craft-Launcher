@@ -137,6 +137,7 @@ extension ModPackDependencyInstaller {
                 urlString: downloadUrl,
                 destinationURL: destinationPath,
                 expectedSha1: fileDetail.hash?.value,
+                headers: CurseForgeService.getHeaders(),
             )
 
             if let hash = DIContainer.shared.core.modScanner.sha1Hash(of: downloadedFile) {

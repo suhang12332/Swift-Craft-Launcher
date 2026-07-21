@@ -105,13 +105,14 @@ enum DownloadManager {
         urlString: String,
         destinationURL: URL,
         expectedSha1: String? = nil,
+        headers: [String: String]? = nil,
     ) async throws -> URL {
         do {
             return try await ProgressDownloadManager.downloadFile(
                 urlString: urlString,
                 destinationURL: destinationURL,
                 expectedSha1: expectedSha1,
-                progressHandler: nil,
+                headers: headers,
             )
         } catch {
             throw mapDownloadError(error)

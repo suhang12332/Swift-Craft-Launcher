@@ -114,13 +114,14 @@ class AIChatManager: ObservableObject {
             "messages": try await buildOpenAIMessages(messages: messages),
         ]
 
-        var request = URLRequest(url: url)
-        request.httpMethod = APIClient.HTTPMethods.post
-        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
-        request.setValue(APIClient.bearer(DIContainer.shared.ui.aiSettingsManager.apiKey), forHTTPHeaderField: APIClient.Header.authorization)
-
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
-        request.httpBody = jsonData
+        let request = URLRequest(url: url)
+            .methods(APIClient.HTTPMethods.post)
+            .headers([
+                APIClient.Header.contentType: APIClient.MimeType.json,
+                APIClient.Header.authorization: APIClient.bearer(DIContainer.shared.ui.aiSettingsManager.apiKey),
+            ])
+            .bodys(jsonData)
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
@@ -223,16 +224,18 @@ class AIChatManager: ObservableObject {
             "messages": try await buildOllamaMessages(messages: messages),
         ]
 
-        var request = URLRequest(url: url)
-        request.httpMethod = APIClient.HTTPMethods.post
-        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
-
+        var headers: [String: String] = [
+            APIClient.Header.contentType: APIClient.MimeType.json,
+        ]
         if !DIContainer.shared.ui.aiSettingsManager.apiKey.isEmpty {
-            request.setValue(DIContainer.shared.ui.aiSettingsManager.apiKey, forHTTPHeaderField: APIClient.Header.authorization)
+            headers[APIClient.Header.authorization] = DIContainer.shared.ui.aiSettingsManager.apiKey
         }
 
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
-        request.httpBody = jsonData
+        let request = URLRequest(url: url)
+            .methods(APIClient.HTTPMethods.post)
+            .headers(headers)
+            .bodys(jsonData)
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
@@ -323,12 +326,11 @@ class AIChatManager: ObservableObject {
             "contents": try await buildGeminiContents(messages: messages),
         ]
 
-        var request = URLRequest(url: url)
-        request.httpMethod = APIClient.HTTPMethods.post
-        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
-
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
-        request.httpBody = jsonData
+        let request = URLRequest(url: url)
+            .methods(APIClient.HTTPMethods.post)
+            .headers([APIClient.Header.contentType: APIClient.MimeType.json])
+            .bodys(jsonData)
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
