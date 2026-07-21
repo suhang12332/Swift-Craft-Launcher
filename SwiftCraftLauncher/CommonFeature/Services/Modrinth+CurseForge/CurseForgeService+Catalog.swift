@@ -9,16 +9,9 @@ import Foundation
 
 /// Provides catalog operations for CurseForge categories and game versions.
 extension CurseForgeService {
-    /// Fetches the list of CurseForge categories.
-    /// - Returns: An array of categories, or an empty array on failure.
     static func fetchCategories() async -> [CurseForgeCategory] {
-        do {
-            return try await fetchCategoriesThrowing()
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch CurseForge category list: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
+        await withServiceErrorHandling(context: "fetch CurseForge category list", fallback: []) {
+            try await fetchCategoriesThrowing()
         }
     }
 
@@ -32,16 +25,9 @@ extension CurseForgeService {
         return result.data
     }
 
-    /// Fetches the list of supported game versions from CurseForge.
-    /// - Returns: An array of game versions, or an empty array on failure.
     static func fetchGameVersions() async -> [CurseForgeGameVersion] {
-        do {
-            return try await fetchGameVersionsThrowing()
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch CurseForge game version list: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
+        await withServiceErrorHandling(context: "fetch CurseForge game version list", fallback: []) {
+            try await fetchGameVersionsThrowing()
         }
     }
 

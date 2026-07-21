@@ -13,13 +13,8 @@ extension CurseForgeService {
     /// - Parameter id: The CurseForge project identifier (may include "cf-" prefix).
     /// - Returns: The project details in Modrinth format, or `nil` on failure.
     static func fetchProjectDetailsAsModrinth(id: String) async -> ModrinthProjectDetail? {
-        do {
-            return try await fetchProjectDetailsAsModrinthThrowing(id: id)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch project details (ID: \(id)): \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return nil
+        await withServiceErrorHandling(context: "fetch project details (ID: \(id))", fallback: nil) {
+            try await fetchProjectDetailsAsModrinthThrowing(id: id)
         }
     }
 
@@ -104,13 +99,8 @@ extension CurseForgeService {
     /// - Parameter id: The CurseForge project identifier.
     /// - Returns: An array of versions in Modrinth format, or an empty array on failure.
     static func fetchProjectVersionsAsModrinth(id: String) async -> [ModrinthProjectDetailVersion] {
-        do {
-            return try await fetchProjectVersionsAsModrinthThrowing(id: id)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch project version list (ID: \(id)): \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
+        await withServiceErrorHandling(context: "fetch project version list (ID: \(id))", fallback: []) {
+            try await fetchProjectVersionsAsModrinthThrowing(id: id)
         }
     }
 

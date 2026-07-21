@@ -15,19 +15,14 @@ extension ModrinthService {
         limit: Int,
         query: String?,
     ) async -> ModrinthResult {
-        do {
-            return try await searchProjectsThrowing(
+        await withServiceErrorHandling(context: "search Modrinth projects", fallback: ModrinthResult(hits: [], offset: offset, limit: limit, totalHits: 0)) {
+            try await searchProjectsThrowing(
                 facets: facets,
                 index: AppConstants.modrinthIndex,
                 offset: offset,
                 limit: limit,
                 query: query,
             )
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to search Modrinth projects: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return ModrinthResult(hits: [], offset: offset, limit: limit, totalHits: 0)
         }
     }
 

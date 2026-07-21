@@ -36,8 +36,8 @@ extension CurseForgeService {
         index: Int = 0,
         pageSize: Int = 20,
     ) async -> CurseForgeSearchResult {
-        do {
-            return try await searchProjectsThrowing(
+        await withServiceErrorHandling(context: "search CurseForge projects", fallback: CurseForgeSearchResult(data: [], pagination: nil)) {
+            try await searchProjectsThrowing(
                 gameId: gameId,
                 classId: classId,
                 categoryId: categoryId,
@@ -50,11 +50,6 @@ extension CurseForgeService {
                 index: index,
                 pageSize: pageSize,
             )
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to search CurseForge projects: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return CurseForgeSearchResult(data: [], pagination: nil)
         }
     }
 

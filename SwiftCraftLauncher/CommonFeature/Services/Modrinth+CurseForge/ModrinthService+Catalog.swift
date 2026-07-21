@@ -10,13 +10,8 @@ import Foundation
 /// Provides catalog operations for Modrinth loaders, categories, and game versions.
 extension ModrinthService {
     static func fetchLoaders() async -> [Loader] {
-        do {
-            return try await fetchLoadersThrowing()
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch Modrinth loader list: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
+        await withServiceErrorHandling(context: "fetch Modrinth loader list", fallback: []) {
+            try await fetchLoadersThrowing()
         }
     }
 
@@ -26,13 +21,8 @@ extension ModrinthService {
     }
 
     static func fetchCategories() async -> [Category] {
-        do {
-            return try await fetchCategoriesThrowing()
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch Modrinth category list: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
+        await withServiceErrorHandling(context: "fetch Modrinth category list", fallback: []) {
+            try await fetchCategoriesThrowing()
         }
     }
 
@@ -42,13 +32,8 @@ extension ModrinthService {
     }
 
     static func fetchGameVersions(includeSnapshots: Bool = false) async -> [GameVersion] {
-        do {
-            return try await fetchGameVersionsThrowing(includeSnapshots: includeSnapshots)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch Modrinth game version list: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
+        await withServiceErrorHandling(context: "fetch Modrinth game version list", fallback: []) {
+            try await fetchGameVersionsThrowing(includeSnapshots: includeSnapshots)
         }
     }
 
