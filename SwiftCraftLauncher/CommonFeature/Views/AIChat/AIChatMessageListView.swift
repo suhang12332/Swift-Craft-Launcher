@@ -128,7 +128,7 @@ struct AIChatMessageListView: View {
                     .scaleEffect(0.6)
                     .controlSize(.small)
                 Text("ai.chat.thinking".localized())
-                    .font(.system(size: 12))
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
 

@@ -21,11 +21,11 @@ struct ContributorRankBadgeView: View {
 
             if let icon {
                 Image(systemName: icon)
-                    .font(.system(size: 8, weight: .bold))
+                    .font(.caption2.bold())
                     .foregroundColor(.white)
             } else {
                 Text("\(rank)")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(.caption2.bold())
                     .foregroundColor(.white)
             }
         }

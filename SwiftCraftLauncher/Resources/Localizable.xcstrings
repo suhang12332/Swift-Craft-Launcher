@@ -373,13 +373,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バージョン %@ (%@)"
+            "value" : "バージョン %@ (%@）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "버전 %@ (%@)"
+            "value" : "버전 %@ (%@）"
           }
         },
         "nb" : {
@@ -439,13 +439,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "版本 %@ (%@)"
+            "value" : "版本 %@ (%@）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "版本 %@ (%@)"
+            "value" : "版本 %@ (%@）"
           }
         }
       }
@@ -1612,7 +1612,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 플레이어 이름 길이는 1-16자로 권장되며 문자, 숫자, 밑줄만 포함할 수 있습니다"
+            "value" : "• 플레이어 이름 길이는 1-16자로 권장되며 문자， 숫자， 밑줄만 포함할 수 있습니다"
           }
         },
         "nb" : {
@@ -1672,13 +1672,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 建议玩家名称长度为 1-16 个字符，仅可包含字母、数字和下划线"
+            "value" : "• 建议玩家名称长度为1-16个字符，仅可包含字母、数字和下划线"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 建議玩家名稱長度為 1-16 個字元，僅可包含字母、數字和底線"
+            "value" : "• 建議玩家名稱長度為1-16個字元，僅可包含字母、數字和底線"
           }
         }
       }
@@ -2083,13 +2083,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "离线账户说明:"
+            "value" : "离线账户说明："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "離線賬戶說明:"
+            "value" : "離線賬戶說明："
           }
         }
       }
@@ -2905,13 +2905,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 助手"
+            "value" : "AI助手"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 助手"
+            "value" : "AI助手"
           }
         }
       }
@@ -2977,13 +2977,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "メッセージを入力してください..."
+            "value" : "メッセージを入力してください……"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "메시지를 입력하세요..."
+            "value" : "메시지를 입력하세요……"
           }
         },
         "nb" : {
@@ -3043,13 +3043,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在此输入您的消息..."
+            "value" : "在此输入您的消息……"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在此輸入您的訊息..."
+            "value" : "在此輸入您的訊息……"
           }
         }
       }
@@ -3115,13 +3115,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "考え中..."
+            "value" : "考え中……"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "생각 중..."
+            "value" : "생각 중……"
           }
         },
         "nb" : {
@@ -3181,13 +3181,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在思考..."
+            "value" : "正在思考……"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在思考..."
+            "value" : "正在思考……"
           }
         }
       }
@@ -3397,7 +3397,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "안녕하세요, %@!"
+            "value" : "안녕하세요， %@!"
           }
         },
         "nb" : {
@@ -3528,13 +3528,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ファイル: %@ (読み取れません)"
+            "value" : "ファイル： %@ (読み取れません）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "파일: %@ (읽을 수 없음)"
+            "value" : "파일： %@ (읽을 수 없음）"
           }
         },
         "nb" : {
@@ -3594,13 +3594,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件: %@ (无法读取)"
+            "value" : "文件： %@ (无法读取）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "檔案: %@ (無法讀取)"
+            "value" : "檔案： %@ (無法讀取）"
           }
         }
       }
@@ -3665,13 +3665,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ファイル: %@ (テキストコンテンツを読み取れません)"
+            "value" : "ファイル： %@ (テキストコンテンツを読み取れません）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "파일: %@ (텍스트 내용을 읽을 수 없음)"
+            "value" : "파일： %@ (텍스트 내용을 읽을 수 없음）"
           }
         },
         "nb" : {
@@ -3731,13 +3731,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件: %@ (无法读取文本内容)"
+            "value" : "文件： %@ (无法读取文本内容）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "檔案: %@ (無法讀取文字內容)"
+            "value" : "檔案： %@ (無法讀取文字內容）"
           }
         }
       }
@@ -3802,13 +3802,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ファイル: %@\n内容:\n%@"
+            "value" : "ファイル： %@\n内容：\n%@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "파일: %@\n내용:\n%@"
+            "value" : "파일： %@\n내용：\n%@"
           }
         },
         "nb" : {
@@ -3868,13 +3868,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件: %@\n内容:\n%@"
+            "value" : "文件： %@\n内容：\n%@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "檔案: %@\n內容:\n%@"
+            "value" : "檔案： %@\n內容：\n%@"
           }
         }
       }
@@ -3939,13 +3939,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(コンテンツが切り詰められました)"
+            "value" : "(コンテンツが切り詰められました）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(내용 잘림)"
+            "value" : "(내용 잘림）"
           }
         },
         "nb" : {
@@ -4005,13 +4005,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(内容已截断)"
+            "value" : "(内容已截断）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(內容已截斷)"
+            "value" : "(內容已截斷）"
           }
         }
       }
@@ -5512,13 +5512,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在加载..."
+            "value" : "正在加载……"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在載入..."
+            "value" : "正在載入……"
           }
         }
       }
@@ -7706,13 +7706,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub 贡献者"
+            "value" : "GitHub贡献者"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub 貢獻者"
+            "value" : "GitHub貢獻者"
           }
         }
       }
@@ -8256,13 +8256,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "待下载的前置Mod(必须)"
+            "value" : "待下载的前置Mod(必须）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "待下載的前置Mod(必須)"
+            "value" : "待下載的前置Mod(必須）"
           }
         }
       }
@@ -8327,13 +8327,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バージョンを選択:"
+            "value" : "バージョンを選択："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "버전 선택:"
+            "value" : "버전 선택："
           }
         },
         "nb" : {
@@ -8393,13 +8393,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择版本:"
+            "value" : "选择版本："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選取版本:"
+            "value" : "選取版本："
           }
         }
       }
@@ -8602,13 +8602,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "現在のステップ:%@"
+            "value" : "現在のステップ：%@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "현재 단계:%@"
+            "value" : "현재 단계：%@"
           }
         },
         "nb" : {
@@ -8668,13 +8668,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前步骤:%@"
+            "value" : "当前步骤：%@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "當前步驟:%@"
+            "value" : "當前步驟：%@"
           }
         }
       }
@@ -8739,13 +8739,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ファイル:%d/%d"
+            "value" : "ファイル：%d/%d"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "파일:%d/%d"
+            "value" : "파일：%d/%d"
           }
         },
         "nb" : {
@@ -8805,13 +8805,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件:%d/%d"
+            "value" : "文件：%d/%d"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "檔案:%d/%d"
+            "value" : "檔案：%d/%d"
           }
         }
       }
@@ -9563,13 +9563,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ケープの装備権限がありません (403)"
+            "value" : "ケープの装備権限がありません (403）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "망토 착용 권한이 없습니다 (403)"
+            "value" : "망토 착용 권한이 없습니다 (403）"
           }
         },
         "nb" : {
@@ -9629,13 +9629,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没有装备斗篷的权限 (403)"
+            "value" : "没有装备斗篷的权限 (403）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "沒有裝備斗篷的權限 (403)"
+            "value" : "沒有裝備斗篷的權限 (403）"
           }
         }
       }
@@ -9700,13 +9700,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "この Microsoft アカウントは Minecraft を購入していないか、権限が不足しています。Minecraft を購入したアカウントでログインしてください"
+            "value" : "このMicrosoftアカウントはMinecraftを購入していないか、権限が不足しています。Minecraftを購入したアカウントでログインしてください"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 Microsoft 계정은 Minecraft를 구매하지 않았거나 권한이 부족합니다. Minecraft를 구매한 계정으로 로그인하세요"
+            "value" : "이 Microsoft 계정은 Minecraft를 구매하지 않았거나 권한이 부족합니다。 Minecraft를 구매한 계정으로 로그인하세요"
           }
         },
         "nb" : {
@@ -9766,13 +9766,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该 Microsoft 账户未购买 Minecraft 或权限不足，请使用已购买 Minecraft 的账户登录"
+            "value" : "该Microsoft账户未购买Minecraft或权限不足，请使用已购买Minecraft的账户登录"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "該 Microsoft 帳戶未購買 Minecraft 或權限不足，請使用已購買 Minecraft 的帳戶登入"
+            "value" : "該Microsoft帳戶未購買Minecraft或權限不足，請使用已購買Minecraft的帳戶登入"
           }
         }
       }
@@ -9837,7 +9837,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft アクセストークンが無効または期限切れです"
+            "value" : "Minecraftアクセストークンが無効または期限切れです"
           }
         },
         "ko" : {
@@ -9903,13 +9903,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 访问令牌无效或已过期"
+            "value" : "Minecraft访问令牌无效或已过期"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 存取權杖無效或已過期"
+            "value" : "Minecraft存取權杖無效或已過期"
           }
         }
       }
@@ -10111,13 +10111,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 認証に失敗しました: Xbox Live トークンが無効または期限切れです"
+            "value" : "Minecraft認証に失敗しました： Xbox Liveトークンが無効または期限切れです"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 인증 실패: Xbox Live 토큰이 유효하지 않거나 만료되었습니다"
+            "value" : "Minecraft 인증 실패： Xbox Live 토큰이 유효하지 않거나 만료되었습니다"
           }
         },
         "nb" : {
@@ -10177,13 +10177,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 认证失败: Xbox Live 令牌无效或已过期"
+            "value" : "Minecraft认证失败： Xbox Live令牌无效或已过期"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 認證失敗: Xbox Live 權杖無效或已過期"
+            "value" : "Minecraft認證失敗： Xbox Live權杖無效或已過期"
           }
         }
       }
@@ -10249,7 +10249,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 認証エラー"
+            "value" : "Minecraft認証エラー"
           }
         },
         "ko" : {
@@ -10315,13 +10315,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 认证错误"
+            "value" : "Minecraft认证错误"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 認證錯誤"
+            "value" : "Minecraft認證錯誤"
           }
         }
       }
@@ -10386,13 +10386,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 認証に失敗しました: この Microsoft アカウントは Minecraft を所有していません"
+            "value" : "Minecraft認証に失敗しました： このMicrosoftアカウントはMinecraftを所有していません"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 인증 실패: 이 Microsoft 계정은 Minecraft를 소유하지 않습니다"
+            "value" : "Minecraft 인증 실패： 이 Microsoft 계정은 Minecraft를 소유하지 않습니다"
           }
         },
         "nb" : {
@@ -10452,13 +10452,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 认证失败: 该Microsoft账户未购买Minecraft"
+            "value" : "Minecraft认证失败： 该Microsoft账户未购买Minecraft"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 認證失敗: 該 Microsoft 帳戶未購買 Minecraft"
+            "value" : "Minecraft認證失敗： 該Microsoft帳戶未購買Minecraft"
           }
         }
       }
@@ -10523,13 +10523,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このアカウントは Minecraft を購入していません。Minecraft を所有している Microsoft アカウントでログインしてください"
+            "value" : "このアカウントはMinecraftを購入していません。Minecraftを所有しているMicrosoftアカウントでログインしてください"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 계정은 Minecraft를 구매하지 않았습니다. Minecraft를 소유한 Microsoft 계정으로 로그인하세요"
+            "value" : "이 계정은 Minecraft를 구매하지 않았습니다。 Minecraft를 소유한 Microsoft 계정으로 로그인하세요"
           }
         },
         "nb" : {
@@ -10589,13 +10589,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该账户未购买 Minecraft，请使用已购买 Minecraft 的 Microsoft 账户登录"
+            "value" : "该账户未购买Minecraft，请使用已购买Minecraft的Microsoft账户登录"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "該帳戶未購買 Minecraft，請使用已購買 Minecraft 的 Microsoft 帳戶登入"
+            "value" : "該帳戶未購買Minecraft，請使用已購買Minecraft的Microsoft帳戶登入"
           }
         }
       }
@@ -10666,7 +10666,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "액세스 토큰이 없습니다. 다시 로그인해 주세요"
+            "value" : "액세스 토큰이 없습니다。 다시 로그인해 주세요"
           }
         },
         "nb" : {
@@ -10803,7 +10803,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "로그인이 만료되었습니다. 게임을 시작하기 전에 플레이어 관리에서 이 계정에 다시 로그인해 주세요"
+            "value" : "로그인이 만료되었습니다。 게임을 시작하기 전에 플레이어 관리에서 이 계정에 다시 로그인해 주세요"
           }
         },
         "nb" : {
@@ -11077,7 +11077,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "액세스 토큰이 만료되었습니다. 다시 로그인해 주세요"
+            "value" : "액세스 토큰이 만료되었습니다。 다시 로그인해 주세요"
           }
         },
         "nb" : {
@@ -11214,7 +11214,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "로그인이 만료되었습니다. 이 계정에 다시 로그인해 주세요"
+            "value" : "로그인이 만료되었습니다。 이 계정에 다시 로그인해 주세요"
           }
         },
         "nb" : {
@@ -11488,7 +11488,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "액세스 토큰이 유효하지 않거나 만료되었습니다. 다시 로그인해 주세요"
+            "value" : "액세스 토큰이 유효하지 않거나 만료되었습니다。 다시 로그인해 주세요"
           }
         },
         "nb" : {
@@ -11619,13 +11619,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "トークンの更新中に不明なエラーが発生しました: %@"
+            "value" : "トークンの更新中に不明なエラーが発生しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "토큰을 새로고침하는 중 알 수 없는 오류가 발생했습니다: %@"
+            "value" : "토큰을 새로고침하는 중 알 수 없는 오류가 발생했습니다： %@"
           }
         },
         "nb" : {
@@ -11685,13 +11685,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刷新 Token 时发生未知错误: %@"
+            "value" : "刷新Token时发生未知错误： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重新整理權杖時發生未知錯誤: %@"
+            "value" : "重新整理權杖時發生未知錯誤： %@"
           }
         }
       }
@@ -11762,7 +11762,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 모델이 구성되지 않았습니다. 설정에서 모델 이름을 입력하세요"
+            "value" : "AI 모델이 구성되지 않았습니다。 설정에서 모델 이름을 입력하세요"
           }
         },
         "nb" : {
@@ -11822,13 +11822,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 模型未配置，请在设置中填写模型名称"
+            "value" : "AI模型未配置，请在设置中填写模型名称"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 模型未配置，請在設定中填寫模型名稱"
+            "value" : "AI模型未配置，請在設定中填寫模型名稱"
           }
         }
       }
@@ -11899,7 +11899,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OpenAI 서비스가 구성되지 않았습니다. API 키를 확인하세요"
+            "value" : "OpenAI 서비스가 구성되지 않았습니다。 API 키를 확인하세요"
           }
         },
         "nb" : {
@@ -11959,13 +11959,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OpenAI 服务未配置，请检查 API Key"
+            "value" : "OpenAI服务未配置，请检查API Key"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "OpenAI 服務未配置，請檢查 API Key"
+            "value" : "OpenAI服務未配置，請檢查API Key"
           }
         }
       }
@@ -12169,13 +12169,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ファイルの削除に失敗しました:ゲーム情報またはリソースディレクトリが無効です"
+            "value" : "ファイルの削除に失敗しました：ゲーム情報またはリソースディレクトリが無効です"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "파일 삭제 실패: 게임 정보 또는 리소스 디렉토리가 유효하지 않습니다"
+            "value" : "파일 삭제 실패： 게임 정보 또는 리소스 디렉토리가 유효하지 않습니다"
           }
         },
         "nb" : {
@@ -12235,13 +12235,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法删除文件:游戏信息或资源目录无效"
+            "value" : "无法删除文件：游戏信息或资源目录无效"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法刪除檔案:遊戲資訊或資源目錄無效"
+            "value" : "無法刪除檔案：遊戲資訊或資源目錄無效"
           }
         }
       }
@@ -13266,7 +13266,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector のダウンロードに失敗しました"
+            "value" : "Authlib Injectorのダウンロードに失敗しました"
           }
         },
         "ko" : {
@@ -13332,13 +13332,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下载 Authlib Injector 失败"
+            "value" : "下载Authlib Injector失败"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載 Authlib Injector 失敗"
+            "value" : "下載Authlib Injector失敗"
           }
         }
       }
@@ -13677,13 +13677,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ゲームの所有権確認に失敗しました: HTTP %@"
+            "value" : "ゲームの所有権確認に失敗しました： HTTP %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 소유권 확인 실패: HTTP %@"
+            "value" : "게임 소유권 확인 실패： HTTP %@"
           }
         },
         "nb" : {
@@ -13743,13 +13743,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "检查游戏拥有情况失败: HTTP %@"
+            "value" : "检查游戏拥有情况失败： HTTP %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "檢查遊戲擁有情況失敗: HTTP %@"
+            "value" : "檢查遊戲擁有情況失敗： HTTP %@"
           }
         }
       }
@@ -14428,13 +14428,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法打开JAR文件: %@"
+            "value" : "无法打开JAR文件： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法打開JAR檔案: %@"
+            "value" : "無法打開JAR檔案： %@"
           }
         }
       }
@@ -16006,13 +16006,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "プロセッサの実行に失敗 (終了コード: %d)"
+            "value" : "プロセッサの実行に失敗 (終了コード： %d）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "프로세서 실행 실패 (종료 코드: %d)"
+            "value" : "프로세서 실행 실패 (종료 코드： %d）"
           }
         },
         "nb" : {
@@ -16072,13 +16072,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "处理器执行失败 (退出码: %d)"
+            "value" : "处理器执行失败 (退出码： %d）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "處理器執行失敗 (退出碼: %d)"
+            "value" : "處理器執行失敗 (退出碼： %d）"
           }
         }
       }
@@ -16143,13 +16143,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "プロセッサJARファイルからメインクラスの取得に失敗: %@"
+            "value" : "プロセッサJARファイルからメインクラスの取得に失敗： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "프로세서 JAR 파일에서 메인 클래스 가져오기 실패: %@"
+            "value" : "프로세서 JAR 파일에서 메인 클래스 가져오기 실패： %@"
           }
         },
         "nb" : {
@@ -16209,13 +16209,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法从processor JAR文件中获取主类: %@"
+            "value" : "无法从processor JAR文件中获取主类： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法從processor JAR檔案中獲取主類: %@"
+            "value" : "無法從processor JAR檔案中獲取主類： %@"
           }
         }
       }
@@ -19911,13 +19911,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "读取 Litematica 文件列表失败"
+            "value" : "读取Litematica文件列表失败"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "讀取 Litematica 檔案列表失敗"
+            "value" : "讀取Litematica檔案列表失敗"
           }
         }
       }
@@ -20538,7 +20538,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임이 크래시되었습니다. 자세한 내용과 문제 해결 정보를 보려면 런처 로그를 확인하세요."
+            "value" : "게임이 크래시되었습니다。 자세한 내용과 문제 해결 정보를 보려면 런처 로그를 확인하세요。"
           }
         },
         "nb" : {
@@ -21218,13 +21218,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ケープの非表示に失敗しました: HTTP %@"
+            "value" : "ケープの非表示に失敗しました： HTTP %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "망토 숨기기 실패: HTTP %@"
+            "value" : "망토 숨기기 실패： HTTP %@"
           }
         },
         "nb" : {
@@ -21284,13 +21284,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隐藏斗篷失败: HTTP %@"
+            "value" : "隐藏斗篷失败： HTTP %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "隱藏斗篷失敗: HTTP %@"
+            "value" : "隱藏斗篷失敗： HTTP %@"
           }
         }
       }
@@ -21355,13 +21355,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ケープの表示に失敗しました: HTTP %@"
+            "value" : "ケープの表示に失敗しました： HTTP %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "망토 표시 실패: HTTP %@"
+            "value" : "망토 표시 실패： HTTP %@"
           }
         },
         "nb" : {
@@ -21421,13 +21421,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示斗篷失败: HTTP %@"
+            "value" : "显示斗篷失败： HTTP %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "顯示斗篷失敗: HTTP %@"
+            "value" : "顯示斗篷失敗： HTTP %@"
           }
         }
       }
@@ -21629,13 +21629,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 認証サービスは一時的に利用できません。後でもう一度お試しください"
+            "value" : "Minecraft認証サービスは一時的に利用できません。後でもう一度お試しください"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 인증 서비스가 일시적으로 사용할 수 없습니다. 나중에 다시 시도해 주세요"
+            "value" : "Minecraft 인증 서비스가 일시적으로 사용할 수 없습니다。 나중에 다시 시도해 주세요"
           }
         },
         "nb" : {
@@ -21695,13 +21695,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 认证服务暂时不可用，请稍后重试"
+            "value" : "Minecraft认证服务暂时不可用，请稍后重试"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 認證服務暫時不可用，請稍後重試"
+            "value" : "Minecraft認證服務暫時不可用，請稍後重試"
           }
         }
       }
@@ -21772,7 +21772,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "요청이 너무 많습니다. 나중에 다시 시도해 주세요"
+            "value" : "요청이 너무 많습니다。 나중에 다시 시도해 주세요"
           }
         },
         "nb" : {
@@ -21903,13 +21903,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "スキンのリセットに失敗しました: HTTP %@"
+            "value" : "スキンのリセットに失敗しました： HTTP %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스킨 재설정 실패: HTTP %@"
+            "value" : "스킨 재설정 실패： HTTP %@"
           }
         },
         "nb" : {
@@ -21969,13 +21969,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "皮肤重置失败: HTTP %@"
+            "value" : "皮肤重置失败： HTTP %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "皮膚重設失敗: HTTP %@"
+            "value" : "皮膚重設失敗： HTTP %@"
           }
         }
       }
@@ -22106,13 +22106,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "网络 URL 错误"
+            "value" : "网络URL错误"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "網路 URL 錯誤"
+            "value" : "網路URL錯誤"
           }
         }
       }
@@ -24097,13 +24097,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無効なユーザー名:ユーザー名は空にできません"
+            "value" : "無効なユーザー名：ユーザー名は空にできません"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "잘못된 사용자 이름: 사용자 이름은 비워둘 수 없습니다"
+            "value" : "잘못된 사용자 이름： 사용자 이름은 비워둘 수 없습니다"
           }
         },
         "nb" : {
@@ -24163,13 +24163,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无效的用户名:用户名不能为空"
+            "value" : "无效的用户名：用户名不能为空"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無效的用戶名:用戶名不能為空"
+            "value" : "無效的用戶名：用戶名不能為空"
           }
         }
       }
@@ -24371,13 +24371,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新するユーザーが見つかりません: %@"
+            "value" : "更新するユーザーが見つかりません： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "업데이트할 사용자를 찾을 수 없습니다: %@"
+            "value" : "업데이트할 사용자를 찾을 수 없습니다： %@"
           }
         },
         "nb" : {
@@ -24437,13 +24437,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "要更新的用户不存在: %@"
+            "value" : "要更新的用户不存在： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "要更新的使用者不存在: %@"
+            "value" : "要更新的使用者不存在： %@"
           }
         }
       }
@@ -26084,13 +26084,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 Forge 版本"
+            "value" : "缺少Forge版本"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 Forge 版本"
+            "value" : "缺少Forge版本"
           }
         }
       }
@@ -26299,7 +26299,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "지원되지 않는 게임 버전입니다(%@ 이상 필요)"
+            "value" : "지원되지 않는 게임 버전입니다（%@ 이상 필요）"
           }
         },
         "nb" : {
@@ -26437,7 +26437,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드팩 파싱 실패, 파일 형식을 확인해주세요"
+            "value" : "모드팩 파싱 실패， 파일 형식을 확인해주세요"
           }
         },
         "nb" : {
@@ -26771,13 +26771,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 NeoForge 版本"
+            "value" : "缺少NeoForge版本"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 NeoForge 版本"
+            "value" : "缺少NeoForge版本"
           }
         }
       }
@@ -27392,13 +27392,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "プロセッサーJARが見つかりません: %@"
+            "value" : "プロセッサーJARが見つかりません： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "프로세서 JAR을 찾을 수 없음: %@"
+            "value" : "프로세서 JAR을 찾을 수 없음： %@"
           }
         },
         "nb" : {
@@ -27458,13 +27458,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "找不到处理器JAR文件: %@"
+            "value" : "找不到处理器JAR文件： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "找不到處理器JAR檔案: %@"
+            "value" : "找不到處理器JAR檔案： %@"
           }
         }
       }
@@ -27733,13 +27733,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 Quilt 版本"
+            "value" : "缺少Quilt版本"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 Quilt 版本"
+            "value" : "缺少Quilt版本"
           }
         }
       }
@@ -28489,13 +28489,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "認証情報の保存に失敗しました: %@"
+            "value" : "認証情報の保存に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "인증 자격 증명 저장 실패: %@"
+            "value" : "인증 자격 증명 저장 실패： %@"
           }
         },
         "nb" : {
@@ -28555,13 +28555,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存认证凭据失败: %@"
+            "value" : "保存认证凭据失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "儲存認證憑據失敗: %@"
+            "value" : "儲存認證憑據失敗： %@"
           }
         }
       }
@@ -28900,13 +28900,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "データベースを開けませんでした: %@"
+            "value" : "データベースを開けませんでした： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "데이터베이스 열기 실패: %@"
+            "value" : "데이터베이스 열기 실패： %@"
           }
         },
         "nb" : {
@@ -28966,13 +28966,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法打开数据库: %@"
+            "value" : "无法打开数据库： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法打開資料庫: %@"
+            "value" : "無法打開資料庫： %@"
           }
         }
       }
@@ -29103,13 +29103,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编码 categoryIds 失败"
+            "value" : "编码categoryIds失败"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "編碼 categoryIds 失敗"
+            "value" : "編碼categoryIds失敗"
           }
         }
       }
@@ -29240,13 +29240,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编码 gameVersions 失败"
+            "value" : "编码gameVersions失败"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "編碼 gameVersions 失敗"
+            "value" : "編碼gameVersions失敗"
           }
         }
       }
@@ -29377,13 +29377,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "编码 modLoaderTypes 失败"
+            "value" : "编码modLoaderTypes失败"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "編碼 modLoaderTypes 失敗"
+            "value" : "編碼modLoaderTypes失敗"
           }
         }
       }
@@ -29448,13 +29448,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ゲームの所有権確認中に不明なエラーが発生しました: %@"
+            "value" : "ゲームの所有権確認中に不明なエラーが発生しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 소유권 확인 중 알 수 없는 오류가 발생했습니다: %@"
+            "value" : "게임 소유권 확인 중 알 수 없는 오류가 발생했습니다： %@"
           }
         },
         "nb" : {
@@ -29514,13 +29514,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "检查游戏拥有情况时发生未知错误: %@"
+            "value" : "检查游戏拥有情况时发生未知错误： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "檢查遊戲擁有情況時發生未知錯誤: %@"
+            "value" : "檢查遊戲擁有情況時發生未知錯誤： %@"
           }
         }
       }
@@ -29585,13 +29585,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ゲーム権限の応答の解析に失敗しました: %@"
+            "value" : "ゲーム権限の応答の解析に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 권한 응답을 구문 분석하지 못했습니다: %@"
+            "value" : "게임 권한 응답을 구문 분석하지 못했습니다： %@"
           }
         },
         "nb" : {
@@ -29651,13 +29651,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析游戏权限响应失败: %@"
+            "value" : "解析游戏权限响应失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析遊戲權限響應失敗: %@"
+            "value" : "解析遊戲權限響應失敗： %@"
           }
         }
       }
@@ -29859,13 +29859,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fabric ローダーバージョンデータの解析に失敗: %@"
+            "value" : "Fabricローダーバージョンデータの解析に失敗： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fabric 로더 버전 데이터 분석 실패: %@"
+            "value" : "Fabric 로더 버전 데이터 분석 실패： %@"
           }
         },
         "nb" : {
@@ -29925,13 +29925,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Fabric 加载器版本数据失败: %@"
+            "value" : "解析Fabric加载器版本数据失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Fabric 加載器版本數據失敗: %@"
+            "value" : "解析Fabric加載器版本數據失敗： %@"
           }
         }
       }
@@ -30062,13 +30062,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 Fabric 加载器版本"
+            "value" : "缺少Fabric加载器版本"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "缺少 Fabric 載入器版本"
+            "value" : "缺少Fabric載入器版本"
           }
         }
       }
@@ -30270,13 +30270,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ゲームの削除に失敗しました: %@"
+            "value" : "ゲームの削除に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 삭제 실패: %@"
+            "value" : "게임 삭제 실패： %@"
           }
         },
         "nb" : {
@@ -30336,13 +30336,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除游戏失败: %@"
+            "value" : "删除游戏失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刪除遊戲失敗: %@"
+            "value" : "刪除遊戲失敗： %@"
           }
         }
       }
@@ -31229,13 +31229,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ゲームの保存に失敗しました: %@"
+            "value" : "ゲームの保存に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 저장 실패: %@"
+            "value" : "게임 저장 실패： %@"
           }
         },
         "nb" : {
@@ -31295,13 +31295,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存游戏失败: %@"
+            "value" : "保存游戏失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "儲存遊戲失敗: %@"
+            "value" : "儲存遊戲失敗： %@"
           }
         }
       }
@@ -31503,13 +31503,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ゲームの一括保存に失敗しました: %@"
+            "value" : "ゲームの一括保存に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 일괄 저장 실패: %@"
+            "value" : "게임 일괄 저장 실패： %@"
           }
         },
         "nb" : {
@@ -31569,13 +31569,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批量保存游戏失败: %@"
+            "value" : "批量保存游戏失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批量儲存遊戲失敗: %@"
+            "value" : "批量儲存遊戲失敗： %@"
           }
         }
       }
@@ -31640,13 +31640,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "作業パスのゲームの削除に失敗しました: %@"
+            "value" : "作業パスのゲームの削除に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "작업 경로의 게임 삭제 실패: %@"
+            "value" : "작업 경로의 게임 삭제 실패： %@"
           }
         },
         "nb" : {
@@ -31706,13 +31706,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除工作路径游戏失败: %@"
+            "value" : "删除工作路径游戏失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刪除工作路徑遊戲失敗: %@"
+            "value" : "刪除工作路徑遊戲失敗： %@"
           }
         }
       }
@@ -32189,13 +32189,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無効なMaven座標: %@"
+            "value" : "無効なMaven座標： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "유효하지 않은 Maven 좌표: %@"
+            "value" : "유효하지 않은 Maven 좌표： %@"
           }
         },
         "nb" : {
@@ -32255,13 +32255,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无效的Maven坐标: %@"
+            "value" : "无效的Maven坐标： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無效的Maven坐標: %@"
+            "value" : "無效的Maven坐標： %@"
           }
         }
       }
@@ -32529,13 +32529,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无效的项目 ID"
+            "value" : "无效的项目ID"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無效的項目 ID"
+            "value" : "無效的項目ID"
           }
         }
       }
@@ -33077,13 +33077,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法编码游戏数据为 JSON"
+            "value" : "无法编码游戏数据为JSON"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法編碼遊戲數據為 JSON"
+            "value" : "無法編碼遊戲數據為JSON"
           }
         }
       }
@@ -33285,13 +33285,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最終プレイ時間の更新に失敗しました: %@"
+            "value" : "最終プレイ時間の更新に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "마지막 플레이 시간 업데이트 실패: %@"
+            "value" : "마지막 플레이 시간 업데이트 실패： %@"
           }
         },
         "nb" : {
@@ -33351,13 +33351,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新最后游玩时间失败: %@"
+            "value" : "更新最后游玩时间失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新最後遊玩時間失敗: %@"
+            "value" : "更新最後遊玩時間失敗： %@"
           }
         }
       }
@@ -33696,13 +33696,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraftプロファイルの解析に失敗: %@"
+            "value" : "Minecraftプロファイルの解析に失敗： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 프로필 파싱 실패: %@"
+            "value" : "Minecraft 프로필 파싱 실패： %@"
           }
         },
         "nb" : {
@@ -33762,13 +33762,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Minecraft 用户资料响应失败: %@"
+            "value" : "解析Minecraft用户资料响应失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Minecraft 帳戶資料響應失敗: %@"
+            "value" : "解析Minecraft帳戶資料響應失敗： %@"
           }
         }
       }
@@ -33833,13 +33833,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraftリクエストのシリアライズに失敗: %@"
+            "value" : "Minecraftリクエストのシリアライズに失敗： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 요청 직렬화 실패: %@"
+            "value" : "Minecraft 요청 직렬화 실패： %@"
           }
         },
         "nb" : {
@@ -33899,13 +33899,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "序列化 Minecraft 认证请求失败: %@"
+            "value" : "序列化Minecraft认证请求失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "序列化 Minecraft 認證請求失敗: %@"
+            "value" : "序列化Minecraft認證請求失敗： %@"
           }
         }
       }
@@ -33970,13 +33970,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraftトークンの解析に失敗: %@"
+            "value" : "Minecraftトークンの解析に失敗： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 토큰 파싱 실패: %@"
+            "value" : "Minecraft 토큰 파싱 실패： %@"
           }
         },
         "nb" : {
@@ -34036,13 +34036,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Minecraft 访问令牌响应失败: %@"
+            "value" : "解析Minecraft访问令牌响应失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Minecraft 訪問令牌響應失敗: %@"
+            "value" : "解析Minecraft訪問令牌響應失敗： %@"
           }
         }
       }
@@ -34107,13 +34107,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mmapを有効にできませんでした: %@"
+            "value" : "mmapを有効にできませんでした： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "mmap 활성화 실패: %@"
+            "value" : "mmap 활성화 실패： %@"
           }
         },
         "nb" : {
@@ -34173,13 +34173,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法启用 mmap: %@"
+            "value" : "无法启用mmap: %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法啟用 mmap: %@"
+            "value" : "無法啟用mmap: %@"
           }
         }
       }
@@ -34244,13 +34244,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MODキャッシュの一括削除に失敗しました: %@"
+            "value" : "MODキャッシュの一括削除に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드 캐시 일괄 삭제 실패: %@"
+            "value" : "모드 캐시 일괄 삭제 실패： %@"
           }
         },
         "nb" : {
@@ -34310,13 +34310,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批量删除 mod 缓存失败: %@"
+            "value" : "批量删除mod缓存失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批量刪除 mod 緩存失敗: %@"
+            "value" : "批量刪除mod緩存失敗： %@"
           }
         }
       }
@@ -34381,13 +34381,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MODキャッシュの一括保存に失敗しました: %@"
+            "value" : "MODキャッシュの一括保存に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드 캐시 일괄 저장 실패: %@"
+            "value" : "모드 캐시 일괄 저장 실패： %@"
           }
         },
         "nb" : {
@@ -34447,13 +34447,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批量保存 mod 缓存失败: %@"
+            "value" : "批量保存mod缓存失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "批量儲存 mod 緩存失敗: %@"
+            "value" : "批量儲存mod緩存失敗： %@"
           }
         }
       }
@@ -34518,13 +34518,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MODキャッシュの削除に失敗しました: %@"
+            "value" : "MODキャッシュの削除に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드 캐시 삭제 실패: %@"
+            "value" : "모드 캐시 삭제 실패： %@"
           }
         },
         "nb" : {
@@ -34584,13 +34584,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "删除 mod 缓存失败: %@"
+            "value" : "删除mod缓存失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刪除 mod 緩存失敗: %@"
+            "value" : "刪除mod緩存失敗： %@"
           }
         }
       }
@@ -34655,13 +34655,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MODキャッシュの保存に失敗しました: %@"
+            "value" : "MODキャッシュの保存に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드 캐시 저장 실패: %@"
+            "value" : "모드 캐시 저장 실패： %@"
           }
         },
         "nb" : {
@@ -34721,13 +34721,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存 mod 缓存失败: %@"
+            "value" : "保存mod缓存失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "儲存 mod 緩存失敗: %@"
+            "value" : "儲存mod緩存失敗： %@"
           }
         }
       }
@@ -34792,13 +34792,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MODキャッシュの保存に失敗しました: %@"
+            "value" : "MODキャッシュの保存に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드 캐시 저장 실패: %@"
+            "value" : "모드 캐시 저장 실패： %@"
           }
         },
         "nb" : {
@@ -34858,13 +34858,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存 mod 缓存失败: %@"
+            "value" : "保存mod缓存失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "儲存 mod 緩存失敗: %@"
+            "value" : "儲存mod緩存失敗： %@"
           }
         }
       }
@@ -35066,13 +35066,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "プラットフォームデータが見つかりません: %@"
+            "value" : "プラットフォームデータが見つかりません： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "플랫폼 데이터를 찾을 수 없습니다: %@"
+            "value" : "플랫폼 데이터를 찾을 수 없습니다： %@"
           }
         },
         "nb" : {
@@ -36439,13 +36439,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SQLの実行に失敗しました: %@"
+            "value" : "SQLの実行に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SQL 실행 실패: %@"
+            "value" : "SQL 실행 실패： %@"
           }
         },
         "nb" : {
@@ -36505,13 +36505,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SQL 执行失败: %@"
+            "value" : "SQL执行失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SQL 執行失敗: %@"
+            "value" : "SQL執行失敗： %@"
           }
         }
       }
@@ -36576,13 +36576,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SQLステートメントの準備に失敗しました: %@"
+            "value" : "SQLステートメントの準備に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SQL 문 준비 실패: %@"
+            "value" : "SQL 문 준비 실패： %@"
           }
         },
         "nb" : {
@@ -36642,13 +36642,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法准备 SQL 语句: %@"
+            "value" : "无法准备SQL语句： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法準備 SQL 語句: %@"
+            "value" : "無法準備SQL語句： %@"
           }
         }
       }
@@ -36713,13 +36713,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "トランザクションの開始に失敗しました: %@"
+            "value" : "トランザクションの開始に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "트랜잭션 시작 실패: %@"
+            "value" : "트랜잭션 시작 실패： %@"
           }
         },
         "nb" : {
@@ -36779,13 +36779,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法开始事务: %@"
+            "value" : "无法开始事务： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法開始事務: %@"
+            "value" : "無法開始事務： %@"
           }
         }
       }
@@ -36850,13 +36850,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "トランザクションのコミットに失敗しました: %@"
+            "value" : "トランザクションのコミットに失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "트랜잭션 커밋 실패: %@"
+            "value" : "트랜잭션 커밋 실패： %@"
           }
         },
         "nb" : {
@@ -36916,13 +36916,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法提交事务: %@"
+            "value" : "无法提交事务： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法提交事務: %@"
+            "value" : "無法提交事務： %@"
           }
         }
       }
@@ -37124,13 +37124,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ユーザー基本情報の読み込みに失敗しました: %@"
+            "value" : "ユーザー基本情報の読み込みに失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사용자 기본 정보 로드 실패: %@"
+            "value" : "사용자 기본 정보 로드 실패： %@"
           }
         },
         "nb" : {
@@ -37190,13 +37190,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加载用户基本信息失败: %@"
+            "value" : "加载用户基本信息失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "載入使用者基本資訊失敗: %@"
+            "value" : "載入使用者基本資訊失敗： %@"
           }
         }
       }
@@ -37261,13 +37261,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ユーザー基本情報の保存に失敗しました: %@"
+            "value" : "ユーザー基本情報の保存に失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사용자 기본 정보 저장 실패: %@"
+            "value" : "사용자 기본 정보 저장 실패： %@"
           }
         },
         "nb" : {
@@ -37327,13 +37327,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存用户基本信息失败: %@"
+            "value" : "保存用户基本信息失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "儲存使用者基本資訊失敗: %@"
+            "value" : "儲存使用者基本資訊失敗： %@"
           }
         }
       }
@@ -37672,13 +37672,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ バージョンマニフェストの解析に失敗: %@"
+            "value" : "%@ バージョンマニフェストの解析に失敗： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 버전 매니페스트 파싱 실패: %@"
+            "value" : "%@ 버전 매니페스트 파싱 실패： %@"
           }
         },
         "nb" : {
@@ -37738,13 +37738,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 %@ 版本清单失败: %@"
+            "value" : "解析 %@ 版本清单失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 %@ 版本清單失敗: %@"
+            "value" : "解析 %@ 版本清單失敗： %@"
           }
         }
       }
@@ -37809,13 +37809,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "WALモードを有効にできませんでした: %@"
+            "value" : "WALモードを有効にできませんでした： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "WAL 모드 활성화 실패: %@"
+            "value" : "WAL 모드 활성화 실패： %@"
           }
         },
         "nb" : {
@@ -37875,13 +37875,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法启用 WAL 模式: %@"
+            "value" : "无法启用WAL模式： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法啟用 WAL 模式: %@"
+            "value" : "無法啟用WAL模式： %@"
           }
         }
       }
@@ -37946,13 +37946,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Xbox Liveリクエストのシリアライズに失敗: %@"
+            "value" : "Xbox Liveリクエストのシリアライズに失敗： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Xbox Live 요청 직렬화 실패: %@"
+            "value" : "Xbox Live 요청 직렬화 실패： %@"
           }
         },
         "nb" : {
@@ -38012,13 +38012,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "序列化 Xbox Live 认证请求失败: %@"
+            "value" : "序列化Xbox Live认证请求失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "序列化 Xbox Live 認證請求失敗: %@"
+            "value" : "序列化Xbox Live認證請求失敗： %@"
           }
         }
       }
@@ -38083,13 +38083,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Xbox Liveトークンの解析に失敗: %@"
+            "value" : "Xbox Liveトークンの解析に失敗： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Xbox Live 토큰 파싱 실패: %@"
+            "value" : "Xbox Live 토큰 파싱 실패： %@"
           }
         },
         "nb" : {
@@ -38149,13 +38149,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Xbox Live 令牌响应失败: %@"
+            "value" : "解析Xbox Live令牌响应失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Xbox Live 令牌響應失敗: %@"
+            "value" : "解析Xbox Live令牌響應失敗： %@"
           }
         }
       }
@@ -38220,13 +38220,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "XSTSリクエストのシリアライズに失敗: %@"
+            "value" : "XSTSリクエストのシリアライズに失敗： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "XSTS 요청 직렬화 실패: %@"
+            "value" : "XSTS 요청 직렬화 실패： %@"
           }
         },
         "nb" : {
@@ -38286,13 +38286,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "序列化 XSTS 认证请求失败: %@"
+            "value" : "序列化XSTS认证请求失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "序列化 XSTS 認證請求失敗: %@"
+            "value" : "序列化XSTS認證請求失敗： %@"
           }
         }
       }
@@ -38357,13 +38357,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "XSTSトークンの解析に失敗: %@"
+            "value" : "XSTSトークンの解析に失敗： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "XSTS 토큰 파싱 실패: %@"
+            "value" : "XSTS 토큰 파싱 실패： %@"
           }
         },
         "nb" : {
@@ -38423,13 +38423,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 XSTS 令牌响应失败: %@"
+            "value" : "解析XSTS令牌响应失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 XSTS 令牌響應失敗: %@"
+            "value" : "解析XSTS令牌響應失敗： %@"
           }
         }
       }
@@ -38500,7 +38500,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "플레이어 프로필을 찾을 수 없습니다."
+            "value" : "플레이어 프로필을 찾을 수 없습니다。"
           }
         },
         "nb" : {
@@ -38631,13 +38631,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yggdrasil からのプレイヤープロファイル データを解析できませんでした。"
+            "value" : "Yggdrasilからのプレイヤープロファイル データを解析できませんでした。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yggdrasil에서 플레이어 프로필 데이터를 해석하지 못했습니다."
+            "value" : "Yggdrasil에서 플레이어 프로필 데이터를 해석하지 못했습니다。"
           }
         },
         "nb" : {
@@ -38697,13 +38697,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Yggdrasil 玩家资料失败：格式无法识别"
+            "value" : "解析Yggdrasil玩家资料失败：格式无法识别"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Yggdrasil 玩家資料失敗：格式無法識別"
+            "value" : "解析Yggdrasil玩家資料失敗：格式無法識別"
           }
         }
       }
@@ -38768,13 +38768,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "プレイヤープロファイルの URL が無効です。"
+            "value" : "プレイヤープロファイルのURLが無効です。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "플레이어 프로필 URL이 올바르지 않습니다."
+            "value" : "플레이어 프로필 URL이 올바르지 않습니다。"
           }
         },
         "nb" : {
@@ -38905,13 +38905,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "リフレッシュトークンの URL が無効です。"
+            "value" : "リフレッシュトークンのURLが無効です。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "리프레시 토큰 URL이 올바르지 않습니다."
+            "value" : "리프레시 토큰 URL이 올바르지 않습니다。"
           }
         },
         "nb" : {
@@ -38971,13 +38971,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刷新 Token 地址无效"
+            "value" : "刷新Token地址无效"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重新整理 Token 位址無效"
+            "value" : "重新整理Token位址無效"
           }
         }
       }
@@ -39042,13 +39042,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yggdrasil トークンの応答を解析できませんでした。"
+            "value" : "Yggdrasilトークンの応答を解析できませんでした。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yggdrasil 토큰 응답을 해석하지 못했습니다."
+            "value" : "Yggdrasil 토큰 응답을 해석하지 못했습니다。"
           }
         },
         "nb" : {
@@ -39108,13 +39108,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Yggdrasil Token 响应失败"
+            "value" : "解析Yggdrasil Token响应失败"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Yggdrasil Token 回應失敗"
+            "value" : "解析Yggdrasil Token回應失敗"
           }
         }
       }
@@ -39179,13 +39179,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "トークン URL が無効です。"
+            "value" : "トークンURLが無効です。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "토큰 URL이 올바르지 않습니다."
+            "value" : "토큰 URL이 올바르지 않습니다。"
           }
         },
         "nb" : {
@@ -39245,13 +39245,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Token 地址无效"
+            "value" : "Token地址无效"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Token 位址無效"
+            "value" : "Token位址無效"
           }
         }
       }
@@ -39453,13 +39453,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
+            "value" : "例： `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "예시: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
+            "value" : "예시： `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "nb" : {
@@ -39519,13 +39519,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例如:`JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
+            "value" : "例如：`JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例如:`JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
+            "value" : "例如：`JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         }
       }
@@ -39591,7 +39591,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fabric ローダー"
+            "value" : "Fabricローダー"
           }
         },
         "ko" : {
@@ -39657,13 +39657,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fabric 加载器"
+            "value" : "Fabric加载器"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fabric 加載器"
+            "value" : "Fabric加載器"
           }
         }
       }
@@ -41514,7 +41514,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Forge ローダー"
+            "value" : "Forgeローダー"
           }
         },
         "ko" : {
@@ -41580,13 +41580,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Forge 加载器"
+            "value" : "Forge加载器"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Forge 加載器"
+            "value" : "Forge加載器"
           }
         }
       }
@@ -41651,13 +41651,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "サードパーティアカウントを使用しています。ゲーム起動時に認証サーバーへ接続するには authlib-injector が必要です。\n\n「続行」をタップすると authlib-injector なしで起動します。ログインやスキンの同期が失敗する場合があります。\n\nauthlib-injector を使用するには、ランチャー設定のプレイヤー設定からダウンロードしてください。"
+            "value" : "サードパーティアカウントを使用しています。ゲーム起動時に認証サーバーへ接続するにはauthlib-injectorが必要です。\n\n「続行」をタップするとauthlib-injectorなしで起動します。ログインやスキンの同期が失敗する場合があります。\n\nauthlib-injectorを使用するには、ランチャー設定のプレイヤー設定からダウンロードしてください。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "서드파티 계정을 사용 중입니다. 게임 실행 시 인증 서버에 연결하려면 authlib-injector가 필요합니다.\n\n계속을 누르면 authlib-injector 없이 실행됩니다. 로그인 또는 스킨 동기화가 실패할 수 있습니다.\n\nauthlib-injector를 사용하려면 런처 설정의 플레이어 설정에서 다운로드하세요."
+            "value" : "서드파티 계정을 사용 중입니다。 게임 실행 시 인증 서버에 연결하려면 authlib-injector가 필요합니다。\n\n계속을 누르면 authlib-injector 없이 실행됩니다。 로그인 또는 스킨 동기화가 실패할 수 있습니다。\n\nauthlib-injector를 사용하려면 런처 설정의 플레이어 설정에서 다운로드하세요。"
           }
         },
         "nb" : {
@@ -41717,13 +41717,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前为第三方账号，启动游戏时需要 authlib-injector 才能连接认证服务器。\n\n点击继续则不使用 authlib-injector 启动游戏，可能无法登录或同步皮肤。\n\n如果要使用 authlib-injector，则前往启动器设置的玩家设置中进行下载"
+            "value" : "当前为第三方账号，启动游戏时需要authlib-injector才能连接认证服务器。\n\n点击继续则不使用authlib-injector启动游戏，可能无法登录或同步皮肤。\n\n如果要使用authlib-injector，则前往启动器设置的玩家设置中进行下载"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "您正在使用第三方帳號。啟動遊戲時需要 authlib-injector 才能連接認證伺服器。\n\n點擊繼續則不使用 authlib-injector 啟動遊戲，可能無法登入或同步皮膚。\n\n若要使用 authlib-injector，請前往啟動器設定中的玩家設定進行下載。"
+            "value" : "您正在使用第三方帳號。啟動遊戲時需要authlib-injector才能連接認證伺服器。\n\n點擊繼續則不使用authlib-injector啟動遊戲，可能無法登入或同步皮膚。\n\n若要使用authlib-injector，請前往啟動器設定中的玩家設定進行下載。"
           }
         }
       }
@@ -41788,7 +41788,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector が見つかりません"
+            "value" : "Authlib Injectorが見つかりません"
           }
         },
         "ko" : {
@@ -41854,13 +41854,424 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未找到 Authlib Injector"
+            "value" : "未找到Authlib Injector"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未找到 Authlib Injector"
+            "value" : "未找到Authlib Injector"
+          }
+        }
+      }
+    },
+    "game_launch.memory_pressure.critical_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نظامك يعاني من ضغطذاكرة حرج. يُنصح بشدة بعدم تشغيل اللعبة."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit system har kritisk hukommelsespresion. Det frarådes kraftigt at starte spillet."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr System unterliegt einem kritischen Speicherdruck. Das Starten des Spiels wird dringend nicht empfohlen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your system is under critical memory pressure. Launching the game is strongly discouraged."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su sistema está bajo presión de memoria crítica. Se desaconseja encarecidamente iniciar el juego."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Järjestelmässäsi on kriittinen muistipaine. Pelin käynnistäminen on erittäin epäsuositeltua."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre système est sous pression mémoire critique. Le lancement du jeu est fortement déconseillé."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आपके सिस्टम में गंभीर मेमोरी दबाव है। गेम लॉन्च करने की दृढ़ता से अनुशंसा नहीं की जाती।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il sistema è sotto pressione sulla memoria critica. L'avvio del gioco è fortemente sconsigliato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "システムに重大なメモリプレッシャーがあります。ゲームの起動は強く推奨されません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시스템에 심각한 메모리 압력이 있습니다。 게임 시작은 강력히 권장되지 않습니다。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Systemet ditt har kritisk minnetrykk. Det frarådes på det sterkeste å starte spillet."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uw systeem heeft kritieke geheugendruk. Het starten van het spel wordt ten zeerste afgeraden."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twój system jest pod krytycznym ciśnieniem pamięci. Uruchomienie gry jest zdecydowanie odradzane."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu sistema está sob pressão de memória crítica. Iniciar o jogo é fortemente desencorajado."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваша система испытывает критическое давление памяти. Запуск игры настоятельно не рекомендуется."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ditt system har kritiskt minnestryck. Att starta spelet rekommenderas starkt inte."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ระบบของคุณมีแรงกดดันหน่วยความจำวิกฤต การเริ่มเกมไม่แนะนำอย่างยิ่ง"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sisteminiz kritik bellek basıncı altında. Oyunu başlatmak kesinlikle önerilmez."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hệ thống của bạn đang bị áp lực bộ nhớ nghiêm trọng. Khởi động trò chơi bị khuyến cáo mạnh mẽ."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的系统正处于严重的内存压力下，强烈不建议启动游戏。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的系統正處於嚴重的記憶體壓力下，強烈不建議啟動遊戲。"
+          }
+        }
+      }
+    },
+    "game_launch.memory_pressure.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم اكتشاف ضغط الذاكرة"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hukommelsespresion opdaget"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speicherdruck erkannt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Memory Pressure Detected"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presión de memoria detectada"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muistipaine havaittu"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pression mémoire détectée"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मेमोरी दबाव का पता चला"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pressione sulla memoria rilevata"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メモリプレッシャーを検出"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메모리 압력 감지"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minnetrykk oppdaget"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geheugendruk gedetecteerd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wykryto ciśnienie pamięci"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pressão de memória detectada"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обнаружено давление памяти"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minnestryck upptäckt"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตรวจพบแรงกดดันหน่วยความจำ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bellek basıncı algılandı"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phát hiện áp lực bộ nhớ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检测到内存压力"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偵測到記憶體壓力"
+          }
+        }
+      }
+    },
+    "game_launch.memory_pressure.warning_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نظامك يعاني من ضغطذاكرة. تشغيل اللعبة قد يسبب مشاكل في الأداء أو انهيارات."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit system har hukommelsespresion. Start af spillet kan forårsage ydeevneproblemer eller nedbrud."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihr System unterliegt einem Speicherdruck. Das Starten des Spiels kann zu Leistungsproblemen oder Abstürzen führen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your system is under memory pressure. Launching the game may cause performance issues or crashes."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Su sistema está bajo presión de memoria. Iniciar el juego puede causar problemas de rendimiento o caídas."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Järjestelmässäsi on muistipaine. Pelin käynnistäminen voi aiheuttaa suorituskykyongelmia tai kaatumisia."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre système est sous pression mémoire. Le lancement du jeu peut provoquer des problèmes de performance ou des plantages."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आपके सिस्टम में मेमोरी दबाव है। गेम लॉन्च करने से प्रदर्शन समस्याएं या क्रैश हो सकते हैं।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il sistema è sotto pressione sulla memoria. L'avvio del gioco può causare problemi di prestazione o crash."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "システムにメモリプレッシャーがあります。ゲームの起動により、パフォーマンスの問題やクラッシュが発生する可能性があります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시스템에 메모리 압력이 있습니다。 게임을 시작하면 성능 문제나 충돌이 발생할 수 있습니다。"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Systemet ditt har minnetrykk. Å starte spillet kan forårsake ytelsesproblemer eller krasj."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uw systeem heeft geheugendruk. Het starten van het spel kan prestatieproblemen of crashes veroorzaken."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twój system jest pod ciśnieniem pamięci. Uruchomienie gry może spowodować problemy z wydajnością lub awarie."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seu sistema está sob pressão de memória. Iniciar o jogo pode causar problemas de desempenho ou travamentos."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ваша система испытывает давление памяти. Запуск игры может вызвать проблемы с производительностью или сбои."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ditt system har minnestryck. Att starta spelet kan orsaka prestandaproblem eller krascher."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ระบบของคุณมีแรงกดดันหน่วยความจำ การเริ่มเกมอาจทำให้เกิดปัญหาด้านประสิทธิภาพหรือเกิดการขัดข้อง"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sisteminiz bellek basıncı altında. Oyunu başlatmak performans sorunlarına veya çökmelere neden olabilir."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hệ thống của bạn đang bị áp lực bộ nhớ. Khởi động trò chơi có thể gây ra vấn đề hiệu suất hoặc sự cố."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的系统正处于内存压力下，启动游戏可能会导致性能问题或崩溃。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您的系統正處於記憶體壓力下，啟動遊戲可能會導致效能問題或崩潰。"
           }
         }
       }
@@ -42475,7 +42886,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod ローダー"
+            "value" : "Modローダー"
           }
         },
         "ko" : {
@@ -42755,7 +43166,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 이름이 이미 존재합니다. 변경해 주세요"
+            "value" : "게임 이름이 이미 존재합니다。 변경해 주세요"
           }
         },
         "nb" : {
@@ -45497,13 +45908,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "スキーマ情報の読み込みに失敗しました: %@"
+            "value" : "スキーマ情報の読み込みに失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "도면 정보 로드 실패: %@"
+            "value" : "도면 정보 로드 실패： %@"
           }
         },
         "nb" : {
@@ -45563,13 +45974,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加载投影信息失败: %@"
+            "value" : "加载投影信息失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "載入投影資訊失敗: %@"
+            "value" : "載入投影資訊失敗： %@"
           }
         }
       }
@@ -45641,7 +46052,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "도면 메타데이터를 구문 분석할 수 없습니다. 파일이 손상되었거나 지원되지 않는 형식일 수 있습니다."
+            "value" : "도면 메타데이터를 구문 분석할 수 없습니다。 파일이 손상되었거나 지원되지 않는 형식일 수 있습니다。"
           }
         },
         "nb" : {
@@ -47705,13 +48116,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AIドキュメント (zread)"
+            "value" : "AIドキュメント (zread）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 문서 (zread)"
+            "value" : "AI 문서 (zread）"
           }
         },
         "nb" : {
@@ -47771,13 +48182,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 文档 (zread)"
+            "value" : "AI文档 (zread）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 文檔 (zread)"
+            "value" : "AI文檔 (zread）"
           }
         }
       }
@@ -48257,7 +48668,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub ディスカッション"
+            "value" : "GitHubディスカッション"
           }
         },
         "ko" : {
@@ -48323,13 +48734,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub 讨论区"
+            "value" : "GitHub讨论区"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub 討論區"
+            "value" : "GitHub討論區"
           }
         }
       }
@@ -48461,13 +48872,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QQ 群"
+            "value" : "QQ群"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QQ 群"
+            "value" : "QQ群"
           }
         }
       }
@@ -49835,13 +50246,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无效的回调 URL"
+            "value" : "无效的回调URL"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無效的回調 URL"
+            "value" : "無效的回調URL"
           }
         }
       }
@@ -50180,13 +50591,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "認証プロセスを完了中です。お待ちください..."
+            "value" : "認証プロセスを完了中です。お待ちください……"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "인증 프로세스를 완료하는 중입니다. 잠시 기다려 주세요..."
+            "value" : "인증 프로세스를 완료하는 중입니다。 잠시 기다려 주세요……"
           }
         },
         "nb" : {
@@ -50246,13 +50657,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在完成认证流程，请稍候..."
+            "value" : "正在完成认证流程，请稍候……"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在完成認證流程，請稍候..."
+            "value" : "正在完成認證流程，請稍候……"
           }
         }
       }
@@ -50866,7 +51277,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Microsoft アカウントで Minecraft にログイン"
+            "value" : "MicrosoftアカウントでMinecraftにログイン"
           }
         },
         "ko" : {
@@ -50932,13 +51343,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用 Microsoft 账户登录 Minecraft"
+            "value" : "使用Microsoft账户登录Minecraft"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用 Microsoft 帳戶登入 Minecraft"
+            "value" : "使用Microsoft帳戶登入Minecraft"
           }
         }
       }
@@ -51414,13 +51825,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft フレンドを開く（Mojang サービス）"
+            "value" : "Minecraftフレンドを開く（Mojangサービス）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 친구 열기 (Mojang 서비스)"
+            "value" : "Minecraft 친구 열기 (Mojang 서비스）"
           }
         },
         "nb" : {
@@ -51480,13 +51891,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Minecraft 好友（Mojang 服务）"
+            "value" : "打开Minecraft好友（Mojang服务）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開啟 Minecraft 好友（Mojang 服務）"
+            "value" : "開啟Minecraft好友（Mojang服務）"
           }
         }
       }
@@ -53614,7 +54025,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드팩에 대한 간단한 설명 (선택 사항)"
+            "value" : "모드팩에 대한 간단한 설명 (선택 사항）"
           }
         },
         "nb" : {
@@ -55117,13 +55528,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "モッドパックを処理中..."
+            "value" : "モッドパックを処理中……"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드팩 처리 중..."
+            "value" : "모드팩 처리 중……"
           }
         },
         "nb" : {
@@ -55183,13 +55594,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在处理整合包..."
+            "value" : "正在处理整合包……"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在處理整合包..."
+            "value" : "正在處理整合包……"
           }
         }
       }
@@ -56217,7 +56628,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NeoForge ローダー"
+            "value" : "NeoForgeローダー"
           }
         },
         "ko" : {
@@ -56283,13 +56694,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NeoForge 加载器"
+            "value" : "NeoForge加载器"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "NeoForge 加載器"
+            "value" : "NeoForge加載器"
           }
         }
       }
@@ -56360,7 +56771,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 작업을 수행하기 전에 먼저 로컬 게임을 추가해 주세요."
+            "value" : "이 작업을 수행하기 전에 먼저 로컬 게임을 추가해 주세요。"
           }
         },
         "nb" : {
@@ -56629,13 +57040,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ (バージョン: %@、ローダー: %@) が正常にダウンロードされました。"
+            "value" : "%@ (バージョン： %@、ローダー： %@） が正常にダウンロードされました。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ (버전: %@, 로더: %@)가 성공적으로 다운로드되었습니다."
+            "value" : "%@ (버전： %@, 로더： %@)가 성공적으로 다운로드되었습니다。"
           }
         },
         "nb" : {
@@ -56695,13 +57106,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ (版本: %@, 加载器: %@) 已成功下载。"
+            "value" : "%@ (版本： %@, 加载器： %@） 已成功下载。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ (版本: %@, 加載器: %@) 已成功下載。"
+            "value" : "%@ (版本： %@, 加載器： %@） 已成功下載。"
           }
         }
       }
@@ -58415,7 +58826,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PNG 64×64 またはレガシー 64×32"
+            "value" : "PNG 64×64またはレガシー64×32"
           }
         },
         "ko" : {
@@ -58481,13 +58892,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PNG 64×64 或旧版 64×32"
+            "value" : "PNG 64×64或旧版64×32"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "PNG 64×64 或舊版 64×32"
+            "value" : "PNG 64×64或舊版64×32"
           }
         }
       }
@@ -59578,13 +59989,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加入 Discord"
+            "value" : "加入Discord"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加入 Discord"
+            "value" : "加入Discord"
           }
         }
       }
@@ -60126,13 +60537,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod 加载器"
+            "value" : "Mod加载器"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod 加載器"
+            "value" : "Mod加載器"
           }
         }
       }
@@ -60471,7 +60882,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QuiltMC ローダー"
+            "value" : "QuiltMCローダー"
           }
         },
         "ko" : {
@@ -60537,13 +60948,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QuiltMc 加载器"
+            "value" : "QuiltMc加载器"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QuiltMC 加載器"
+            "value" : "QuiltMC加載器"
           }
         }
       }
@@ -60609,13 +61020,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "リリース: "
+            "value" : "リリース： "
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "출시: "
+            "value" : "출시： "
           }
         },
         "nb" : {
@@ -60675,13 +61086,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "发布于: "
+            "value" : "发布于： "
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "發布於: "
+            "value" : "發布於： "
           }
         }
       }
@@ -65412,7 +65823,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "25565 (선택 사항)"
+            "value" : "25565 (선택 사항）"
           }
         },
         "nb" : {
@@ -65680,13 +66091,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "level.dat の構造が無効です（Data タグが欠落しています）"
+            "value" : "level.datの構造が無効です（Dataタグが欠落しています）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "level.dat 구조가 유효하지 않습니다 (Data 태그 누락)"
+            "value" : "level.dat 구조가 유효하지 않습니다 (Data 태그 누락）"
           }
         },
         "nb" : {
@@ -65746,13 +66157,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "level.dat 结构不符合预期（缺少 Data 标签）"
+            "value" : "level.dat结构不符合预期（缺少Data标签）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "level.dat 結構不符合預期（缺少 Data 標籤）"
+            "value" : "level.dat結構不符合預期（缺少Data標籤）"
           }
         }
       }
@@ -65817,7 +66228,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "level.dat ファイルが見つかりません"
+            "value" : "level.datファイルが見つかりません"
           }
         },
         "ko" : {
@@ -65883,13 +66294,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未找到 level.dat 文件"
+            "value" : "未找到level.dat文件"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未找到 level.dat 檔案"
+            "value" : "未找到level.dat檔案"
           }
         }
       }
@@ -65954,13 +66365,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ワールド情報の読み込みに失敗しました: %@"
+            "value" : "ワールド情報の読み込みに失敗しました： %@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "세계 정보 로드 실패: %@"
+            "value" : "세계 정보 로드 실패： %@"
           }
         },
         "nb" : {
@@ -66020,13 +66431,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "加载世界信息失败: %@"
+            "value" : "加载世界信息失败： %@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "載入世界資訊失敗: %@"
+            "value" : "載入世界資訊失敗： %@"
           }
         }
       }
@@ -67872,7 +68283,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バージョン ID"
+            "value" : "バージョンID"
           }
         },
         "ko" : {
@@ -67938,13 +68349,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "版本 ID"
+            "value" : "版本ID"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "版本 ID"
+            "value" : "版本ID"
           }
         }
       }
@@ -71237,6 +71648,280 @@
         }
       }
     },
+    "settings.memory_pressure_warning.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تحقق من ضغطذاكرة النظام قبل تشغيل الألعاب"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontroller systemets hukommelsespresion før du starter spil"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speicherdruck des Systems vor dem Starten von Spielen prüfen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check system memory pressure before launching games"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verificar la presión de memoria del sistema antes de iniciar juegos"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tarkista järjestelmän muistipaine ennen pelien käynnistämistä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier la pression mémoire du système avant de lancer des jeux"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "गेम लॉन्च करने से पहले सिस्टम मेमोरी दबाव की जांच करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controllare la pressione sulla memoria del sistema prima di avviare i giochi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲームを起動する前にシステムのメモリプレッシャーを確認"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "게임 시작 전 시스템 메모리 압력 확인"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontroller systemets minnetrykk før du starter spill"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controleer de geheugendruk van het systeem voordat u games start"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sprawdź ciśnienie pamięci systemu przed uruchomieniem gier"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verificar a pressão de memória do sistema antes de iniciar jogos"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверьте давление памяти системы перед запуском игр"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontrollera systemets minnestryck innan du startar spel"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตรวจสอบแรงกดดันหน่วยความจำของระบบก่อนเริ่มเกม"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyunları başlatmadan önce sistem bellek basıncını kontrol edin"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kiểm tra áp lực bộ nhớ hệ thống trước khi khởi động trò chơi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启动游戏前检查系统内存压力"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟動遊戲前檢查系統記憶體壓力"
+          }
+        }
+      }
+    },
+    "settings.memory_pressure_warning.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تحذير ضغط الذاكرة"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hukommelsespresionsadvarsel"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speicherdruck-Warnung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Memory Pressure Warning"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Advertencia de presión de memoria"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muistipainevaroitus"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avertissement de pression mémoire"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मेमोरी दबाव चेतावनी"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avviso pressione sulla memoria"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メモリプレッシャー警告"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메모리 압력 경고"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minnetrykkadvarsel"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geheugendrukwaarschuwing"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ostrzeżenie o ciśnieniu pamięci"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aviso de pressão de memória"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Предупреждение о давлении памяти"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minnestrycksvarning"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "คำเตือนแรงกดดันหน่วยความจำ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bellek basıncı uyarısı"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cảnh báo áp lực bộ nhớ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内存压力警告"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記憶體壓力警告"
+          }
+        }
+      }
+    },
     "settings.ai.api_key.description" : {
       "comment" : "AI Settings",
       "extractionState" : "manual",
@@ -71364,13 +72049,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 密钥仅在本地存储"
+            "value" : "API密钥仅在本地存储"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 密鑰僅在本地存儲"
+            "value" : "API密鑰僅在本地存儲"
           }
         }
       }
@@ -71502,13 +72187,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 密钥"
+            "value" : "API密钥"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 密鑰"
+            "value" : "API密鑰"
           }
         }
       }
@@ -71640,13 +72325,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 类型"
+            "value" : "API类型"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 類型"
+            "value" : "API類型"
           }
         }
       }
@@ -71778,13 +72463,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 地址"
+            "value" : "API地址"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 地址"
+            "value" : "API地址"
           }
         }
       }
@@ -71796,7 +72481,7 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 皮肤直链，必须是 64x64 像素"
+            "value" : "Minecraft皮肤直链，必须是64x64像素"
           }
         },
         "da" : {
@@ -71856,7 +72541,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 스킨 직접 링크, 64x64 픽셀이어야 합니다"
+            "value" : "Minecraft 스킨 직접 링크， 64x64 픽셀이어야 합니다"
           }
         },
         "nb" : {
@@ -71916,13 +72601,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 皮肤直链，必须是 64x64 像素"
+            "value" : "Minecraft皮肤直链，必须是64x64像素"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 皮膚直鏈，必須是 64x64 像素"
+            "value" : "Minecraft皮膚直鏈，必須是64x64像素"
           }
         }
       }
@@ -72054,13 +72739,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 头像"
+            "value" : "AI头像"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 頭像"
+            "value" : "AI頭像"
           }
         }
       }
@@ -72072,7 +72757,7 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入 Minecraft 皮肤直链 (64x64)"
+            "value" : "输入Minecraft皮肤直链 (64x64)"
           }
         },
         "da" : {
@@ -72126,13 +72811,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MinecraftスキンURLを入力 (64x64)"
+            "value" : "MinecraftスキンURLを入力 (64x64）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 스킨 URL 입력 (64x64)"
+            "value" : "Minecraft 스킨 URL 입력 (64x64）"
           }
         },
         "nb" : {
@@ -72192,13 +72877,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "输入 Minecraft 皮肤直链 (64x64)"
+            "value" : "输入Minecraft皮肤直链 (64x64）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "輸入 Minecraft 皮膚直鏈 (64x64)"
+            "value" : "輸入Minecraft皮膚直鏈 (64x64）"
           }
         }
       }
@@ -72402,13 +73087,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例: gpt-4o, deepseek-chat"
+            "value" : "例： gpt-4o, deepseek-chat"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "예: gpt-4o, deepseek-chat"
+            "value" : "예： gpt-4o, deepseek-chat"
           }
         },
         "nb" : {
@@ -72606,13 +73291,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama 地址"
+            "value" : "Ollama地址"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama 地址"
+            "value" : "Ollama地址"
           }
         }
       }
@@ -73643,7 +74328,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft의 최소 및 최대 메모리 할당을 설정합니다. 최소값(Xms)은 게임 시작 시 할당되는 초기 메모리이고, 최대값(Xmx)은 게임이 사용할 수 있는 최대 메모리입니다."
+            "value" : "Minecraft의 최소 및 최대 메모리 할당을 설정합니다。 최소값（Xms)은 게임 시작 시 할당되는 초기 메모리이고， 최대값（Xmx)은 게임이 사용할 수 있는 최대 메모리입니다。"
           }
         },
         "nb" : {
@@ -73703,13 +74388,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置 Minecraft 的最小和最大内存分配。最小值（Xms）是游戏启动时分配的初始内存，最大值（Xmx）是游戏可以使用的最大内存。"
+            "value" : "设置Minecraft的最小和最大内存分配。最小值（Xms）是游戏启动时分配的初始内存，最大值（Xmx）是游戏可以使用的最大内存。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "設定 Minecraft 的最小和最大記憶體分配。最小值（Xms）是遊戲啟動時分配的初始記憶體，最大值（Xmx）是遊戲可以使用的最大記憶體。"
+            "value" : "設定Minecraft的最小和最大記憶體分配。最小值（Xms）是遊戲啟動時分配的初始記憶體，最大值（Xmx）是遊戲可以使用的最大記憶體。"
           }
         }
       }
@@ -74467,7 +75152,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스캔에 실패한 로컬 모드 캐시를 지웁니다. 스캔을 다시 실행해 가능한 한 상세 정보를 가져옵니다."
+            "value" : "스캔에 실패한 로컬 모드 캐시를 지웁니다。 스캔을 다시 실행해 가능한 한 상세 정보를 가져옵니다。"
           }
         },
         "nb" : {
@@ -74527,13 +75212,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "清理扫描失败的本地 mod 缓存，用于重新触发扫描，以尽可能获取详情"
+            "value" : "清理扫描失败的本地mod缓存，用于重新触发扫描，以尽可能获取详情"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "清理掃描失敗的本地 mod 快取，用於重新觸發掃描，以盡可能取得詳情"
+            "value" : "清理掃描失敗的本地mod快取，用於重新觸發掃描，以盡可能取得詳情"
           }
         }
       }
@@ -74872,13 +75557,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "注意:カスタムパラメータは上記の最適化設定を上書きします"
+            "value" : "注意：カスタムパラメータは上記の最適化設定を上書きします"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "참고: 사용자 정의 매개변수는 위의 최적화 설정을 덮어씁니다"
+            "value" : "참고： 사용자 정의 매개변수는 위의 최적화 설정을 덮어씁니다"
           }
         },
         "nb" : {
@@ -74938,13 +75623,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "注意: 自定义参数会覆盖上面的优化设置"
+            "value" : "注意： 自定义参数会覆盖上面的优化设置"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "注意:自定義參數會覆蓋上面的優化設置"
+            "value" : "注意：自定義參數會覆蓋上面的優化設置"
           }
         }
       }
@@ -75284,13 +75969,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "G1GC (推奨)"
+            "value" : "G1GC (推奨）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "G1GC (권장)"
+            "value" : "G1GC (권장）"
           }
         },
         "nb" : {
@@ -75350,13 +76035,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "G1GC (推荐)"
+            "value" : "G1GC (推荐）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "G1GC (推薦)"
+            "value" : "G1GC (推薦）"
           }
         }
       }
@@ -75427,7 +76112,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "G1 가비지 컬렉터, 성능과 지연시간의 균형을 맞추며 대부분의 시나리오에 적합"
+            "value" : "G1 가비지 컬렉터， 성능과 지연시간의 균형을 맞추며 대부분의 시나리오에 적합"
           }
         },
         "nb" : {
@@ -75558,13 +76243,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ParallelGC (高スループット)"
+            "value" : "ParallelGC (高スループット）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ParallelGC (높은 처리량)"
+            "value" : "ParallelGC (높은 처리량）"
           }
         },
         "nb" : {
@@ -75624,13 +76309,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ParallelGC (高吞吐量)"
+            "value" : "ParallelGC (高吞吐量）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ParallelGC (高吞吐量)"
+            "value" : "ParallelGC (高吞吐量）"
           }
         }
       }
@@ -75701,7 +76386,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "병렬 가비지 컬렉터, 높은 처리량, 백그라운드 처리 작업에 적합"
+            "value" : "병렬 가비지 컬렉터， 높은 처리량， 백그라운드 처리 작업에 적합"
           }
         },
         "nb" : {
@@ -75832,13 +76517,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SerialGC (シングルスレッド)"
+            "value" : "SerialGC (シングルスレッド）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SerialGC (단일 스레드)"
+            "value" : "SerialGC (단일 스레드）"
           }
         },
         "nb" : {
@@ -75898,13 +76583,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SerialGC (单线程)"
+            "value" : "SerialGC (单线程）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "SerialGC (單線程)"
+            "value" : "SerialGC (單線程）"
           }
         }
       }
@@ -75975,7 +76660,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "시리얼 가비지 컬렉터, 단일 스레드, 작은 메모리 애플리케이션에 적합"
+            "value" : "시리얼 가비지 컬렉터， 단일 스레드， 작은 메모리 애플리케이션에 적합"
           }
         },
         "nb" : {
@@ -76106,13 +76791,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shenandoah (低停止)"
+            "value" : "Shenandoah (低停止）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shenandoah (낮은 일시정지)"
+            "value" : "Shenandoah (낮은 일시정지）"
           }
         },
         "nb" : {
@@ -76172,13 +76857,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shenandoah (低暂停)"
+            "value" : "Shenandoah (低暂停）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shenandoah (低暫停)"
+            "value" : "Shenandoah (低暫停）"
           }
         }
       }
@@ -76249,7 +76934,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shenandoah 가비지 컬렉터, 낮은 일시정지 시간, 안정적인 성능을 요구하는 시나리오에 적합"
+            "value" : "Shenandoah 가비지 컬렉터， 낮은 일시정지 시간， 안정적인 성능을 요구하는 시나리오에 적합"
           }
         },
         "nb" : {
@@ -76380,13 +77065,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ZGC (低レイテンシ)"
+            "value" : "ZGC (低レイテンシ）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ZGC (낮은 지연시간)"
+            "value" : "ZGC (낮은 지연시간）"
           }
         },
         "nb" : {
@@ -76446,13 +77131,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ZGC (低延迟)"
+            "value" : "ZGC (低延迟）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ZGC (低延遲)"
+            "value" : "ZGC (低延遲）"
           }
         }
       }
@@ -76523,7 +77208,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ZGC 가비지 컬렉터, 극도로 낮은 지연시간, 극도로 높은 응답시간 요구사항이 있는 시나리오에 적합"
+            "value" : "ZGC 가비지 컬렉터， 극도로 낮은 지연시간， 극도로 높은 응답시간 요구사항이 있는 시나리오에 적합"
           }
         },
         "nb" : {
@@ -76937,7 +77622,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "좋은 성능과 안정성을 위한 균형 잡힌 최적화 (권장)"
+            "value" : "좋은 성능과 안정성을 위한 균형 잡힌 최적화 (권장）"
           }
         },
         "nb" : {
@@ -77207,7 +77892,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "パフォーマンス向上のための基本 JVM 最適化"
+            "value" : "パフォーマンス向上のための基本JVM最適化"
           }
         },
         "ko" : {
@@ -77273,13 +77958,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "基础 JVM 优化，提升性能"
+            "value" : "基础JVM优化，提升性能"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "基礎 JVM 優化，提升效能"
+            "value" : "基礎JVM優化，提升效能"
           }
         }
       }
@@ -77483,7 +78168,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最高のパフォーマンスのための Aikar フラグを含む最大最適化"
+            "value" : "最高のパフォーマンスのためのAikarフラグを含む最大最適化"
           }
         },
         "ko" : {
@@ -77549,13 +78234,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最大优化，包括 Aikar 标志，获得最佳性能"
+            "value" : "最大优化，包括Aikar标志，获得最佳性能"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最大優化，包括 Aikar 標誌，獲得最佳效能"
+            "value" : "最大優化，包括Aikar標誌，獲得最佳效能"
           }
         }
       }
@@ -77759,7 +78444,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JVM 最適化は有効になっていません"
+            "value" : "JVM最適化は有効になっていません"
           }
         },
         "ko" : {
@@ -77825,13 +78510,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不启用任何 JVM 优化"
+            "value" : "不启用任何JVM优化"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不啟用任何 JVM 優化"
+            "value" : "不啟用任何JVM優化"
           }
         }
       }
@@ -78041,7 +78726,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java 실행 파일의 경로입니다. 클릭하여 선택하거나 기본 경로로 재설정합니다."
+            "value" : "Java 실행 파일의 경로입니다。 클릭하여 선택하거나 기본 경로로 재설정합니다。"
           }
         },
         "nb" : {
@@ -78310,7 +78995,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "JRE なし"
+            "value" : "JREなし"
           }
         },
         "ko" : {
@@ -78376,13 +79061,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暂无 JRE"
+            "value" : "暂无JRE"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暫無 JRE"
+            "value" : "暫無JRE"
           }
         }
       }
@@ -78586,7 +79271,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java ランタイム"
+            "value" : "Javaランタイム"
           }
         },
         "ko" : {
@@ -78652,13 +79337,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java 运行时"
+            "value" : "Java运行时"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java 執行環境"
+            "value" : "Java執行環境"
           }
         }
       }
@@ -79271,13 +79956,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有効にすると、github.com と raw.githubusercontent.com へのリクエストにプロキシプレフィックスが追加されます。"
+            "value" : "有効にすると、github.comとraw.githubusercontent.comへのリクエストにプロキシプレフィックスが追加されます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "활성화되면 github.com 및 raw.githubusercontent.com에 대한 요청에 프록시 접두사를 추가합니다."
+            "value" : "활성화되면 github.com 및 raw.githubusercontent.com에 대한 요청에 프록시 접두사를 추가합니다。"
           }
         },
         "nb" : {
@@ -79337,13 +80022,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启后会对 github.com 与 raw.githubusercontent.com 的请求添加代理前缀。"
+            "value" : "开启后会对github.com与raw.githubusercontent.com的请求添加代理前缀。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開啟後會對 github.com 與 raw.githubusercontent.com 的請求添加代理前綴。"
+            "value" : "開啟後會對github.com與raw.githubusercontent.com的請求添加代理前綴。"
           }
         }
       }
@@ -79545,7 +80230,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub プロキシ"
+            "value" : "GitHubプロキシ"
           }
         },
         "ko" : {
@@ -79611,13 +80296,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub 代理"
+            "value" : "GitHub代理"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "GitHub 代理"
+            "value" : "GitHub代理"
           }
         }
       }
@@ -80375,7 +81060,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "변경하려면 시스템 설정 -> 일반 -> 언어 및 지역 -> 응용 프로그램에서 수정하세요. 번역은 기계로 생성되었으며 사람이 검수하지 않았으므로 부정확할 수 있습니다. 문제가 있다면 \"Help/Report an Issue\"를 이용해 주세요."
+            "value" : "변경하려면 시스템 설정 -> 일반 -> 언어 및 지역 -> 응용 프로그램에서 수정하세요。 번역은 기계로 생성되었으며 사람이 검수하지 않았으므로 부정확할 수 있습니다。 문제가 있다면 \"Help/Report an Issue\"를 이용해 주세요."
           }
         },
         "nb" : {
@@ -81191,13 +81876,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "有効にすると、サードパーティログインと Microsoft ログインは、システムブラウザと Cookie を共有しないプライベートなブラウザセッションを使用します。毎回サインインし直す必要がある場合があります。"
+            "value" : "有効にすると、サードパーティログインとMicrosoftログインは、システムブラウザとCookieを共有しないプライベートなブラウザセッションを使用します。毎回サインインし直す必要がある場合があります。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "활성화하면 서드파티 로그인과 Microsoft 로그인 시 시스템 브라우저와 쿠키를 공유하지 않는 비공개 브라우저 세션을 사용합니다. 매번 다시 로그인해야 할 수 있습니다."
+            "value" : "활성화하면 서드파티 로그인과 Microsoft 로그인 시 시스템 브라우저와 쿠키를 공유하지 않는 비공개 브라우저 세션을 사용합니다。 매번 다시 로그인해야 할 수 있습니다。"
           }
         },
         "nb" : {
@@ -81257,13 +81942,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启后，三方登录和微软登录将使用独立的无痕浏览器会话，不会共享系统浏览器的 Cookie，每次登录可能需要重新输入账号密码。"
+            "value" : "开启后，三方登录和微软登录将使用独立的无痕浏览器会话，不会共享系统浏览器的Cookie，每次登录可能需要重新输入账号密码。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "啟用後，三方登入和微軟登入將使用獨立的無痕瀏覽器工作階段，不會共享系統瀏覽器的 Cookie，每次登入可能需要重新輸入帳號密碼。"
+            "value" : "啟用後，三方登入和微軟登入將使用獨立的無痕瀏覽器工作階段，不會共享系統瀏覽器的Cookie，每次登入可能需要重新輸入帳號密碼。"
           }
         }
       }
@@ -81608,7 +82293,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 스위치는 기록 스킨 라이브러리 진입 버튼 표시 여부만 제어합니다. 이전에 기록 스킨이 저장되어 있다면 이 스위치를 꺼도 삭제되지 않습니다. 삭제하려면 이 스위치를 켠 뒤 수동으로 정리하세요."
+            "value" : "이 스위치는 기록 스킨 라이브러리 진입 버튼 표시 여부만 제어합니다。 이전에 기록 스킨이 저장되어 있다면 이 스위치를 꺼도 삭제되지 않습니다。 삭제하려면 이 스위치를 켠 뒤 수동으로 정리하세요。"
           }
         },
         "nb" : {
@@ -81745,7 +82430,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기록 스킨 라이브러리 사용 (Microsoft 계정 전용)"
+            "value" : "기록 스킨 라이브러리 사용 (Microsoft 계정 전용）"
           }
         },
         "nb" : {
@@ -81805,13 +82490,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启历史皮肤库(仅限Microsoft帐户)"
+            "value" : "开启历史皮肤库（仅限Microsoft帐户）"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開啟歷史皮膚庫（僅限 Microsoft 帳戶）"
+            "value" : "開啟歷史皮膚庫（僅限Microsoft帳戶）"
           }
         }
       }
@@ -81876,13 +82561,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "これらのスイッチは Microsoft の Minecraft アカウントに保存されます。このタブを開いたとき、またはアカウントから再読み込みをタップしたときに、ランチャーがネットワークから取得します。"
+            "value" : "これらのスイッチはMicrosoftのMinecraftアカウントに保存されます。このタブを開いたとき、またはアカウントから再読み込みをタップしたときに、ランチャーがネットワークから取得します。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 항목은 Microsoft Minecraft 계정에 저장됩니다. 이 탭을 열거나 계정에서 다시 불러오기를 누르면 런처가 네트워크에서 불러옵니다."
+            "value" : "이 항목은 Microsoft Minecraft 계정에 저장됩니다。 이 탭을 열거나 계정에서 다시 불러오기를 누르면 런처가 네트워크에서 불러옵니다。"
           }
         },
         "nb" : {
@@ -81942,13 +82627,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "以下开关保存在 Microsoft Minecraft 账号侧。打开本页或点击「从账号同步」时会从网络加载最新状态。"
+            "value" : "以下开关保存在Microsoft Minecraft账号侧。打开本页或点击「从账号同步」时会从网络加载最新状态。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "以下開關儲存在 Microsoft Minecraft 帳號端。開啟本頁或點「從帳號同步」時會從網路載入最新狀態。"
+            "value" : "以下開關儲存在Microsoft Minecraft帳號端。開啟本頁或點「從帳號同步」時會從網路載入最新狀態。"
           }
         }
       }
@@ -82490,13 +83175,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 账号好友"
+            "value" : "Minecraft账号好友"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 帳號好友"
+            "value" : "Minecraft帳號好友"
           }
         }
       }
@@ -82704,7 +83389,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "활성화하면 런처가 백그라운드에서 친구 활동을 확인하고 시스템 알림을 보냅니다. 시스템 설정에서 이 앱의 알림을 켜고 알림 스타일을 '알림'으로 설정해야 합니다."
+            "value" : "활성화하면 런처가 백그라운드에서 친구 활동을 확인하고 시스템 알림을 보냅니다。 시스템 설정에서 이 앱의 알림을 켜고 알림 스타일을 '알림'으로 설정해야 합니다。"
           }
         },
         "nb" : {
@@ -82770,7 +83455,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "啟用後，啟動器會在背景檢查好友狀態，並在好友上線、離線或傳送邀請時通知你。同時需要在系統設定中為此 App 啟用通知，並將通知類型設為「提醒」。"
+            "value" : "啟用後，啟動器會在背景檢查好友狀態，並在好友上線、離線或傳送邀請時通知你。同時需要在系統設定中為此App啟用通知，並將通知類型設為「提醒」。"
           }
         }
       }
@@ -84213,7 +84898,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 경로 설정은 게임 저장 파일, 모드, 셰이더 및 기타 리소스의 저장 위치에만 영향을 미칩니다."
+            "value" : "이 경로 설정은 게임 저장 파일， 모드， 셰이더 및 기타 리소스의 저장 위치에만 영향을 미칩니다。"
           }
         },
         "nb" : {
@@ -84344,7 +85029,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d ゲーム"
+            "value" : "%dゲーム"
           }
         },
         "ko" : {
@@ -84410,13 +85095,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d 个游戏"
+            "value" : "%d个游戏"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d 個遊戲"
+            "value" : "%d個遊戲"
           }
         }
       }
@@ -84487,7 +85172,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "플레이어 정보가 없습니다. 게임을 실행하기 전에 먼저 플레이어 정보를 추가하세요"
+            "value" : "플레이어 정보가 없습니다。 게임을 실행하기 전에 먼저 플레이어 정보를 추가하세요"
           }
         },
         "nb" : {
@@ -84624,7 +85309,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "플레이어 정보가 없습니다. 게임을 추가하기 전에 먼저 플레이어 정보를 추가하세요"
+            "value" : "플레이어 정보가 없습니다。 게임을 추가하기 전에 먼저 플레이어 정보를 추가하세요"
           }
         },
         "nb" : {
@@ -88750,7 +89435,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스킨 서버가 선택되었습니다. 이제 로그인할 수 있습니다."
+            "value" : "스킨 서버가 선택되었습니다。 이제 로그인할 수 있습니다。"
           }
         },
         "nb" : {
@@ -88887,7 +89572,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "아래 버튼을 눌러 브라우저를 여세요."
+            "value" : "아래 버튼을 눌러 브라우저를 여세요。"
           }
         },
         "nb" : {
@@ -89161,7 +89846,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "브라우저에서 완료한 후 이 앱으로 돌아오세요."
+            "value" : "브라우저에서 완료한 후 이 앱으로 돌아오세요。"
           }
         },
         "nb" : {
@@ -89292,13 +89977,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "認可 URL の生成に失敗しました。サーバー構成を確認してください。"
+            "value" : "認可URLの生成に失敗しました。サーバー構成を確認してください。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "인가 URL을 생성하지 못했습니다. 서버 구성을 확인하세요."
+            "value" : "인가 URL을 생성하지 못했습니다。 서버 구성을 확인하세요。"
           }
         },
         "nb" : {
@@ -89429,13 +90114,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "コールバック URL が無効です。"
+            "value" : "コールバックURLが無効です。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "콜백 URL이 올바르지 않습니다."
+            "value" : "콜백 URL이 올바르지 않습니다。"
           }
         },
         "nb" : {
@@ -89572,7 +90257,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "로그인에 실패했습니다. 나중에 다시 시도해 주세요."
+            "value" : "로그인에 실패했습니다。 나중에 다시 시도해 주세요。"
           }
         },
         "nb" : {
@@ -89709,7 +90394,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "인가 코드를 받지 못했습니다."
+            "value" : "인가 코드를 받지 못했습니다。"
           }
         },
         "nb" : {
@@ -89840,13 +90525,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yggdrasil サーバーが選択されていません。"
+            "value" : "Yggdrasilサーバーが選択されていません。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "선택된 Yggdrasil 서버가 없습니다."
+            "value" : "선택된 Yggdrasil 서버가 없습니다。"
           }
         },
         "nb" : {
@@ -89906,13 +90591,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未选择 Yggdrasil 服务器"
+            "value" : "未选择Yggdrasil服务器"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未選擇 Yggdrasil 伺服器"
+            "value" : "未選擇Yggdrasil伺服器"
           }
         }
       }
@@ -90251,7 +90936,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ログインに使用する Yggdrasil スキンサーバーを選択してください"
+            "value" : "ログインに使用するYggdrasilスキンサーバーを選択してください"
           }
         },
         "ko" : {
@@ -90317,13 +91002,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择 Yggdrasil 登录皮肤站"
+            "value" : "选择Yggdrasil登录皮肤站"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇 Yggdrasil 登入皮膚站"
+            "value" : "選擇Yggdrasil登入皮膚站"
           }
         }
       }

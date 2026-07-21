@@ -15,7 +15,7 @@ public struct GameSettingsView: View {
 
     @StateObject private var viewModel: GameSettingsJavaRuntimeViewModel
 
-    @State private var globalMemoryRange: ClosedRange<Double> = 512 ... 4096
+    @State private var globalMemoryRange: ClosedRange<Double> = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
 
     public init() {
         _viewModel = StateObject(wrappedValue: GameSettingsJavaRuntimeViewModel())
@@ -74,6 +74,18 @@ public struct GameSettingsView: View {
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
 
+                LabeledContent("settings.memory_pressure_warning.label".localized()) {
+                    HStack {
+                        Toggle(
+                            "",
+                            isOn: $gameSettingsManager.enableMemoryPressureWarning,
+                        ).labelsHidden()
+                        Text("settings.memory_pressure_warning.description".localized())
+                    }
+                }
+                .labeledContentStyle(.custom)
+                .padding(.bottom, 10)
+
                 LabeledContent("settings.game.language.label".localized()) {
                     HStack {
                         Toggle(
@@ -93,7 +105,7 @@ public struct GameSettingsView: View {
                             MiniRangeSlider(
                                 range: $globalMemoryRange,
                                 bounds:
-                                512 ... Double(gameSettingsManager.maximumMemoryAllocation),
+                                Double(AppConstants.MemoryDefaults.xms) ... Double(gameSettingsManager.maximumMemoryAllocation),
                             )
                             .frame(width: 200)
                             .controlSize(.mini)
@@ -114,6 +126,12 @@ public struct GameSettingsView: View {
                             .foregroundColor(.primary)
                             .lineLimit(1)
                             .truncationMode(.tail)
+                            Button("common.reset".localized()) {
+                                gameSettingsManager.globalXms = AppConstants.MemoryDefaults.xms
+                                gameSettingsManager.globalXmx = AppConstants.MemoryDefaults.xmx
+                                globalMemoryRange = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
+                            }
+                            .padding(.leading, 8)
                         }
                     }
                     .labeledContentStyle(.custom)

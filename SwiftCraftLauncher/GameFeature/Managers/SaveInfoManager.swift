@@ -250,6 +250,7 @@ final class SaveInfoManager: ObservableObject {
         worlds = result
     }
 
+    @MainActor
     private func loadScreenshots() async {
         isLoadingScreenshots = true
         defer { isLoadingScreenshots = false }
@@ -278,6 +279,7 @@ final class SaveInfoManager: ObservableObject {
         }
     }
 
+    @MainActor
     private func loadLitematicaFiles() async {
         isLoadingLitematica = true
         defer { isLoadingLitematica = false }

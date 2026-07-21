@@ -32,17 +32,22 @@ class GameSettingsManager: ObservableObject {
     init() { }
 
     @AppStorage(AppConstants.UserDefaultsKeys.globalXms)
-    var globalXms: Int = 512 {
+    var globalXms: Int = AppConstants.MemoryDefaults.xms {
         didSet { objectWillChange.send() }
     }
 
     @AppStorage(AppConstants.UserDefaultsKeys.globalXmx)
-    var globalXmx: Int = 4096 {
+    var globalXmx: Int = AppConstants.MemoryDefaults.xmx {
         didSet { objectWillChange.send() }
     }
 
     @AppStorage(AppConstants.UserDefaultsKeys.enableAICrashAnalysis)
     var enableAICrashAnalysis: Bool = false {
+        didSet { objectWillChange.send() }
+    }
+
+    @AppStorage(AppConstants.UserDefaultsKeys.enableMemoryPressureWarning)
+    var enableMemoryPressureWarning: Bool = true {
         didSet { objectWillChange.send() }
     }
 

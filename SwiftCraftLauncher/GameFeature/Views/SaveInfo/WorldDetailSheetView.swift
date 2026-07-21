@@ -65,13 +65,6 @@ struct WorldDetailSheetView: View {
         }
     }
 
-    private var loadingView: some View {
-        VStack {
-            ProgressView().controlSize(.small)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
     private func metadataContentView(metadata: WorldDetailMetadata) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {

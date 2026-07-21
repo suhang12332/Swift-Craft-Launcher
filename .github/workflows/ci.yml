@@ -2,9 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [main, master, dev]
+    branches: [main, dev]
   push:
-    branches: [main, master, dev]
+    branches: [main, dev]
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -45,10 +45,9 @@ jobs:
           curl -sL https://github.com/nicklockwood/SwiftFormat/releases/download/0.61.1/swiftformat.zip -o swiftformat.zip
           unzip -o swiftformat.zip -d /usr/local/bin
           chmod +x /usr/local/bin/swiftformat
-          swiftformat --version
 
       - name: Run SwiftFormat lint
-        run: swiftformat . --swift-version 6.1 --lint
+        run: /usr/local/bin/swiftformat . --swift-version 6.1 --lint
 
       # =========================
       # Code Rules Check

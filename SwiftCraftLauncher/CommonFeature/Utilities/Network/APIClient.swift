@@ -70,10 +70,9 @@ enum APIClient {
         url: URL,
         headers: [String: String]? = nil,
     ) async throws -> Data {
-        var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethods.get
-
-        headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
+        let request = URLRequest(url: url)
+            .methods(HTTPMethods.get)
+            .headers(headers)
 
         return try await performRequest(request: request)
     }
@@ -91,26 +90,14 @@ enum APIClient {
         body: Data? = nil,
         headers: [String: String]? = nil,
     ) async throws -> Data {
-        var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethods.post
-        request.httpBody = body
-
-        var needsContentType = false
-        if body != nil {
-            if let headers {
-                needsContentType = !headers.keys.contains { key in
-                    key.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame
-                }
-            } else {
-                needsContentType = true
-            }
+        var postHeaders = headers ?? [:]
+        if body != nil, !postHeaders.keys.contains(where: { $0.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame }) {
+            postHeaders[Header.contentType] = MimeType.json
         }
-
-        headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
-
-        if needsContentType {
-            request.setValue(MimeType.json, forHTTPHeaderField: Header.contentType)
-        }
+        let request = URLRequest(url: url)
+            .methods(HTTPMethods.post)
+            .headers(postHeaders)
+            .bodys(body)
 
         return try await performRequest(request: request)
     }
@@ -138,9 +125,9 @@ enum APIClient {
         url: URL,
         headers: [String: String]? = nil,
     ) async throws -> (Data, Int) {
-        var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethods.get
-        headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
+        let request = URLRequest(url: url)
+            .methods(HTTPMethods.get)
+            .headers(headers)
         return try await performRequestUnchecked(request: request)
     }
 
@@ -151,26 +138,14 @@ enum APIClient {
         body: Data? = nil,
         headers: [String: String]? = nil,
     ) async throws -> (Data, Int) {
-        var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethods.post
-        request.httpBody = body
-
-        var needsContentType = false
-        if body != nil {
-            if let headers {
-                needsContentType = !headers.keys.contains { key in
-                    key.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame
-                }
-            } else {
-                needsContentType = true
-            }
+        var postHeaders = headers ?? [:]
+        if body != nil, !postHeaders.keys.contains(where: { $0.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame }) {
+            postHeaders[Header.contentType] = MimeType.json
         }
-
-        headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
-
-        if needsContentType {
-            request.setValue(MimeType.json, forHTTPHeaderField: Header.contentType)
-        }
+        let request = URLRequest(url: url)
+            .methods(HTTPMethods.post)
+            .headers(postHeaders)
+            .bodys(body)
 
         return try await performRequestUnchecked(request: request)
     }
@@ -186,7 +161,7 @@ enum APIClient {
     /// - Throws: A ``GlobalError`` if the request fails, or a ``DecodingError`` if decoding fails.
     static func request<T: Decodable>(
         url: URL,
-        method: String = "GET",
+        method: String = HTTPMethods.get,
         body: Data? = nil,
         headers: [String: String]? = nil,
         decoder: JSONDecoder? = nil,
@@ -214,15 +189,10 @@ enum APIClient {
         body: Data? = nil,
         headers: [String: String]? = nil,
     ) async throws -> Data {
-        var request = URLRequest(url: url)
-        request.httpMethod = method
-        request.httpBody = body
-
-        if body != nil, method == HTTPMethods.post {
-            request.setValue(MimeType.json, forHTTPHeaderField: Header.contentType)
-        }
-
-        headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
+        let request = URLRequest(url: url)
+            .methods(method)
+            .headers(headers)
+            .bodys(body)
 
         return try await performRequest(request: request)
     }

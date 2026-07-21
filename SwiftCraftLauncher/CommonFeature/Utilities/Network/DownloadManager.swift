@@ -21,14 +21,7 @@ enum DownloadManager {
         }
 
         init?(from string: String) {
-            let lowercased = string.lowercased()
-            switch lowercased {
-            case Self.mod.rawValue: self = .mod
-            case Self.datapack.rawValue: self = .datapack
-            case Self.shader.rawValue: self = .shader
-            case Self.resourcepack.rawValue: self = .resourcepack
-            default: return nil
-            }
+            self.init(rawValue: string.lowercased())
         }
     }
 
@@ -105,13 +98,14 @@ enum DownloadManager {
         urlString: String,
         destinationURL: URL,
         expectedSha1: String? = nil,
+        headers: [String: String]? = nil,
     ) async throws -> URL {
         do {
             return try await ProgressDownloadManager.downloadFile(
                 urlString: urlString,
                 destinationURL: destinationURL,
                 expectedSha1: expectedSha1,
-                progressHandler: nil,
+                headers: headers,
             )
         } catch {
             throw mapDownloadError(error)
@@ -147,21 +141,7 @@ enum DownloadManager {
         do {
             return try await APIClient.get(url: url)
         } catch {
-            if let globalError = error as? GlobalError {
-                throw globalError
-            } else if error is URLError {
-                throw GlobalError.download(
-                    i18nKey: "error.download.network_request_failed",
-                    level: .notification,
-                    message: "Failed to download data from \(url.absoluteString): \(error.localizedDescription)",
-                )
-            } else {
-                throw GlobalError.download(
-                    i18nKey: "error.download.general_failure",
-                    level: .notification,
-                    message: "Unexpected error downloading data from \(url.absoluteString): \(error.localizedDescription)",
-                )
-            }
+            throw mapDownloadError(error)
         }
     }
 }

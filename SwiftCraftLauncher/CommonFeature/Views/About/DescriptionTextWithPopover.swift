@@ -37,14 +37,13 @@ struct DescriptionTextWithPopover: View {
         .popover(isPresented: $showPopover, arrowEdge: .top) {
             VStack(alignment: .leading) {
                 Text(description)
-                    .font(.system(size: 12))
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(nil)
                     .multilineTextAlignment(.leading)
             }
             .padding()
-            .frame(maxWidth: 500)
             .fixedSize(horizontal: true, vertical: false)
         }
         .onDisappear {

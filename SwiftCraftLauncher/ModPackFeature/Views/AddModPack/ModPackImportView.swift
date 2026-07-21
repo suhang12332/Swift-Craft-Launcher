@@ -135,7 +135,7 @@ struct ModPackImportView: View {
                 .symbolRenderingMode(.multicolor)
                 .symbolVariant(.none)
                 .foregroundStyle(.secondary)
-                .font(.system(size: 32))
+                .font(.largeTitle)
             Text(viewModel.selectedModPackFile?.lastPathComponent ?? "")
                 .font(.headline)
                 .bold()

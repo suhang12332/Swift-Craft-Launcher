@@ -17,16 +17,16 @@ struct CapeTextureView: View {
         AsyncImage(url: url) { phase in
             switch phase {
             case .empty:
-                ProgressView().controlSize(.mini)
+                ProgressView().controlSize(.small)
             case let .success(image):
                 capeImageContent(image: image)
             case .failure:
                 Image(systemName: "photo")
-                    .font(.system(size: 16))
+                    .font(.title3)
                     .foregroundColor(.secondary)
             @unknown default:
                 Image(systemName: "photo")
-                    .font(.system(size: 16))
+                    .font(.title3)
                     .foregroundColor(.secondary)
             }
         }
@@ -181,7 +181,7 @@ struct CapeSelectionView: View {
                 CapeTextureView(imageURL: imageURL)
                     .id(imageURL).frame(width: 42, height: 62).clipped().cornerRadius(6)
             } else if isSystemOption {
-                Image(systemName: "xmark").font(.system(size: 16)).foregroundColor(.secondary)
+                Image(systemName: "xmark").font(.title3).foregroundColor(.secondary)
             }
         }
     }

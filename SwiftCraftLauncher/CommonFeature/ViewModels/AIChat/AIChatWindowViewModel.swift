@@ -74,7 +74,7 @@ final class AIChatWindowViewModel: ObservableObject {
         } else {
             cachedUserAvatar = AnyView(
                 Image(systemName: "person.fill")
-                    .font(.system(size: Constants.avatarSize))
+                    .font(.largeTitle)
                     .foregroundStyle(.secondary),
             )
         }

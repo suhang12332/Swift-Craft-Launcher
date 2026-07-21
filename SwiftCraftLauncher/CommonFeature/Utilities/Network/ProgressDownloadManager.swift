@@ -27,6 +27,7 @@ enum ProgressDownloadManager {
         urlString: String,
         destinationURL: URL,
         expectedSha1: String? = nil,
+        headers: [String: String]? = nil,
         progressHandler: ((Int64, Int64) -> Void)? = nil,
     ) async throws -> URL {
         try Task.checkCancellation()
@@ -48,7 +49,7 @@ enum ProgressDownloadManager {
 
         let fileSize: Int64
         if let progressHandler {
-            fileSize = try await getRemoteFileSize(from: finalURL)
+            fileSize = try await getRemoteFileSize(from: finalURL, headers: headers)
             progressHandler(0, fileSize)
         } else {
             fileSize = 0
@@ -61,6 +62,7 @@ enum ProgressDownloadManager {
                 let tempURL = try await ProgressDownloadSession.shared.download(
                     from: finalURL,
                     totalSize: fileSize,
+                    headers: headers,
                     progressHandler: progressHandler,
                 )
                 defer { try? fileManager.removeItem(at: tempURL) }
@@ -81,8 +83,8 @@ enum ProgressDownloadManager {
         }
     }
 
-    private static func getRemoteFileSize(from url: URL) async throws -> Int64 {
-        let (_, httpResponse) = try await ProgressDownloadSession.shared.head(url: url)
+    private static func getRemoteFileSize(from url: URL, headers: [String: String]? = nil) async throws -> Int64 {
+        let (_, httpResponse) = try await ProgressDownloadSession.shared.head(url: url, headers: headers)
 
         guard httpResponse.statusCode == 200,
               let contentLength = httpResponse.value(forHTTPHeaderField: APIClient.Header.contentLength),
@@ -150,6 +152,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
     func download(
         from url: URL,
         totalSize: Int64,
+        headers: [String: String]? = nil,
         progressHandler: ((Int64, Int64) -> Void)?,
     ) async throws -> URL {
         let tracker = ProgressDownloadTracker(totalSize: totalSize, progressCallback: progressHandler)
@@ -161,7 +164,8 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
                     continuation.resume(with: result)
                 }
 
-                let task = self.session.downloadTask(with: url)
+                let request = URLRequest(url: url).headers(headers)
+                let task = self.session.downloadTask(with: request)
                 self.set(tracker: tracker, for: task)
                 context.set(task: task)
                 if Task.isCancelled {
@@ -175,9 +179,10 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
         })
     }
 
-    func head(url: URL) async throws -> (Data, HTTPURLResponse) {
-        var request = URLRequest(url: url)
-        request.httpMethod = APIClient.HTTPMethods.head
+    func head(url: URL, headers: [String: String]? = nil) async throws -> (Data, HTTPURLResponse) {
+        let request = URLRequest(url: url)
+            .methods(APIClient.HTTPMethods.head)
+            .headers(headers)
         let (data, response) = try await session.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
@@ -190,19 +195,16 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
     }
 
     func invalidateAndCancel() {
-        lock.lock()
-        let pendingHandlers = handlers
-        handlers.removeAll()
-        lock.unlock()
-
-        for (_, tracker) in pendingHandlers {
-            tracker.complete(.failure(CancellationError()))
-        }
-
+        cancelPendingHandlers()
         session.invalidateAndCancel()
     }
 
     func finishTasksAndInvalidate() {
+        cancelPendingHandlers()
+        session.finishTasksAndInvalidate()
+    }
+
+    private func cancelPendingHandlers() {
         lock.lock()
         let pendingHandlers = handlers
         handlers.removeAll()
@@ -211,8 +213,6 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
         for (_, tracker) in pendingHandlers {
             tracker.complete(.failure(CancellationError()))
         }
-
-        session.finishTasksAndInvalidate()
     }
 
     func urlSession(

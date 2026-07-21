@@ -186,7 +186,7 @@ struct GameCreationView: View {
                 .symbolRenderingMode(.multicolor)
                 .symbolVariant(.none)
                 .fontWeight(.regular)
-                .font(.system(size: 16))
+                .font(.title3)
         }
         .frame(maxWidth: .infinity, minHeight: 80)
         .background(emptyDropBackground())

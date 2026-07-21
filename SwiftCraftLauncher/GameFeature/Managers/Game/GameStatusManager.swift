@@ -119,13 +119,6 @@ class GameStatusManager: ObservableObject {
         }
     }
 
-    /// A list of process keys for games that are currently running.
-    var runningProcessKeys: [String] {
-        gameRunningStates.compactMap { key, isRunning in
-            isRunning ? key : nil
-        }
-    }
-
     /// All cached game states keyed by processKey.
     var allGameStates: [String: Bool] {
         gameRunningStates

@@ -155,19 +155,19 @@ struct NBTDisclosureButton: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.footnote.weight(.medium))
                     .foregroundColor(.secondary)
                     .frame(width: 14, alignment: .leading)
                     .contentShape(Rectangle())
 
                 Text(label)
-                    .font(.system(.subheadline, design: .monospaced))
+                    .font(.subheadline.monospaced())
                     .foregroundColor(.primary)
                     .lineLimit(1)
                     .truncationMode(.tail)
 
                 Text(suffix)
-                    .font(.system(.caption, design: .monospaced))
+                    .font(.caption.monospaced())
                     .foregroundColor(.secondary)
 
                 Spacer()
@@ -195,14 +195,14 @@ struct NBTValueRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(label + ":")
-                .font(.system(.subheadline, design: .monospaced))
+                .font(.subheadline.monospaced())
                 .foregroundColor(.secondary)
                 .frame(width: 120, alignment: .trailing)
                 .lineLimit(1)
                 .truncationMode(.tail)
 
             Text(value)
-                .font(.system(.subheadline, design: .monospaced))
+                .font(.subheadline.monospaced())
                 .foregroundColor(.primary)
                 .textSelection(.enabled)
 

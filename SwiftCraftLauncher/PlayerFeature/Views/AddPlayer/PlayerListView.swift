@@ -59,7 +59,7 @@ private struct PlayerSelectorLabel: View {
                 PlayerAvatarView(player: selectedPlayer, size: 32)
                 Text(selectedPlayer.name)
                     .foregroundColor(.primary)
-                    .font(.system(size: 13).bold())
+                    .font(.headline)
                     .lineLimit(1)
             }
         }

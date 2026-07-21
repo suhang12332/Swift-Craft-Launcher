@@ -40,6 +40,7 @@ enum AppConstants {
         static let globalXms = "globalXms"
         static let globalXmx = "globalXmx"
         static let enableAICrashAnalysis = "enableAICrashAnalysis"
+        static let enableMemoryPressureWarning = "enableMemoryPressureWarning"
         static let defaultAPISource = "defaultAPISource"
         static let includeSnapshotsForGameVersions = "includeSnapshotsForGameVersions"
         static let syncLanguageForNewGames = "syncLanguageForNewGames"
@@ -206,6 +207,12 @@ enum AppConstants {
         "java-runtime-alpha",
         "java-runtime-beta",
     ]
+
+    /// Default memory allocation constants (in megabytes).
+    enum MemoryDefaults {
+        static let xms = 512
+        static let xmx = 4096
+    }
 
     enum SystemSettingsDeepLinks {
         static let localizationApps = [
