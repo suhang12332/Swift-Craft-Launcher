@@ -11,9 +11,10 @@ import os
 import SwiftUI
 
 /// Handles Microsoft OAuth authentication for Minecraft accounts.
-class MinecraftAuthService: NSObject, ObservableObject {
-    @Published var authState: AuthenticationState = .notAuthenticated
-    @Published var isLoading: Bool = false
+@Observable
+final class MinecraftAuthService: NSObject {
+    var authState: AuthenticationState = .notAuthenticated
+    var isLoading: Bool = false
     var webAuthSession: ASWebAuthenticationSession?
 
     let clientId = AppConstants.minecraftClientId

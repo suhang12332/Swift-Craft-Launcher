@@ -10,7 +10,7 @@ import SwiftUI
 
 struct JavaDownloadProgressWindow: View {
     @EnvironmentObject private var container: DIContainer
-    @ObservedObject var downloadState: JavaDownloadState
+    var downloadState: JavaDownloadState
     @Environment(\.dismiss)
     private var dismiss
 

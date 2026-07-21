@@ -10,18 +10,21 @@ import Foundation
 import SwiftUI
 
 public struct GameSettingsView: View {
-    @EnvironmentObject private var gameSettingsManager: GameSettingsManager
+    @Environment(GameSettingsManager.self)
+    private var gameSettingsManager
     @EnvironmentObject private var container: DIContainer
 
-    @StateObject private var viewModel: GameSettingsJavaRuntimeViewModel
+    @State private var viewModel: GameSettingsJavaRuntimeViewModel
 
     @State private var globalMemoryRange: ClosedRange<Double> = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
 
     public init() {
-        _viewModel = StateObject(wrappedValue: GameSettingsJavaRuntimeViewModel())
+        _viewModel = State(initialValue: GameSettingsJavaRuntimeViewModel())
     }
 
     public var body: some View {
+        @Bindable var gameSettingsManager = gameSettingsManager
+        @Bindable var viewModel = viewModel
         VStack {
             Form {
                 LabeledContent("settings.default_api_source.label".localized()) {

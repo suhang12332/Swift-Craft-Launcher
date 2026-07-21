@@ -2,6 +2,7 @@
 //  GeneralSettingsManager.swift
 //  CommonFeature
 //
+//  Manages general application settings including proxy, downloads, and layout preferences.
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
@@ -20,47 +21,44 @@ public enum InterfaceLayoutStyle: String, CaseIterable {
 }
 
 /// Manages general application settings including proxy, downloads, and layout preferences.
-class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
+@Observable
+final class GeneralSettingsManager: WorkingPathProviding {
+    /// A Combine subject that fires when the working directory path changes.
+    private let workingPathDidChangeSubject = PassthroughSubject<Void, Never>()
+
     /// Whether GitHub proxy is enabled.
-    @AppStorage(AppConstants.UserDefaultsKeys.enableGitHubProxy)
-    var enableGitHubProxy: Bool = true {
-        didSet { objectWillChange.send() }
+    var enableGitHubProxy: Bool {
+        didSet { UserDefaults.standard.set(enableGitHubProxy, forKey: AppConstants.UserDefaultsKeys.enableGitHubProxy) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.gitProxyURL)
-    var gitProxyURL: String = URLConfig.Defaults.gitProxyURL {
-        didSet { objectWillChange.send() }
+    var gitProxyURL: String {
+        didSet { UserDefaults.standard.set(gitProxyURL, forKey: AppConstants.UserDefaultsKeys.gitProxyURL) }
     }
 
     /// Whether to limit the height of common sheets.
-    @AppStorage(AppConstants.UserDefaultsKeys.limitCommonSheetHeight)
-    var limitCommonSheetHeight: Bool = false {
-        didSet { objectWillChange.send() }
+    var limitCommonSheetHeight: Bool {
+        didSet { UserDefaults.standard.set(limitCommonSheetHeight, forKey: AppConstants.UserDefaultsKeys.limitCommonSheetHeight) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.concurrentDownloads)
-    var concurrentDownloads: Int = 64 {
+    var concurrentDownloads: Int {
         didSet {
-            if concurrentDownloads < 1 {
-                concurrentDownloads = 1
-            }
-            objectWillChange.send()
+            if concurrentDownloads < 1 { concurrentDownloads = 1 }
+            UserDefaults.standard.set(concurrentDownloads, forKey: AppConstants.UserDefaultsKeys.concurrentDownloads)
         }
     }
 
     /// The launcher working directory path.
-    @AppStorage(AppConstants.UserDefaultsKeys.launcherWorkingDirectory)
-    var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
-        didSet { objectWillChange.send() }
+    var launcherWorkingDirectory: String {
+        didSet {
+            UserDefaults.standard.set(launcherWorkingDirectory, forKey: AppConstants.UserDefaultsKeys.launcherWorkingDirectory)
+            workingPathDidChangeSubject.send()
+        }
     }
 
     /// The interface layout style for the main window.
-    @AppStorage(AppConstants.UserDefaultsKeys.interfaceLayoutStyle)
-    var interfaceLayoutStyle: InterfaceLayoutStyle = .classic {
-        didSet { objectWillChange.send() }
+    var interfaceLayoutStyle: InterfaceLayoutStyle {
+        didSet { UserDefaults.standard.set(interfaceLayoutStyle.rawValue, forKey: AppConstants.UserDefaultsKeys.interfaceLayoutStyle) }
     }
-
-    init() { }
 
     /// The current working path, falling back to the default support directory when empty.
     var currentWorkingPath: String {
@@ -68,6 +66,17 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     }
 
     var workingPathWillChange: AnyPublisher<Void, Never> {
-        objectWillChange.map { _ in () }.eraseToAnyPublisher()
+        workingPathDidChangeSubject.eraseToAnyPublisher()
+    }
+
+    init() {
+        let d = UserDefaults.standard
+        enableGitHubProxy = d.object(forKey: AppConstants.UserDefaultsKeys.enableGitHubProxy) as? Bool ?? true
+        gitProxyURL = d.string(forKey: AppConstants.UserDefaultsKeys.gitProxyURL) ?? URLConfig.Defaults.gitProxyURL
+        limitCommonSheetHeight = d.bool(forKey: AppConstants.UserDefaultsKeys.limitCommonSheetHeight)
+        concurrentDownloads = d.object(forKey: AppConstants.UserDefaultsKeys.concurrentDownloads) as? Int ?? 64
+        launcherWorkingDirectory = d.string(forKey: AppConstants.UserDefaultsKeys.launcherWorkingDirectory) ?? AppPaths.launcherSupportDirectory.path
+        let layoutRaw = d.string(forKey: AppConstants.UserDefaultsKeys.interfaceLayoutStyle) ?? InterfaceLayoutStyle.classic.rawValue
+        interfaceLayoutStyle = InterfaceLayoutStyle(rawValue: layoutRaw) ?? .classic
     }
 }

@@ -14,16 +14,16 @@ import Foundation
 /// coordinating between the local SQLite database and the in-memory cache.
 class GameRepository: ObservableObject {
     /// A dictionary of game instances keyed by their working path.
-    @Published private(set) var gamesByWorkingPath: [String: [GameVersionInfo]] = [:]
+    private(set) var gamesByWorkingPath: [String: [GameVersionInfo]] = [:]
 
     /// A dictionary of corrupted game names keyed by their working path.
     ///
     /// A game is considered corrupted when its database record and local directory
     /// are inconsistent.
-    @Published private(set) var corruptedGamesByWorkingPath: [String: [String]] = [:]
+    private(set) var corruptedGamesByWorkingPath: [String: [String]] = [:]
 
     /// All working paths and their associated game counts from the database.
-    @Published private(set) var workingPathOptions: [(path: String, count: Int)] = []
+    private(set) var workingPathOptions: [(path: String, count: Int)] = []
 
     var games: [GameVersionInfo] {
         gamesByWorkingPath[currentWorkingPath] ?? []
@@ -45,7 +45,7 @@ class GameRepository: ObservableObject {
     private var workspaceSwitchTask: Task<Void, Never>?
     private var hasLoadedInitialData = false
 
-    @Published var workingPathChanged: Bool = false
+    var workingPathChanged: Bool = false
 
     /// Creates a game repository.
     init() {

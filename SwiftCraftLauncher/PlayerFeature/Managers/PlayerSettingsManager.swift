@@ -5,51 +5,61 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
+import Combine
 import SwiftUI
 
-/// Manages player-related settings persisted in `UserDefaults` via `@AppStorage`.
-class PlayerSettingsManager: ObservableObject {
+/// Manages player-related settings persisted in `UserDefaults`.
+@Observable
+final class PlayerSettingsManager {
+    /// A Combine subject that fires when presence notification setting changes,
+    /// for consumers that need Combine streams (e.g. MinecraftFriendsPresencePollingCoordinator).
+    let presenceNotificationsDidChange = PassthroughSubject<Void, Never>()
+
     /// The identifier of the currently selected player.
-    @AppStorage(AppConstants.UserDefaultsKeys.currentPlayerId)
-    var currentPlayerId: String = "" {
-        didSet { objectWillChange.send() }
+    var currentPlayerId: String {
+        didSet { UserDefaults.standard.set(currentPlayerId, forKey: AppConstants.UserDefaultsKeys.currentPlayerId) }
     }
 
     /// A Boolean value indicating whether offline login is allowed in the launcher.
-    @AppStorage(AppConstants.UserDefaultsKeys.enableOfflineLogin)
-    var enableOfflineLogin: Bool = false {
-        didSet { objectWillChange.send() }
+    var enableOfflineLogin: Bool {
+        didSet { UserDefaults.standard.set(enableOfflineLogin, forKey: AppConstants.UserDefaultsKeys.enableOfflineLogin) }
     }
 
     /// A Boolean value indicating whether to use an ephemeral browser session for web login.
-    @AppStorage(AppConstants.UserDefaultsKeys.enableEphemeralWebLogin)
-    var enableEphemeralWebLogin: Bool = false {
-        didSet { objectWillChange.send() }
+    var enableEphemeralWebLogin: Bool {
+        didSet { UserDefaults.standard.set(enableEphemeralWebLogin, forKey: AppConstants.UserDefaultsKeys.enableEphemeralWebLogin) }
     }
 
     /// The default Yggdrasil authentication server base URL for offline login.
-    @AppStorage(AppConstants.UserDefaultsKeys.defaultYggdrasilServerBaseURL)
-    var defaultYggdrasilServerBaseURL: String = "" {
-        didSet { objectWillChange.send() }
+    var defaultYggdrasilServerBaseURL: String {
+        didSet { UserDefaults.standard.set(defaultYggdrasilServerBaseURL, forKey: AppConstants.UserDefaultsKeys.defaultYggdrasilServerBaseURL) }
     }
 
     /// A Boolean value indicating whether the history skin library is enabled.
     ///
     /// This feature is only available for premium (Mojang/Microsoft) accounts.
-    @AppStorage(AppConstants.UserDefaultsKeys.enableHistorySkinLibrary)
-    var enableHistorySkinLibrary: Bool = false {
-        didSet { objectWillChange.send() }
+    var enableHistorySkinLibrary: Bool {
+        didSet { UserDefaults.standard.set(enableHistorySkinLibrary, forKey: AppConstants.UserDefaultsKeys.enableHistorySkinLibrary) }
     }
 
     /// A Boolean value indicating whether Minecraft friend presence notifications are enabled.
     ///
     /// When enabled, the launcher polls for friend online/offline/invite status
     /// in the background while a Microsoft account is selected.
-    @AppStorage(AppConstants.UserDefaultsKeys.enableMinecraftFriendsPresenceNotifications)
-    var enableMinecraftFriendsPresenceNotifications: Bool = false {
-        didSet { objectWillChange.send() }
+    var enableMinecraftFriendsPresenceNotifications: Bool {
+        didSet {
+            UserDefaults.standard.set(enableMinecraftFriendsPresenceNotifications, forKey: AppConstants.UserDefaultsKeys.enableMinecraftFriendsPresenceNotifications)
+            presenceNotificationsDidChange.send()
+        }
     }
 
-    init() { }
+    init() {
+        let d = UserDefaults.standard
+        currentPlayerId = d.string(forKey: AppConstants.UserDefaultsKeys.currentPlayerId) ?? ""
+        enableOfflineLogin = d.bool(forKey: AppConstants.UserDefaultsKeys.enableOfflineLogin)
+        enableEphemeralWebLogin = d.bool(forKey: AppConstants.UserDefaultsKeys.enableEphemeralWebLogin)
+        defaultYggdrasilServerBaseURL = d.string(forKey: AppConstants.UserDefaultsKeys.defaultYggdrasilServerBaseURL) ?? ""
+        enableHistorySkinLibrary = d.bool(forKey: AppConstants.UserDefaultsKeys.enableHistorySkinLibrary)
+        enableMinecraftFriendsPresenceNotifications = d.bool(forKey: AppConstants.UserDefaultsKeys.enableMinecraftFriendsPresenceNotifications)
+    }
 }

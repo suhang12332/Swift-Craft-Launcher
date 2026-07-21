@@ -20,8 +20,8 @@ enum AuthlibInjectorMissingChoice {
 /// The main window observes ``isPresented`` and displays a modal. The launch
 /// flow suspends until the user makes a choice or the prompt is dismissed.
 @MainActor
-final class AuthlibInjectorMissingPresenter: ObservableObject {
-    @Published private(set) var isPresented = false
+@Observable final class AuthlibInjectorMissingPresenter {
+    private(set) var isPresented = false
 
     private var continuation: CheckedContinuation<AuthlibInjectorMissingChoice, Never>?
 

@@ -9,10 +9,12 @@ import SwiftUI
 
 /// A view for configuring AI service settings.
 public struct AISettingsView: View {
-    @EnvironmentObject private var aiSettingsManager: AISettingsManager
+    @Environment(AISettingsManager.self)
+    private var aiSettingsManager
     @State private var showApiKey = false
 
     public var body: some View {
+        @Bindable var aiSettingsManager = aiSettingsManager
         Form {
             LabeledContent("settings.ai.api_type.label".localized()) {
                 Picker("", selection: $aiSettingsManager.selectedProvider) {

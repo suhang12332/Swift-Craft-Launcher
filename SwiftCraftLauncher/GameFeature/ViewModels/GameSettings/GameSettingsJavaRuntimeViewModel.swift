@@ -9,13 +9,13 @@ import Foundation
 
 /// View model for the Java runtime settings view, managing installed runtime detection and Java version info.
 @MainActor
-final class GameSettingsJavaRuntimeViewModel: ObservableObject {
+@Observable final class GameSettingsJavaRuntimeViewModel {
     /// The installed runtime component names, or `nil` while scanning is in progress.
-    @Published private(set) var installedRuntimeComponents: [String]?
-    @Published var selectedRuntimeComponent: String = ""
+    private(set) var installedRuntimeComponents: [String]?
+    var selectedRuntimeComponent: String = ""
 
-    @Published private(set) var javaVersionInfo: String = ""
-    @Published private(set) var javaExecutablePath: String = ""
+    private(set) var javaVersionInfo: String = ""
+    private(set) var javaExecutablePath: String = ""
 
     private var loadTask: Task<Void, Never>?
     private var loadGeneration: Int = 0

@@ -10,8 +10,8 @@ import Foundation
 
 /// Manages sidebar state and icon refresh triggers for game items.
 @MainActor
-final class SidebarViewModel: ObservableObject {
-    @Published private(set) var iconRefreshTriggers: [String: UUID] = [:]
+@Observable final class SidebarViewModel {
+    private(set) var iconRefreshTriggers: [String: UUID] = [:]
 
     private var cancellable: AnyCancellable?
 

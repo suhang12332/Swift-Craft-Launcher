@@ -262,9 +262,10 @@ extension GlobalError {
 }
 
 /// Manages global error state, including presentation and history.
-class GlobalErrorHandler: ObservableObject {
-    @Published var currentError: GlobalError?
-    @Published var errorHistory: [GlobalError] = []
+@Observable
+final class GlobalErrorHandler {
+    var currentError: GlobalError?
+    var errorHistory: [GlobalError] = []
 
     private let maxHistoryCount = 100
 
@@ -370,16 +371,16 @@ class GlobalErrorHandler: ObservableObject {
 }
 
 struct GlobalErrorHandlerModifier: ViewModifier {
-    @StateObject private var errorHandler: GlobalErrorHandler
+    @State private var errorHandler: GlobalErrorHandler
 
     init(errorHandler: GlobalErrorHandler) {
-        _errorHandler = StateObject(wrappedValue: errorHandler)
+        _errorHandler = State(wrappedValue: errorHandler)
     }
 
     func body(content: Content) -> some View {
         content
-            .onReceive(errorHandler.$currentError) { error in
-                if let error {
+            .onChange(of: errorHandler.currentError?.id) { _, _ in
+                if let error = errorHandler.currentError {
                     AppLog.common.error("Global error occurred: \(error.description)")
                 }
             }

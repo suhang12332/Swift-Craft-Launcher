@@ -21,8 +21,8 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var showEditSkin = false
     @State private var showingMinecraftFriendsSheet = false
     @State private var minecraftFriendsSheetHost: MinecraftFriendsSheetHostAdapter?
-    @StateObject private var viewModel = ContentToolbarViewModel()
-    @StateObject private var minecraftFriendsSheetViewModel = MinecraftFriendsSheetViewModel(friendsService: DIContainer.shared.ui.minecraftFriendsService)
+    @State private var viewModel = ContentToolbarViewModel()
+    @State private var minecraftFriendsSheetViewModel = MinecraftFriendsSheetViewModel(friendsService: DIContainer.shared.ui.minecraftFriendsService)
 
     private var currentPlayer: Player? {
         playerListViewModel.currentPlayer

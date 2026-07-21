@@ -231,7 +231,6 @@ class GameSetupUtil: ObservableObject {
 
         fileManager.onProgressUpdate = { fileName, completed, total, type in
             Task { @MainActor in
-                self.objectWillChange.send()
                 self.downloadState.updateProgress(fileName: fileName, completed: completed, total: total, type: type)
             }
         }

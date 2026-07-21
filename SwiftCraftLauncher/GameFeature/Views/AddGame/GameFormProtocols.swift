@@ -9,7 +9,7 @@
 import SwiftUI
 
 @MainActor
-protocol GameFormStateProtocol: ObservableObject {
+protocol GameFormStateProtocol {
     var isDownloading: Bool { get set }
     var isFormValid: Bool { get set }
     var triggerConfirm: Bool { get set }

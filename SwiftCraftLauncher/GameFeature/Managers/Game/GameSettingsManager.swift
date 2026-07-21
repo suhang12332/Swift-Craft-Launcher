@@ -28,50 +28,41 @@ enum DataSource: String, CaseIterable, Codable {
 }
 
 /// Manages global application settings for the launcher.
-class GameSettingsManager: ObservableObject {
-    init() { }
-
-    @AppStorage(AppConstants.UserDefaultsKeys.globalXms)
-    var globalXms: Int = AppConstants.MemoryDefaults.xms {
-        didSet { objectWillChange.send() }
+@Observable
+final class GameSettingsManager {
+    var globalXms: Int {
+        didSet { UserDefaults.standard.set(globalXms, forKey: AppConstants.UserDefaultsKeys.globalXms) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.globalXmx)
-    var globalXmx: Int = AppConstants.MemoryDefaults.xmx {
-        didSet { objectWillChange.send() }
+    var globalXmx: Int {
+        didSet { UserDefaults.standard.set(globalXmx, forKey: AppConstants.UserDefaultsKeys.globalXmx) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.enableAICrashAnalysis)
-    var enableAICrashAnalysis: Bool = false {
-        didSet { objectWillChange.send() }
+    var enableAICrashAnalysis: Bool {
+        didSet { UserDefaults.standard.set(enableAICrashAnalysis, forKey: AppConstants.UserDefaultsKeys.enableAICrashAnalysis) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.enableMemoryPressureWarning)
-    var enableMemoryPressureWarning: Bool = true {
-        didSet { objectWillChange.send() }
+    var enableMemoryPressureWarning: Bool {
+        didSet { UserDefaults.standard.set(enableMemoryPressureWarning, forKey: AppConstants.UserDefaultsKeys.enableMemoryPressureWarning) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.defaultAPISource)
-    var defaultAPISource: DataSource = .modrinth {
-        didSet { objectWillChange.send() }
+    var defaultAPISource: DataSource {
+        didSet { UserDefaults.standard.set(defaultAPISource.rawValue, forKey: AppConstants.UserDefaultsKeys.defaultAPISource) }
     }
 
     /// Whether to include snapshot versions in game version selection.
-    @AppStorage(AppConstants.UserDefaultsKeys.includeSnapshotsForGameVersions)
-    var includeSnapshotsForGameVersions: Bool = false {
-        didSet { objectWillChange.send() }
+    var includeSnapshotsForGameVersions: Bool {
+        didSet { UserDefaults.standard.set(includeSnapshotsForGameVersions, forKey: AppConstants.UserDefaultsKeys.includeSnapshotsForGameVersions) }
     }
 
     /// Whether to sync the game language to the current launcher language after downloading a new game.
-    @AppStorage(AppConstants.UserDefaultsKeys.syncLanguageForNewGames)
-    var syncLanguageForNewGames: Bool = true {
-        didSet { objectWillChange.send() }
+    var syncLanguageForNewGames: Bool {
+        didSet { UserDefaults.standard.set(syncLanguageForNewGames, forKey: AppConstants.UserDefaultsKeys.syncLanguageForNewGames) }
     }
 
     /// The default export format for mod packs.
-    @AppStorage(AppConstants.UserDefaultsKeys.defaultModPackExportFormat)
-    var defaultModPackExportFormat: ModPackExportFormat = .modrinth {
-        didSet { objectWillChange.send() }
+    var defaultModPackExportFormat: ModPackExportFormat {
+        didSet { UserDefaults.standard.set(defaultModPackExportFormat.rawValue, forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat) }
     }
 
     /// The maximum memory allocation based on 70% of physical RAM, rounded to the nearest 512 MB.
@@ -81,5 +72,19 @@ class GameSettingsManager: ObservableObject {
         let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
         let roundedMax = (calculatedMax / 512) * 512
         return max(roundedMax, 512)
+    }
+
+    init() {
+        let d = UserDefaults.standard
+        globalXms = d.object(forKey: AppConstants.UserDefaultsKeys.globalXms) as? Int ?? AppConstants.MemoryDefaults.xms
+        globalXmx = d.object(forKey: AppConstants.UserDefaultsKeys.globalXmx) as? Int ?? AppConstants.MemoryDefaults.xmx
+        enableAICrashAnalysis = d.bool(forKey: AppConstants.UserDefaultsKeys.enableAICrashAnalysis)
+        enableMemoryPressureWarning = d.object(forKey: AppConstants.UserDefaultsKeys.enableMemoryPressureWarning) as? Bool ?? true
+        let apiSourceRaw = d.string(forKey: AppConstants.UserDefaultsKeys.defaultAPISource) ?? DataSource.modrinth.rawValue
+        defaultAPISource = DataSource(rawValue: apiSourceRaw) ?? .modrinth
+        includeSnapshotsForGameVersions = d.bool(forKey: AppConstants.UserDefaultsKeys.includeSnapshotsForGameVersions)
+        syncLanguageForNewGames = d.object(forKey: AppConstants.UserDefaultsKeys.syncLanguageForNewGames) as? Bool ?? true
+        let exportFormatRaw = d.string(forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat) ?? ModPackExportFormat.modrinth.rawValue
+        defaultModPackExportFormat = ModPackExportFormat(rawValue: exportFormatRaw) ?? .modrinth
     }
 }

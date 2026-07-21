@@ -10,18 +10,18 @@ import UniformTypeIdentifiers
 
 /// View model for the game advanced settings view, managing JVM arguments, memory, garbage collector, and Java path configuration.
 @MainActor
-final class GameAdvancedSettingsViewModel: ObservableObject {
+@Observable final class GameAdvancedSettingsViewModel {
     var gameRepository: GameRepository?
 
-    @Published var memoryRange: ClosedRange<Double>
-    @Published var selectedGarbageCollector: GarbageCollector
-    @Published var optimizationPreset: OptimizationPreset
-    @Published var customJvmArguments: String
-    @Published var environmentVariables: String
-    @Published var javaPath: String
-    @Published var javaVersionInfo: String
-    @Published var error: GlobalError?
-    @Published var isLoadingSettings: Bool
+    var memoryRange: ClosedRange<Double>
+    var selectedGarbageCollector: GarbageCollector
+    var optimizationPreset: OptimizationPreset
+    var customJvmArguments: String
+    var environmentVariables: String
+    var javaPath: String
+    var javaVersionInfo: String
+    var error: GlobalError?
+    var isLoadingSettings: Bool
 
     var enableOptimizations: Bool = true
     var enableAikarFlags: Bool = false

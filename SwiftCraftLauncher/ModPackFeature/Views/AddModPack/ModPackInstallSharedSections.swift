@@ -18,8 +18,8 @@ struct ModPackInstallSharedSections: View {
     let isGameNameInputDisabled: Bool
     let showGameNameInput: Bool
 
-    @ObservedObject var gameSetupService: GameSetupUtil
-    @ObservedObject var modPackInstallState: ModPackInstallState
+    var gameSetupService: GameSetupUtil
+    var modPackInstallState: ModPackInstallState
 
     let lastParsedIndexInfo: ModrinthIndexInfo?
 

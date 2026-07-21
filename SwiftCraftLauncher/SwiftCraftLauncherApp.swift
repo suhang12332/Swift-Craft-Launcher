@@ -30,10 +30,10 @@ import UserNotifications
 /// The entry point and root scene of SwiftCraftLauncher.
 @main
 struct SwiftCraftLauncherApp: App {
-    @StateObject var playerListViewModel = PlayerListViewModel()
-    @StateObject var gameRepository = GameRepository()
-    @StateObject var gameLaunchUseCase = GameLaunchUseCase()
-    @StateObject var container = DIContainer.shared
+    @State var playerListViewModel = PlayerListViewModel()
+    @State var gameRepository = GameRepository()
+    @State var gameLaunchUseCase = GameLaunchUseCase()
+    @State var container = DIContainer.shared
 
     @Environment(\.openSettings)
     private var openSettings

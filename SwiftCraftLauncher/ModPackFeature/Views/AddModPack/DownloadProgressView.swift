@@ -9,8 +9,8 @@ import SwiftUI
 
 /// Displays download and installation progress for game core files, mod loader, and modpack.
 struct DownloadProgressView: View {
-    @ObservedObject var gameSetupService: GameSetupUtil
-    @ObservedObject var modPackInstallState: ModPackInstallState
+    var gameSetupService: GameSetupUtil
+    var modPackInstallState: ModPackInstallState
     let lastParsedIndexInfo: ModrinthIndexInfo?
 
     var body: some View {

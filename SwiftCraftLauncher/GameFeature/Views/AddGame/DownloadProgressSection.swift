@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct DownloadProgressSection: View {
-    @ObservedObject var gameSetupService: GameSetupUtil
+    var gameSetupService: GameSetupUtil
     var modPackViewModel: ModPackDownloadSheetViewModel?
     let modPackIndexInfo: ModrinthIndexInfo?
     let selectedModLoader: String

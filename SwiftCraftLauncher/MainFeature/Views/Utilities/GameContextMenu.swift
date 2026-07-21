@@ -34,7 +34,7 @@ struct GameContextMenu: View {
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
-    @StateObject private var actionViewModel = GameContextMenuActionViewModel()
+    @State private var actionViewModel = GameContextMenuActionViewModel()
 
     /// Whether the game is currently running, determined by cached process state.
     private var isRunning: Bool {

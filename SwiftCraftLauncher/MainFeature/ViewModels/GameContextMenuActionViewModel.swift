@@ -9,7 +9,7 @@ import Foundation
 
 /// Handles context menu actions for launching or stopping a game.
 @MainActor
-final class GameContextMenuActionViewModel: ObservableObject {
+@Observable final class GameContextMenuActionViewModel {
     init() { }
 
     /// Toggles the running state of a game by launching or stopping it.

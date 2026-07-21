@@ -203,7 +203,6 @@ final class ModPackInstallCoordinator {
         if overridesTotal > 0 {
             input.modPackInstallState.isInstalling = true
             input.modPackInstallState.overridesTotal = overridesTotal
-            input.modPackInstallState.objectWillChange.send()
         }
         try? await Task.sleep(nanoseconds: 100_000_000)
 
@@ -219,7 +218,6 @@ final class ModPackInstallCoordinator {
                     total: total,
                     type: type,
                 )
-                input.modPackInstallState.objectWillChange.send()
             }
         }
     }
@@ -243,7 +241,6 @@ final class ModPackInstallCoordinator {
                     total: total,
                     type: type,
                 )
-                input.modPackInstallState.objectWillChange.send()
             }
         }
     }
@@ -267,7 +264,6 @@ final class ModPackInstallCoordinator {
                     total: total,
                     type: type,
                 )
-                input.modPackInstallState.objectWillChange.send()
             }
         }
     }

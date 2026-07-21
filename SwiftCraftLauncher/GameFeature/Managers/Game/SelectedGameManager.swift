@@ -9,20 +9,13 @@ import Foundation
 import SwiftUI
 
 /// Shares the currently selected game ID between the main view and settings.
-class SelectedGameManager: ObservableObject {
+@Observable
+final class SelectedGameManager {
     /// The currently selected game identifier.
-    @Published var selectedGameId: String? {
-        didSet {
-            objectWillChange.send()
-        }
-    }
+    var selectedGameId: String?
 
     /// Whether the advanced settings tab should be opened.
-    @Published var shouldOpenAdvancedSettings: Bool = false {
-        didSet {
-            objectWillChange.send()
-        }
-    }
+    var shouldOpenAdvancedSettings: Bool = false
 
     init() { }
 

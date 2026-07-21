@@ -8,9 +8,9 @@
 import Foundation
 
 /// Manages Java runtime downloads and tracks their progress.
-class JavaDownloadManager: ObservableObject {
-    @Published var downloadState = JavaDownloadState()
-    @Published var isWindowVisible = false
+@Observable class JavaDownloadManager {
+    var downloadState = JavaDownloadState()
+    var isWindowVisible = false
 
     private var dismissCallback: (() -> Void)?
     private var currentDownloadTask: Task<Void, Error>?

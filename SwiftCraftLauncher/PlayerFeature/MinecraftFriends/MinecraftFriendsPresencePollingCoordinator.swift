@@ -69,7 +69,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
             }
 
         let playerSettings = DIContainer.shared.ui.playerSettingsManager
-        presenceNotificationsSettingObservation = playerSettings.objectWillChange
+        presenceNotificationsSettingObservation = playerSettings.presenceNotificationsDidChange
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 guard let self else { return }

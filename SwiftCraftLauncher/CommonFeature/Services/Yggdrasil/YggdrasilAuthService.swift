@@ -10,18 +10,19 @@ import Foundation
 import SwiftUI
 
 /// Manages OAuth2 authentication with Yggdrasil-compatible authentication servers.
-final class YggdrasilAuthService: NSObject, ObservableObject {
+@Observable
+final class YggdrasilAuthService: NSObject {
     /// The current authentication state.
-    @Published var authState: YggdrasilAuthState = .idle
+    var authState: YggdrasilAuthState = .idle
 
     /// Whether an authentication request is in progress.
-    @Published var isLoading: Bool = false
+    var isLoading: Bool = false
 
     /// The currently selected Yggdrasil server configuration.
-    @Published var currentServer: YggdrasilServerConfig?
+    var currentServer: YggdrasilServerConfig?
 
     /// The list of player profiles returned after authentication.
-    @Published var authenticatedProfiles: [YggdrasilProfile] = []
+    var authenticatedProfiles: [YggdrasilProfile] = []
 
     private var webAuthSession: ASWebAuthenticationSession?
 

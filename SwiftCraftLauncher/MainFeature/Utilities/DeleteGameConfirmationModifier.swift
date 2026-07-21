@@ -11,7 +11,7 @@ import SwiftUI
 struct DeleteGameConfirmationModifier: ViewModifier {
     @EnvironmentObject private var container: DIContainer
     @Binding var gamePendingDeletion: GameVersionInfo?
-    @ObservedObject var detailState: ResourceDetailState
+    var detailState: ResourceDetailState
 
     @EnvironmentObject private var gameRepository: GameRepository
 

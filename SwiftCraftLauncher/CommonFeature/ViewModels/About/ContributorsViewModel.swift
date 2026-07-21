@@ -9,9 +9,9 @@ import Foundation
 
 /// Manages fetching and displaying GitHub contributors.
 @MainActor
-public class ContributorsViewModel: ObservableObject {
-    @Published public var contributors: [GitHubContributor] = []
-    @Published public var isLoading: Bool = false
+@Observable public class ContributorsViewModel {
+    public var contributors: [GitHubContributor] = []
+    public var isLoading: Bool = false
 
     init() { }
 

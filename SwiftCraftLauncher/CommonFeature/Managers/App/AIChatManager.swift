@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 @MainActor
-class AIChatManager: ObservableObject {
+@Observable class AIChatManager {
     init() { }
 
     /// Sends a message to the AI service and streams the response.

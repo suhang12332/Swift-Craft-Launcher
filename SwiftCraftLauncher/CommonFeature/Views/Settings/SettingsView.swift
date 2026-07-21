@@ -31,19 +31,19 @@ public struct SettingsView: View {
                 }
                 .tag(SettingsTab.general)
             PlayerSettingsView()
-                .environmentObject(container.ui.playerSettingsManager)
+                .environment(container.ui.playerSettingsManager)
                 .tabItem {
                     Label("settings.player.tab".localized(), systemImage: "person")
                 }
                 .tag(SettingsTab.player)
             GameSettingsView()
-                .environmentObject(container.ui.gameSettingsManager)
+                .environment(container.ui.gameSettingsManager)
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
                 .tag(SettingsTab.game)
             AISettingsView()
-                .environmentObject(container.ui.aiSettingsManager)
+                .environment(container.ui.aiSettingsManager)
                 .tabItem {
                     Label("settings.ai.tab".localized(), systemImage: "brain")
                 }

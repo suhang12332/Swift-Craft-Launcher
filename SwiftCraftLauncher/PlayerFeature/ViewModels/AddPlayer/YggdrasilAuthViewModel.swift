@@ -9,9 +9,9 @@ import Foundation
 
 /// Manages Yggdrasil authentication server selection and profile dispatch.
 @MainActor
-final class YggdrasilAuthViewModel: ObservableObject {
+@Observable final class YggdrasilAuthViewModel {
     /// The currently selected Yggdrasil server configuration.
-    @Published var selectedOption: YggdrasilServerConfig?
+    var selectedOption: YggdrasilServerConfig?
 
     /// Handles a change in server selection and updates the auth service.
     ///

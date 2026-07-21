@@ -15,7 +15,7 @@ public struct SidebarView: View {
     @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
-    @StateObject private var viewModel = SidebarViewModel()
+    @State private var viewModel = SidebarViewModel()
 
     @Environment(\.openSettings)
     private var openSettings

@@ -10,9 +10,9 @@ import SwiftUI
 
 /// Manages presentation state for main-window game dialogs such as mod-pack export and deletion confirmation.
 @MainActor
-final class GameDialogsPresenter: ObservableObject {
-    @Published var gameForExport: GameVersionInfo?
-    @Published var gamePendingDeletion: GameVersionInfo?
+@Observable final class GameDialogsPresenter {
+    var gameForExport: GameVersionInfo?
+    var gamePendingDeletion: GameVersionInfo?
 
     init() { }
 

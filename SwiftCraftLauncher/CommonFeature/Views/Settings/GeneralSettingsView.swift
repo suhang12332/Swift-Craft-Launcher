@@ -23,29 +23,29 @@ public struct GeneralSettingsView: View {
             GeneralSettingsLanguageRow(languageManager: container.ui.languageManager)
 
             GeneralSettingsThemeRow()
-                .environmentObject(container.ui.themeManager)
+                .environment(container.ui.themeManager)
 
             GeneralSettingsInterfaceLayoutRow()
-                .environmentObject(container.ui.generalSettingsManager)
+                .environment(container.ui.generalSettingsManager)
 
             GeneralSettingsWorkingDirectoryRow(
                 viewModel: viewModel,
                 gameRepository: gameRepository,
             )
-            .environmentObject(container.ui.generalSettingsManager)
+            .environment(container.ui.generalSettingsManager)
 
             GeneralSettingsConcurrentDownloadsRow(
                 viewModel: viewModel,
             )
-            .environmentObject(container.ui.generalSettingsManager)
+            .environment(container.ui.generalSettingsManager)
 
             GeneralSettingsSystemProxyRow()
 
             GeneralSettingsGitHubProxyRow()
-                .environmentObject(container.ui.generalSettingsManager)
+                .environment(container.ui.generalSettingsManager)
 
             GeneralSettingsCommonSheetHeightLimitRow()
-                .environmentObject(container.ui.generalSettingsManager)
+                .environment(container.ui.generalSettingsManager)
         }
         .errorHandler(container.core.errorHandler)
         .onAppear {

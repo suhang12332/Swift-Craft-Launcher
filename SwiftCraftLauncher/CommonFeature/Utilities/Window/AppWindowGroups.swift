@@ -28,8 +28,8 @@ private struct AuxiliaryWindowScene: View {
     @EnvironmentObject private var container: DIContainer
 
     let windowID: AuxiliaryWindowID
-    @ObservedObject var playerListViewModel: PlayerListViewModel
-    @ObservedObject var gameRepository: GameRepository
+    var playerListViewModel: PlayerListViewModel
+    var gameRepository: GameRepository
 
     var body: some View {
         Group {
