@@ -117,12 +117,12 @@ class AIChatManager {
 
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         let request = URLRequest(url: url)
-            .methods(APIClient.HTTPMethods.post)
+            .method(APIClient.HTTPMethods.post)
             .headers([
                 APIClient.Header.contentType: APIClient.MimeType.json,
                 APIClient.Header.authorization: APIClient.bearer(DIContainer.shared.ui.aiSettingsManager.apiKey),
             ])
-            .bodys(jsonData)
+            .body(jsonData)
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
@@ -234,9 +234,9 @@ class AIChatManager {
 
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         let request = URLRequest(url: url)
-            .methods(APIClient.HTTPMethods.post)
+            .method(APIClient.HTTPMethods.post)
             .headers(headers)
-            .bodys(jsonData)
+            .body(jsonData)
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
@@ -329,9 +329,9 @@ class AIChatManager {
 
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         let request = URLRequest(url: url)
-            .methods(APIClient.HTTPMethods.post)
+            .method(APIClient.HTTPMethods.post)
             .headers([APIClient.Header.contentType: APIClient.MimeType.json])
-            .bodys(jsonData)
+            .body(jsonData)
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 

@@ -71,7 +71,7 @@ enum APIClient {
         headers: [String: String]? = nil,
     ) async throws -> Data {
         let request = URLRequest(url: url)
-            .methods(HTTPMethods.get)
+            .method(HTTPMethods.get)
             .headers(headers)
 
         return try await performRequest(request: request)
@@ -118,7 +118,7 @@ enum APIClient {
         headers: [String: String]? = nil,
     ) async throws -> (Data, Int) {
         let request = URLRequest(url: url)
-            .methods(HTTPMethods.get)
+            .method(HTTPMethods.get)
             .headers(headers)
         return try await performRequestUnchecked(request: request)
     }
@@ -174,9 +174,9 @@ enum APIClient {
         headers: [String: String]? = nil,
     ) async throws -> Data {
         let request = URLRequest(url: url)
-            .methods(method)
+            .method(method)
             .headers(headers)
-            .bodys(body)
+            .body(body)
 
         return try await performRequest(request: request)
     }
@@ -193,9 +193,9 @@ enum APIClient {
             postHeaders[Header.contentType] = MimeType.json
         }
         return URLRequest(url: url)
-            .methods(HTTPMethods.post)
+            .method(HTTPMethods.post)
             .headers(postHeaders)
-            .bodys(body)
+            .body(body)
     }
 
     /// Casts a `URLResponse` to `HTTPURLResponse`, throwing if the cast fails.

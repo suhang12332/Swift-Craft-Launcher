@@ -34,12 +34,9 @@ enum NetworkSession {
     }
 
     private static func newConfiguration() -> URLSessionConfiguration {
-        let configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = sharedConfiguration.timeoutIntervalForRequest
-        configuration.timeoutIntervalForResource = sharedConfiguration.timeoutIntervalForResource
-        configuration.httpMaximumConnectionsPerHost = sharedConfiguration.httpMaximumConnectionsPerHost
-        configuration.waitsForConnectivity = sharedConfiguration.waitsForConnectivity
-        configuration.requestCachePolicy = sharedConfiguration.requestCachePolicy
+        guard let configuration = sharedConfiguration.copy() as? URLSessionConfiguration else {
+            return URLSessionConfiguration.default
+        }
         return configuration
     }
 }
