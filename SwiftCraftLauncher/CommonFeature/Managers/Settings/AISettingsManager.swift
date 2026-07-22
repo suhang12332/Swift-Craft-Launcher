@@ -79,10 +79,8 @@ final class AISettingsManager {
     }
 
     /// The API key for the selected AI provider, stored securely in Keychain.
-    var apiKey: String = {
-        KeychainManager.load(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
-            .flatMap { String(data: $0, encoding: .utf8) } ?? ""
-    }() {
+    var apiKey: String = KeychainManager.load(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
+        .flatMap { String(data: $0, encoding: .utf8) } ?? "" {
         didSet {
             if apiKey.isEmpty {
                 _ = KeychainManager.delete(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
