@@ -55,18 +55,10 @@ struct XboxLiveTokenResponse: Codable {
 
 struct DisplayClaims: Codable {
     let xui: [XUI]
-
-    enum CodingKeys: String, CodingKey {
-        case xui
-    }
 }
 
 struct XUI: Codable {
     let uhs: String
-
-    enum CodingKeys: String, CodingKey {
-        case uhs
-    }
 }
 
 struct MinecraftProfileResponse: Codable, Equatable {
