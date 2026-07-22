@@ -39,6 +39,7 @@ final class ModPackInstallState {
         overridesTotal = 0
         filesCompleted = 0
         dependenciesCompleted = 0
+        overridesCompleted = 0
     }
 
     /// Begins a new installation with the specified totals.
