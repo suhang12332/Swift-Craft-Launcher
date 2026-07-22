@@ -8,23 +8,6 @@
 import Foundation
 
 enum DownloadManager {
-    enum ResourceType: String {
-        case mod, datapack, shader, resourcepack
-
-        var folderName: String {
-            switch self {
-            case .mod: return AppConstants.DirectoryNames.mods
-            case .datapack: return AppConstants.DirectoryNames.datapacks
-            case .shader: return AppConstants.DirectoryNames.shaderpacks
-            case .resourcepack: return AppConstants.DirectoryNames.resourcepacks
-            }
-        }
-
-        init?(from string: String) {
-            self.init(rawValue: string.lowercased())
-        }
-    }
-
     /// Downloads a resource file to the appropriate game directory.
     /// - Parameters:
     ///   - game: The game version information.
@@ -68,6 +51,8 @@ enum DownloadManager {
                     return AppPaths.modsDirectory(gameName: game.gameName)
                 }
                 return AppPaths.resourcepacksDirectory(gameName: game.gameName)
+            case .modpack, .minecraftJavaServer:
+                return nil
             }
         }()
 

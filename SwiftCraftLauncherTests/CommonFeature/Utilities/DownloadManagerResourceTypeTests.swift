@@ -10,59 +10,62 @@ import XCTest
 
 final class DownloadManagerResourceTypeTests: XCTestCase {
     func testFolderName_mod() {
-        XCTAssertEqual(DownloadManager.ResourceType.mod.folderName, AppConstants.DirectoryNames.mods)
+        XCTAssertEqual(ResourceType.mod.folderName, AppConstants.DirectoryNames.mods)
     }
 
     func testFolderName_datapack() {
-        XCTAssertEqual(DownloadManager.ResourceType.datapack.folderName, AppConstants.DirectoryNames.datapacks)
+        XCTAssertEqual(ResourceType.datapack.folderName, AppConstants.DirectoryNames.datapacks)
     }
 
     func testFolderName_shader() {
-        XCTAssertEqual(DownloadManager.ResourceType.shader.folderName, AppConstants.DirectoryNames.shaderpacks)
+        XCTAssertEqual(ResourceType.shader.folderName, AppConstants.DirectoryNames.shaderpacks)
     }
 
     func testFolderName_resourcepack() {
-        XCTAssertEqual(DownloadManager.ResourceType.resourcepack.folderName, AppConstants.DirectoryNames.resourcepacks)
+        XCTAssertEqual(ResourceType.resourcepack.folderName, AppConstants.DirectoryNames.resourcepacks)
+    }
+
+    func testFolderName_modpack_returnsEmpty() {
+        XCTAssertEqual(ResourceType.modpack.folderName, "")
     }
 
     func testInitFrom_mod() {
-        XCTAssertEqual(DownloadManager.ResourceType(from: "mod"), .mod)
+        XCTAssertEqual(ResourceType(from: "mod"), .mod)
     }
 
     func testInitFrom_datapack() {
-        XCTAssertEqual(DownloadManager.ResourceType(from: "datapack"), .datapack)
+        XCTAssertEqual(ResourceType(from: "datapack"), .datapack)
     }
 
     func testInitFrom_shader() {
-        XCTAssertEqual(DownloadManager.ResourceType(from: "shader"), .shader)
+        XCTAssertEqual(ResourceType(from: "shader"), .shader)
     }
 
     func testInitFrom_resourcepack() {
-        XCTAssertEqual(DownloadManager.ResourceType(from: "resourcepack"), .resourcepack)
+        XCTAssertEqual(ResourceType(from: "resourcepack"), .resourcepack)
     }
 
     func testInitFrom_uppercase() {
-        XCTAssertEqual(DownloadManager.ResourceType(from: "MOD"), .mod)
-        XCTAssertEqual(DownloadManager.ResourceType(from: "DATAPACK"), .datapack)
-        XCTAssertEqual(DownloadManager.ResourceType(from: "SHADER"), .shader)
-        XCTAssertEqual(DownloadManager.ResourceType(from: "RESOURCEPACK"), .resourcepack)
+        XCTAssertEqual(ResourceType(from: "MOD"), .mod)
+        XCTAssertEqual(ResourceType(from: "DATAPACK"), .datapack)
+        XCTAssertEqual(ResourceType(from: "SHADER"), .shader)
+        XCTAssertEqual(ResourceType(from: "RESOURCEPACK"), .resourcepack)
     }
 
     func testInitFrom_mixedCase() {
-        XCTAssertEqual(DownloadManager.ResourceType(from: "Mod"), .mod)
-        XCTAssertEqual(DownloadManager.ResourceType(from: "DataPack"), .datapack)
+        XCTAssertEqual(ResourceType(from: "Mod"), .mod)
+        XCTAssertEqual(ResourceType(from: "DataPack"), .datapack)
     }
 
     func testInitFrom_invalid_returnsNil() {
-        XCTAssertNil(DownloadManager.ResourceType(from: "invalid"))
-        XCTAssertNil(DownloadManager.ResourceType(from: ""))
-        XCTAssertNil(DownloadManager.ResourceType(from: "texturepack"))
-        XCTAssertNil(DownloadManager.ResourceType(from: "modpack"))
+        XCTAssertNil(ResourceType(from: "invalid"))
+        XCTAssertNil(ResourceType(from: ""))
+        XCTAssertNil(ResourceType(from: "texturepack"))
     }
 
     func testRawValue_roundTrip() {
-        for type in [DownloadManager.ResourceType.mod, .datapack, .shader, .resourcepack] {
-            XCTAssertEqual(DownloadManager.ResourceType(from: type.rawValue), type)
+        for type in [ResourceType.mod, .datapack, .shader, .resourcepack] {
+            XCTAssertEqual(ResourceType(from: type.rawValue), type)
         }
     }
 }
