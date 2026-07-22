@@ -198,10 +198,8 @@ enum APIClient {
             .bodys(body)
     }
 
-    /// Executes a URL request and returns the response data.
-    private static func performRequest(request: URLRequest) async throws -> Data {
-        let (data, response) = try await sharedSession.data(for: request)
-
+    /// Casts a `URLResponse` to `HTTPURLResponse`, throwing if the cast fails.
+    private static func asHTTPResponse(_ response: URLResponse, for request: URLRequest) throws -> HTTPURLResponse {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
                 i18nKey: "error.network.invalid_response",
@@ -209,6 +207,13 @@ enum APIClient {
                 message: "Response is not HTTPURLResponse: \(type(of: response)), URL: \(request.url?.absoluteString ?? "nil")",
             )
         }
+        return httpResponse
+    }
+
+    /// Executes a URL request and returns the response data.
+    private static func performRequest(request: URLRequest) async throws -> Data {
+        let (data, response) = try await sharedSession.data(for: request)
+        let httpResponse = try asHTTPResponse(response, for: request)
 
         guard httpResponse.statusCode == 200 else {
             throw GlobalError.network(
@@ -224,29 +229,14 @@ enum APIClient {
     /// Executes a URL request without status code validation, returning the data and status code.
     private static func performRequestUnchecked(request: URLRequest) async throws -> (Data, Int) {
         let (data, response) = try await sharedSession.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                i18nKey: "error.network.invalid_response",
-                message: "Response is not HTTPURLResponse for unchecked request: \(request.url?.absoluteString ?? "nil")",
-            )
-        }
-
+        let httpResponse = try asHTTPResponse(response, for: request)
         return (data, httpResponse.statusCode)
     }
 
     /// Executes a streaming request and returns the async bytes and response.
     static func performStreamRequest(request: URLRequest) async throws -> (URLSession.AsyncBytes, HTTPURLResponse) {
         let (asyncBytes, response) = try await sharedSession.bytes(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                i18nKey: "error.network.invalid_response",
-                level: .notification,
-                message: "Response is not HTTPURLResponse for stream request: \(request.url?.absoluteString ?? "nil")",
-            )
-        }
-
+        let httpResponse = try asHTTPResponse(response, for: request)
         return (asyncBytes, httpResponse)
     }
 }
