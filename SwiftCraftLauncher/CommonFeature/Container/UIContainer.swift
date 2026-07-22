@@ -11,31 +11,31 @@ import SwiftUI
 final class UIContainer {
     // Window & UI
 
-    @MainActorLazy var windowManager: WindowManager = WindowManager()
-    @MainActorLazy var windowDataStore: WindowDataStore = WindowDataStore()
-    @MainActorLazy var iconRefreshNotifier: IconRefreshNotifier = IconRefreshNotifier()
-    @MainActorLazy var gameDialogsPresenter: GameDialogsPresenter = GameDialogsPresenter()
-    @MainActorLazy var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter = AuthlibInjectorMissingPresenter()
-    @MainActorLazy var memoryPressureAlertPresenter: MemoryPressureAlertPresenter = MemoryPressureAlertPresenter()
-    @MainActorLazy var openURLModPackImportPresenter: OpenURLModPackImportPresenter = OpenURLModPackImportPresenter()
+    @MainActorLazy var windowManager: WindowManager = .init()
+    @MainActorLazy var windowDataStore: WindowDataStore = .init()
+    @MainActorLazy var iconRefreshNotifier: IconRefreshNotifier = .init()
+    @MainActorLazy var gameDialogsPresenter: GameDialogsPresenter = .init()
+    @MainActorLazy var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter = .init()
+    @MainActorLazy var memoryPressureAlertPresenter: MemoryPressureAlertPresenter = .init()
+    @MainActorLazy var openURLModPackImportPresenter: OpenURLModPackImportPresenter = .init()
 
     // Settings
 
-    @MainActorLazy var announcementStateManager: AnnouncementStateManager = AnnouncementStateManager()
-    @Lazy var generalSettingsManager: GeneralSettingsManager = GeneralSettingsManager()
-    @Lazy var gameSettingsManager: GameSettingsManager = GameSettingsManager()
-    @Lazy var playerSettingsManager: PlayerSettingsManager = PlayerSettingsManager()
-    @Lazy var playerDataManager: PlayerDataManager = PlayerDataManager()
-    @Lazy var themeManager: ThemeManager = ThemeManager()
-    @Lazy var languageManager: LanguageManager = LanguageManager()
-    @Lazy var aiSettingsManager: AISettingsManager = AISettingsManager()
+    @MainActorLazy var announcementStateManager: AnnouncementStateManager = .init()
+    @Lazy var generalSettingsManager: GeneralSettingsManager = .init()
+    @Lazy var gameSettingsManager: GameSettingsManager = .init()
+    @Lazy var playerSettingsManager: PlayerSettingsManager = .init()
+    @Lazy var playerDataManager: PlayerDataManager = .init()
+    @Lazy var themeManager: ThemeManager = .init()
+    @Lazy var languageManager: LanguageManager = .init()
+    @Lazy var aiSettingsManager: AISettingsManager = .init()
 
     // Minecraft Friends
 
-    @MainActorLazy var minecraftFriendsPresencePollingCoordinator: MinecraftFriendsPresencePollingCoordinator = MinecraftFriendsPresencePollingCoordinator()
-    @Lazy var minecraftFriendsService: MinecraftFriendsService = MinecraftFriendsService()
+    @MainActorLazy var minecraftFriendsPresencePollingCoordinator: MinecraftFriendsPresencePollingCoordinator = .init()
+    @Lazy var minecraftFriendsService: MinecraftFriendsService = .init()
 
     // AI Chat
 
-    @MainActorLazy var aiChatManager: AIChatManager = AIChatManager()
+    @MainActorLazy var aiChatManager: AIChatManager = .init()
 }

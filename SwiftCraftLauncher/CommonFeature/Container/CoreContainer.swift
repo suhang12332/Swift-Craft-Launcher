@@ -10,34 +10,34 @@ import Foundation
 final class CoreContainer {
     // Error handling
 
-    @Lazy var errorHandler: GlobalErrorHandler = GlobalErrorHandler()
+    @Lazy var errorHandler: GlobalErrorHandler = .init()
 
     // Cache
 
-    @Lazy var appCacheManager: AppCacheManager = AppCacheManager()
-    @Lazy var cacheCalculator: CacheCalculator = CacheCalculator()
-    @Lazy var cacheInfoManager: CacheInfoManager = CacheInfoManager()
+    @Lazy var appCacheManager: AppCacheManager = .init()
+    @Lazy var cacheCalculator: CacheCalculator = .init()
+    @Lazy var cacheInfoManager: CacheInfoManager = .init()
 
     // Mods
 
-    @Lazy var modScanner: ModScanner = ModScanner()
-    @Lazy var modCacheManager: ModCacheManager = ModCacheManager()
-    @Lazy var modDirectoryWatcherRegistry: ModDirectoryWatcherRegistry = ModDirectoryWatcherRegistry()
-    @Lazy var modInstallationCache: ModScanner.ModInstallationCache = ModScanner.ModInstallationCache()
-    @Lazy var directoryHashCache: ModScanner.DirectoryHashCache = ModScanner.DirectoryHashCache()
+    @Lazy var modScanner: ModScanner = .init()
+    @Lazy var modCacheManager: ModCacheManager = .init()
+    @Lazy var modDirectoryWatcherRegistry: ModDirectoryWatcherRegistry = .init()
+    @Lazy var modInstallationCache: ModScanner.ModInstallationCache = .init()
+    @Lazy var directoryHashCache: ModScanner.DirectoryHashCache = .init()
 
     // Game
 
-    @Lazy var gameProcessManager: GameProcessManager = GameProcessManager()
-    @Lazy var gameStatusManager: GameStatusManager = GameStatusManager()
-    @Lazy var gameLogCollector: GameLogCollector = GameLogCollector()
-    @Lazy var gameActionManager: GameActionManager = GameActionManager()
+    @Lazy var gameProcessManager: GameProcessManager = .init()
+    @Lazy var gameStatusManager: GameStatusManager = .init()
+    @Lazy var gameLogCollector: GameLogCollector = .init()
+    @Lazy var gameActionManager: GameActionManager = .init()
 
     // Favorites
 
-    @Lazy var favoriteStore: FavoriteStore = FavoriteStore()
+    @Lazy var favoriteStore: FavoriteStore = .init()
 
     // Settings core
 
-    @Lazy var selectedGameManager: SelectedGameManager = SelectedGameManager()
+    @Lazy var selectedGameManager: SelectedGameManager = .init()
 }

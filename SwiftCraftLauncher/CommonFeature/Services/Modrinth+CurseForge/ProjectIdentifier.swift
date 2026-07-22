@@ -61,8 +61,6 @@ struct ProjectIdentifier: Equatable, Hashable {
     }
 }
 
-// MARK: - Convenience on String
-
 extension String {
     var asProjectId: ProjectIdentifier { ProjectIdentifier(self) }
 }

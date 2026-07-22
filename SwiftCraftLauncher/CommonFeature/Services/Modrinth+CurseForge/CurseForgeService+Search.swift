@@ -26,6 +26,7 @@ extension CurseForgeService {
         }
         return URLQueryItem(name: name, value: jsonString)
     }
+
     /// Searches CurseForge projects.
     /// - Parameters:
     ///   - gameId: The game identifier (432 for Minecraft).

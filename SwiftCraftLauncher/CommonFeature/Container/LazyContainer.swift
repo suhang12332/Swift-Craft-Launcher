@@ -7,8 +7,6 @@
 
 import Foundation
 
-// MARK: - @Lazy
-
 /// Thread-safe lazy property wrapper. Creates the value on first access, then caches it.
 ///
 /// Usage: `@Lazy var foo: Foo = Foo()`
@@ -20,7 +18,7 @@ final class Lazy<T>: @unchecked Sendable {
     private let factory: () -> T
 
     init(wrappedValue: @autoclosure @escaping () -> T) {
-        self.factory = wrappedValue
+        factory = wrappedValue
     }
 
     var wrappedValue: T {
@@ -41,8 +39,6 @@ final class Lazy<T>: @unchecked Sendable {
     }
 }
 
-// MARK: - @MainActorLazy
-
 /// Main-actor-isolated lazy property wrapper. Value created on first access on the main actor.
 ///
 /// Usage: `@MainActorLazy var manager: Manager = Manager()`
@@ -53,7 +49,7 @@ final class MainActorLazy<T> {
     private var storage: T?
 
     init(wrappedValue: @MainActor @autoclosure @escaping () -> T) {
-        self.factory = wrappedValue
+        factory = wrappedValue
     }
 
     @MainActor var wrappedValue: T {

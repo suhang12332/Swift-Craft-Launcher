@@ -8,8 +8,6 @@
 import MinecraftFriendsKit
 import SwiftUI
 
-// MARK: - Delayed Dismiss Helper
-
 /// Dismisses a sheet binding after a 0.3s delay, allowing the sheet animation to complete
 /// before resetting auth state.
 private func delayedDismiss(_ binding: Binding<Bool>, execute work: @escaping () -> Void) {

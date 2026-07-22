@@ -11,22 +11,22 @@ import MinecraftFriendsKit
 final class SystemContainer {
     // Authentication & Network
 
-    @Lazy var gitHubService: GitHubService = GitHubService()
-    @Lazy var minecraftAuthService: MinecraftAuthService = MinecraftAuthService()
-    @Lazy var yggdrasilAuthService: YggdrasilAuthService = YggdrasilAuthService()
-    @Lazy var ipLocationService: IPLocationService = IPLocationService()
+    @Lazy var gitHubService: GitHubService = .init()
+    @Lazy var minecraftAuthService: MinecraftAuthService = .init()
+    @Lazy var yggdrasilAuthService: YggdrasilAuthService = .init()
+    @Lazy var ipLocationService: IPLocationService = .init()
 
     // Java
 
-    @MainActorLazy var javaManager: JavaManager = JavaManager()
-    @Lazy var javaRuntimeService: JavaRuntimeService = JavaRuntimeService()
-    @Lazy var javaRuntimeDownloader: JavaRuntimeDownloader = JavaRuntimeDownloader()
-    @Lazy var javaDownloadManager: JavaDownloadManager = JavaDownloadManager()
+    @MainActorLazy var javaManager: JavaManager = .init()
+    @Lazy var javaRuntimeService: JavaRuntimeService = .init()
+    @Lazy var javaRuntimeDownloader: JavaRuntimeDownloader = .init()
+    @Lazy var javaDownloadManager: JavaDownloadManager = .init()
 
     // Utilities
 
-    @Lazy var sparkleUpdateService: SparkleUpdateService = SparkleUpdateService()
-    @Lazy var serverAddressService: ServerAddressService = ServerAddressService()
-    @Lazy var litematicaService: LitematicaService = LitematicaService()
-    @Lazy var premiumAccountFlagManager: PremiumAccountFlagManager = PremiumAccountFlagManager()
+    @Lazy var sparkleUpdateService: SparkleUpdateService = .init()
+    @Lazy var serverAddressService: ServerAddressService = .init()
+    @Lazy var litematicaService: LitematicaService = .init()
+    @Lazy var premiumAccountFlagManager: PremiumAccountFlagManager = .init()
 }
