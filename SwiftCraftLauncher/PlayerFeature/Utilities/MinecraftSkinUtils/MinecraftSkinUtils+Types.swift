@@ -14,7 +14,7 @@ import SwiftUI
 enum SkinType {
     /// Loaded from a remote URL.
     case url
-    /// Loaded from the app's asset catalog.
+    /// Loaded from the app's asset catalog (resolved to remote URL at runtime).
     case asset
     /// Loaded from a local file path.
     case local
