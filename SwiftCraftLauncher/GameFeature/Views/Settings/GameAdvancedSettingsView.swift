@@ -10,8 +10,10 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct GameAdvancedSettingsView: View {
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var container: DIContainer
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(DIContainer.self)
+    private var container
     @State private var viewModel = GameAdvancedSettingsViewModel()
 
     @State private var showJavaPathPicker = false

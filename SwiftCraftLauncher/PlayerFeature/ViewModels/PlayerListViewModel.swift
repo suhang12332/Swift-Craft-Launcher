@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import Observation
 import SwiftUI
 
 /// Manages the player list and coordinates with ``PlayerDataManager`` for persistence.
-class PlayerListViewModel: ObservableObject {
-    @Published var players: [Player] = []
-    @Published var currentPlayer: Player?
+@Observable
+class PlayerListViewModel {
+    var players: [Player] = []
+    var currentPlayer: Player?
 
     private var notificationObserver: NSObjectProtocol?
     private var hasLoadedPlayers = false

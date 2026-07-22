@@ -9,7 +9,8 @@ import SwiftUI
 
 /// Loads and displays the project detail content including compatibility, links, and details.
 struct ModrinthProjectContentView: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     @State private var isLoading = false
     @State private var error: GlobalError?
     @Binding var projectDetail: ModrinthProjectDetail?

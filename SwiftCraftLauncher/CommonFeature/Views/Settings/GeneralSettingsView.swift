@@ -9,13 +9,15 @@ import SwiftUI
 
 /// A view for configuring general launcher settings.
 public struct GeneralSettingsView: View {
-    @EnvironmentObject private var container: DIContainer
-    @StateObject private var viewModel: GeneralSettingsViewModel
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(DIContainer.self)
+    private var container
+    @State private var viewModel: GeneralSettingsViewModel
+    @Environment(GameRepository.self)
+    private var gameRepository
 
     @MainActor
     public init() {
-        _viewModel = StateObject(wrappedValue: GeneralSettingsViewModel())
+        _viewModel = State(wrappedValue: GeneralSettingsViewModel())
     }
 
     public var body: some View {

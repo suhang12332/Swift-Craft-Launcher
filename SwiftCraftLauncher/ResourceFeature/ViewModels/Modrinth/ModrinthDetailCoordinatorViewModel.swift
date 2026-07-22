@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Observation
 
 /// Captures the search parameters used for a Modrinth search query.
 struct ModrinthSearchContext: Equatable {
@@ -39,9 +40,10 @@ struct ModrinthSearchContext: Equatable {
 
 /// Coordinates pagination, debounce, and error handling for Modrinth search.
 @MainActor
-final class ModrinthDetailCoordinatorViewModel: ObservableObject {
-    @Published var error: GlobalError?
-    @Published var hasLoaded: Bool = false
+@Observable
+final class ModrinthDetailCoordinatorViewModel {
+    var error: GlobalError?
+    var hasLoaded: Bool = false
 
     private var currentPage: Int = 1
     private var lastSearchParams: String = ""

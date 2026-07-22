@@ -11,7 +11,7 @@ import SwiftUI
 struct GameLocalResourceListContent: View {
     let game: GameVersionInfo
     let query: String
-    @ObservedObject var viewModel: GameLocalResourceViewModel
+    var viewModel: GameLocalResourceViewModel
 
     @Binding var selectedItem: SidebarItem
     @Binding var selectedProjectId: String?

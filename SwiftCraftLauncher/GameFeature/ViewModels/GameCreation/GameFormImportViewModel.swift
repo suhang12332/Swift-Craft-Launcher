@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import Observation
 
 /// View model that prepares mod pack import files by copying them to a temporary directory.
 @MainActor
-final class GameFormImportViewModel: ObservableObject {
+@Observable
+final class GameFormImportViewModel {
     init() { }
 
     /// Prepares a mod pack file for import by copying it to a temporary directory.

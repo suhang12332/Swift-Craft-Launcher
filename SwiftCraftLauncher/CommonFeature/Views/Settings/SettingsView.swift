@@ -19,8 +19,10 @@ enum SettingsTab: Int {
 
 /// The main settings view with tabbed navigation.
 public struct SettingsView: View {
-    @EnvironmentObject private var container: DIContainer
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(DIContainer.self)
+    private var container
+    @Environment(GameRepository.self)
+    private var gameRepository
     @State private var selectedTab: SettingsTab = .general
 
     public var body: some View {

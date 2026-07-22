@@ -10,7 +10,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct GameInfoDetailView: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     let game: GameVersionInfo
 
     @Binding var query: String
@@ -23,12 +24,13 @@ struct GameInfoDetailView: View {
     @Binding var selectedProjectId: String?
     @Binding var selectedLoaders: [String]
     @Binding var gameType: Bool
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(GameRepository.self)
+    private var gameRepository
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
     @Binding var localResourceFilter: LocalResourceFilter
     @State private var localRefreshToken = UUID()
-    @StateObject private var ioViewModel = GameInfoDetailIOViewModel()
+    @State private var ioViewModel = GameInfoDetailIOViewModel()
 
     @State private var scannedResources: Set<String> = []
     @State private var header: AnyView?

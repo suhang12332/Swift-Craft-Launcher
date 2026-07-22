@@ -23,9 +23,11 @@ private enum Constants {
 }
 
 struct GameCreationView: View {
-    @StateObject private var viewModel: GameCreationViewModel
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @State private var viewModel: GameCreationViewModel
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 
@@ -58,7 +60,7 @@ struct GameCreationView: View {
             onCancel: onCancel,
             onConfirm: onConfirm,
         )
-        _viewModel = StateObject(wrappedValue: GameCreationViewModel(configuration: configuration))
+        _viewModel = State(wrappedValue: GameCreationViewModel(configuration: configuration))
     }
 
     var body: some View {
@@ -200,10 +202,11 @@ struct GameCreationView: View {
     }
 
     private var versionPicker: some View {
-        CustomVersionPicker(
-            selected: $viewModel.selectedGameVersion,
+        @Bindable var vm = viewModel
+        return CustomVersionPicker(
+            selected: $vm.selectedGameVersion,
             availableVersions: viewModel.availableVersions,
-            time: $viewModel.versionTime,
+            time: $vm.versionTime,
         ) { version in
             await ModrinthService.queryVersionTime(from: version)
         }
@@ -211,11 +214,12 @@ struct GameCreationView: View {
     }
 
     private var modLoaderPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        @Bindable var vm = viewModel
+        return VStack(alignment: .leading, spacing: 8) {
             Text("game.form.modloader".localized())
                 .foregroundColor(.primary)
             CommonMenuPicker(
-                selection: $viewModel.selectedModLoader,
+                selection: $vm.selectedModLoader,
                 hidesLabel: true,
             ) {
                 Text("")
@@ -245,11 +249,12 @@ struct GameCreationView: View {
     }
 
     private var loaderVersionPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        @Bindable var vm = viewModel
+        return VStack(alignment: .leading, spacing: 8) {
             Text("game.form.loader.version".localized())
                 .foregroundColor(.primary)
             CommonMenuPicker(
-                selection: $viewModel.selectedLoaderVersion,
+                selection: $vm.selectedLoaderVersion,
                 hidesLabel: true,
             ) {
                 Text("")

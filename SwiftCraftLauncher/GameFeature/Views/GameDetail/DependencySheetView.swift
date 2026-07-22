@@ -9,11 +9,11 @@
 import SwiftUI
 
 struct DependencySheetView: View {
-    @ObservedObject var viewModel: DependencySheetViewModel
+    var viewModel: DependencySheetViewModel
     @Binding var isDownloadingAllDependencies: Bool
     @Binding var isDownloadingMainResourceOnly: Bool
     let projectDetail: ModrinthProjectDetail
-    @StateObject private var actionViewModel: DependencySheetActionViewModel
+    @State private var actionViewModel: DependencySheetActionViewModel
 
     let onDownloadAll: () async -> Void
     let onDownloadMainOnly: () async -> Void
@@ -32,7 +32,7 @@ struct DependencySheetView: View {
         self.projectDetail = projectDetail
         self.onDownloadAll = onDownloadAll
         self.onDownloadMainOnly = onDownloadMainOnly
-        _actionViewModel = StateObject(
+        _actionViewModel = State(
             wrappedValue: DependencySheetActionViewModel(
                 isDownloadingAllDependencies: isDownloadingAllDependencies,
                 isDownloadingMainResourceOnly: isDownloadingMainResourceOnly,

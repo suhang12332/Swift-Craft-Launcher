@@ -10,7 +10,8 @@ import SwiftUI
 
 /// Manages modpack export state, including format selection, progress tracking, and file handling.
 @MainActor
-class ModPackExportViewModel: ObservableObject {
+@Observable
+class ModPackExportViewModel {
     /// The current state of the export process.
     enum ExportState: Equatable {
         case idle
@@ -18,16 +19,16 @@ class ModPackExportViewModel: ObservableObject {
         case completed
     }
 
-    @Published var exportState: ExportState = .idle
-    @Published var exportProgress = ModPackExporter.ExportProgress()
-    @Published var modPackName: String = ""
-    @Published var modPackVersion: String = "1.0.0"
-    @Published var summary: String = ""
-    @Published var exportError: String?
-    @Published var tempExportPath: URL?
-    @Published var saveError: String?
-    @Published var selectedFileURLs: [URL] = []
-    @Published var currentExportFormat: ModPackExportFormat = .modrinth
+    var exportState: ExportState = .idle
+    var exportProgress = ModPackExporter.ExportProgress()
+    var modPackName: String = ""
+    var modPackVersion: String = "1.0.0"
+    var summary: String = ""
+    var exportError: String?
+    var tempExportPath: URL?
+    var saveError: String?
+    var selectedFileURLs: [URL] = []
+    var currentExportFormat: ModPackExportFormat = .modrinth
 
     private var exportTask: Task<Void, Never>?
     private var hasShownSaveDialog = false

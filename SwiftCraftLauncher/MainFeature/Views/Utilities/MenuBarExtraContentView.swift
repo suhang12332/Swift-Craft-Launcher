@@ -11,18 +11,16 @@ import AppKit
 import SwiftUI
 
 struct MenuBarExtraContentView: View {
-    @EnvironmentObject private var container: DIContainer
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
+    @Environment(DIContainer.self)
+    private var container
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(GameLaunchUseCase.self)
+    private var gameLaunchUseCase
 
     let openSettings: () -> Void
-
-    init(
-        openSettings: @escaping () -> Void,
-    ) {
-        self.openSettings = openSettings
-    }
 
     /// Returns the SF Symbol name reflecting the game's current launch or running state.
     private func gameStatusSymbolName(for game: GameVersionInfo) -> String {

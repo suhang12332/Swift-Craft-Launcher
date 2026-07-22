@@ -6,28 +6,30 @@
 //
 
 import Foundation
+import Observation
 import os
 import SwiftUI
 
 /// View model that manages the add, delete, and update actions for a Modrinth resource button.
 @MainActor
-final class AddOrDeleteResourceButtonViewModel: ObservableObject {
-    @Published var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
-    @Published var isUpdateButtonLoading = false
-    @Published var showDeleteAlert = false
+@Observable
+final class AddOrDeleteResourceButtonViewModel {
+    var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
+    var isUpdateButtonLoading = false
+    var showDeleteAlert = false
 
-    @Published var activeAlert: ResourceButtonAlertType?
-    @Published var showGlobalResourceSheet = false
-    @Published var showModPackDownloadSheet = false
-    @Published var showGameResourceInstallSheet = false
+    var activeAlert: ResourceButtonAlertType?
+    var showGlobalResourceSheet = false
+    var showModPackDownloadSheet = false
+    var showGameResourceInstallSheet = false
 
-    @Published var preloadedDetail: ModrinthProjectDetail?
-    @Published var preloadedCompatibleGames: [GameVersionInfo] = []
+    var preloadedDetail: ModrinthProjectDetail?
+    var preloadedCompatibleGames: [GameVersionInfo] = []
 
-    @Published var isDisabled = false
-    @Published var currentFileName: String?
-    @Published var hasDownloadedInSheet = false
-    @Published var oldFileNameForUpdate: String?
+    var isDisabled = false
+    var currentFileName: String?
+    var hasDownloadedInSheet = false
+    var oldFileNameForUpdate: String?
 
     let project: ModrinthProject
     let selectedVersions: [String]

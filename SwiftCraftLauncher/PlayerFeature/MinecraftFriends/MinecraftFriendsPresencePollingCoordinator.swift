@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import MinecraftFriendsKit
+import Observation
 
 /// Coordinates periodic polling of Minecraft friends presence and friend list updates.
 ///
@@ -24,7 +25,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
     private let credentialSideEffects: MinecraftFriendsMicrosoftPlayerSideEffects
 
     private weak var playerListViewModel: PlayerListViewModel?
-    private var currentPlayerObservation: AnyCancellable?
+    private var currentPlayerObservationTask: Task<Void, Never>?
     private var presenceNotificationsSettingObservation: AnyCancellable?
     private var pollingTask: Task<Void, Never>?
     private var pollingGeneration = 0
@@ -57,16 +58,12 @@ final class MinecraftFriendsPresencePollingCoordinator {
     func start(playerListViewModel: PlayerListViewModel) {
         self.playerListViewModel = playerListViewModel
 
-        guard currentPlayerObservation == nil else {
+        guard currentPlayerObservationTask == nil else {
             syncPollingToCurrentPlayer()
             return
         }
 
-        currentPlayerObservation = playerListViewModel.$currentPlayer
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.syncPollingToCurrentPlayer()
-            }
+        currentPlayerObservationTask = observeCurrentPlayer(playerListViewModel)
 
         let playerSettings = DIContainer.shared.ui.playerSettingsManager
         presenceNotificationsSettingObservation = playerSettings.presenceNotificationsDidChange
@@ -82,10 +79,27 @@ final class MinecraftFriendsPresencePollingCoordinator {
         syncPollingToCurrentPlayer()
     }
 
+    private func observeCurrentPlayer(_ vm: PlayerListViewModel) -> Task<Void, Never> {
+        Task { [weak self] in
+            while !Task.isCancelled {
+                await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                    withObservationTracking {
+                        _ = vm.currentPlayer
+                    } onChange: {
+                        Task { @MainActor in
+                            continuation.resume()
+                            self?.syncPollingToCurrentPlayer()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /// Stops all observations and the polling loop.
     func stop() {
-        currentPlayerObservation?.cancel()
-        currentPlayerObservation = nil
+        currentPlayerObservationTask?.cancel()
+        currentPlayerObservationTask = nil
         presenceNotificationsSettingObservation?.cancel()
         presenceNotificationsSettingObservation = nil
         playerListViewModel = nil

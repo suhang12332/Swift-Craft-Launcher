@@ -20,7 +20,7 @@ struct GameLocalResourceView: View {
     @Binding var searchText: String
     @Binding var localFilter: LocalResourceFilter
 
-    @StateObject private var viewModel = GameLocalResourceViewModel()
+    @State private var viewModel = GameLocalResourceViewModel()
 
     var body: some View {
         List {

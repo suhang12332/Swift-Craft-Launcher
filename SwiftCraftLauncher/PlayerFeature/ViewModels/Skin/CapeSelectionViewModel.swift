@@ -11,7 +11,8 @@ import SwiftUI
 
 /// Manages cape image loading and selection state.
 @MainActor
-final class CapeSelectionViewModel: ObservableObject {
+@Observable
+final class CapeSelectionViewModel {
     private let selectedCapeImageURL: Binding<String?>
     private let selectedCapeImage: Binding<NSImage?>
 

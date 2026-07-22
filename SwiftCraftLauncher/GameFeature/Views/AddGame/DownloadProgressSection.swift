@@ -152,7 +152,7 @@ struct DownloadProgressSection: View {
 
 /// Displays download progress for mod pack installation components.
 private struct ModPackProgressView: View {
-    @ObservedObject var modPackViewModel: ModPackDownloadSheetViewModel
+    var modPackViewModel: ModPackDownloadSheetViewModel
 
     var body: some View {
         if modPackViewModel.modPackInstallState.isInstalling {

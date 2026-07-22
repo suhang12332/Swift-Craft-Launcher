@@ -191,7 +191,7 @@ private enum InstallProgressType {
 
 private struct ProgressRowWrapper: View {
     let title: String
-    @ObservedObject var state: DownloadState
+    var state: DownloadState
     let type: ProgressType
     let version: String?
 

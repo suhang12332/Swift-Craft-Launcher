@@ -15,8 +15,10 @@ enum GameFormMode {
 }
 
 struct GameFormView: View {
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 
@@ -35,7 +37,7 @@ struct GameFormView: View {
     @State private var mode: GameFormMode
     @State private var isModPackParsed = false
     @State private var imagePickerHandler: ((Result<[URL], Error>) -> Void)?
-    @StateObject private var importViewModel = GameFormImportViewModel()
+    @State private var importViewModel = GameFormImportViewModel()
 
     private enum ImportModePickerValue: Hashable {
         case manual

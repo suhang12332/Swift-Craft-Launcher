@@ -8,7 +8,8 @@
 import Foundation
 
 /// Manages Java runtime downloads and tracks their progress.
-@Observable class JavaDownloadManager {
+@Observable
+class JavaDownloadManager {
     var downloadState = JavaDownloadState()
     var isWindowVisible = false
 

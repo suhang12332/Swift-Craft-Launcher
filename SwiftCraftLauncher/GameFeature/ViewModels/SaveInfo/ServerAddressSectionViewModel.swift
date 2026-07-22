@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import Observation
 
 /// View model that manages server connection status checks and visibility computation for a list of server addresses.
-final class ServerAddressSectionViewModel: ObservableObject {
-    @Published var serverStatuses: [String: ServerConnectionStatus] = [:]
-    @Published var serverInfos: [String: MinecraftServerInfo] = [:]
+@Observable
+final class ServerAddressSectionViewModel {
+    var serverStatuses: [String: ServerConnectionStatus] = [:]
+    var serverInfos: [String: MinecraftServerInfo] = [:]
 
     /// Splits servers into visible and overflow items based on the configured maximum.
     func computeVisibleAndOverflowItems(

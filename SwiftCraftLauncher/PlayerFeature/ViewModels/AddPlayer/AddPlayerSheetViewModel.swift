@@ -6,16 +6,18 @@
 //
 
 import Foundation
+import Observation
 
 /// Manages the state for the add-player sheet.
 @MainActor
-final class AddPlayerSheetViewModel: ObservableObject {
-    @Published var selectedAuthType: AccountAuthType = .premium
+@Observable
+final class AddPlayerSheetViewModel {
+    var selectedAuthType: AccountAuthType = .premium
 
     /// A Boolean value indicating whether the premium account flag check is in progress.
-    @Published var isCheckingFlag: Bool = true
+    var isCheckingFlag: Bool = true
     /// Whether the user's IP is detected as non-domestic (foreign), checked when no premium flag exists.
-    @Published var isForeignIP: Bool = false
+    var isForeignIP: Bool = false
 
     init() { }
 

@@ -7,8 +7,10 @@
 
 import Foundation
 import MinecraftFriendsKit
+import Observation
 
 /// System layer for IO heavy / network / runtime operations.
+@Observable
 final class SystemContainer {
     // Authentication & Network
 

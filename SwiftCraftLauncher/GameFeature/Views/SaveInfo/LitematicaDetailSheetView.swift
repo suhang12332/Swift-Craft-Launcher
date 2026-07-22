@@ -9,7 +9,8 @@
 import SwiftUI
 
 struct LitematicaDetailSheetView: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     let filePath: URL
     let gameName: String
     @Environment(\.dismiss)

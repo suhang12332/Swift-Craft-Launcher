@@ -9,29 +9,26 @@ import SwiftUI
 
 /// Loads and organizes category, version, and loader data for filtering.
 @MainActor
-final class CategoryContentViewModel: ObservableObject {
-    @Published private(set) var categories: [Category] = []
-    @Published private(set) var features: [Category] = []
-    @Published private(set) var resolutions: [Category] = []
-    @Published private(set) var performanceImpacts: [Category] = []
-    @Published private(set) var versions: [GameVersion] = []
-    @Published private(set) var isLoading: Bool = true
-    @Published private(set) var error: GlobalError?
-    @Published private(set) var loaders: [Loader] = []
-    @Published private(set) var plays: [Category] = []
-    @Published private(set) var metas: [Category] = []
-    @Published private(set) var serverFeatures: [Category] = []
-    @Published private(set) var communitys: [Category] = []
+@Observable
+final class CategoryContentViewModel {
+    private(set) var categories: [Category] = []
+    private(set) var features: [Category] = []
+    private(set) var resolutions: [Category] = []
+    private(set) var performanceImpacts: [Category] = []
+    private(set) var versions: [GameVersion] = []
+    private(set) var isLoading: Bool = true
+    private(set) var error: GlobalError?
+    private(set) var loaders: [Loader] = []
+    private(set) var plays: [Category] = []
+    private(set) var metas: [Category] = []
+    private(set) var serverFeatures: [Category] = []
+    private(set) var communitys: [Category] = []
 
     private let project: String
     private var loadTask: Task<Void, Never>?
 
     init(project: String) {
         self.project = project
-    }
-
-    deinit {
-        loadTask?.cancel()
     }
 
     /// Loads categories, versions, and loaders from the API or cache.

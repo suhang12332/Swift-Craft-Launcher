@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 
 /// Manages the currently selected player for skin operations.
-@Observable class SkinSelectionStore {
+@Observable
+class SkinSelectionStore {
     /// The identifier of the selected player.
     var selectedPlayerId: String?
 

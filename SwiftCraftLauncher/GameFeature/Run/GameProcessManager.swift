@@ -8,7 +8,8 @@
 import Foundation
 
 /// Manages running game processes and tracks their lifecycle.
-final class GameProcessManager: ObservableObject, @unchecked Sendable {
+@Observable
+final class GameProcessManager: @unchecked Sendable {
     static func processKey(gameId: String, userId: String) -> String {
         "\(gameId)_\(userId)"
     }

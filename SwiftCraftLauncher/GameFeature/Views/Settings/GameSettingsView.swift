@@ -12,7 +12,8 @@ import SwiftUI
 public struct GameSettingsView: View {
     @Environment(GameSettingsManager.self)
     private var gameSettingsManager
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
 
     @State private var viewModel: GameSettingsJavaRuntimeViewModel
 

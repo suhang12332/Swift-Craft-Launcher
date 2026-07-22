@@ -10,15 +10,20 @@ import SwiftUI
 
 /// Provides action buttons for the selected game: launch/stop, show in Finder, import, and crash alert handling.
 struct GameActionButtons: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     let game: GameVersionInfo
     @Environment(\.controlActiveState)
     private var controlActiveState
 
-    @EnvironmentObject private var detailState: ResourceDetailState
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(ResourceDetailState.self)
+    private var detailState
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(GameLaunchUseCase.self)
+    private var gameLaunchUseCase
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @State private var showCrashAlert = false
     @State private var crashDirectory: URL?
     @State private var activeAlert: ResourceButtonAlertType?

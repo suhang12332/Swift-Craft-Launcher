@@ -20,7 +20,8 @@ enum MemoryPressureChoice {
 /// The main window observes ``isPresented`` and displays a modal. The launch
 /// flow suspends until the user makes a choice or the prompt is dismissed.
 @MainActor
-@Observable final class MemoryPressureAlertPresenter {
+@Observable
+final class MemoryPressureAlertPresenter {
     private(set) var isPresented = false
     private(set) var pressureLevel: MemoryPressureLevel = .normal
 

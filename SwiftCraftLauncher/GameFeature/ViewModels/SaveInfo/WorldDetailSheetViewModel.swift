@@ -9,7 +9,8 @@ import Foundation
 
 /// View model for the world detail sheet, parsing NBT data from level.dat to display world metadata.
 @MainActor
-@Observable final class WorldDetailSheetViewModel {
+@Observable
+final class WorldDetailSheetViewModel {
     private enum LoadError: Error {
         case levelDatNotFound
         case invalidStructure

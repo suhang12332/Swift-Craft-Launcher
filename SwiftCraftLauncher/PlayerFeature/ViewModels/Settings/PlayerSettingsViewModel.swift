@@ -5,19 +5,20 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Combine
 import Foundation
 import MinecraftFriendsKit
+import Observation
 
 /// Manages player-related settings in the settings view.
 @MainActor
-final class PlayerSettingsViewModel: ObservableObject {
-    @Published var isDownloadingAuthlibInjector: Bool = false
-    @Published var authlibInjectorExists: Bool = false
+@Observable
+final class PlayerSettingsViewModel {
+    var isDownloadingAuthlibInjector: Bool = false
+    var authlibInjectorExists: Bool = false
 
-    @Published private(set) var minecraftFriendAccountPreferences: MinecraftFriendsPreferencesPayload?
-    @Published private(set) var isLoadingMinecraftFriendAccountPreferences = false
-    @Published private(set) var isSavingMinecraftFriendAccountPreferences = false
+    private(set) var minecraftFriendAccountPreferences: MinecraftFriendsPreferencesPayload?
+    private(set) var isLoadingMinecraftFriendAccountPreferences = false
+    private(set) var isSavingMinecraftFriendAccountPreferences = false
 
     private let sideEffects: MinecraftFriendsMicrosoftPlayerSideEffects
 

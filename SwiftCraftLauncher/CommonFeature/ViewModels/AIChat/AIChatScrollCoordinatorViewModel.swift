@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import Observation
 
 /// Coordinates automatic scroll behavior in the AI chat interface.
 @MainActor
-final class AIChatScrollCoordinatorViewModel: ObservableObject {
+@Observable
+final class AIChatScrollCoordinatorViewModel {
     private var lastContentLength: Int = 0
     private var scrollTask: Task<Void, Never>?
     private var periodicScrollTask: Task<Void, Never>?

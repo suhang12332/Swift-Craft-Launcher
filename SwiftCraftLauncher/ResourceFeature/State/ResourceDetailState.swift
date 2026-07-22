@@ -5,17 +5,19 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import Observation
 import SwiftUI
 
 /// Aggregates sidebar selection, game/resource type, and project detail state.
 ///
-/// Intended to be provided via `@EnvironmentObject` to reduce `@Binding` proliferation.
-public final class ResourceDetailState: ObservableObject {
-    @Published public var selectedItem: SidebarItem
-    @Published public var gameType: Bool // false = local, true = server
-    @Published public var gameId: String?
-    @Published public var gameResourcesType: String
-    @Published public var selectedProjectId: String? {
+/// Intended to be provided via `@Environment` to reduce `@Binding` proliferation.
+@Observable
+public final class ResourceDetailState {
+    public var selectedItem: SidebarItem
+    public var gameType: Bool // false = local, true = server
+    public var gameId: String?
+    public var gameResourcesType: String
+    public var selectedProjectId: String? {
         didSet {
             if selectedProjectId != oldValue {
                 loadedProjectDetail = nil
@@ -23,10 +25,10 @@ public final class ResourceDetailState: ObservableObject {
         }
     }
 
-    @Published public var loadedProjectDetail: ModrinthProjectDetail?
-    @Published public var showInstallSheet: Bool = false
-    @Published public var currentProject: ModrinthProject?
-    @Published var compatibleGames: [GameVersionInfo] = []
+    public var loadedProjectDetail: ModrinthProjectDetail?
+    public var showInstallSheet: Bool = false
+    public var currentProject: ModrinthProject?
+    var compatibleGames: [GameVersionInfo] = []
 
     public init(
         selectedItem: SidebarItem = .resource(.mod),

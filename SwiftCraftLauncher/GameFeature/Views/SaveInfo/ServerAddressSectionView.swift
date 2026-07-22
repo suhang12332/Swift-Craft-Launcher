@@ -16,7 +16,7 @@ struct ServerAddressSectionView: View {
     let gameName: String
     let onRefresh: (() -> Void)?
 
-    @StateObject private var viewModel = ServerAddressSectionViewModel()
+    @State private var viewModel = ServerAddressSectionViewModel()
     @State private var showOverflowPopover = false
     @State private var selectedServer: ServerAddress?
     @State private var showAddServer = false

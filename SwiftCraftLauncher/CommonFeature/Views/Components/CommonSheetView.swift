@@ -9,7 +9,8 @@ import SwiftUI
 
 /// A sheet view with header, body, and footer sections that adapts to content size.
 struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     private let header: () -> Header
     private let bodyContent: () -> BodyContent
     private let footer: () -> Footer

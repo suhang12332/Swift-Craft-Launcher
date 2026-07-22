@@ -6,15 +6,17 @@
 //
 
 import Foundation
+import Observation
 import SwiftUI
 
 /// Manages the complete game installation flow including download, configuration, and setup.
 @MainActor
-class GameSetupUtil: ObservableObject {
-    @Published var downloadState = DownloadState()
-    @Published var fabricDownloadState = DownloadState()
-    @Published var forgeDownloadState = DownloadState()
-    @Published var neoForgeDownloadState = DownloadState()
+@Observable
+class GameSetupUtil {
+    var downloadState = DownloadState()
+    var fabricDownloadState = DownloadState()
+    var forgeDownloadState = DownloadState()
+    var neoForgeDownloadState = DownloadState()
 
     private var downloadTask: Task<Void, Never>?
 
@@ -48,14 +50,12 @@ class GameSetupUtil: ObservableObject {
         }
 
         await MainActor.run {
-            self.objectWillChange.send()
             downloadState.reset()
             downloadState.isDownloading = true
         }
 
         defer {
             Task { @MainActor in
-                self.objectWillChange.send()
                 downloadState.isDownloading = false
                 downloadTask = nil
             }
@@ -132,7 +132,6 @@ class GameSetupUtil: ObservableObject {
                 AppLog.game.info("Game download task cancelled")
                 await cleanupGameDirectories(gameName: input.gameName)
                 await MainActor.run {
-                    self.objectWillChange.send()
                     self.downloadState.reset()
                 }
                 return
@@ -304,7 +303,6 @@ class GameSetupUtil: ObservableObject {
         let progressCallback: (String, Int, Int) -> Void = { [weak self] fileName, completed, total in
             Task { @MainActor in
                 guard let self else { return }
-                self.objectWillChange.send()
                 switch loaderType {
                 case GameLoader.fabric.displayName:
                     self.fabricDownloadState.updateProgress(fileName: fileName, completed: completed, total: total, type: .core)

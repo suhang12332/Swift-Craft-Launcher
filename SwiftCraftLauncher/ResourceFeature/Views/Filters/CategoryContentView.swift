@@ -9,9 +9,10 @@ import SwiftUI
 
 /// Displays category filter sections for a given project type.
 struct CategoryContentView: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     let project: String
-    @StateObject private var viewModel: CategoryContentViewModel
+    @State private var viewModel: CategoryContentViewModel
     @Binding var selectedCategories: [String]
     @Binding var selectedFeatures: [String]
     @Binding var selectedResolutions: [String]
@@ -47,7 +48,7 @@ struct CategoryContentView: View {
         self.gameVersion = gameVersion
         self.gameLoader = gameLoader
         self.dataSource = dataSource
-        _viewModel = StateObject(
+        _viewModel = State(
             wrappedValue: CategoryContentViewModel(project: project),
         )
     }

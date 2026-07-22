@@ -10,7 +10,8 @@ import SwiftUI
 
 /// Manages startup announcement display and acknowledgment state.
 @MainActor
-@Observable final class StartupAnnouncementViewModel {
+@Observable
+final class StartupAnnouncementViewModel {
     var hasAnnouncement: Bool = false
     var announcementData: AnnouncementData?
 

@@ -9,7 +9,8 @@ import SwiftUI
 
 /// Provides the UI for adding a new player via Microsoft, Yggdrasil, or offline authentication.
 struct AddPlayerSheetView: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     @Binding var playerName: String
     @Binding var isPlayerNameValid: Bool
     var onAdd: () -> Void
@@ -21,11 +22,11 @@ struct AddPlayerSheetView: View {
         case minecraft(MinecraftProfileResponse)
     }
 
-    @ObservedObject var playerListViewModel: PlayerListViewModel
+    var playerListViewModel: PlayerListViewModel
 
     @State private var isPremium: Bool = false
     @State private var authenticatedProfile: MinecraftProfileResponse?
-    @StateObject private var viewModel = AddPlayerSheetViewModel()
+    @State private var viewModel = AddPlayerSheetViewModel()
 
     @Environment(\.openURL)
     private var openURL

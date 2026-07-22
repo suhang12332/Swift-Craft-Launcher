@@ -9,11 +9,13 @@ import SwiftUI
 
 /// Confirmation dialog for deleting a game, shared across sidebar and toolbar entry points.
 struct DeleteGameConfirmationModifier: ViewModifier {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     @Binding var gamePendingDeletion: GameVersionInfo?
     var detailState: ResourceDetailState
 
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(GameRepository.self)
+    private var gameRepository
 
     init(
         gamePendingDeletion: Binding<GameVersionInfo?>,

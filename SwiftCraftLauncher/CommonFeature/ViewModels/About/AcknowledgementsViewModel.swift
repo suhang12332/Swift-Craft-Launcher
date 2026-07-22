@@ -9,7 +9,8 @@ import Foundation
 
 /// Manages loading and display of open-source library acknowledgements.
 @MainActor
-@Observable final class AcknowledgementsViewModel {
+@Observable
+final class AcknowledgementsViewModel {
     var libraries: [OpenSourceLibrary] = []
     var isLoading: Bool = true
     var loadFailed: Bool = false

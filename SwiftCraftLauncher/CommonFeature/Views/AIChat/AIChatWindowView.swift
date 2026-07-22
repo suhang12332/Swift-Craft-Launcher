@@ -10,13 +10,16 @@ import UniformTypeIdentifiers
 
 /// Provides the main AI chat window interface.
 struct AIChatWindowView: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
 
-    @ObservedObject var chatState: ChatState
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
-    @EnvironmentObject private var gameRepository: GameRepository
-    @StateObject private var attachmentManager = AIChatAttachmentManager()
-    @StateObject private var viewModel = AIChatWindowViewModel()
+    var chatState: ChatState
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @State private var attachmentManager = AIChatAttachmentManager()
+    @State private var viewModel = AIChatWindowViewModel()
     @State private var inputText = ""
     @FocusState private var isInputFocused: Bool
     @State private var showFilePicker = false

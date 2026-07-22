@@ -9,11 +9,16 @@ import SwiftUI
 
 /// Sidebar view for navigating between game and resource sections.
 public struct SidebarView: View {
-    @EnvironmentObject private var container: DIContainer
-    @EnvironmentObject private var detailState: ResourceDetailState
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(DIContainer.self)
+    private var container
+    @Environment(ResourceDetailState.self)
+    private var detailState
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(GameLaunchUseCase.self)
+    private var gameLaunchUseCase
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @State private var searchText: String = ""
     @State private var viewModel = SidebarViewModel()
 

@@ -8,7 +8,8 @@
 import Foundation
 
 /// An observable state object that tracks the progress of a Java runtime download.
-@Observable class JavaDownloadState {
+@Observable
+class JavaDownloadState {
     /// Indicates whether a download is currently in progress.
     var isDownloading = false
 

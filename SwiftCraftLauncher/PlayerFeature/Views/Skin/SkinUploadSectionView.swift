@@ -13,7 +13,8 @@ import UniformTypeIdentifiers
 
 /// Provides the skin upload area, render preview, and library access.
 struct SkinUploadSectionView: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     @Binding var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel
     @Binding var showingFileImporter: Bool
     @Binding var selectedSkinImage: NSImage?

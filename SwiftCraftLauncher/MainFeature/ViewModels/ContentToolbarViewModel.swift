@@ -10,7 +10,8 @@ import SwiftUI
 
 /// Provides preloaded skin and profile data for the content toolbar's skin manager.
 @MainActor
-@Observable final class ContentToolbarViewModel {
+@Observable
+final class ContentToolbarViewModel {
     var isLoadingSkin: Bool = false
     var preloadedSkinInfo: PlayerSkinService.PublicSkinInfo?
     var preloadedProfile: MinecraftProfileResponse?

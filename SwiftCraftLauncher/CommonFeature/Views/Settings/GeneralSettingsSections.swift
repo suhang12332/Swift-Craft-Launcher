@@ -75,8 +75,8 @@ struct GeneralSettingsInterfaceLayoutRow: View {
 struct GeneralSettingsWorkingDirectoryRow: View {
     @Environment(GeneralSettingsManager.self)
     private var generalSettings
-    @ObservedObject var viewModel: GeneralSettingsViewModel
-    @ObservedObject var gameRepository: GameRepository
+    @Bindable var viewModel: GeneralSettingsViewModel
+    var gameRepository: GameRepository
 
     var body: some View {
         LabeledContent("settings.launcher_working_directory".localized()) {
@@ -128,7 +128,7 @@ struct GeneralSettingsWorkingDirectoryRow: View {
 struct GeneralSettingsConcurrentDownloadsRow: View {
     @Environment(GeneralSettingsManager.self)
     private var generalSettings
-    @ObservedObject var viewModel: GeneralSettingsViewModel
+    @Bindable var viewModel: GeneralSettingsViewModel
 
     var body: some View {
         LabeledContent("settings.concurrent_downloads.label".localized()) {

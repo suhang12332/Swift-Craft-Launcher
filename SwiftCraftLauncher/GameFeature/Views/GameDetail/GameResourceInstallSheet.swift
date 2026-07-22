@@ -15,11 +15,12 @@ struct GameResourceInstallSheet: View {
     @Binding var isPresented: Bool
     let preloadedDetail: ModrinthProjectDetail?
     var isUpdateMode: Bool = false
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(GameRepository.self)
+    private var gameRepository
     /// Invoked on successful download with (fileName, hash). Nil values for manual downloads.
     var onDownloadSuccess: ((String?, String?) -> Void)?
 
-    @StateObject private var viewModel: GameResourceInstallSheetViewModel
+    @State private var viewModel: GameResourceInstallSheetViewModel
 
     init(
         project: ModrinthProject,
@@ -37,7 +38,7 @@ struct GameResourceInstallSheet: View {
         self.preloadedDetail = preloadedDetail
         self.isUpdateMode = isUpdateMode
         self.onDownloadSuccess = onDownloadSuccess
-        _viewModel = StateObject(
+        _viewModel = State(
             wrappedValue: GameResourceInstallSheetViewModel(
                 project: project,
                 resourceType: resourceType,
@@ -104,7 +105,7 @@ struct GameResourceInstallSheet: View {
 struct GameResourceInstallFooter: View {
     @Binding var isPresented: Bool
     let projectDetail: ModrinthProjectDetail?
-    @ObservedObject var viewModel: GameResourceInstallSheetViewModel
+    var viewModel: GameResourceInstallSheetViewModel
     /// Invoked on successful download with (fileName, hash). Nil values for manual downloads.
     var onDownloadSuccess: ((String?, String?) -> Void)?
 

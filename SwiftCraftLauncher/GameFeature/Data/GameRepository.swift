@@ -7,12 +7,14 @@
 
 import Combine
 import Foundation
+import Observation
 
 /// A repository that manages the persistence and retrieval of game version information.
 ///
 /// `GameRepository` serves as the primary data access layer for game instances,
 /// coordinating between the local SQLite database and the in-memory cache.
-class GameRepository: ObservableObject {
+@Observable
+class GameRepository {
     /// A dictionary of game instances keyed by their working path.
     private(set) var gamesByWorkingPath: [String: [GameVersionInfo]] = [:]
 

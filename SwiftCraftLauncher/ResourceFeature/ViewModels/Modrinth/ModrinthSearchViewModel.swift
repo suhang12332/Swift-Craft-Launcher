@@ -9,21 +9,18 @@ import SwiftUI
 
 /// Manages Modrinth project search state and pagination.
 @MainActor
-final class ModrinthSearchViewModel: ObservableObject {
-    @Published private(set) var results: [ModrinthProject] = []
-    @Published private(set) var isLoading: Bool = false
-    @Published private(set) var isLoadingMore: Bool = false
-    @Published private(set) var error: GlobalError?
-    @Published private(set) var totalHits: Int = 0
+@Observable
+final class ModrinthSearchViewModel {
+    private(set) var results: [ModrinthProject] = []
+    private(set) var isLoading: Bool = false
+    private(set) var isLoadingMore: Bool = false
+    private(set) var error: GlobalError?
+    private(set) var totalHits: Int = 0
 
     var searchTask: Task<Void, Never>?
     let pageSize: Int = 20
 
     init() { }
-
-    deinit {
-        searchTask?.cancel()
-    }
 
     /// Searches for projects with the given query and filters.
     ///

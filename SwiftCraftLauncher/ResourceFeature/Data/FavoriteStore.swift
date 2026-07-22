@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Observation
 import SQLite3
 
 /// Manages a local SQLite-backed collection of favorited Modrinth projects.
@@ -14,7 +15,8 @@ import SQLite3
 /// database. Database thread safety is handled by `SQLiteDatabase`'s internal
 /// serial queue. The in-memory map is updated on the main thread so SwiftUI
 /// observations remain responsive.
-final class FavoriteStore: ObservableObject {
+@Observable
+final class FavoriteStore {
     private let db: SQLiteDatabase
     private let tableName = AppConstants.DatabaseTables.favorites
     private let initQueue = DispatchQueue(label: "com.swiftcraftlauncher.favoritestore.init")
@@ -26,7 +28,7 @@ final class FavoriteStore: ObservableObject {
     private let selectAllIdsByTypeSQL: String
 
     /// All favorite project IDs grouped by type, kept in sync with the database.
-    @Published var favoriteIds: [String: Set<String>] = [:]
+    var favoriteIds: [String: Set<String>] = [:]
 
     init() {
         db = SQLiteDatabase.database(at: AppPaths.gameVersionDatabase.path)

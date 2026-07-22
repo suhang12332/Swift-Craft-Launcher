@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import Observation
 import SwiftUI
 
 /// Manages download and installation actions for a project's resource footer.
 @MainActor
-final class GlobalResourceFooterViewModel: ObservableObject {
+@Observable
+final class GlobalResourceFooterViewModel {
     private let project: ModrinthProject
     private let resourceType: String
     private let gameRepository: GameRepository

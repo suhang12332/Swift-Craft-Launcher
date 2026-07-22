@@ -24,11 +24,13 @@ struct ModrinthDetailView: View {
     @Binding var scannedDetailIds: Set<String> // detail IDs from the parent for fast lookup
     @Binding var dataSource: DataSource
 
-    @StateObject private var viewModel = ModrinthSearchViewModel()
+    @State private var viewModel = ModrinthSearchViewModel()
     @Binding var searchText: String
-    @StateObject private var coordinator = ModrinthDetailCoordinatorViewModel()
-    @EnvironmentObject private var filterState: ResourceFilterState
-    @EnvironmentObject private var favoriteStore: FavoriteStore
+    @State private var coordinator = ModrinthDetailCoordinatorViewModel()
+    @Environment(ResourceFilterState.self)
+    private var filterState
+    @Environment(FavoriteStore.self)
+    private var favoriteStore
 
     init(
         query: String,

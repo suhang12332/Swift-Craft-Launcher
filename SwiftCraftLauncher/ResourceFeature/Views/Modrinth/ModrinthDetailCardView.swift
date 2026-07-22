@@ -65,7 +65,8 @@ struct ModrinthDetailCardView: View {
     @State private var addButtonState: AddButtonState = .idle
     @State private var showDeleteAlert = false
     @State private var isResourceDisabled: Bool = false
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(GameRepository.self)
+    private var gameRepository
 
     enum AddButtonState {
         case idle

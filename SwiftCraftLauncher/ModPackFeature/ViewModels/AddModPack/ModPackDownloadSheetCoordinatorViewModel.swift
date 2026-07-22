@@ -6,13 +6,15 @@
 //
 
 import Foundation
+import Observation
 
 /// Coordinates the lifecycle of the mod pack download sheet.
 ///
 /// Manages loading project details when the sheet appears and
 /// cleaning up resources when it disappears.
 @MainActor
-final class ModPackDownloadSheetCoordinatorViewModel: ObservableObject {
+@Observable
+final class ModPackDownloadSheetCoordinatorViewModel {
     private var loadTask: Task<Void, Never>?
 
     /// Initializes the sheet view model and loads project details.

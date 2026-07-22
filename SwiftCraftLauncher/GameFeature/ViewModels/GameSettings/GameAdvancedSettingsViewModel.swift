@@ -10,7 +10,8 @@ import UniformTypeIdentifiers
 
 /// View model for the game advanced settings view, managing JVM arguments, memory, garbage collector, and Java path configuration.
 @MainActor
-@Observable final class GameAdvancedSettingsViewModel {
+@Observable
+final class GameAdvancedSettingsViewModel {
     var gameRepository: GameRepository?
 
     var memoryRange: ClosedRange<Double>

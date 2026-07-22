@@ -40,15 +40,15 @@ struct ModPackExportSheet: View {
     let gameInfo: GameVersionInfo
     @Environment(\.dismiss)
     private var dismiss
-    @StateObject private var viewModel: ModPackExportViewModel
+    @State private var viewModel: ModPackExportViewModel
     @State private var showSaveErrorAlert = false
-    @StateObject private var coordinator = ModPackExportSheetCoordinatorViewModel()
+    @State private var coordinator = ModPackExportSheetCoordinatorViewModel()
 
     init(gameInfo: GameVersionInfo) {
         self.gameInfo = gameInfo
         let viewModel = ModPackExportViewModel()
         viewModel.modPackName = gameInfo.gameName
-        _viewModel = StateObject(wrappedValue: viewModel)
+        _viewModel = State(wrappedValue: viewModel)
     }
 
     var body: some View {

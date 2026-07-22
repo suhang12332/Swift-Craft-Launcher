@@ -7,11 +7,12 @@
 
 import Foundation
 import MinecraftFriendsKit
+import Observation
 import SwiftUI
 
 /// Centralized dependency container that owns all shared service instances.
-/// AppServices delegates to this container internally.
-final class DIContainer: ObservableObject {
+@Observable
+final class DIContainer {
     static let shared = DIContainer()
 
     // UI

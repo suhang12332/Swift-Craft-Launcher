@@ -10,14 +10,17 @@ import SwiftUI
 
 /// Provides the primary toolbar content for the main content area.
 public struct ContentToolbarView: ToolbarContent {
-    @EnvironmentObject private var container: DIContainer
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(DIContainer.self)
+    private var container
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @State private var showingAddPlayerSheet = false
     @State private var playerName = ""
     @State private var isPlayerNameValid = false
     @State private var showPlayerAlert = false
     @State private var showingGameForm = false
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(GameRepository.self)
+    private var gameRepository
     @State private var showEditSkin = false
     @State private var showingMinecraftFriendsSheet = false
     @State private var minecraftFriendsSheetHost: MinecraftFriendsSheetHostAdapter?

@@ -6,15 +6,17 @@
 //
 
 import Foundation
+import Observation
 import SwiftUI
 
 /// View model for editing server addresses, managing save and delete operations with error handling.
 @MainActor
-final class ServerAddressEditActionViewModel: ObservableObject {
-    @Published var isSaving: Bool = false
-    @Published var isDeleting: Bool = false
-    @Published var showError: Bool = false
-    @Published var errorMessage: String = ""
+@Observable
+final class ServerAddressEditActionViewModel {
+    var isSaving: Bool = false
+    var isDeleting: Bool = false
+    var showError: Bool = false
+    var errorMessage: String = ""
 
     init() { }
 

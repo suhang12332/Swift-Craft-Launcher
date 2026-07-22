@@ -11,22 +11,29 @@ import SwiftUI
 /// Manages modpack download and installation state, including project details,
 /// version filtering, and progress tracking.
 @MainActor
-class ModPackDownloadSheetViewModel: ObservableObject {
-    @Published var projectDetail: ModrinthProjectDetail?
-    @Published var availableGameVersions: [String] = []
-    @Published var filteredModPackVersions: [ModrinthProjectDetailVersion] = []
-    @Published var isLoadingModPackVersions = false
-    @Published var isLoadingProjectDetails = true
-    @Published var lastParsedIndexInfo: ModrinthIndexInfo?
-    @Published var modPackInstallState = ModPackInstallState()
-    @Published var modPackDownloadProgress: Int64 = 0
-    @Published var modPackTotalSize: Int64 = 0
+@Observable
+class ModPackDownloadSheetViewModel {
+    var projectDetail: ModrinthProjectDetail?
+    var availableGameVersions: [String] = []
+    var filteredModPackVersions: [ModrinthProjectDetailVersion] = []
+    var isLoadingModPackVersions = false
+    var isLoadingProjectDetails = true
+    var lastParsedIndexInfo: ModrinthIndexInfo?
+    var modPackInstallState = ModPackInstallState()
+    var modPackDownloadProgress: Int64 = 0
+    var modPackTotalSize: Int64 = 0
 
-    @Published var isProcessing = false
+    var isProcessing = false
 
     private var downloadTask: Task<Void, Never>?
     private let downloadService = ModPackDownloadService()
-    private lazy var installCoordinator = ModPackInstallCoordinator(downloadService: downloadService)
+    private var _installCoordinator: ModPackInstallCoordinator?
+    private var installCoordinator: ModPackInstallCoordinator {
+        if let _installCoordinator { return _installCoordinator }
+        let coordinator = ModPackInstallCoordinator(downloadService: downloadService)
+        _installCoordinator = coordinator
+        return coordinator
+    }
 
     func clearParsedIndexInfo() {
         lastParsedIndexInfo = nil

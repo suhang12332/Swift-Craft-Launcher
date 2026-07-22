@@ -6,16 +6,18 @@
 //
 
 import Foundation
+import Observation
 import SwiftUI
 
 /// View model for the game resource install sheet, managing version selection, dependency loading, and resource download.
 @MainActor
-final class GameResourceInstallSheetViewModel: ObservableObject {
-    @Published var selectedVersion: ModrinthProjectDetailVersion?
-    @Published var availableVersions: [ModrinthProjectDetailVersion] = []
-    @Published var dependencyState = DependencyState()
-    @Published var isDownloadingAll = false
-    @Published var mainVersionId = ""
+@Observable
+final class GameResourceInstallSheetViewModel {
+    var selectedVersion: ModrinthProjectDetailVersion?
+    var availableVersions: [ModrinthProjectDetailVersion] = []
+    var dependencyState = DependencyState()
+    var isDownloadingAll = false
+    var mainVersionId = ""
 
     let project: ModrinthProject
     let resourceType: String
