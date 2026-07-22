@@ -35,15 +35,8 @@ struct ProjectIdentifier: Equatable, Hashable {
     }
 
     /// Parses the identifier into its CurseForge numeric ID and normalized string.
-    /// Throws if the identifier looks like CurseForge but isn't a valid integer.
+    /// Accepts both `"cf-12345"` and plain `"12345"` forms.
     func parseCurseForgeId() throws -> (modId: Int, normalized: String) {
-        guard isCurseForge else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.invalid_project_id",
-                level: .notification,
-                message: "Expected CurseForge identifier but got '\(raw)'",
-            )
-        }
         let clean = raw.replacingOccurrences(of: "cf-", with: "")
         guard let modId = Int(clean) else {
             throw GlobalError.validation(
@@ -52,6 +45,7 @@ struct ProjectIdentifier: Equatable, Hashable {
                 message: "CurseForge ID '\(raw)' is not a valid integer after stripping 'cf-' prefix",
             )
         }
+        let normalized = isCurseForge ? raw : "cf-\(clean)"
         return (modId, normalized)
     }
 
