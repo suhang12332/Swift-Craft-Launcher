@@ -7,29 +7,33 @@
 
 import Foundation
 
-/// Thread-safe lazy initialization wrapper. Creates the instance on first access, then caches it.
-final class LazyContainer<T>: @unchecked Sendable {
+// MARK: - @Lazy
+
+/// Thread-safe lazy property wrapper. Creates the value on first access, then caches it.
+///
+/// Usage: `@Lazy var foo: Foo = Foo()`
+/// The `= Foo()` part is an autoclosure — evaluated only on first access.
+@propertyWrapper
+final class Lazy<T>: @unchecked Sendable {
     private let lock = NSLock()
     private var instance: T?
     private let factory: () -> T
 
-    init(_ factory: @escaping () -> T) {
-        self.factory = factory
+    init(wrappedValue: @autoclosure @escaping () -> T) {
+        self.factory = wrappedValue
     }
 
-    /// Lazily creates or returns cached instance.
-    func value() -> T {
+    var wrappedValue: T {
         lock.lock()
         defer { lock.unlock() }
-        if let instance {
-            return instance
-        }
+        if let instance { return instance }
         let created = factory()
         instance = created
         return created
     }
 
-    /// Safe reset: clears cached instance, keeps factory intact.
+    var projectedValue: Lazy<T> { self }
+
     func reset() {
         lock.lock()
         defer { lock.unlock() }
@@ -37,19 +41,27 @@ final class LazyContainer<T>: @unchecked Sendable {
     }
 }
 
-final class MainActorLazyContainer<T> {
+// MARK: - @MainActorLazy
+
+/// Main-actor-isolated lazy property wrapper. Value created on first access on the main actor.
+///
+/// Usage: `@MainActorLazy var manager: Manager = Manager()`
+/// The property becomes implicitly `@MainActor`.
+@propertyWrapper
+final class MainActorLazy<T> {
     private let factory: @MainActor () -> T
     private var storage: T?
 
-    init(factory: @escaping @MainActor () -> T) {
-        self.factory = factory
+    init(wrappedValue: @MainActor @autoclosure @escaping () -> T) {
+        self.factory = wrappedValue
     }
 
-    @MainActor
-    func value() -> T {
+    @MainActor var wrappedValue: T {
         if let storage { return storage }
         let v = factory()
         storage = v
         return v
     }
+
+    var projectedValue: MainActorLazy<T> { self }
 }
