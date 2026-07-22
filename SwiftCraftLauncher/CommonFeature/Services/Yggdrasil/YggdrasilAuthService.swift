@@ -11,7 +11,7 @@ import SwiftUI
 
 /// Manages OAuth2 authentication with Yggdrasil-compatible authentication servers.
 @Observable
-final class YggdrasilAuthService: NSObject {
+final class YggdrasilAuthService {
     /// The current authentication state.
     var authState: YggdrasilAuthState = .idle
 
@@ -24,14 +24,8 @@ final class YggdrasilAuthService: NSObject {
     /// The list of player profiles returned after authentication.
     var authenticatedProfiles: [YggdrasilProfile] = []
 
-    private var webAuthSession: ASWebAuthenticationSession?
+    private let webAuthenticator = WebAuthenticator()
 
-    override init() {
-        super.init()
-    }
-}
-
-extension YggdrasilAuthService {
     /// Sets the Yggdrasil server to use for authentication.
     func setServer(_ config: YggdrasilServerConfig) {
         currentServer = config
@@ -51,17 +45,16 @@ extension YggdrasilAuthService {
     /// Starts the Yggdrasil OAuth2 authorization code login flow.
     @MainActor
     func startAuthentication() async {
-        webAuthSession?.cancel()
-        webAuthSession = nil
+        webAuthenticator.cancel()
         authenticatedProfiles = []
 
         guard let server = currentServer else {
-            authState = .failed("yggdrasil.error.server_not_selected".localized())
+            authState = .error("yggdrasil.error.server_not_selected".localized())
             return
         }
 
         guard let authURL = buildAuthorizationURL(for: server) else {
-            authState = .failed("yggdrasil.error.build_authorize_url_failed".localized())
+            authState = .error("yggdrasil.error.build_authorize_url_failed".localized())
             return
         }
 
@@ -69,9 +62,10 @@ extension YggdrasilAuthService {
         authState = .waitingForBrowser
 
         await withCheckedContinuation { continuation in
-            webAuthSession = ASWebAuthenticationSession(
-                url: authURL,
-                callbackURLScheme: URL(string: server.redirectURI)?.scheme,
+            self.webAuthenticator.start(
+                authorizationURL: authURL,
+                callbackScheme: URL(string: server.redirectURI)?.scheme,
+                prefersEphemeral: DIContainer.shared.ui.playerSettingsManager.enableEphemeralWebLogin,
             ) { [weak self] callbackURL, error in
                 Task { @MainActor in
                     func finish(_ state: YggdrasilAuthState) {
@@ -93,7 +87,7 @@ extension YggdrasilAuthService {
                             finish(.idle)
                         } else {
                             AppLog.common.error("Yggdrasil login failed: \(error.localizedDescription)")
-                            finish(.failed("yggdrasil.error.login_failed_retry".localized()))
+                            finish(.error("yggdrasil.error.login_failed_retry".localized()))
                         }
                         return
                     }
@@ -101,7 +95,7 @@ extension YggdrasilAuthService {
                     guard let callbackURL,
                           let authResponse = AuthorizationCodeResponse(from: callbackURL) else {
                         AppLog.common.error("Invalid Yggdrasil callback URL")
-                        finish(.failed("yggdrasil.error.invalid_callback_url".localized()))
+                        finish(.error("yggdrasil.error.invalid_callback_url".localized()))
                         return
                     }
 
@@ -114,23 +108,19 @@ extension YggdrasilAuthService {
                     if let error = authResponse.error {
                         let description = authResponse.errorDescription ?? error
                         AppLog.common.error("Yggdrasil authorization failed: \(description)")
-                        finish(.failed(description))
+                        finish(.error(description))
                         return
                     }
 
                     guard authResponse.isSuccess, let code = authResponse.code else {
                         AppLog.common.error("No Yggdrasil authorization code received")
-                        finish(.failed("yggdrasil.error.no_auth_code".localized()))
+                        finish(.error("yggdrasil.error.no_auth_code".localized()))
                         return
                     }
 
                     await self.handleAuthorizationCode(code, server: server)
                 }
             }
-
-            webAuthSession?.presentationContextProvider = self
-            webAuthSession?.prefersEphemeralWebBrowserSession = DIContainer.shared.ui.playerSettingsManager.enableEphemeralWebLogin
-            webAuthSession?.start()
         }
     }
 
@@ -139,8 +129,7 @@ extension YggdrasilAuthService {
     func logout() {
         authState = .idle
         isLoading = false
-        webAuthSession?.cancel()
-        webAuthSession = nil
+        webAuthenticator.cancel()
         currentServer = nil
         authenticatedProfiles = []
     }
@@ -172,7 +161,7 @@ private extension YggdrasilAuthService {
 
     @MainActor
     func handleAuthorizationCode(_ code: String, server: YggdrasilServerConfig) async {
-        authState = .exchangingCode
+        authState = .processing
 
         do {
             let token = try await exchangeCodeForToken(code: code, server: server)
@@ -216,7 +205,7 @@ private extension YggdrasilAuthService {
             let globalError = GlobalError.from(error)
             AppLog.common.error("Yggdrasil authentication failed: \(globalError.localizedDescription)")
             isLoading = false
-            authState = .failed(globalError.localizedDescription)
+            authState = .error(globalError.localizedDescription)
         }
     }
 }

@@ -71,11 +71,11 @@ struct YggdrasilAuthView: View {
             notAuthenticatedView
         case .waitingForBrowser:
             waitingForBrowserView
-        case .exchangingCode:
+        case .processing:
             exchangingCodeView
         case let .authenticated(profile):
             authenticatedView(profile: profile)
-        case let .failed(message):
+        case let .error(message):
             failedView(message: message)
         }
     }

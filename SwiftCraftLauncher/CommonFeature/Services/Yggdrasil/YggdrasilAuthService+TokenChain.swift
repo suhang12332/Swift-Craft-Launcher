@@ -18,34 +18,19 @@ extension YggdrasilAuthService {
             )
         }
 
-        var parameters: [String: String] = [
-            "grant_type": "authorization_code",
-            "code": code,
-            "redirect_uri": server.redirectURI,
-        ]
-
-        if let clientId = server.clientId {
-            parameters["client_id"] = clientId
-        }
+        var additionalParams: [String: String] = [:]
         if let clientSecret = server.clientSecret {
-            parameters["client_secret"] = clientSecret
+            additionalParams["client_secret"] = clientSecret
         }
 
-        let data = try await APIClient.post(
-            url: tokenURL,
-            body: APIClient.formURLEncodedBody(from: parameters),
-            headers: APIClient.DefaultHeaders.contentTypeFormURLEncoded,
+        return try await OAuth2TokenOperations.exchangeCode(
+            code: code,
+            tokenURL: tokenURL,
+            clientId: server.clientId ?? "",
+            redirectURI: server.redirectURI,
+            scope: server.scope.isEmpty ? nil : server.scope,
+            additionalParameters: additionalParams,
         )
-
-        do {
-            return try JSONDecoder().decode(TokenResponse.self, from: data)
-        } catch {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.yggdrasil_token_response_parse_failed",
-                level: .notification,
-                message: "Failed to parse Yggdrasil token response from \(tokenURL): \(error.localizedDescription)",
-            )
-        }
     }
 
     private func refreshToken(refreshToken: String, server: YggdrasilServerConfig) async throws -> TokenResponse {
@@ -59,33 +44,19 @@ extension YggdrasilAuthService {
 
         AppLog.common.debug("Refreshing token for server \(server.name)")
 
-        var parameters: [String: String] = [
-            "grant_type": "refresh_token",
-            "refresh_token": refreshToken,
-        ]
-
-        if let clientId = server.clientId {
-            parameters["client_id"] = clientId
-        }
+        var additionalParams: [String: String] = [:]
         if let clientSecret = server.clientSecret {
-            parameters["client_secret"] = clientSecret
+            additionalParams["client_secret"] = clientSecret
         }
 
-        do {
-            let data = try await APIClient.post(
-                url: refreshTokenURL,
-                body: APIClient.formURLEncodedBody(from: parameters),
-                headers: APIClient.DefaultHeaders.contentTypeFormURLEncoded,
-            )
-            AppLog.common.info("Token refreshed successfully for server \(server.name)")
-            return try JSONDecoder().decode(TokenResponse.self, from: data)
-        } catch {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.yggdrasil_token_response_parse_failed",
-                level: .silent,
-                message: "Failed to parse Yggdrasil refresh token response from \(refreshTokenURL): \(error.localizedDescription)",
-            )
-        }
+        let result = try await OAuth2TokenOperations.refreshToken(
+            refreshToken: refreshToken,
+            tokenURL: refreshTokenURL,
+            clientId: server.clientId ?? "",
+            additionalParameters: additionalParams,
+        )
+        AppLog.common.info("Token refreshed successfully for server \(server.name)")
+        return result
     }
 
     func fetchProfileList(

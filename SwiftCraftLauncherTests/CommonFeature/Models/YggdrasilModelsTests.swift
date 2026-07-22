@@ -287,9 +287,9 @@ final class YggdrasilModelsTests: XCTestCase {
         XCTAssertEqual(state, .waitingForBrowser)
     }
 
-    func testAuthState_exchangingCode() {
-        let state = YggdrasilAuthState.exchangingCode
-        XCTAssertEqual(state, .exchangingCode)
+    func testAuthState_processing() {
+        let state = YggdrasilAuthState.processing
+        XCTAssertEqual(state, .processing)
     }
 
     func testAuthState_authenticated() {
@@ -310,14 +310,14 @@ final class YggdrasilModelsTests: XCTestCase {
         }
     }
 
-    func testAuthState_failed() {
-        let state = YggdrasilAuthState.failed("error message")
-        XCTAssertEqual(state, .failed("error message"))
+    func testAuthState_error() {
+        let state = YggdrasilAuthState.error("error message")
+        XCTAssertEqual(state, .error("error message"))
     }
 
     func testAuthState_notEqual_differentCases() {
-        XCTAssertNotEqual(YggdrasilAuthState.idle, YggdrasilAuthState.failed("err"))
-        XCTAssertNotEqual(YggdrasilAuthState.waitingForBrowser, YggdrasilAuthState.exchangingCode)
+        XCTAssertNotEqual(YggdrasilAuthState.idle, YggdrasilAuthState.error("err"))
+        XCTAssertNotEqual(YggdrasilAuthState.waitingForBrowser, YggdrasilAuthState.processing)
     }
 
     func testPresets_count() {

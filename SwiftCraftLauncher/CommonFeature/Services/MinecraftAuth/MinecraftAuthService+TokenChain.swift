@@ -10,31 +10,13 @@ import Foundation
 /// Performs the Microsoft OAuth token exchange chain to obtain Minecraft access tokens.
 extension MinecraftAuthService {
     func exchangeCodeForToken(code: String) async throws -> TokenResponse {
-        let url = URLConfig.API.Authentication.token
-
-        let bodyParameters = [
-            "client_id": clientId,
-            "code": code,
-            "redirect_uri": redirectUri,
-            "grant_type": "authorization_code",
-            "scope": scope,
-        ]
-
-        let data = try await APIClient.post(
-            url: url,
-            body: APIClient.formURLEncodedBody(from: bodyParameters),
-            headers: APIClient.DefaultHeaders.contentTypeFormURLEncoded,
+        try await OAuth2TokenOperations.exchangeCode(
+            code: code,
+            tokenURL: URLConfig.API.Authentication.token,
+            clientId: clientId,
+            redirectURI: redirectUri,
+            scope: scope,
         )
-
-        do {
-            return try JSONDecoder().decode(TokenResponse.self, from: data)
-        } catch {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.token_response_parse_failed",
-                level: .notification,
-                message: "Failed to parse OAuth token response from \(url): \(error.localizedDescription)",
-            )
-        }
     }
 
     func getXboxLiveTokenThrowing(accessToken: String) async throws -> XboxLiveTokenResponse {

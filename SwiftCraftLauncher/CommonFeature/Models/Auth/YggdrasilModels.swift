@@ -110,10 +110,4 @@ struct YggdrasilProfileCandidate: Codable, Equatable {
 }
 
 /// The current state of the Yggdrasil authentication flow.
-enum YggdrasilAuthState: Equatable {
-    case idle
-    case waitingForBrowser
-    case exchangingCode
-    case authenticated(profile: YggdrasilProfile)
-    case failed(String)
-}
+typealias YggdrasilAuthState = AuthFlowState<YggdrasilProfile>
