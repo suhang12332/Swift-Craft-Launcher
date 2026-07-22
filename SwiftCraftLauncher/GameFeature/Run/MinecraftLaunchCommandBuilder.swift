@@ -121,20 +121,12 @@ enum MinecraftLaunchCommandBuilder {
         guard arg.contains("${") else {
             return arg
         }
-
-        let result = NSMutableString(string: arg)
-        for (key, value) in map {
-            let placeholder = "${\(key)}"
-            if result.range(of: placeholder).location != NSNotFound {
-                result.replaceOccurrences(
-                    of: placeholder,
-                    with: value,
-                    options: [],
-                    range: NSRange(location: 0, length: result.length),
-                )
+        return map.reduce(into: arg) { result, entry in
+            let placeholder = "${\(entry.key)}"
+            if result.contains(placeholder) {
+                result = result.replacingOccurrences(of: placeholder, with: entry.value)
             }
         }
-        return result as String
     }
 
     private static func buildClasspath(_ libraries: [Library], librariesDir: URL, clientJarPath: String, modClassPath: String, minecraftVersion: String) -> String {

@@ -109,33 +109,16 @@ struct MinecraftLaunchCommand {
             commandWithAgent = command
         }
 
-        let authReplacedCommand = commandWithAgent.map { arg -> String in
-            let mutableArg = NSMutableString(string: arg)
-            mutableArg.replaceOccurrences(
-                of: "${auth_player_name}",
-                with: player.name,
-                options: [],
-                range: NSRange(location: 0, length: mutableArg.length),
-            )
-            mutableArg.replaceOccurrences(
-                of: "${auth_uuid}",
-                with: player.id,
-                options: [],
-                range: NSRange(location: 0, length: mutableArg.length),
-            )
-            mutableArg.replaceOccurrences(
-                of: "${auth_access_token}",
-                with: accessToken,
-                options: [],
-                range: NSRange(location: 0, length: mutableArg.length),
-            )
-            mutableArg.replaceOccurrences(
-                of: "${auth_xuid}",
-                with: player.authXuid,
-                options: [],
-                range: NSRange(location: 0, length: mutableArg.length),
-            )
-            return mutableArg as String
+        let replacements: [String: String] = [
+            "${auth_player_name}": player.name,
+            "${auth_uuid}": player.id,
+            "${auth_access_token}": accessToken,
+            "${auth_xuid}": player.authXuid,
+        ]
+        let authReplacedCommand = commandWithAgent.map { arg in
+            replacements.reduce(into: arg) { result, pair in
+                result = result.replacingOccurrences(of: pair.key, with: pair.value)
+            }
         }
 
         return replaceGameParameters(command: authReplacedCommand)
@@ -204,23 +187,14 @@ struct MinecraftLaunchCommand {
         let xms = game.xms > 0 ? game.xms : settings.globalXms
         let xmx = game.xmx > 0 ? game.xmx : settings.globalXmx
 
-        var replacedCommand = command.map { arg -> String in
-            let mutableArg = NSMutableString(string: arg)
-            let xmsString = "\(xms)"
-            let xmxString = "\(xmx)"
-            mutableArg.replaceOccurrences(
-                of: "${xms}",
-                with: xmsString,
-                options: [],
-                range: NSRange(location: 0, length: mutableArg.length),
-            )
-            mutableArg.replaceOccurrences(
-                of: "${xmx}",
-                with: xmxString,
-                options: [],
-                range: NSRange(location: 0, length: mutableArg.length),
-            )
-            return mutableArg as String
+        let replacements: [String: String] = [
+            "${xms}": "\(xms)",
+            "${xmx}": "\(xmx)",
+        ]
+        var replacedCommand = command.map { arg in
+            replacements.reduce(into: arg) { result, pair in
+                result = result.replacingOccurrences(of: pair.key, with: pair.value)
+            }
         }
 
         if !game.jvmArguments.isEmpty {

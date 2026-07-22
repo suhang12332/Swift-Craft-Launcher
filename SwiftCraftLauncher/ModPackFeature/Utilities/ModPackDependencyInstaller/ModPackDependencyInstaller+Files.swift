@@ -20,7 +20,7 @@ extension ModPackDependencyInstaller {
         onProgressUpdate?("modpack.progress.files_download_started".localized(), 0, filesToDownload.count, .files)
 
         let semaphore = AsyncSemaphore(value: downloadSemaphoreValue)
-        let completedCount = ModPackCounter()
+        let completedCount = AtomicCounter()
 
         let results = await withTaskGroup(of: (Int, Bool).self) { group in
             for (index, file) in filesToDownload.enumerated() {
@@ -31,7 +31,7 @@ extension ModPackDependencyInstaller {
                     let success = await downloadSingleFile(file: file, resourceDir: resourceDir)
 
                     if success {
-                        let currentCount = completedCount.increment()
+                        let currentCount = await completedCount.increment()
                         onProgressUpdate?(file.path, currentCount, filesToDownload.count, .files)
                     }
 

@@ -11,8 +11,8 @@ import Foundation
 /// Manages Minecraft version file downloads, verification, and directory setup.
 class MinecraftFileManager {
     private let fileManager = FileManager.default
-    let coreFilesCount = NSLockingCounter()
-    let resourceFilesCount = NSLockingCounter()
+    let coreFilesCount = AtomicCounter()
+    let resourceFilesCount = AtomicCounter()
     var coreTotalFiles = 0
     var resourceTotalFiles = 0
     var onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
@@ -23,6 +23,47 @@ class MinecraftFileManager {
     }
 
     init() { }
+
+    /// Cleans up game directories, logging errors instead of throwing.
+    static func cleanupGameDirectoriesSafely(gameName: String) async {
+        do {
+            try MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
+        } catch {
+            AppLog.modPack.error("Failed to clean up game directories: \(error.localizedDescription)")
+        }
+    }
+
+    /// Creates the profile directory structure for a game.
+    static func createProfileDirectories(for gameName: String) async -> Bool {
+        let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
+        let subdirs = AppPaths.profileSubdirectories.map {
+            profileDirectory.appendingPathComponent($0)
+        }
+        for dir in [profileDirectory] + subdirs {
+            do {
+                try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            } catch {
+                AppLog.modPack.error("Failed to create directory: \(dir.path), error: \(error.localizedDescription)")
+                DIContainer.shared.core.errorHandler.handle(
+                    GlobalError.fileSystem(i18nKey: "error.filesystem.directory_creation_failed", level: .notification),
+                )
+                return false
+            }
+        }
+        return true
+    }
+
+    /// Splits index info into downloadable files and required dependencies.
+    static func calculateInstallationCounts(from indexInfo: ModrinthIndexInfo) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
+        let filesToDownload = indexInfo.files.filter { file in
+            if let env = file.env, let client = env.client, client.lowercased() == "unsupported" {
+                return false
+            }
+            return true
+        }
+        let requiredDependencies = indexInfo.dependencies.filter { $0.dependencyType == "required" }
+        return (filesToDownload, requiredDependencies)
+    }
 
     func cleanupGameDirectories(gameName: String) throws {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
@@ -141,16 +182,16 @@ class MinecraftFileManager {
     func incrementCompletedFilesCount(
         fileName: String,
         type: DownloadType,
-    ) {
+    ) async {
         let currentCount: Int
         let total: Int
 
         switch type {
         case .core:
-            currentCount = coreFilesCount.increment()
+            currentCount = await coreFilesCount.increment()
             total = coreTotalFiles
         case .resources:
-            currentCount = resourceFilesCount.increment()
+            currentCount = await resourceFilesCount.increment()
             total = resourceTotalFiles
         }
 
@@ -183,7 +224,7 @@ class MinecraftFileManager {
                 expectedSha1: sha1,
             )
 
-            incrementCompletedFilesCount(
+            await incrementCompletedFilesCount(
                 fileName: fileNameForNotification
                     ?? destinationURL.lastPathComponent,
                 type: type,

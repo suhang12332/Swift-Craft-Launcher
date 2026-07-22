@@ -22,24 +22,7 @@ enum MinecraftFileManagerConstants {
     static let memoryBufferSize = 1024 * 1024
 }
 
-/// A thread-safe counter using `NSLock`.
-final class NSLockingCounter {
-    private var count = 0
-    private let lock = NSLock()
-
-    func increment() -> Int {
-        lock.lock()
-        defer { lock.unlock() }
-        count += 1
-        return count
-    }
-
-    func reset() {
-        lock.lock()
-        defer { lock.unlock() }
-        count = 0
-    }
-}
+// NSLockingCounter removed — replaced by shared AtomicCounter actor.
 
 extension Library {
     var artifactPath: String? {

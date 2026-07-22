@@ -118,12 +118,7 @@ class ModPackDownloadSheetViewModel {
     }
 
     private func cleanupGameDirectories(gameName: String) async {
-        do {
-            let fileManager = MinecraftFileManager()
-            try fileManager.cleanupGameDirectories(gameName: gameName)
-        } catch {
-            AppLog.modPack.error("Failed to clean up game directories: \(error.localizedDescription)")
-        }
+        await MinecraftFileManager.cleanupGameDirectoriesSafely(gameName: gameName)
     }
 
     private func performModPackDownloadAndInstall(

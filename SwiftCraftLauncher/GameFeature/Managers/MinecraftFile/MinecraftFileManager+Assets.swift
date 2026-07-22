@@ -116,7 +116,7 @@ extension MinecraftFileManager {
                 expectedSha1: asset.hash,
             )
             let fileName = path.components(separatedBy: "/").last ?? path
-            incrementCompletedFilesCount(
+            await incrementCompletedFilesCount(
                 fileName: fileName,
                 type: .resources,
             )
