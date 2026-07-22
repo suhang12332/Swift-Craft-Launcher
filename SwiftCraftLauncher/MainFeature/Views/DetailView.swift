@@ -9,9 +9,12 @@ import SwiftUI
 
 /// Displays detailed information for the selected game or resource item.
 struct DetailView: View {
-    @EnvironmentObject private var filterState: ResourceFilterState
-    @EnvironmentObject private var detailState: ResourceDetailState
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(ResourceFilterState.self)
+    private var filterState
+    @Environment(ResourceDetailState.self)
+    private var detailState
+    @Environment(GameRepository.self)
+    private var gameRepository
 
     var body: some View {
         Group {

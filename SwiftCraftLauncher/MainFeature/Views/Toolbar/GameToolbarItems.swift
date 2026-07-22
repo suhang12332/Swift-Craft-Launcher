@@ -13,8 +13,10 @@ struct GameToolbarItems: View {
 
     @Environment(\.controlActiveState)
     private var controlActiveState
-    @EnvironmentObject private var filterState: ResourceFilterState
-    @EnvironmentObject private var detailState: ResourceDetailState
+    @Environment(ResourceFilterState.self)
+    private var filterState
+    @Environment(ResourceDetailState.self)
+    private var detailState
 
     var body: some View {
         ResourceFilterMenus.resourcesTypeMenu(detailState: detailState)

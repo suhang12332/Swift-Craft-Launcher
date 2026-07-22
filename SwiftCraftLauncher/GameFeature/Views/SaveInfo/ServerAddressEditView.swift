@@ -23,7 +23,7 @@ struct ServerAddressEditView: View {
     @State private var serverPort: String
     @State private var isHidden: Bool
     @State private var acceptTextures: Bool
-    @StateObject private var actionViewModel = ServerAddressEditActionViewModel()
+    @State private var actionViewModel = ServerAddressEditActionViewModel()
     @State private var showDeleteConfirmation: Bool = false
 
     var isNewServer: Bool {

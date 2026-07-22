@@ -11,12 +11,13 @@ import SwiftUI
 
 /// Manages general application settings including working directory and download preferences.
 @MainActor
-final class GeneralSettingsViewModel: ObservableObject {
-    @Published var showDirectoryPicker = false
-    @Published var error: GlobalError?
+@Observable
+final class GeneralSettingsViewModel {
+    var showDirectoryPicker = false
+    var error: GlobalError?
 
-    @Published var concurrentDownloadsDraft: Double
-    @Published var isEditingConcurrentDownloads = false
+    var concurrentDownloadsDraft: Double
+    var isEditingConcurrentDownloads = false
 
     private weak var gameRepository: GameRepository?
 

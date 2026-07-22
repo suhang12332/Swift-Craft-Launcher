@@ -53,7 +53,7 @@ struct ScreenshotThumbnail: View {
     let screenshot: ScreenshotInfo
     let action: () -> Void
 
-    @StateObject private var viewModel = ScreenshotThumbnailViewModel()
+    @State private var viewModel = ScreenshotThumbnailViewModel()
 
     var body: some View {
         Button(action: action) {
@@ -148,7 +148,7 @@ struct ScreenshotDetailView: View {
 /// An image view that loads and displays a screenshot from a file URL.
 struct ScreenshotImageView: View {
     let path: URL
-    @StateObject private var viewModel = ScreenshotImageViewModel()
+    @State private var viewModel = ScreenshotImageViewModel()
 
     var body: some View {
         Group {

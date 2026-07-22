@@ -9,17 +9,18 @@ import Foundation
 import Sparkle
 
 /// Manages application updates using the Sparkle framework.
-class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
+@Observable
+final class SparkleUpdateService: NSObject, SPUUpdaterDelegate {
     private var updater: SPUUpdater?
     private var hasStartedUpdater = false
     private var hasScheduledStartupCheck = false
 
-    @Published var isCheckingForUpdates = false
-    @Published var updateAvailable = false
-    @Published var currentVersion = ""
-    @Published var latestVersion = ""
-    @Published var updateDescription = ""
-    @Published var versionString = ""
+    var isCheckingForUpdates = false
+    var updateAvailable = false
+    var currentVersion = ""
+    var latestVersion = ""
+    var updateDescription = ""
+    var versionString = ""
 
     private let startupCheckDelay: TimeInterval = 2.0
 

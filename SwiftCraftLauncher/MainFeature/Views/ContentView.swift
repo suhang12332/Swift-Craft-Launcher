@@ -10,10 +10,14 @@ import WebKit
 
 /// Primary content view that displays game or resource details based on the selected item.
 struct ContentView: View {
-    @EnvironmentObject private var filterState: ResourceFilterState
-    @EnvironmentObject private var detailState: ResourceDetailState
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(ResourceFilterState.self)
+    private var filterState
+    @Environment(ResourceDetailState.self)
+    private var detailState
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
 
     var body: some View {
         List {

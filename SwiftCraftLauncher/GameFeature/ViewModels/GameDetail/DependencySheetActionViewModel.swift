@@ -10,8 +10,9 @@ import SwiftUI
 
 /// View model that manages download actions for dependency sheet dialogs, coordinating "download all" and "download main only" flows.
 @MainActor
-final class DependencySheetActionViewModel: ObservableObject {
-    @Published var error: GlobalError?
+@Observable
+final class DependencySheetActionViewModel {
+    var error: GlobalError?
 
     private let isDownloadingAllDependencies: Binding<Bool>
     private let isDownloadingMainResourceOnly: Binding<Bool>

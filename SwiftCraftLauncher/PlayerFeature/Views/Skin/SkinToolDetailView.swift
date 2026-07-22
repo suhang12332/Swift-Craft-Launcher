@@ -12,18 +12,20 @@ import UniformTypeIdentifiers
 
 /// A sheet for managing the current player's skin and cape.
 struct SkinToolDetailView: View {
-    @EnvironmentObject private var container: DIContainer
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(DIContainer.self)
+    private var container
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 
-    @StateObject private var viewModel: SkinToolDetailViewModel
+    @State private var viewModel: SkinToolDetailViewModel
 
     init(
         preloadedSkinInfo: PlayerSkinService.PublicSkinInfo? = nil,
         preloadedProfile: MinecraftProfileResponse? = nil,
     ) {
-        _viewModel = StateObject(
+        _viewModel = State(
             wrappedValue: SkinToolDetailViewModel(
                 preloadedSkinInfo: preloadedSkinInfo,
                 preloadedProfile: preloadedProfile,

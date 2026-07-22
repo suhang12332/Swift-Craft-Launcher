@@ -6,13 +6,15 @@
 //
 
 import Foundation
+import Observation
 import SkinRenderKit
 import SwiftUI
 import UniformTypeIdentifiers
 
 /// Manages the state and operations for the skin tool detail view.
 @MainActor
-final class SkinToolDetailViewModel: ObservableObject {
+@Observable
+final class SkinToolDetailViewModel {
     let skinLibraryStore: SkinLibraryStore
 
     let preloadedSkinInfo: PlayerSkinService.PublicSkinInfo?
@@ -28,27 +30,28 @@ final class SkinToolDetailViewModel: ObservableObject {
         self.skinLibraryStore = skinLibraryStore
     }
 
-    @Published var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
-    @Published var showingFileImporter = false
-    @Published var operationInProgress = false
+    var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
+    var showingFileImporter = false
+    var operationInProgress = false
 
-    @Published var selectedSkinData: Data?
-    @Published var selectedSkinImage: NSImage?
-    @Published var selectedSkinPath: String?
-    @Published var showingSkinPreview = false
+    var selectedSkinData: Data?
+    var selectedSkinImage: NSImage?
+    var selectedSkinPath: String?
+    var showingSkinPreview = false
 
-    @Published var selectedCapeId: String?
-    @Published var selectedCapeImageURL: String?
-    @Published var selectedCapeLocalPath: String?
-    @Published var selectedCapeImage: NSImage?
-    @Published var isCapeLoading: Bool = false
-    @Published var capeLoadCompleted: Bool = false
+    var selectedCapeId: String?
+    var selectedCapeImageURL: String?
+    var selectedCapeLocalPath: String?
+    var selectedCapeImage: NSImage?
+    var isCapeLoading: Bool = false
+    var capeLoadCompleted: Bool = false
 
-    @Published var publicSkinInfo: PlayerSkinService.PublicSkinInfo?
-    @Published var playerProfile: MinecraftProfileResponse?
+    var publicSkinInfo: PlayerSkinService.PublicSkinInfo?
+    var playerProfile: MinecraftProfileResponse?
 
-    @Published var hasChanges = false
-    @Published var currentSkinRenderImage: NSImage?
+    var hasChanges = false
+
+    var currentSkinRenderImage: NSImage?
 
     /// Cached values for detecting skin and cape changes.
     var lastSelectedSkinData: Data?

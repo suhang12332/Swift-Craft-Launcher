@@ -9,9 +9,12 @@ import SwiftUI
 
 /// Provides context-sensitive toolbar content for the detail panel.
 public struct DetailToolbarView: ToolbarContent {
-    @EnvironmentObject private var filterState: ResourceFilterState
-    @EnvironmentObject private var detailState: ResourceDetailState
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(ResourceFilterState.self)
+    private var filterState
+    @Environment(ResourceDetailState.self)
+    private var detailState
+    @Environment(GameRepository.self)
+    private var gameRepository
 
     private var currentGame: GameVersionInfo? {
         if case let .game(gameId) = detailState.selectedItem {

@@ -94,7 +94,7 @@ struct CapeSelectionView: View {
     @Binding var selectedCapeImage: NSImage?
     let onCapeSelected: (String?, String?) -> Void
 
-    @StateObject private var viewModel: CapeSelectionViewModel
+    @State private var viewModel: CapeSelectionViewModel
 
     init(
         playerProfile: MinecraftProfileResponse?,
@@ -108,7 +108,7 @@ struct CapeSelectionView: View {
         _selectedCapeImageURL = selectedCapeImageURL
         _selectedCapeImage = selectedCapeImage
         self.onCapeSelected = onCapeSelected
-        _viewModel = StateObject(
+        _viewModel = State(
             wrappedValue: CapeSelectionViewModel(
                 selectedCapeImageURL: selectedCapeImageURL,
                 selectedCapeImage: selectedCapeImage,

@@ -17,10 +17,14 @@ struct ResourceToolbarItems: View {
     private var controlActiveState
     @Environment(\.openURL)
     private var openURL
-    @EnvironmentObject private var filterState: ResourceFilterState
-    @EnvironmentObject private var detailState: ResourceDetailState
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(ResourceFilterState.self)
+    private var filterState
+    @Environment(ResourceDetailState.self)
+    private var detailState
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
 
     /// Opens the project page for the currently loaded resource in the default browser.
     private func openCurrentResourceInBrowser() {

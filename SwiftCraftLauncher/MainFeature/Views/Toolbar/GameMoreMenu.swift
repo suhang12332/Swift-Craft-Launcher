@@ -10,18 +10,14 @@ import SwiftUI
 
 /// Displays a context menu with additional actions for the selected game.
 struct GameMoreMenu: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     let game: GameVersionInfo
 
     @Environment(\.openSettings)
     private var openSettings
-    @EnvironmentObject private var detailState: ResourceDetailState
-
-    init(
-        game: GameVersionInfo,
-    ) {
-        self.game = game
-    }
+    @Environment(ResourceDetailState.self)
+    private var detailState
 
     var body: some View {
         Menu {

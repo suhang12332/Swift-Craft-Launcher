@@ -13,7 +13,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct ResourceImportButton: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     let game: GameVersionInfo
     let gameResourcesType: String
 

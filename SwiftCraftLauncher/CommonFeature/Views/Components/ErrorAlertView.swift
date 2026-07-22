@@ -9,10 +9,10 @@ import SwiftUI
 
 /// A view modifier that presents error alerts from the global error handler.
 struct ErrorAlertModifier: ViewModifier {
-    @StateObject private var errorHandler: GlobalErrorHandler
+    @State private var errorHandler: GlobalErrorHandler
 
     init(errorHandler: GlobalErrorHandler) {
-        _errorHandler = StateObject(wrappedValue: errorHandler)
+        _errorHandler = State(wrappedValue: errorHandler)
     }
 
     func body(content: Content) -> some View {

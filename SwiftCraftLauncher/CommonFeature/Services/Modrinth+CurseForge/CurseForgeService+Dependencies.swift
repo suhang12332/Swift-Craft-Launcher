@@ -24,19 +24,14 @@ extension CurseForgeService {
         selectedVersions: [String],
         selectedLoaders: [String],
     ) async -> ModrinthProjectDependency {
-        do {
-            return try await fetchProjectDependenciesThrowingAsModrinth(
+        await withServiceErrorHandling(context: "fetch CurseForge project dependencies (ID: \(id))", fallback: ModrinthProjectDependency(projects: [])) {
+            try await fetchProjectDependenciesThrowingAsModrinth(
                 type: type,
                 cachePath: cachePath,
                 id: id,
                 selectedVersions: selectedVersions,
                 selectedLoaders: selectedLoaders,
             )
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch CurseForge project dependencies (ID: \(id)): \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return ModrinthProjectDependency(projects: [])
         }
     }
 

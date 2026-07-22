@@ -15,12 +15,12 @@ class PremiumAccountFlagManager {
 
     /// A Boolean value indicating whether a premium account has been added previously.
     func hasAddedPremiumAccount() -> Bool {
-        UserDefaults.standard.bool(forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
+        Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
     }
 
     /// Records that a premium account has been added.
     func setPremiumAccountAdded() {
-        UserDefaults.standard.set(true, forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
+        Defaults.save(true, forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
         AppLog.player.debug("Premium account added flag set")
     }
 }

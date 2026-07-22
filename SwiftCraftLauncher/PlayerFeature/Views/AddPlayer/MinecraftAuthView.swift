@@ -9,7 +9,8 @@ import SwiftUI
 
 /// Displays the Microsoft authentication flow with status feedback.
 struct MinecraftAuthView: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     var onLoginSuccess: ((MinecraftProfileResponse) -> Void)?
 
     init(onLoginSuccess: ((MinecraftProfileResponse) -> Void)? = nil) { self.onLoginSuccess = onLoginSuccess }

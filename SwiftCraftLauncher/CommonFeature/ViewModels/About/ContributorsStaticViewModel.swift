@@ -9,10 +9,11 @@ import Foundation
 
 /// Manages loading and display of static contributor information.
 @MainActor
-final class ContributorsStaticViewModel: ObservableObject {
-    @Published var contributors: [StaticContributor] = []
-    @Published var loaded: Bool = false
-    @Published var loadFailed: Bool = false
+@Observable
+final class ContributorsStaticViewModel {
+    var contributors: [StaticContributor] = []
+    var loaded: Bool = false
+    var loadFailed: Bool = false
 
     private var loadTask: Task<Void, Never>?
 

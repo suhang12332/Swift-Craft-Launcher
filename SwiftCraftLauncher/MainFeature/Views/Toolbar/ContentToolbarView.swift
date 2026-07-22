@@ -10,19 +10,23 @@ import SwiftUI
 
 /// Provides the primary toolbar content for the main content area.
 public struct ContentToolbarView: ToolbarContent {
-    @EnvironmentObject private var container: DIContainer
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(DIContainer.self)
+    private var container
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @State private var showingAddPlayerSheet = false
     @State private var playerName = ""
     @State private var isPlayerNameValid = false
     @State private var showPlayerAlert = false
     @State private var showingGameForm = false
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(GameRepository.self)
+    private var gameRepository
     @State private var showEditSkin = false
     @State private var showingMinecraftFriendsSheet = false
     @State private var minecraftFriendsSheetHost: MinecraftFriendsSheetHostAdapter?
-    @StateObject private var viewModel = ContentToolbarViewModel()
-    @StateObject private var minecraftFriendsSheetViewModel = MinecraftFriendsSheetViewModel(friendsService: DIContainer.shared.ui.minecraftFriendsService)
+    @State private var isLoadingFriends = false
+    @State private var viewModel = ContentToolbarViewModel()
+    @State private var minecraftFriendsSheetViewModel = MinecraftFriendsSheetViewModel(friendsService: DIContainer.shared.ui.minecraftFriendsService)
 
     private var currentPlayer: Player? {
         playerListViewModel.currentPlayer
@@ -139,15 +143,17 @@ public struct ContentToolbarView: ToolbarContent {
                 Button {
                     Task {
                         guard let p = currentPlayer else { return }
+                        isLoadingFriends = true
+                        defer { isLoadingFriends = false }
                         let host = MinecraftFriendsSheetHostAdapter(player: p)
                         minecraftFriendsSheetHost = host
                         minecraftFriendsSheetViewModel.prepare(playerId: p.id, host: host)
                         await minecraftFriendsSheetViewModel.load(forceRefresh: false)
-                        guard !Task.isCancelled, currentPlayer?.id == p.id else { return }
+                        guard !Task.isCancelled else { return }
                         showingMinecraftFriendsSheet = true
                     }
                 } label: {
-                    if minecraftFriendsSheetViewModel.isLoading, !showingMinecraftFriendsSheet {
+                    if isLoadingFriends {
                         ProgressView()
                             .controlSize(.small)
                     } else {
@@ -155,7 +161,7 @@ public struct ContentToolbarView: ToolbarContent {
                     }
                 }
                 .help("minecraft.friends.toolbar.help".localized())
-                .disabled(minecraftFriendsSheetViewModel.isLoading && !showingMinecraftFriendsSheet)
+                .disabled(isLoadingFriends)
                 .sheet(isPresented: $showingMinecraftFriendsSheet) {
                     if let p = currentPlayer, minecraftFriendsSheetHost != nil {
                         MinecraftFriendsSheetView(

@@ -8,7 +8,8 @@
 import Foundation
 
 /// Detects the user's geographic location by IP address and timezone.
-class IPLocationService: ObservableObject {
+@Observable
+class IPLocationService {
     /// Chinese timezone identifier.
     private static let chinaTimeZone = "Asia/Shanghai"
 

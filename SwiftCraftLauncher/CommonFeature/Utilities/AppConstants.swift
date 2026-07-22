@@ -22,7 +22,6 @@ enum AppConstants {
     enum UserDefaultsKeys {
         static let userProfiles = "userProfiles"
 
-        static let currentPlayerId = "currentPlayerId"
         static let enableOfflineLogin = "enableOfflineLogin"
         static let enableEphemeralWebLogin = "enableEphemeralWebLogin"
         static let defaultYggdrasilServerBaseURL = "defaultYggdrasilServerBaseURL"

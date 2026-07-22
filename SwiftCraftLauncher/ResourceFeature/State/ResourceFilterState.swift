@@ -5,29 +5,31 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import Observation
 import SwiftUI
 
 /// Aggregates resource filter, pagination, tab, data source, search, and local filter state.
 ///
-/// Intended to be provided via `@EnvironmentObject` to reduce `@Binding` proliferation.
-final class ResourceFilterState: ObservableObject {
-    @Published var selectedVersions: [String] = []
-    @Published var selectedLicenses: [String] = []
-    @Published var selectedCategories: [String] = []
-    @Published var selectedFeatures: [String] = []
-    @Published var selectedResolutions: [String] = []
-    @Published var selectedPerformanceImpact: [String] = []
-    @Published var selectedLoaders: [String] = []
-    @Published var sortIndex: String = AppConstants.modrinthIndex
+/// Intended to be provided via `@Environment` to reduce `@Binding` proliferation.
+@Observable
+final class ResourceFilterState {
+    var selectedVersions: [String] = []
+    var selectedLicenses: [String] = []
+    var selectedCategories: [String] = []
+    var selectedFeatures: [String] = []
+    var selectedResolutions: [String] = []
+    var selectedPerformanceImpact: [String] = []
+    var selectedLoaders: [String] = []
+    var sortIndex: String = AppConstants.modrinthIndex
 
-    @Published var versionCurrentPage: Int = 1
-    @Published var versionTotal: Int = 0
-    @Published var selectedTab: Int = 0
+    var versionCurrentPage: Int = 1
+    var versionTotal: Int = 0
+    var selectedTab: Int = 0
 
-    @Published var dataSource: DataSource
-    @Published var searchText: String = ""
-    @Published var localResourceFilter: LocalResourceFilter = .all
-    @Published var showFavoritesOnly: Bool = false
+    var dataSource: DataSource
+    var searchText: String = ""
+    var localResourceFilter: LocalResourceFilter = .all
+    var showFavoritesOnly: Bool = false
 
     init(
         dataSource: DataSource? = nil,

@@ -9,12 +9,12 @@ import SwiftUI
 
 /// Presents an alert when the system is under memory pressure before game launch.
 struct MemoryPressureAlertModifier: ViewModifier {
-    @StateObject private var memoryPressureAlertPresenter: MemoryPressureAlertPresenter
+    @State private var memoryPressureAlertPresenter: MemoryPressureAlertPresenter
 
     init(
         memoryPressureAlertPresenter: MemoryPressureAlertPresenter,
     ) {
-        _memoryPressureAlertPresenter = StateObject(wrappedValue: memoryPressureAlertPresenter)
+        self.memoryPressureAlertPresenter = memoryPressureAlertPresenter
     }
 
     private var alertBinding: Binding<Bool> {

@@ -9,7 +9,8 @@ import SwiftUI
 
 /// Displays a player list popover with selection and deletion capabilities.
 struct PlayerListView: View {
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @Environment(\.dismiss)
     var dismiss
     @State private var playerToDelete: Player?

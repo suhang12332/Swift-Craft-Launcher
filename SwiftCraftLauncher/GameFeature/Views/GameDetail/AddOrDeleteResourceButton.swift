@@ -17,8 +17,10 @@ struct AddOrDeleteResourceButton: View {
     let query: String
     let type: Bool
     @Binding var scannedDetailIds: Set<String>
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @Binding var isResourceDisabled: Bool
     @Binding var selectedItem: SidebarItem
     var onResourceChanged: (() -> Void)?
@@ -27,7 +29,7 @@ struct AddOrDeleteResourceButton: View {
     /// Closure invoked after a successful resource update with (projectId, oldFileName, newFileName, newHash).
     var onResourceUpdated: ((String, String, String, String?) -> Void)?
 
-    @StateObject private var viewModel: AddOrDeleteResourceButtonViewModel
+    @State private var viewModel: AddOrDeleteResourceButtonViewModel
 
     init(
         project: ModrinthProject,
@@ -56,7 +58,7 @@ struct AddOrDeleteResourceButton: View {
         self.onResourceUpdated = onResourceUpdated
         self.onToggleDisableState = onToggleDisableState
 
-        _viewModel = StateObject(
+        _viewModel = State(
             wrappedValue: AddOrDeleteResourceButtonViewModel(
                 project: project,
                 selectedVersions: selectedVersions,

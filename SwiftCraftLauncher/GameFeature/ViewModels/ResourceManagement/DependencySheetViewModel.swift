@@ -14,14 +14,15 @@ enum ResourceDownloadState {
 }
 
 /// View model that manages dependency resolution, download states, and version selection for resource dependencies.
-final class DependencySheetViewModel: ObservableObject {
-    @Published var missingDependencies: [ModrinthProjectDetail] = []
-    @Published var isLoadingDependencies = true
-    @Published var showDependenciesSheet = false
-    @Published var dependencyDownloadStates: [String: ResourceDownloadState] = [:]
-    @Published var dependencyVersions: [String: [ModrinthProjectDetailVersion]] = [:]
-    @Published var selectedDependencyVersion: [String: String] = [:]
-    @Published var overallDownloadState: OverallDownloadState = .idle
+@Observable
+final class DependencySheetViewModel {
+    var missingDependencies: [ModrinthProjectDetail] = []
+    var isLoadingDependencies = true
+    var showDependenciesSheet = false
+    var dependencyDownloadStates: [String: ResourceDownloadState] = [:]
+    var dependencyVersions: [String: [ModrinthProjectDetailVersion]] = [:]
+    var selectedDependencyVersion: [String: String] = [:]
+    var overallDownloadState: OverallDownloadState = .idle
 
     /// Represents the aggregate state of all dependency downloads.
     enum OverallDownloadState {

@@ -15,7 +15,8 @@ private enum Constants {
 }
 
 struct CustomVersionPicker: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     @Binding var selected: String
     let availableVersions: [String]
     @Binding var time: String

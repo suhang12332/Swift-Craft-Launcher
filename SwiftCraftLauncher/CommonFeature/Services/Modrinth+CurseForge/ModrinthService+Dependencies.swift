@@ -16,19 +16,14 @@ extension ModrinthService {
         selectedVersions: [String],
         selectedLoaders: [String],
     ) async -> ModrinthProjectDependency {
-        do {
-            return try await fetchProjectDependenciesThrowing(
+        await withServiceErrorHandling(context: "fetch project dependencies (ID: \(id))", fallback: ModrinthProjectDependency(projects: [])) {
+            try await fetchProjectDependenciesThrowing(
                 type: type,
                 cachePath: cachePath,
                 id: id,
                 selectedVersions: selectedVersions,
                 selectedLoaders: selectedLoaders,
             )
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch project dependencies (ID: \(id)): \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return ModrinthProjectDependency(projects: [])
         }
     }
 

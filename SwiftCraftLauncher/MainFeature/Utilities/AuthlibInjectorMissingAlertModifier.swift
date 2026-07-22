@@ -9,12 +9,12 @@ import SwiftUI
 
 /// Presents an alert when the authlib-injector is missing before game launch.
 struct AuthlibInjectorMissingAlertModifier: ViewModifier {
-    @StateObject private var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter
+    @State private var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter
 
     init(
         authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter,
     ) {
-        _authlibInjectorMissingPresenter = StateObject(wrappedValue: authlibInjectorMissingPresenter)
+        self.authlibInjectorMissingPresenter = authlibInjectorMissingPresenter
     }
 
     private var alertBinding: Binding<Bool> {

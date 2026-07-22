@@ -10,12 +10,14 @@ import UniformTypeIdentifiers
 
 /// A form view for importing a modpack from a local file.
 struct ModPackImportView: View {
-    @StateObject private var viewModel: ModPackImportViewModel
-    @EnvironmentObject private var gameRepository: GameRepository
+    @State private var viewModel: ModPackImportViewModel
+    @Environment(GameRepository.self)
+    private var gameRepository
 
     private let triggerConfirm: Binding<Bool>
     private let triggerCancel: Binding<Bool>
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 
@@ -28,7 +30,7 @@ struct ModPackImportView: View {
         triggerConfirm = configuration.triggerConfirm
         triggerCancel = configuration.triggerCancel
 
-        _viewModel = StateObject(wrappedValue: ModPackImportViewModel(
+        _viewModel = State(wrappedValue: ModPackImportViewModel(
             configuration: configuration,
             preselectedFile: preselectedFile,
             shouldStartProcessing: shouldStartProcessing,

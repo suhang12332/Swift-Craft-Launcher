@@ -5,12 +5,13 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Combine
 import Foundation
+import Observation
 
 /// Loads and manages save information including worlds, screenshots, servers,
 /// litematica files, and logs for a specific game instance.
-final class SaveInfoManager: ObservableObject {
+@Observable
+final class SaveInfoManager {
     private struct WorldParseResult {
         let lastPlayed: Date?
         let gameMode: String?
@@ -20,23 +21,23 @@ final class SaveInfoManager: ObservableObject {
     }
 
     let gameName: String
-    @Published private(set) var worlds: [WorldInfo] = []
-    @Published private(set) var screenshots: [ScreenshotInfo] = []
-    @Published private(set) var servers: [ServerAddress] = []
-    @Published private(set) var litematicaFiles: [LitematicaInfo] = []
-    @Published private(set) var logs: [LogInfo] = []
-    @Published private(set) var isLoading: Bool = true
+    private(set) var worlds: [WorldInfo] = []
+    private(set) var screenshots: [ScreenshotInfo] = []
+    private(set) var servers: [ServerAddress] = []
+    private(set) var litematicaFiles: [LitematicaInfo] = []
+    private(set) var logs: [LogInfo] = []
+    private(set) var isLoading: Bool = true
 
-    @Published private(set) var isLoadingWorlds: Bool = false
-    @Published private(set) var isLoadingScreenshots: Bool = false
-    @Published private(set) var isLoadingServers: Bool = false
-    @Published private(set) var isLoadingLitematica: Bool = false
-    @Published private(set) var isLoadingLogs: Bool = false
+    private(set) var isLoadingWorlds: Bool = false
+    private(set) var isLoadingScreenshots: Bool = false
+    private(set) var isLoadingServers: Bool = false
+    private(set) var isLoadingLitematica: Bool = false
+    private(set) var isLoadingLogs: Bool = false
 
-    @Published private(set) var hasWorldsType: Bool = false
-    @Published private(set) var hasScreenshotsType: Bool = false
-    @Published private(set) var hasLitematicaType: Bool = false
-    @Published private(set) var hasLogsType: Bool = false
+    private(set) var hasWorldsType: Bool = false
+    private(set) var hasScreenshotsType: Bool = false
+    private(set) var hasLitematicaType: Bool = false
+    private(set) var hasLogsType: Bool = false
 
     private var loadTask: Task<Void, Never>?
 

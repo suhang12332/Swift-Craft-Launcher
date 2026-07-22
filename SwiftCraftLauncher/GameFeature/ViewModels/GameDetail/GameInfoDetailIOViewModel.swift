@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import Observation
 import UniformTypeIdentifiers
 
 /// View model for game info detail I/O operations, including local resource scanning and game icon management.
 @MainActor
-final class GameInfoDetailIOViewModel: ObservableObject {
+@Observable
+final class GameInfoDetailIOViewModel {
     init() { }
 
     /// Scans the local resource directory and returns a set of detail IDs.

@@ -9,9 +9,10 @@ import Foundation
 import SwiftUI
 
 /// Manages the currently selected player for skin operations.
-class SkinSelectionStore: ObservableObject {
+@Observable
+class SkinSelectionStore {
     /// The identifier of the selected player.
-    @Published var selectedPlayerId: String?
+    var selectedPlayerId: String?
 
     /// Updates the selected player identifier.
     ///

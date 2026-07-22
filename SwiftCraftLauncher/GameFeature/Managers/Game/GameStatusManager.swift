@@ -8,11 +8,12 @@
 import Foundation
 
 /// Tracks game running and launching states per player using process keys.
-class GameStatusManager: ObservableObject {
+@Observable
+final class GameStatusManager {
     /// Running states keyed by processKey(gameId, userId).
-    @Published private var gameRunningStates: [String: Bool] = [:]
+    private var gameRunningStates: [String: Bool] = [:]
     /// Launching states keyed by processKey(gameId, userId).
-    @Published private var gameLaunchingStates: [String: Bool] = [:]
+    private var gameLaunchingStates: [String: Bool] = [:]
 
     init() { }
 

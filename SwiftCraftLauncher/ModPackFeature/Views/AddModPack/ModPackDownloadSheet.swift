@@ -13,16 +13,17 @@ struct ModPackDownloadSheet: View {
     let gameInfo: GameVersionInfo?
     let query: String
     let preloadedDetail: ModrinthProjectDetail?
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(GameRepository.self)
+    private var gameRepository
     @Environment(\.dismiss)
     private var dismiss
 
-    @StateObject private var viewModel = ModPackDownloadSheetViewModel()
-    @StateObject private var coordinator = ModPackDownloadSheetCoordinatorViewModel()
+    @State private var viewModel = ModPackDownloadSheetViewModel()
+    @State private var coordinator = ModPackDownloadSheetCoordinatorViewModel()
     @State private var selectedGameVersion: String = ""
     @State private var selectedModPackVersion: ModrinthProjectDetailVersion?
-    @StateObject private var gameSetupService = GameSetupUtil()
-    @StateObject private var gameNameValidator: GameNameValidator
+    @State private var gameSetupService = GameSetupUtil()
+    @State private var gameNameValidator: GameNameValidator
 
     init(
         projectId: String,
@@ -34,7 +35,7 @@ struct ModPackDownloadSheet: View {
         self.gameInfo = gameInfo
         self.query = query
         self.preloadedDetail = preloadedDetail
-        _gameNameValidator = StateObject(wrappedValue: GameNameValidator(gameSetupService: GameSetupUtil()))
+        _gameNameValidator = State(wrappedValue: GameNameValidator(gameSetupService: GameSetupUtil()))
     }
 
     var body: some View {

@@ -6,20 +6,22 @@
 //
 
 import Foundation
+import Observation
 
 /// Tracks download progress for game core files and resources.
 @MainActor
-class DownloadState: ObservableObject {
-    @Published var isDownloading = false
-    @Published var coreProgress: Double = 0
-    @Published var resourcesProgress: Double = 0
-    @Published var currentCoreFile: String = ""
-    @Published var currentResourceFile: String = ""
-    @Published var coreTotalFiles: Int = 0
-    @Published var resourcesTotalFiles: Int = 0
-    @Published var coreCompletedFiles: Int = 0
-    @Published var resourcesCompletedFiles: Int = 0
-    @Published var isCancelled = false
+@Observable
+class DownloadState {
+    var isDownloading = false
+    var coreProgress: Double = 0
+    var resourcesProgress: Double = 0
+    var currentCoreFile: String = ""
+    var currentResourceFile: String = ""
+    var coreTotalFiles: Int = 0
+    var resourcesTotalFiles: Int = 0
+    var coreCompletedFiles: Int = 0
+    var resourcesCompletedFiles: Int = 0
+    var isCancelled = false
 
     /// Resets all progress values to the default state.
     func reset() {

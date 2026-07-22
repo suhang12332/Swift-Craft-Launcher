@@ -51,9 +51,10 @@ struct ChatMessage: Identifiable, Equatable {
 }
 
 @MainActor
-class ChatState: ObservableObject {
-    @Published var messages: [ChatMessage] = []
-    @Published var isSending = false
+@Observable
+class ChatState {
+    var messages: [ChatMessage] = []
+    var isSending = false
 
     func addMessage(_ message: ChatMessage) {
         messages.append(message)

@@ -8,6 +8,23 @@
 import Foundation
 import SwiftUI
 
+/// Wraps an async throwing operation with standardized error handling.
+/// Errors are logged, reported to the global error handler, and a fallback value is returned.
+func withServiceErrorHandling<T>(
+    context: String,
+    fallback: T,
+    operation: () async throws -> T,
+) async -> T {
+    do {
+        return try await operation()
+    } catch {
+        let globalError = GlobalError.from(error)
+        AppLog.common.error("Failed to \(context): \(globalError.localizedDescription)")
+        DIContainer.shared.core.errorHandler.handle(globalError)
+        return fallback
+    }
+}
+
 extension ServerConnectionStatus {
     var statusColor: Color {
         switch self {
