@@ -45,9 +45,9 @@ public enum ThemeMode: String, CaseIterable {
 /// Manages the app's visual theme and applies the selected appearance.
 @Observable
 final class ThemeManager {
-    var themeMode: ThemeMode {
+    var themeMode: ThemeMode = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.themeMode, defaultValue: .system) {
         didSet {
-            UserDefaults.standard.set(themeMode.rawValue, forKey: AppConstants.UserDefaultsKeys.themeMode)
+            Defaults.save(themeMode.rawValue, forKey: AppConstants.UserDefaultsKeys.themeMode)
             applyAppAppearance()
         }
     }
@@ -57,7 +57,6 @@ final class ThemeManager {
     private var systemAppearanceRevision = 0
 
     var preferredColorScheme: ColorScheme? {
-        // Touch systemAppearanceRevision so views re-evaluate on system appearance change.
         _ = systemAppearanceRevision
         return themeMode.preferredColorScheme
     }
@@ -65,12 +64,8 @@ final class ThemeManager {
     private var appearanceObserver: NSKeyValueObservation?
 
     init() {
-        let raw = UserDefaults.standard.string(forKey: AppConstants.UserDefaultsKeys.themeMode) ?? ThemeMode.system.rawValue
-        themeMode = ThemeMode(rawValue: raw) ?? .system
         applyAppAppearance()
-        Task { @MainActor in
-            setupAppearanceObserverIfNeeded()
-        }
+        setupAppearanceObserverIfNeeded()
     }
 
     deinit {

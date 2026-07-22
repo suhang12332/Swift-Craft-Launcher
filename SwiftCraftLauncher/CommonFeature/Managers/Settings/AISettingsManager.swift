@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftUI
 
 /// Represents an available AI service provider.
 enum AIProvider: String, CaseIterable, Identifiable {
@@ -75,37 +74,38 @@ enum APIFormat {
 @Observable
 final class AISettingsManager {
     /// The currently selected AI provider, persisted in UserDefaults.
-    var selectedProvider: AIProvider {
-        didSet { UserDefaults.standard.set(selectedProvider.rawValue, forKey: AppConstants.UserDefaultsKeys.aiProvider) }
+    var selectedProvider: AIProvider = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.aiProvider, defaultValue: .openai) {
+        didSet { Defaults.save(selectedProvider.rawValue, forKey: AppConstants.UserDefaultsKeys.aiProvider) }
     }
 
     /// The API key for the selected AI provider, stored securely in Keychain.
-    var apiKey: String {
+    var apiKey: String = {
+        KeychainManager.load(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
+            .flatMap { String(data: $0, encoding: .utf8) } ?? ""
+    }() {
         didSet {
             if apiKey.isEmpty {
                 _ = KeychainManager.delete(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
-            } else {
-                if let data = apiKey.data(using: .utf8) {
-                    _ = KeychainManager.save(data: data, account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
-                }
+            } else if let data = apiKey.data(using: .utf8) {
+                _ = KeychainManager.save(data: data, account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
             }
         }
     }
 
-    var ollamaBaseURL: String {
-        didSet { UserDefaults.standard.set(ollamaBaseURL, forKey: AppConstants.UserDefaultsKeys.aiOllamaBaseURL) }
+    var ollamaBaseURL: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.aiOllamaBaseURL, defaultValue: URLConfig.API.AIService.ollamaDefaultBaseURL) {
+        didSet { Defaults.save(ollamaBaseURL, forKey: AppConstants.UserDefaultsKeys.aiOllamaBaseURL) }
     }
 
-    var openAIBaseURL: String {
-        didSet { UserDefaults.standard.set(openAIBaseURL, forKey: AppConstants.UserDefaultsKeys.aiOpenAIBaseURL) }
+    var openAIBaseURL: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.aiOpenAIBaseURL) {
+        didSet { Defaults.save(openAIBaseURL, forKey: AppConstants.UserDefaultsKeys.aiOpenAIBaseURL) }
     }
 
-    var modelOverride: String {
-        didSet { UserDefaults.standard.set(modelOverride, forKey: AppConstants.UserDefaultsKeys.aiModelOverride) }
+    var modelOverride: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.aiModelOverride) {
+        didSet { Defaults.save(modelOverride, forKey: AppConstants.UserDefaultsKeys.aiModelOverride) }
     }
 
-    var aiAvatarURL: String {
-        didSet { UserDefaults.standard.set(aiAvatarURL, forKey: AppConstants.UserDefaultsKeys.aiAvatarURL) }
+    var aiAvatarURL: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.aiAvatarURL, defaultValue: URLConfig.API.AIService.defaultAvatarURL) {
+        didSet { Defaults.save(aiAvatarURL, forKey: AppConstants.UserDefaultsKeys.aiAvatarURL) }
     }
 
     /// Returns the full API endpoint URL for the current provider.
@@ -124,22 +124,5 @@ final class AISettingsManager {
     /// Returns the configured model name, trimmed of whitespace.
     func getModel() -> String {
         modelOverride.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    init() {
-        let d = UserDefaults.standard
-        let providerRaw = d.string(forKey: AppConstants.UserDefaultsKeys.aiProvider) ?? "openai"
-        selectedProvider = AIProvider(rawValue: providerRaw) ?? .openai
-        ollamaBaseURL = d.string(forKey: AppConstants.UserDefaultsKeys.aiOllamaBaseURL) ?? URLConfig.API.AIService.ollamaDefaultBaseURL
-        openAIBaseURL = d.string(forKey: AppConstants.UserDefaultsKeys.aiOpenAIBaseURL) ?? ""
-        modelOverride = d.string(forKey: AppConstants.UserDefaultsKeys.aiModelOverride) ?? ""
-        aiAvatarURL = d.string(forKey: AppConstants.UserDefaultsKeys.aiAvatarURL) ?? URLConfig.API.AIService.defaultAvatarURL
-
-        if let data = KeychainManager.load(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey),
-           let key = String(data: data, encoding: .utf8) {
-            apiKey = key
-        } else {
-            apiKey = ""
-        }
     }
 }
