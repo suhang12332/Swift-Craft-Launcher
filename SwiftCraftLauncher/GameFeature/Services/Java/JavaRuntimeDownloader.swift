@@ -49,7 +49,7 @@ class JavaRuntimeDownloader {
         try FileManager.default.createDirectory(at: targetDirectory, withIntermediateDirectories: true)
 
         let totalFiles = files
-            .compactMap { filePath, fileInfo -> Int? in
+            .compactMap { _, fileInfo -> Int? in
                 guard let fileData = fileInfo as? [String: Any],
                       let fileType = fileData["type"] as? String,
                       fileType == "file" else {

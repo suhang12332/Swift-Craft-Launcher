@@ -73,18 +73,12 @@ class BaseGameFormViewModel: GameFormStateProtocol {
     }
 
     func updateParentState() {
-        let newIsDownloading = computeIsDownloading()
-        let newIsFormValid = computeIsFormValid()
-        let newIsLoadingLoaderVersions = computeIsLoadingLoaderVersions()
+        configuration.isDownloading.wrappedValue = computeIsDownloading()
+        configuration.isFormValid.wrappedValue = computeIsFormValid()
+        configuration.isLoadingLoaderVersions.wrappedValue = computeIsLoadingLoaderVersions()
 
-        DispatchQueue.main.async { [weak self] in
-            self?.configuration.isDownloading.wrappedValue = newIsDownloading
-            self?.configuration.isFormValid.wrappedValue = newIsFormValid
-            self?.configuration.isLoadingLoaderVersions.wrappedValue = newIsLoadingLoaderVersions
-
-            self?.isDownloading = newIsDownloading
-            self?.isFormValid = newIsFormValid
-        }
+        isDownloading = configuration.isDownloading.wrappedValue
+        isFormValid = configuration.isFormValid.wrappedValue
     }
 
     func performConfirmAction() async {
