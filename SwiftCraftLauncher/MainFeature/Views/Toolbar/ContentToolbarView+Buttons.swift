@@ -17,7 +17,6 @@ private func delayedDismiss(_ binding: Binding<Bool>, execute work: @escaping ()
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: work)
 }
 
-
 struct AddGameToolbarButton: View {
     @Binding var showingGameForm: Bool
     @Binding var showPlayerAlert: Bool
@@ -47,7 +46,6 @@ struct AddGameToolbarButton: View {
         }
     }
 }
-
 
 struct AddPlayerToolbarButton: View {
     @Environment(DIContainer.self)
@@ -108,7 +106,6 @@ struct AddPlayerToolbarButton: View {
     }
 }
 
-
 struct SkinToolbarButton: View {
     @Binding var showEditSkin: Bool
     let isLoadingSkin: Bool
@@ -144,7 +141,6 @@ struct SkinToolbarButton: View {
         }
     }
 }
-
 
 struct MinecraftFriendsToolbarButton: View {
     @Environment(DIContainer.self)

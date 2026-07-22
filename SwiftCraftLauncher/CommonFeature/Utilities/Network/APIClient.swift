@@ -90,15 +90,7 @@ enum APIClient {
         body: Data? = nil,
         headers: [String: String]? = nil,
     ) async throws -> Data {
-        var postHeaders = headers ?? [:]
-        if body != nil, !postHeaders.keys.contains(where: { $0.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame }) {
-            postHeaders[Header.contentType] = MimeType.json
-        }
-        let request = URLRequest(url: url)
-            .methods(HTTPMethods.post)
-            .headers(postHeaders)
-            .bodys(body)
-
+        let request = buildPostRequest(url: url, body: body, headers: headers)
         return try await performRequest(request: request)
     }
 
@@ -138,15 +130,7 @@ enum APIClient {
         body: Data? = nil,
         headers: [String: String]? = nil,
     ) async throws -> (Data, Int) {
-        var postHeaders = headers ?? [:]
-        if body != nil, !postHeaders.keys.contains(where: { $0.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame }) {
-            postHeaders[Header.contentType] = MimeType.json
-        }
-        let request = URLRequest(url: url)
-            .methods(HTTPMethods.post)
-            .headers(postHeaders)
-            .bodys(body)
-
+        let request = buildPostRequest(url: url, body: body, headers: headers)
         return try await performRequestUnchecked(request: request)
     }
 
@@ -195,6 +179,23 @@ enum APIClient {
             .bodys(body)
 
         return try await performRequest(request: request)
+    }
+
+    /// Builds a POST request, injecting `Content-Type: application/json` if no content type is
+    /// provided and a body is present.
+    private static func buildPostRequest(
+        url: URL,
+        body: Data?,
+        headers: [String: String]?,
+    ) -> URLRequest {
+        var postHeaders = headers ?? [:]
+        if body != nil, !postHeaders.keys.contains(where: { $0.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame }) {
+            postHeaders[Header.contentType] = MimeType.json
+        }
+        return URLRequest(url: url)
+            .methods(HTTPMethods.post)
+            .headers(postHeaders)
+            .bodys(body)
     }
 
     /// Executes a URL request and returns the response data.
