@@ -14,13 +14,13 @@ extension URLRequest {
         return request
     }
 
-    func methods(_ method: String) -> URLRequest {
+    func method(_ method: String) -> URLRequest {
         var request = self
         request.httpMethod = method
         return request
     }
 
-    func bodys(_ body: Data?) -> URLRequest {
+    func body(_ body: Data?) -> URLRequest {
         var request = self
         request.httpBody = body
         return request

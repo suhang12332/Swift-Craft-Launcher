@@ -131,10 +131,7 @@ extension CurseForgeService {
     ) async throws -> [ModrinthProjectDetailVersion] {
         let (modId, normalizedId) = try parseCurseForgeId(id)
 
-        let resourceTypeLowercased = type.lowercased()
-        let shouldFilterByLoader = !(resourceTypeLowercased == ResourceType.shader.rawValue ||
-            resourceTypeLowercased == ResourceType.resourcepack.rawValue ||
-            resourceTypeLowercased == ResourceType.datapack.rawValue)
+        let shouldFilterByLoader = !VersionFilter.shouldSkipLoaderFilter(for: type)
 
         var modLoaderTypes: [Int] = []
         if shouldFilterByLoader {

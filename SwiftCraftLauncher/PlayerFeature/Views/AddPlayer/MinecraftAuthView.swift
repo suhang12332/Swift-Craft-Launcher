@@ -18,13 +18,13 @@ struct MinecraftAuthView: View {
     var body: some View {
         VStack(spacing: 20) {
             switch container.system.minecraftAuthService.authState {
-            case .notAuthenticated:
+            case .idle:
                 notAuthenticatedView
 
-            case .waitingForBrowserAuth:
+            case .waitingForBrowser:
                 waitingForBrowserAuthView
 
-            case .processingAuthCode:
+            case .processing:
                 processingAuthCodeView
 
             case let .authenticated(profile):
@@ -41,7 +41,7 @@ struct MinecraftAuthView: View {
     }
 
     private func clearAllData() {
-        if case .notAuthenticated = container.system.minecraftAuthService.authState {
+        if case .idle = container.system.minecraftAuthService.authState {
             container.system.minecraftAuthService.isLoading = false
         }
     }

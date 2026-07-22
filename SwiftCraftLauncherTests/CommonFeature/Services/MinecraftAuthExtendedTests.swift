@@ -262,9 +262,9 @@ final class MinecraftAuthExtendedTests: XCTestCase {
 
     func testAuthenticationState_allDistinct() {
         let states: [AuthenticationState] = [
-            .notAuthenticated,
-            .waitingForBrowserAuth,
-            .processingAuthCode,
+            .idle,
+            .waitingForBrowser,
+            .processing,
             .error("err"),
         ]
 

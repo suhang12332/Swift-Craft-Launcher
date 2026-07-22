@@ -63,7 +63,7 @@ class JavaRuntimeDownloader {
             value: DIContainer.shared.ui.generalSettingsManager.concurrentDownloads,
         )
 
-        let counter = Counter()
+        let counter = AtomicCounter()
 
         try await withThrowingTaskGroup(of: Void.self) { group in
             for (filePath, fileInfo) in files {
@@ -285,15 +285,6 @@ class JavaRuntimeDownloader {
             destinationURL: destinationURL,
             progressHandler: progressCallback,
         )
-    }
-}
-
-private actor Counter {
-    private var value = 0
-
-    func increment() -> Int {
-        value += 1
-        return value
     }
 }
 

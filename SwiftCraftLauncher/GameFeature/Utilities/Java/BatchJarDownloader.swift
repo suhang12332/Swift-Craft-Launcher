@@ -23,7 +23,7 @@ enum BatchJarDownloader {
         onProgressUpdate: ((String, Int, Int) -> Void)? = nil,
     ) async throws {
         let total = tasks.count
-        let counter = Counter()
+        let counter = AtomicCounter()
 
         let semaphore = AsyncSemaphore(value: DIContainer.shared.ui.generalSettingsManager.concurrentDownloads)
 
@@ -48,16 +48,6 @@ enum BatchJarDownloader {
                 }
             }
             try await group.waitForAll()
-        }
-    }
-
-    /// An actor that safely increments a counter from concurrent tasks.
-    actor Counter {
-        private var value = 0
-
-        func increment() -> Int {
-            value += 1
-            return value
         }
     }
 }

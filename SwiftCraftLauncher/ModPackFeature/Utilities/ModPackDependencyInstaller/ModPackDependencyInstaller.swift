@@ -58,21 +58,4 @@ enum ModPackDependencyInstaller {
     }
 }
 
-/// A thread-safe counter for tracking download progress.
-final class ModPackCounter {
-    private var count = 0
-    private let lock = NSLock()
-
-    func increment() -> Int {
-        lock.lock()
-        defer { lock.unlock() }
-        count += 1
-        return count
-    }
-
-    func reset() {
-        lock.lock()
-        defer { lock.unlock() }
-        count = 0
-    }
-}
+// ModPackCounter removed — replaced by shared AtomicCounter actor.

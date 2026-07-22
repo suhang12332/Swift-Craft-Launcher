@@ -64,4 +64,21 @@ public enum ResourceType: String, CaseIterable {
             return "server.rack"
         }
     }
+
+    /// The folder name used in the game profile directory for this resource type.
+    /// Returns an empty string for types without a physical directory (modpack, server).
+    public var folderName: String {
+        switch self {
+        case .mod: return AppConstants.DirectoryNames.mods
+        case .datapack: return AppConstants.DirectoryNames.datapacks
+        case .shader: return AppConstants.DirectoryNames.shaderpacks
+        case .resourcepack: return AppConstants.DirectoryNames.resourcepacks
+        case .modpack, .minecraftJavaServer: return ""
+        }
+    }
+
+    /// Creates a `ResourceType` from a case-insensitive string.
+    public init?(from string: String) {
+        self.init(rawValue: string.lowercased())
+    }
 }

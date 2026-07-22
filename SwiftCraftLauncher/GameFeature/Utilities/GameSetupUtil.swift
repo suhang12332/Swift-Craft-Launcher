@@ -152,12 +152,7 @@ class GameSetupUtil {
     /// Removes partial game files after a failed or cancelled download.
     /// - Parameter gameName: The name of the game instance.
     private func cleanupGameDirectories(gameName: String) async {
-        do {
-            let fileManager = MinecraftFileManager()
-            try fileManager.cleanupGameDirectories(gameName: gameName)
-        } catch {
-            AppLog.game.error("Failed to clean game folder: \(error.localizedDescription)")
-        }
+        await MinecraftFileManager.cleanupGameDirectoriesSafely(gameName: gameName)
     }
 
     private func saveGameIcon(

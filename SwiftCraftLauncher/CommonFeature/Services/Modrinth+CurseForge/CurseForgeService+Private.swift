@@ -71,16 +71,7 @@ extension CurseForgeService {
 
     /// Parses a CurseForge identifier into its numeric ID and normalized form.
     static func parseCurseForgeId(_ id: String) throws -> (modId: Int, normalized: String) {
-        let cleanId = id.replacingOccurrences(of: "cf-", with: "")
-        guard let modId = Int(cleanId) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.invalid_project_id",
-                level: .notification,
-                message: "CurseForge ID '\(id)' is not a valid integer after stripping 'cf-' prefix, cleanId='\(cleanId)'",
-            )
-        }
-        let normalizedId = id.hasPrefix("cf-") ? id : "cf-\(cleanId)"
-        return (modId, normalizedId)
+        try id.asProjectId.parseCurseForgeId()
     }
 
     static func fetchFingerprintMatchesThrowing(fingerprint: UInt32) async throws -> CurseForgeFingerprintMatchesResponse {

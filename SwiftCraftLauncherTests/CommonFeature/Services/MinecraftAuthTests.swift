@@ -141,8 +141,8 @@ final class MinecraftAuthTests: XCTestCase {
     }
 
     func testAuthenticationState_equatable() {
-        XCTAssertEqual(AuthenticationState.notAuthenticated, AuthenticationState.notAuthenticated)
-        XCTAssertEqual(AuthenticationState.waitingForBrowserAuth, AuthenticationState.waitingForBrowserAuth)
-        XCTAssertNotEqual(AuthenticationState.notAuthenticated, AuthenticationState.processingAuthCode)
+        XCTAssertEqual(AuthenticationState.idle, AuthenticationState.idle)
+        XCTAssertEqual(AuthenticationState.waitingForBrowser, AuthenticationState.waitingForBrowser)
+        XCTAssertNotEqual(AuthenticationState.idle, AuthenticationState.processing)
     }
 }

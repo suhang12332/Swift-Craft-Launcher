@@ -16,26 +16,10 @@ extension ModrinthService {
         selectedVersions: [String],
         selectedLoaders: [String],
     ) async -> ModrinthProjectDependency {
-        await withServiceErrorHandling(context: "fetch project dependencies (ID: \(id))", fallback: ModrinthProjectDependency(projects: [])) {
-            try await fetchProjectDependenciesThrowing(
-                type: type,
-                cachePath: cachePath,
-                id: id,
-                selectedVersions: selectedVersions,
-                selectedLoaders: selectedLoaders,
-            )
-        }
-    }
+        let projectId = id.asProjectId
 
-    static func fetchProjectDependenciesThrowing(
-        type: String,
-        cachePath: URL,
-        id: String,
-        selectedVersions: [String],
-        selectedLoaders: [String],
-    ) async throws -> ModrinthProjectDependency {
-        if id.hasPrefix("cf-") {
-            return try await CurseForgeService.fetchProjectDependenciesThrowingAsModrinth(
+        if projectId.isCurseForge {
+            return await CurseForgeService.fetchProjectDependenciesAsModrinth(
                 type: type,
                 cachePath: cachePath,
                 id: id,
@@ -44,94 +28,25 @@ extension ModrinthService {
             )
         }
 
-        let versions = try await fetchProjectVersionsFilter(
+        let context = DependencyResolver.Context(
+            type: type,
+            cachePath: cachePath,
             id: id,
             selectedVersions: selectedVersions,
             selectedLoaders: selectedLoaders,
-            type: type,
+            fetchVersions: { projectID in
+                try await fetchProjectVersionsFilter(
+                    id: projectID,
+                    selectedVersions: selectedVersions,
+                    selectedLoaders: selectedLoaders,
+                    type: type,
+                )
+            },
+            fetchVersionById: { versionID in
+                try await fetchProjectVersionThrowing(id: versionID)
+            },
         )
-        guard let firstVersion = versions.first else {
-            return ModrinthProjectDependency(projects: [])
-        }
-
-        let requiredDeps = firstVersion.dependencies.filter {
-            $0.dependencyType == "required" && $0.projectId != nil
-        }
-        let maxConcurrentTasks = 10
-        var allDependencyVersions: [ModrinthProjectDetailVersion] = []
-
-        var currentIndex = 0
-        while currentIndex < requiredDeps.count {
-            let endIndex = min(currentIndex + maxConcurrentTasks, requiredDeps.count)
-            let batch = Array(requiredDeps[currentIndex ..< endIndex])
-            currentIndex = endIndex
-
-            let batchResults: [ModrinthProjectDetailVersion] = await withTaskGroup(
-                of: ModrinthProjectDetailVersion?.self,
-            ) { group in
-                for dep in batch {
-                    guard let projectId = dep.projectId else { continue }
-                    group.addTask {
-                        do {
-                            let depVersion: ModrinthProjectDetailVersion
-
-                            if let versionId = dep.versionId {
-                                depVersion = try await fetchProjectVersionThrowing(id: versionId)
-                            } else {
-                                let depVersions = try await fetchProjectVersionsFilter(
-                                    id: projectId,
-                                    selectedVersions: selectedVersions,
-                                    selectedLoaders: selectedLoaders,
-                                    type: type,
-                                )
-                                guard let firstDepVersion = depVersions.first else {
-                                    AppLog.common.error("No compatible dependency version found (ID: \(projectId))")
-                                    return nil
-                                }
-                                depVersion = firstDepVersion
-                            }
-
-                            return depVersion
-                        } catch {
-                            let globalError = GlobalError.from(error)
-                            AppLog.common.error(
-                                "Failed to fetch dependency project version (ID: \(projectId)): \(globalError.localizedDescription)",
-                            )
-                            return nil
-                        }
-                    }
-                }
-
-                var results: [ModrinthProjectDetailVersion] = []
-                for await result in group {
-                    if let version = result {
-                        results.append(version)
-                    }
-                }
-
-                return results
-            }
-
-            allDependencyVersions.append(contentsOf: batchResults)
-        }
-
-        var missingDependencyVersions: [ModrinthProjectDetailVersion] = []
-
-        for version in allDependencyVersions {
-            let isInstalled = await isProjectInstalledByAnyCompatibleVersion(
-                projectId: version.projectId,
-                selectedVersions: selectedVersions,
-                selectedLoaders: selectedLoaders,
-                type: type,
-                modsDir: cachePath,
-            )
-
-            if !isInstalled {
-                missingDependencyVersions.append(version)
-            }
-        }
-
-        return ModrinthProjectDependency(projects: missingDependencyVersions)
+        return await DependencyResolver.resolve(context)
     }
 
     static func isProjectInstalledByAnyCompatibleVersion(
@@ -142,9 +57,10 @@ extension ModrinthService {
         modsDir: URL,
     ) async -> Bool {
         do {
+            let projectIdentifier = projectId.asProjectId
             let versions: [ModrinthProjectDetailVersion]
 
-            if projectId.hasPrefix("cf-") {
+            if projectIdentifier.isCurseForge {
                 versions = try await CurseForgeService.fetchProjectVersionsFilterAsModrinth(
                     id: projectId,
                     selectedVersions: selectedVersions,

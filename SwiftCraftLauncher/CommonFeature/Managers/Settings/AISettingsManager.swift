@@ -12,7 +12,6 @@ import Foundation
 enum AIProvider: String, CaseIterable, Identifiable {
     case openai
     case ollama
-//    case gemini = "gemini"
 
     var id: String { rawValue }
 
@@ -22,8 +21,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return "OpenAI"
         case .ollama:
             return "Ollama"
-//        case .gemini:
-//            return "Google Gemini"
         }
     }
 
@@ -33,8 +30,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return URLConfig.API.AIService.openAIBaseURL
         case .ollama:
             return URLConfig.API.AIService.ollamaDefaultBaseURL
-//        case .gemini:
-//            return "https://generativelanguage.googleapis.com"
         }
     }
 
@@ -45,8 +40,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return .openAI
         case .ollama:
             return .ollama
-//        case .gemini:
-//            return .gemini
         }
     }
 
@@ -57,8 +50,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return URLConfig.API.AIService.openAIChatPath
         case .ollama:
             return URLConfig.API.AIService.ollamaChatPath
-//        case .gemini:
-//            return "/v1/models/\(defaultModel):streamGenerateContent"
         }
     }
 }
@@ -67,7 +58,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
 enum APIFormat {
     case openAI // Compatible with DeepSeek and similar services
     case ollama
-//    case gemini
 }
 
 /// Manages persistent AI service settings including provider, API key, and model configuration.

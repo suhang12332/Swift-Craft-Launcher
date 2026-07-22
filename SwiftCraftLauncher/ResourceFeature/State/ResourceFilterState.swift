@@ -58,63 +58,26 @@ final class ResourceFilterState {
         searchText = ""
     }
 
-    var selectedVersionsBinding: Binding<[String]> {
-        Binding(get: { [weak self] in self?.selectedVersions ?? [] }, set: { [weak self] in self?.selectedVersions = $0 })
+    private func bind<V>(_ keyPath: WritableKeyPath<ResourceFilterState, V>, fallback: V) -> Binding<V> {
+        Binding(
+            get: { [weak self] in self?[keyPath: keyPath] ?? fallback },
+            set: { [weak self] in self?[keyPath: keyPath] = $0 },
+        )
     }
 
-    var selectedLicensesBinding: Binding<[String]> {
-        Binding(get: { [weak self] in self?.selectedLicenses ?? [] }, set: { [weak self] in self?.selectedLicenses = $0 })
-    }
-
-    var selectedCategoriesBinding: Binding<[String]> {
-        Binding(get: { [weak self] in self?.selectedCategories ?? [] }, set: { [weak self] in self?.selectedCategories = $0 })
-    }
-
-    var selectedFeaturesBinding: Binding<[String]> {
-        Binding(get: { [weak self] in self?.selectedFeatures ?? [] }, set: { [weak self] in self?.selectedFeatures = $0 })
-    }
-
-    var selectedResolutionsBinding: Binding<[String]> {
-        Binding(get: { [weak self] in self?.selectedResolutions ?? [] }, set: { [weak self] in self?.selectedResolutions = $0 })
-    }
-
-    var selectedPerformanceImpactBinding: Binding<[String]> {
-        Binding(get: { [weak self] in self?.selectedPerformanceImpact ?? [] }, set: { [weak self] in self?.selectedPerformanceImpact = $0 })
-    }
-
-    var selectedLoadersBinding: Binding<[String]> {
-        Binding(get: { [weak self] in self?.selectedLoaders ?? [] }, set: { [weak self] in self?.selectedLoaders = $0 })
-    }
-
-    var sortIndexBinding: Binding<String> {
-        Binding(get: { [weak self] in self?.sortIndex ?? AppConstants.modrinthIndex }, set: { [weak self] in self?.sortIndex = $0 })
-    }
-
-    var versionCurrentPageBinding: Binding<Int> {
-        Binding(get: { [weak self] in self?.versionCurrentPage ?? 1 }, set: { [weak self] in self?.versionCurrentPage = $0 })
-    }
-
-    var versionTotalBinding: Binding<Int> {
-        Binding(get: { [weak self] in self?.versionTotal ?? 0 }, set: { [weak self] in self?.versionTotal = $0 })
-    }
-
-    var selectedTabBinding: Binding<Int> {
-        Binding(get: { [weak self] in self?.selectedTab ?? 0 }, set: { [weak self] in self?.selectedTab = $0 })
-    }
-
-    var dataSourceBinding: Binding<DataSource> {
-        Binding(get: { [weak self] in self?.dataSource ?? .modrinth }, set: { [weak self] in self?.dataSource = $0 })
-    }
-
-    var searchTextBinding: Binding<String> {
-        Binding(get: { [weak self] in self?.searchText ?? "" }, set: { [weak self] in self?.searchText = $0 })
-    }
-
-    var localResourceFilterBinding: Binding<LocalResourceFilter> {
-        Binding(get: { [weak self] in self?.localResourceFilter ?? .all }, set: { [weak self] in self?.localResourceFilter = $0 })
-    }
-
-    var showFavoritesOnlyBinding: Binding<Bool> {
-        Binding(get: { [weak self] in self?.showFavoritesOnly ?? false }, set: { [weak self] in self?.showFavoritesOnly = $0 })
-    }
+    var selectedVersionsBinding: Binding<[String]> { bind(\.selectedVersions, fallback: []) }
+    var selectedLicensesBinding: Binding<[String]> { bind(\.selectedLicenses, fallback: []) }
+    var selectedCategoriesBinding: Binding<[String]> { bind(\.selectedCategories, fallback: []) }
+    var selectedFeaturesBinding: Binding<[String]> { bind(\.selectedFeatures, fallback: []) }
+    var selectedResolutionsBinding: Binding<[String]> { bind(\.selectedResolutions, fallback: []) }
+    var selectedPerformanceImpactBinding: Binding<[String]> { bind(\.selectedPerformanceImpact, fallback: []) }
+    var selectedLoadersBinding: Binding<[String]> { bind(\.selectedLoaders, fallback: []) }
+    var sortIndexBinding: Binding<String> { bind(\.sortIndex, fallback: AppConstants.modrinthIndex) }
+    var versionCurrentPageBinding: Binding<Int> { bind(\.versionCurrentPage, fallback: 1) }
+    var versionTotalBinding: Binding<Int> { bind(\.versionTotal, fallback: 0) }
+    var selectedTabBinding: Binding<Int> { bind(\.selectedTab, fallback: 0) }
+    var dataSourceBinding: Binding<DataSource> { bind(\.dataSource, fallback: .modrinth) }
+    var searchTextBinding: Binding<String> { bind(\.searchText, fallback: "") }
+    var localResourceFilterBinding: Binding<LocalResourceFilter> { bind(\.localResourceFilter, fallback: .all) }
+    var showFavoritesOnlyBinding: Binding<Bool> { bind(\.showFavoritesOnly, fallback: false) }
 }

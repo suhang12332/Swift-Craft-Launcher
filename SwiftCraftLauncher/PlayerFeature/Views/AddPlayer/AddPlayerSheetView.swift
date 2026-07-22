@@ -106,7 +106,7 @@ struct AddPlayerSheetView: View {
                     Spacer()
                     if viewModel.selectedAuthType == .premium {
                         switch container.system.minecraftAuthService.authState {
-                        case .notAuthenticated:
+                        case .idle:
                             Button("addplayer.auth.start_login".localized()) {
                                 Task {
                                     await viewModel.startPremiumAuthentication(authService: container.system.minecraftAuthService)
@@ -133,7 +133,7 @@ struct AddPlayerSheetView: View {
                         }
                     } else if viewModel.selectedAuthType == .yggdrasil {
                         switch container.system.yggdrasilAuthService.authState {
-                        case .idle, .failed:
+                        case .idle, .error:
                             Button("addplayer.auth.start_login".localized()) {
                                 Task {
                                     await viewModel.startYggdrasilAuthentication(
@@ -148,7 +148,7 @@ struct AddPlayerSheetView: View {
                                 onYggdrasilLogin?(profile)
                             }
                             .keyboardShortcut(.defaultAction)
-                        case .waitingForBrowser, .exchangingCode:
+                        case .waitingForBrowser, .processing:
                             ProgressView().controlSize(.small)
                         }
                     } else {
