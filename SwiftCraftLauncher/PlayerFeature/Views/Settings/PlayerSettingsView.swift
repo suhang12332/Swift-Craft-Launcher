@@ -12,9 +12,11 @@ import SwiftUI
 /// This view provides toggles for ephemeral login, offline login, skin library,
 /// Minecraft friend presence notifications, and authlib-injector management.
 public struct PlayerSettingsView: View {
-    @EnvironmentObject private var playerSettingsManager: PlayerSettingsManager
-    @StateObject private var viewModel = PlayerSettingsViewModel()
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(PlayerSettingsManager.self)
+    private var playerSettingsManager
+    @State private var viewModel = PlayerSettingsViewModel()
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     private let yggdrasilServers = YggdrasilServerPresets.servers
 
     private var currentPlayer: Player? {
@@ -33,6 +35,7 @@ public struct PlayerSettingsView: View {
     }
 
     public var body: some View {
+        @Bindable var playerSettingsManager = playerSettingsManager
         let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(AppConstants.AuthlibInjector.jarFileName)
 
         Form {

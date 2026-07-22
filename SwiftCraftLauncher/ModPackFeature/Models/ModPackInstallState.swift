@@ -9,20 +9,21 @@ import SwiftUI
 
 /// Tracks progress state during mod pack installation.
 @MainActor
-class ModPackInstallState: ObservableObject {
-    @Published var isInstalling = false
-    @Published var filesProgress: Double = 0
-    @Published var dependenciesProgress: Double = 0
-    @Published var overridesProgress: Double = 0
-    @Published var currentFile: String = ""
-    @Published var currentDependency: String = ""
-    @Published var currentOverride: String = ""
-    @Published var filesTotal: Int = 0
-    @Published var dependenciesTotal: Int = 0
-    @Published var overridesTotal: Int = 0
-    @Published var filesCompleted: Int = 0
-    @Published var dependenciesCompleted: Int = 0
-    @Published var overridesCompleted: Int = 0
+@Observable
+final class ModPackInstallState {
+    var isInstalling = false
+    var filesProgress: Double = 0
+    var dependenciesProgress: Double = 0
+    var overridesProgress: Double = 0
+    var currentFile: String = ""
+    var currentDependency: String = ""
+    var currentOverride: String = ""
+    var filesTotal: Int = 0
+    var dependenciesTotal: Int = 0
+    var overridesTotal: Int = 0
+    var filesCompleted: Int = 0
+    var dependenciesCompleted: Int = 0
+    var overridesCompleted: Int = 0
 
     /// Resets all progress state to initial values.
     func reset() {
@@ -68,7 +69,6 @@ class ModPackInstallState: ObservableObject {
         filesCompleted = completed
         filesTotal = total
         filesProgress = calculateProgress(completed: completed, total: total)
-        objectWillChange.send()
     }
 
     /// Updates progress for a dependency download.
@@ -84,7 +84,6 @@ class ModPackInstallState: ObservableObject {
             completed: completed,
             total: total,
         )
-        objectWillChange.send()
     }
 
     /// Updates progress for an override file.
@@ -100,7 +99,6 @@ class ModPackInstallState: ObservableObject {
             completed: completed,
             total: total,
         )
-        objectWillChange.send()
     }
 
     private func calculateProgress(completed: Int, total: Int) -> Double {

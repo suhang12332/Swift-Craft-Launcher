@@ -30,10 +30,10 @@ import UserNotifications
 /// The entry point and root scene of SwiftCraftLauncher.
 @main
 struct SwiftCraftLauncherApp: App {
-    @StateObject var playerListViewModel = PlayerListViewModel()
-    @StateObject var gameRepository = GameRepository()
-    @StateObject var gameLaunchUseCase = GameLaunchUseCase()
-    @StateObject var container = DIContainer.shared
+    @State var playerListViewModel = PlayerListViewModel()
+    @State var gameRepository = GameRepository()
+    @State var gameLaunchUseCase = GameLaunchUseCase()
+    @State var container = DIContainer.shared
 
     @Environment(\.openSettings)
     private var openSettings
@@ -50,10 +50,10 @@ struct SwiftCraftLauncherApp: App {
     var body: some Scene {
         Window(Bundle.main.appName, id: AppWindowID.main.rawValue) {
             MainView()
-                .environmentObject(playerListViewModel)
-                .environmentObject(gameRepository)
-                .environmentObject(gameLaunchUseCase)
-                .environmentObject(container)
+                .environment(playerListViewModel)
+                .environment(gameRepository)
+                .environment(gameLaunchUseCase)
+                .environment(container)
                 .preferredColorScheme(container.ui.themeManager.preferredColorScheme)
                 .errorAlert(container.core.errorHandler)
                 .windowOpener(container.ui.windowManager)
@@ -81,9 +81,9 @@ struct SwiftCraftLauncherApp: App {
 
         Settings {
             SettingsView()
-                .environmentObject(playerListViewModel)
-                .environmentObject(gameRepository)
-                .environmentObject(container)
+                .environment(playerListViewModel)
+                .environment(gameRepository)
+                .environment(container)
                 .preferredColorScheme(container.ui.themeManager.preferredColorScheme)
                 .errorAlert(container.core.errorHandler)
         }
@@ -98,10 +98,10 @@ struct SwiftCraftLauncherApp: App {
                 MenuBarExtraContentView {
                     openSettings()
                 }
-                .environmentObject(playerListViewModel)
-                .environmentObject(gameRepository)
-                .environmentObject(gameLaunchUseCase)
-                .environmentObject(container)
+                .environment(playerListViewModel)
+                .environment(gameRepository)
+                .environment(gameLaunchUseCase)
+                .environment(container)
             },
             label: {
                 HStack {

@@ -114,44 +114,11 @@ extension MinecraftAuthService {
     }
 
     func refreshTokenThrowing(refreshToken: String) async throws -> TokenResponse {
-        let url = URLConfig.API.Authentication.token
-
-        let bodyParameters: [String: String] = [
-            "grant_type": "refresh_token",
-            "client_id": clientId,
-            "refresh_token": refreshToken,
-        ]
-        let (data, statusCode) = try await APIClient.postUnchecked(
-            url: url,
-            body: APIClient.formURLEncodedBody(from: bodyParameters),
-            headers: APIClient.DefaultHeaders.contentTypeFormURLEncodedUTF8,
+        try await OAuth2TokenOperations.refreshToken(
+            refreshToken: refreshToken,
+            tokenURL: URLConfig.API.Authentication.token,
+            clientId: clientId,
         )
-
-        guard statusCode == 200 else {
-            if let errorResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let error = errorResponse["error"] as? String {
-                switch error {
-                case "invalid_grant":
-                    throw GlobalError.authentication(
-                        i18nKey: "error.authentication.invalid_refresh_token",
-                        level: .popup,
-                        message: "Refresh token rejected as invalid_grant for client \(clientId)",
-                    )
-                default:
-                    throw GlobalError.authentication(
-                        i18nKey: "error.authentication.refresh_token_error",
-                        level: .popup,
-                        message: "Refresh token error '\(error)' (HTTP \(statusCode)) for client \(clientId)",
-                    )
-                }
-            }
-            throw GlobalError.authentication(
-                i18nKey: "error.authentication.refresh_token_request_failed",
-                level: .notification,
-                message: "Refresh token request failed with HTTP \(statusCode) for client \(clientId)",
-            )
-        }
-        return try JSONDecoder().decode(TokenResponse.self, from: data)
     }
 
     func isTokenExpiredBasedOnTime(for player: Player) async -> Bool {

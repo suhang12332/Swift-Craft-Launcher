@@ -18,18 +18,19 @@ extension SwiftCraftLauncherApp {
                     playerListViewModel: playerListViewModel,
                     gameRepository: gameRepository,
                 )
-                .environmentObject(container)
+                .environment(container)
             }
         }
     }
 }
 
 private struct AuxiliaryWindowScene: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
 
     let windowID: AuxiliaryWindowID
-    @ObservedObject var playerListViewModel: PlayerListViewModel
-    @ObservedObject var gameRepository: GameRepository
+    var playerListViewModel: PlayerListViewModel
+    var gameRepository: GameRepository
 
     var body: some View {
         Group {
@@ -40,8 +41,8 @@ private struct AuxiliaryWindowScene: View {
                 AboutView(showingAcknowledgements: true)
             case .aiChat:
                 AIChatWindowContent()
-                    .environmentObject(playerListViewModel)
-                    .environmentObject(gameRepository)
+                    .environment(playerListViewModel)
+                    .environment(gameRepository)
             case .javaDownload:
                 JavaDownloadWindowContent()
             case .skinPreview:
@@ -61,7 +62,8 @@ private struct AuxiliaryWindowScene: View {
 }
 
 private struct JavaDownloadWindowContent: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
 
     var body: some View {
         JavaDownloadProgressWindow(downloadState: container.system.javaDownloadManager.downloadState)
@@ -69,7 +71,8 @@ private struct JavaDownloadWindowContent: View {
 }
 
 private struct AIChatWindowContent: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
 
     var body: some View {
         Group {
@@ -81,7 +84,8 @@ private struct AIChatWindowContent: View {
 }
 
 private struct SkinPreviewWindowContent: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
 
     var body: some View {
         Group {

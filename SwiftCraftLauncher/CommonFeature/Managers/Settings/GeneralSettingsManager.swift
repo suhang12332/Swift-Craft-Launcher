@@ -2,6 +2,7 @@
 //  GeneralSettingsManager.swift
 //  CommonFeature
 //
+//  Manages general application settings including proxy, downloads, and layout preferences.
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
@@ -20,47 +21,37 @@ public enum InterfaceLayoutStyle: String, CaseIterable {
 }
 
 /// Manages general application settings including proxy, downloads, and layout preferences.
-class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
-    /// Whether GitHub proxy is enabled.
-    @AppStorage(AppConstants.UserDefaultsKeys.enableGitHubProxy)
-    var enableGitHubProxy: Bool = true {
-        didSet { objectWillChange.send() }
+@Observable
+final class GeneralSettingsManager: WorkingPathProviding {
+    /// A Combine subject that fires when the working directory path changes.
+    private let workingPathDidChangeSubject = PassthroughSubject<Void, Never>()
+
+    var enableGitHubProxy: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableGitHubProxy, defaultValue: true) {
+        didSet { Defaults.save(enableGitHubProxy, forKey: AppConstants.UserDefaultsKeys.enableGitHubProxy) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.gitProxyURL)
-    var gitProxyURL: String = URLConfig.Defaults.gitProxyURL {
-        didSet { objectWillChange.send() }
+    var gitProxyURL: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.gitProxyURL, defaultValue: URLConfig.Defaults.gitProxyURL) {
+        didSet { Defaults.save(gitProxyURL, forKey: AppConstants.UserDefaultsKeys.gitProxyURL) }
     }
 
-    /// Whether to limit the height of common sheets.
-    @AppStorage(AppConstants.UserDefaultsKeys.limitCommonSheetHeight)
-    var limitCommonSheetHeight: Bool = false {
-        didSet { objectWillChange.send() }
+    var limitCommonSheetHeight: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.limitCommonSheetHeight) {
+        didSet { Defaults.save(limitCommonSheetHeight, forKey: AppConstants.UserDefaultsKeys.limitCommonSheetHeight) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.concurrentDownloads)
-    var concurrentDownloads: Int = 64 {
+    var concurrentDownloads: Int = Defaults.loadInt(forKey: AppConstants.UserDefaultsKeys.concurrentDownloads, defaultValue: 64) {
+        didSet { Defaults.save(max(concurrentDownloads, 1), forKey: AppConstants.UserDefaultsKeys.concurrentDownloads) }
+    }
+
+    var launcherWorkingDirectory: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.launcherWorkingDirectory, defaultValue: AppPaths.launcherSupportDirectory.path) {
         didSet {
-            if concurrentDownloads < 1 {
-                concurrentDownloads = 1
-            }
-            objectWillChange.send()
+            Defaults.save(launcherWorkingDirectory, forKey: AppConstants.UserDefaultsKeys.launcherWorkingDirectory)
+            workingPathDidChangeSubject.send()
         }
     }
 
-    /// The launcher working directory path.
-    @AppStorage(AppConstants.UserDefaultsKeys.launcherWorkingDirectory)
-    var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
-        didSet { objectWillChange.send() }
+    var interfaceLayoutStyle: InterfaceLayoutStyle = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.interfaceLayoutStyle, defaultValue: .classic) {
+        didSet { Defaults.save(interfaceLayoutStyle.rawValue, forKey: AppConstants.UserDefaultsKeys.interfaceLayoutStyle) }
     }
-
-    /// The interface layout style for the main window.
-    @AppStorage(AppConstants.UserDefaultsKeys.interfaceLayoutStyle)
-    var interfaceLayoutStyle: InterfaceLayoutStyle = .classic {
-        didSet { objectWillChange.send() }
-    }
-
-    init() { }
 
     /// The current working path, falling back to the default support directory when empty.
     var currentWorkingPath: String {
@@ -68,6 +59,6 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     }
 
     var workingPathWillChange: AnyPublisher<Void, Never> {
-        objectWillChange.map { _ in () }.eraseToAnyPublisher()
+        workingPathDidChangeSubject.eraseToAnyPublisher()
     }
 }

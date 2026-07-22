@@ -9,8 +9,8 @@ import SwiftUI
 
 /// Displays the list of project contributors from both GitHub and static sources.
 public struct ContributorsView: View {
-    @StateObject private var viewModel = ContributorsViewModel()
-    @StateObject private var staticViewModel = ContributorsStaticViewModel()
+    @State private var viewModel = ContributorsViewModel()
+    @State private var staticViewModel = ContributorsStaticViewModel()
 
     public init() { }
 

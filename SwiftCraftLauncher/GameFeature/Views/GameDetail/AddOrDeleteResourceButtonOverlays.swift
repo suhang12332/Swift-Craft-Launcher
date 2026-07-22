@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct AddOrDeleteResourceButtonOverlays: ViewModifier {
-    @ObservedObject var viewModel: AddOrDeleteResourceButtonViewModel
+    @Bindable var viewModel: AddOrDeleteResourceButtonViewModel
 
     let project: ModrinthProject
     let gameInfo: GameVersionInfo?

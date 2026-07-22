@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 /// Manages file downloads with progress tracking, retry logic, and SHA1 validation.
 enum ProgressDownloadManager {
@@ -145,8 +146,7 @@ private enum ProgressDownloadError: Error {
 private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
     static let shared = ProgressDownloadSession()
 
-    private let lock = NSLock()
-    private var handlers: [Int: ProgressDownloadTracker] = [:]
+    private let lock = OSAllocatedUnfairLock<[Int: ProgressDownloadTracker]>(initialState: [:])
     private lazy var session: URLSession = NetworkSession.makeSession(delegate: self)
 
     func download(
@@ -160,7 +160,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
 
         return try await withTaskCancellationHandler(operation: {
             try await withCheckedThrowingContinuation { continuation in
-                tracker.completionHandler = { result in
+                tracker.setCompletionHandler { result in
                     continuation.resume(with: result)
                 }
 
@@ -181,7 +181,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
 
     func head(url: URL, headers: [String: String]? = nil) async throws -> (Data, HTTPURLResponse) {
         let request = URLRequest(url: url)
-            .methods(APIClient.HTTPMethods.head)
+            .method(APIClient.HTTPMethods.head)
             .headers(headers)
         let (data, response) = try await session.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -205,10 +205,11 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
     }
 
     private func cancelPendingHandlers() {
-        lock.lock()
-        let pendingHandlers = handlers
-        handlers.removeAll()
-        lock.unlock()
+        let pendingHandlers = lock.withLock { handlers in
+            let snapshot = handlers
+            handlers.removeAll()
+            return snapshot
+        }
 
         for (_, tracker) in pendingHandlers {
             tracker.complete(.failure(CancellationError()))
@@ -267,31 +268,22 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
     }
 
     private func set(tracker: ProgressDownloadTracker, for task: URLSessionTask) {
-        lock.lock()
-        handlers[task.taskIdentifier] = tracker
-        lock.unlock()
+        lock.withLock { $0[task.taskIdentifier] = tracker }
     }
 
     private func tracker(for task: URLSessionTask) -> ProgressDownloadTracker? {
-        lock.lock()
-        let tracker = handlers[task.taskIdentifier]
-        lock.unlock()
-        return tracker
+        lock.withLock { $0[task.taskIdentifier] }
     }
 
     private func removeTracker(for task: URLSessionTask) {
-        lock.lock()
-        handlers[task.taskIdentifier] = nil
-        lock.unlock()
+        lock.withLock { $0[task.taskIdentifier] = nil }
     }
 }
 
 private final class ProgressDownloadTracker: @unchecked Sendable {
     private let totalFileSize: Int64
     private let progressCallback: ((Int64, Int64) -> Void)?
-    private let lock = NSLock()
-    private var isCompleted = false
-    var completionHandler: ((Result<URL, Error>) -> Void)?
+    private let state = OSAllocatedUnfairLock<(isCompleted: Bool, completionHandler: ((Result<URL, Error>) -> Void)?)>(initialState: (false, nil))
 
     init(totalSize: Int64, progressCallback: ((Int64, Int64) -> Void)?) {
         totalFileSize = totalSize
@@ -307,34 +299,29 @@ private final class ProgressDownloadTracker: @unchecked Sendable {
     }
 
     func complete(_ result: Result<URL, Error>) {
-        lock.lock()
-        guard !isCompleted else {
-            lock.unlock()
-            return
+        let handler = state.withLock { state -> ((Result<URL, Error>) -> Void)? in
+            guard !state.isCompleted else { return nil }
+            state.isCompleted = true
+            let handler = state.completionHandler
+            state.completionHandler = nil
+            return handler
         }
-        isCompleted = true
-        let completionHandler = completionHandler
-        self.completionHandler = nil
-        lock.unlock()
+        handler?(result)
+    }
 
-        completionHandler?(result)
+    func setCompletionHandler(_ handler: @escaping (Result<URL, Error>) -> Void) {
+        state.withLock { $0.completionHandler = handler }
     }
 }
 
 private final class ProgressDownloadTaskContext: @unchecked Sendable {
-    private let lock = NSLock()
-    private var task: URLSessionDownloadTask?
+    private let lock = OSAllocatedUnfairLock<URLSessionDownloadTask?>(initialState: nil)
 
     func set(task: URLSessionDownloadTask) {
-        lock.lock()
-        self.task = task
-        lock.unlock()
+        lock.withLock { $0 = task }
     }
 
     func cancel() {
-        lock.lock()
-        let currentTask = task
-        lock.unlock()
-        currentTask?.cancel()
+        lock.withLock { $0 }?.cancel()
     }
 }

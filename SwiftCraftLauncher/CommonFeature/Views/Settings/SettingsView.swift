@@ -19,8 +19,10 @@ enum SettingsTab: Int {
 
 /// The main settings view with tabbed navigation.
 public struct SettingsView: View {
-    @EnvironmentObject private var container: DIContainer
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(DIContainer.self)
+    private var container
+    @Environment(GameRepository.self)
+    private var gameRepository
     @State private var selectedTab: SettingsTab = .general
 
     public var body: some View {
@@ -31,19 +33,19 @@ public struct SettingsView: View {
                 }
                 .tag(SettingsTab.general)
             PlayerSettingsView()
-                .environmentObject(container.ui.playerSettingsManager)
+                .environment(container.ui.playerSettingsManager)
                 .tabItem {
                     Label("settings.player.tab".localized(), systemImage: "person")
                 }
                 .tag(SettingsTab.player)
             GameSettingsView()
-                .environmentObject(container.ui.gameSettingsManager)
+                .environment(container.ui.gameSettingsManager)
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
                 .tag(SettingsTab.game)
             AISettingsView()
-                .environmentObject(container.ui.aiSettingsManager)
+                .environment(container.ui.aiSettingsManager)
                 .tabItem {
                     Label("settings.ai.tab".localized(), systemImage: "brain")
                 }

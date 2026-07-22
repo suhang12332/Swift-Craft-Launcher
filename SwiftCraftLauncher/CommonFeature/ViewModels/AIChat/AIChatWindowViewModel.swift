@@ -10,10 +10,11 @@ import SwiftUI
 
 /// Manages state and cached avatars for the AI chat window.
 @MainActor
-final class AIChatWindowViewModel: ObservableObject {
-    @Published var selectedGameId: String?
-    @Published var cachedAIAvatar: AnyView?
-    @Published var cachedUserAvatar: AnyView?
+@Observable
+final class AIChatWindowViewModel {
+    var selectedGameId: String?
+    var cachedAIAvatar: AnyView?
+    var cachedUserAvatar: AnyView?
 
     private enum Constants {
         static let avatarSize: CGFloat = 32

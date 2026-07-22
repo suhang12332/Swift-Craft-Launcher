@@ -556,6 +556,19 @@ enum URLConfig {
             }
         }
 
+        enum DefaultAvatars: String, CaseIterable {
+            case alex, ari, efe, kai, makena, noor, steve, sunny, zuri
+
+            private static let baseURL = URLConfig.url("https://swift-craft-launcher-imagebed.pages.dev/skins")
+            var url: URL {
+                Self.baseURL.appendingPathComponent("\(rawValue).png")
+            }
+
+            static var all: [URL] {
+                allCases.map(\.url)
+            }
+        }
+
         enum AIService {
             /// The OpenAI API base URL.
             static let openAIBaseURL = "https://api.openai.com"

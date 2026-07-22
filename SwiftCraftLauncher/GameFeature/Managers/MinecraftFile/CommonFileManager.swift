@@ -17,15 +17,6 @@ class CommonFileManager {
         self.librariesDir = librariesDir
     }
 
-    actor Counter {
-        private var value = 0
-
-        func increment() -> Int {
-            value += 1
-            return value
-        }
-    }
-
     /// Downloads Forge JAR files, handling errors silently.
     /// - Parameter libraries: The loader libraries to download.
     func downloadForgeJars(libraries: [ModrinthLoaderLibrary]) async {

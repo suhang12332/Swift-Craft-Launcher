@@ -28,50 +28,41 @@ enum DataSource: String, CaseIterable, Codable {
 }
 
 /// Manages global application settings for the launcher.
-class GameSettingsManager: ObservableObject {
-    init() { }
-
-    @AppStorage(AppConstants.UserDefaultsKeys.globalXms)
-    var globalXms: Int = AppConstants.MemoryDefaults.xms {
-        didSet { objectWillChange.send() }
+@Observable
+final class GameSettingsManager {
+    var globalXms: Int = Defaults.loadInt(forKey: AppConstants.UserDefaultsKeys.globalXms, defaultValue: AppConstants.MemoryDefaults.xms) {
+        didSet { Defaults.save(globalXms, forKey: AppConstants.UserDefaultsKeys.globalXms) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.globalXmx)
-    var globalXmx: Int = AppConstants.MemoryDefaults.xmx {
-        didSet { objectWillChange.send() }
+    var globalXmx: Int = Defaults.loadInt(forKey: AppConstants.UserDefaultsKeys.globalXmx, defaultValue: AppConstants.MemoryDefaults.xmx) {
+        didSet { Defaults.save(globalXmx, forKey: AppConstants.UserDefaultsKeys.globalXmx) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.enableAICrashAnalysis)
-    var enableAICrashAnalysis: Bool = false {
-        didSet { objectWillChange.send() }
+    var enableAICrashAnalysis: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableAICrashAnalysis) {
+        didSet { Defaults.save(enableAICrashAnalysis, forKey: AppConstants.UserDefaultsKeys.enableAICrashAnalysis) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.enableMemoryPressureWarning)
-    var enableMemoryPressureWarning: Bool = true {
-        didSet { objectWillChange.send() }
+    var enableMemoryPressureWarning: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableMemoryPressureWarning, defaultValue: true) {
+        didSet { Defaults.save(enableMemoryPressureWarning, forKey: AppConstants.UserDefaultsKeys.enableMemoryPressureWarning) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.defaultAPISource)
-    var defaultAPISource: DataSource = .modrinth {
-        didSet { objectWillChange.send() }
+    var defaultAPISource: DataSource = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.defaultAPISource, defaultValue: .modrinth) {
+        didSet { Defaults.save(defaultAPISource.rawValue, forKey: AppConstants.UserDefaultsKeys.defaultAPISource) }
     }
 
     /// Whether to include snapshot versions in game version selection.
-    @AppStorage(AppConstants.UserDefaultsKeys.includeSnapshotsForGameVersions)
-    var includeSnapshotsForGameVersions: Bool = false {
-        didSet { objectWillChange.send() }
+    var includeSnapshotsForGameVersions: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.includeSnapshotsForGameVersions) {
+        didSet { Defaults.save(includeSnapshotsForGameVersions, forKey: AppConstants.UserDefaultsKeys.includeSnapshotsForGameVersions) }
     }
 
     /// Whether to sync the game language to the current launcher language after downloading a new game.
-    @AppStorage(AppConstants.UserDefaultsKeys.syncLanguageForNewGames)
-    var syncLanguageForNewGames: Bool = true {
-        didSet { objectWillChange.send() }
+    var syncLanguageForNewGames: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.syncLanguageForNewGames, defaultValue: true) {
+        didSet { Defaults.save(syncLanguageForNewGames, forKey: AppConstants.UserDefaultsKeys.syncLanguageForNewGames) }
     }
 
     /// The default export format for mod packs.
-    @AppStorage(AppConstants.UserDefaultsKeys.defaultModPackExportFormat)
-    var defaultModPackExportFormat: ModPackExportFormat = .modrinth {
-        didSet { objectWillChange.send() }
+    var defaultModPackExportFormat: ModPackExportFormat = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat, defaultValue: .modrinth) {
+        didSet { Defaults.save(defaultModPackExportFormat.rawValue, forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat) }
     }
 
     /// The maximum memory allocation based on 70% of physical RAM, rounded to the nearest 512 MB.

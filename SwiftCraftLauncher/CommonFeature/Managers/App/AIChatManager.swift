@@ -10,7 +10,8 @@ import Foundation
 import SwiftUI
 
 @MainActor
-class AIChatManager: ObservableObject {
+@Observable
+class AIChatManager {
     init() { }
 
     /// Sends a message to the AI service and streams the response.
@@ -68,8 +69,6 @@ class AIChatManager: ObservableObject {
                 try await sendOpenAIMessage(messages: allMessages, chatState: chatState)
             case .ollama:
                 try await sendOllamaMessage(messages: allMessages, chatState: chatState)
-//            case .gemini:
-//                try await sendGeminiMessage(messages: allMessages, chatState: chatState)
             }
         } catch {
             AppLog.common.error("Failed to send message: \(error.localizedDescription)")
@@ -116,12 +115,12 @@ class AIChatManager: ObservableObject {
 
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         let request = URLRequest(url: url)
-            .methods(APIClient.HTTPMethods.post)
+            .method(APIClient.HTTPMethods.post)
             .headers([
                 APIClient.Header.contentType: APIClient.MimeType.json,
                 APIClient.Header.authorization: APIClient.bearer(DIContainer.shared.ui.aiSettingsManager.apiKey),
             ])
-            .bodys(jsonData)
+            .body(jsonData)
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
@@ -233,9 +232,9 @@ class AIChatManager: ObservableObject {
 
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         let request = URLRequest(url: url)
-            .methods(APIClient.HTTPMethods.post)
+            .method(APIClient.HTTPMethods.post)
             .headers(headers)
-            .bodys(jsonData)
+            .body(jsonData)
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
@@ -307,102 +306,6 @@ class AIChatManager: ObservableObject {
         }
 
         return apiMessages
-    }
-
-    private func sendGeminiMessage(messages: [ChatMessage], chatState: ChatState) async throws {
-        let model = DIContainer.shared.ui.aiSettingsManager.getModel()
-        let apiKey = DIContainer.shared.ui.aiSettingsManager.apiKey
-        let apiURL = "\(DIContainer.shared.ui.aiSettingsManager.selectedProvider.baseURL)/v1/models/\(model):streamGenerateContent?key=\(apiKey.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? apiKey)"
-
-        guard let url = URL(string: apiURL) else {
-            throw GlobalError.network(
-                i18nKey: "error.network.invalid_url",
-                level: .notification,
-                message: "Invalid Gemini API URL: \(apiURL)",
-            )
-        }
-
-        let requestBody: [String: Any] = [
-            "contents": try await buildGeminiContents(messages: messages),
-        ]
-
-        let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
-        let request = URLRequest(url: url)
-            .methods(APIClient.HTTPMethods.post)
-            .headers([APIClient.Header.contentType: APIClient.MimeType.json])
-            .bodys(jsonData)
-
-        let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
-
-        guard (200 ... 299).contains(httpResponse.statusCode) else {
-            let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
-            let errorMessage = String(data: errorData, encoding: .utf8) ?? "Unknown error"
-            throw GlobalError.network(
-                i18nKey: "error.network.api_error",
-                level: .notification,
-                message: "Gemini API returned HTTP \(httpResponse.statusCode) for \(url.absoluteString): \(errorMessage)",
-            )
-        }
-
-        var accumulatedContent = ""
-        for try await line in asyncBytes.lines {
-            guard !line.isEmpty,
-                  let jsonData = line.data(using: .utf8),
-                  let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
-                  let candidates = json["candidates"] as? [[String: Any]],
-                  let firstCandidate = candidates.first,
-                  let content = firstCandidate["content"] as? [String: Any],
-                  let parts = content["parts"] as? [[String: Any]],
-                  let firstPart = parts.first,
-                  let text = firstPart["text"] as? String else {
-                continue
-            }
-
-            accumulatedContent += text
-            await MainActor.run {
-                chatState.updateLastMessage(accumulatedContent)
-            }
-        }
-
-        await MainActor.run {
-            chatState.isSending = false
-        }
-    }
-
-    private func buildGeminiContents(messages: [ChatMessage]) async throws -> [[String: Any]] {
-        var contents: [[String: Any]] = []
-
-        for message in messages {
-            var parts: [[String: Any]] = []
-
-            if !message.content.isEmpty {
-                parts.append(["text": message.content])
-            }
-
-            for attachment in message.attachments {
-                if case let .file(url, fileName) = attachment {
-                    let fileText = await processFile(url: url, fileName: fileName)
-                    parts.append(["text": fileText])
-                }
-            }
-
-            guard !parts.isEmpty else { continue }
-
-            var contentDict: [String: Any] = [
-                "parts": parts,
-            ]
-
-            // Gemini uses "user" and "model" for roles
-            if message.role == .assistant {
-                contentDict["role"] = "model"
-            } else {
-                contentDict["role"] = "user"
-            }
-
-            contents.append(contentDict)
-        }
-
-        return contents
     }
 
     private func processFile(url: URL, fileName: String) async -> String {

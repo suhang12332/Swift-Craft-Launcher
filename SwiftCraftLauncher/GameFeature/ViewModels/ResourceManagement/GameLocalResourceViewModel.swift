@@ -6,16 +6,18 @@
 //
 
 import Foundation
+import Observation
 import SwiftUI
 
 /// View model that manages paginated loading, search, and filtering of local game resources.
 @MainActor
-final class GameLocalResourceViewModel: ObservableObject {
-    @Published private(set) var scannedResources: [ModrinthProjectDetail] = []
-    @Published private(set) var isLoadingResources = false
-    @Published private(set) var isLoadingMore = false
-    @Published private(set) var hasLoaded = false
-    @Published var error: GlobalError?
+@Observable
+final class GameLocalResourceViewModel {
+    private(set) var scannedResources: [ModrinthProjectDetail] = []
+    private(set) var isLoadingResources = false
+    private(set) var isLoadingMore = false
+    private(set) var hasLoaded = false
+    var error: GlobalError?
 
     private(set) var currentPage: Int = 1
     private(set) var hasMoreResults: Bool = true

@@ -5,52 +5,28 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import MinecraftFriendsKit
 
 /// System layer for IO heavy / network / runtime operations.
 final class SystemContainer {
     // Authentication & Network
 
-    private let _gitHubService = LazyContainer { GitHubService() }
-    var gitHubService: GitHubService { _gitHubService.value() }
-
-    private let _minecraftAuthService = LazyContainer { MinecraftAuthService() }
-    var minecraftAuthService: MinecraftAuthService { _minecraftAuthService.value() }
-
-    private let _yggdrasilAuthService = LazyContainer { YggdrasilAuthService() }
-    var yggdrasilAuthService: YggdrasilAuthService { _yggdrasilAuthService.value() }
-
-    private let _ipLocationService = LazyContainer { IPLocationService() }
-    var ipLocationService: IPLocationService { _ipLocationService.value() }
+    @Lazy var gitHubService: GitHubService = .init()
+    @Lazy var minecraftAuthService: MinecraftAuthService = .init()
+    @Lazy var yggdrasilAuthService: YggdrasilAuthService = .init()
+    @Lazy var ipLocationService: IPLocationService = .init()
 
     // Java
 
-    private let _javaManager = MainActorLazyContainer { JavaManager() }
-    @MainActor var javaManager: JavaManager { _javaManager.value() }
-
-    private let _javaRuntimeService = LazyContainer { JavaRuntimeService() }
-    var javaRuntimeService: JavaRuntimeService { _javaRuntimeService.value() }
-
-    private let _javaRuntimeDownloader = LazyContainer { JavaRuntimeDownloader() }
-    var javaRuntimeDownloader: JavaRuntimeDownloader { _javaRuntimeDownloader.value() }
-
-    private let _javaDownloadManager = LazyContainer { JavaDownloadManager() }
-    var javaDownloadManager: JavaDownloadManager { _javaDownloadManager.value() }
+    @MainActorLazy var javaManager: JavaManager = .init()
+    @Lazy var javaRuntimeService: JavaRuntimeService = .init()
+    @Lazy var javaRuntimeDownloader: JavaRuntimeDownloader = .init()
+    @Lazy var javaDownloadManager: JavaDownloadManager = .init()
 
     // Utilities
 
-    private let _sparkleUpdateService = LazyContainer { SparkleUpdateService() }
-    var sparkleUpdateService: SparkleUpdateService { _sparkleUpdateService.value() }
-
-    private let _serverAddressService = LazyContainer { ServerAddressService() }
-    var serverAddressService: ServerAddressService { _serverAddressService.value() }
-
-    private let _litematicaService = LazyContainer { LitematicaService() }
-    var litematicaService: LitematicaService { _litematicaService.value() }
-
-    private let _premiumAccountFlagManager = LazyContainer { PremiumAccountFlagManager() }
-    var premiumAccountFlagManager: PremiumAccountFlagManager {
-        _premiumAccountFlagManager.value()
-    }
+    @Lazy var sparkleUpdateService: SparkleUpdateService = .init()
+    @Lazy var serverAddressService: ServerAddressService = .init()
+    @Lazy var litematicaService: LitematicaService = .init()
+    @Lazy var premiumAccountFlagManager: PremiumAccountFlagManager = .init()
 }

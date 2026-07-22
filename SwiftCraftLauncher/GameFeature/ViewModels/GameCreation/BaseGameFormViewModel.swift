@@ -6,21 +6,23 @@
 //
 
 import Combine
+import Observation
 import SwiftUI
 
 /// Base view model for game form views, providing common download management and form validation.
 @MainActor
-class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
-    @Published var isDownloading: Bool = false
-    @Published var isFormValid: Bool = false
-    @Published var triggerConfirm: Bool = false
-    @Published var triggerCancel: Bool = false
+@Observable
+class BaseGameFormViewModel: GameFormStateProtocol {
+    var isDownloading: Bool = false
+    var isFormValid: Bool = false
+    var triggerConfirm: Bool = false
+    var triggerCancel: Bool = false
 
     let gameSetupService = GameSetupUtil()
     let gameNameValidator: GameNameValidator
 
     var downloadTask: Task<Void, Error>?
-    private var cancellables = Set<AnyCancellable>()
+
     let configuration: GameFormConfiguration
 
     init(configuration: GameFormConfiguration) {
@@ -32,22 +34,22 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     }
 
     private func setupObservers() {
-        gameNameValidator.objectWillChange
-            .sink { [weak self] in
-                DispatchQueue.main.async {
-                    self?.updateParentState()
-                    self?.objectWillChange.send()
+        // Observe @Observable GameNameValidator via withObservationTracking
+        Task { @MainActor [weak self] in
+            while let self {
+                await withCheckedContinuation { continuation in
+                    withObservationTracking {
+                        _ = self.gameNameValidator.isFormValid
+                        _ = self.gameNameValidator.isGameNameDuplicate
+                        _ = self.gameNameValidator.gameName
+                    } onChange: {
+                        continuation.resume()
+                    }
                 }
+                guard !Task.isCancelled else { break }
+                updateParentState()
             }
-            .store(in: &cancellables)
-        gameSetupService.objectWillChange
-            .sink { [weak self] in
-                DispatchQueue.main.async {
-                    self?.updateParentState()
-                    self?.objectWillChange.send()
-                }
-            }
-            .store(in: &cancellables)
+        }
     }
 
     func handleCancel() {
@@ -71,18 +73,12 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     }
 
     func updateParentState() {
-        let newIsDownloading = computeIsDownloading()
-        let newIsFormValid = computeIsFormValid()
-        let newIsLoadingLoaderVersions = computeIsLoadingLoaderVersions()
+        configuration.isDownloading.wrappedValue = computeIsDownloading()
+        configuration.isFormValid.wrappedValue = computeIsFormValid()
+        configuration.isLoadingLoaderVersions.wrappedValue = computeIsLoadingLoaderVersions()
 
-        DispatchQueue.main.async { [weak self] in
-            self?.configuration.isDownloading.wrappedValue = newIsDownloading
-            self?.configuration.isFormValid.wrappedValue = newIsFormValid
-            self?.configuration.isLoadingLoaderVersions.wrappedValue = newIsLoadingLoaderVersions
-
-            self?.isDownloading = newIsDownloading
-            self?.isFormValid = newIsFormValid
-        }
+        isDownloading = configuration.isDownloading.wrappedValue
+        isFormValid = configuration.isFormValid.wrappedValue
     }
 
     func performConfirmAction() async {

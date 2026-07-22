@@ -10,6 +10,7 @@ import Foundation
 /// Defines application-wide constants and configuration values.
 enum AppConstants {
     static let defaultGameIcon = "default_game_icon.png"
+    static let defaultPort = 25565
     static let modLoaders = GameLoader.allCases.map(\.rawValue)
     static let modrinthIndex = "relevance"
     static let modrinthIndexFileName = "modrinth.index.json"
@@ -22,7 +23,6 @@ enum AppConstants {
     enum UserDefaultsKeys {
         static let userProfiles = "userProfiles"
 
-        static let currentPlayerId = "currentPlayerId"
         static let enableOfflineLogin = "enableOfflineLogin"
         static let enableEphemeralWebLogin = "enableEphemeralWebLogin"
         static let defaultYggdrasilServerBaseURL = "defaultYggdrasilServerBaseURL"

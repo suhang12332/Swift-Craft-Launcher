@@ -34,9 +34,11 @@ struct GeneralSettingsLanguageRow: View {
 
 /// A row with a theme picker selector.
 struct GeneralSettingsThemeRow: View {
-    @EnvironmentObject private var themeManager: ThemeManager
+    @Environment(ThemeManager.self)
+    private var themeManager
 
     var body: some View {
+        @Bindable var themeManager = themeManager
         Group {
             LabeledContent("settings.theme.picker".localized()) {
                 ThemeSelectorView(selectedTheme: $themeManager.themeMode)
@@ -50,9 +52,11 @@ struct GeneralSettingsThemeRow: View {
 
 /// A row for choosing the interface layout style.
 struct GeneralSettingsInterfaceLayoutRow: View {
-    @EnvironmentObject private var generalSettings: GeneralSettingsManager
+    @Environment(GeneralSettingsManager.self)
+    private var generalSettings
 
     var body: some View {
+        @Bindable var generalSettings = generalSettings
         LabeledContent("settings.interface_style.label".localized()) {
             Picker("", selection: $generalSettings.interfaceLayoutStyle) {
                 ForEach(InterfaceLayoutStyle.allCases, id: \.self) { style in
@@ -69,9 +73,10 @@ struct GeneralSettingsInterfaceLayoutRow: View {
 
 /// A row for configuring the launcher working directory.
 struct GeneralSettingsWorkingDirectoryRow: View {
-    @EnvironmentObject private var generalSettings: GeneralSettingsManager
-    @ObservedObject var viewModel: GeneralSettingsViewModel
-    @ObservedObject var gameRepository: GameRepository
+    @Environment(GeneralSettingsManager.self)
+    private var generalSettings
+    @Bindable var viewModel: GeneralSettingsViewModel
+    var gameRepository: GameRepository
 
     var body: some View {
         LabeledContent("settings.launcher_working_directory".localized()) {
@@ -121,8 +126,9 @@ struct GeneralSettingsWorkingDirectoryRow: View {
 
 /// A row with a slider for the maximum concurrent download count.
 struct GeneralSettingsConcurrentDownloadsRow: View {
-    @EnvironmentObject private var generalSettings: GeneralSettingsManager
-    @ObservedObject var viewModel: GeneralSettingsViewModel
+    @Environment(GeneralSettingsManager.self)
+    private var generalSettings
+    @Bindable var viewModel: GeneralSettingsViewModel
 
     var body: some View {
         LabeledContent("settings.concurrent_downloads.label".localized()) {
@@ -166,9 +172,11 @@ struct GeneralSettingsSystemProxyRow: View {
 
 /// A row for configuring a GitHub proxy URL.
 struct GeneralSettingsGitHubProxyRow: View {
-    @EnvironmentObject private var generalSettings: GeneralSettingsManager
+    @Environment(GeneralSettingsManager.self)
+    private var generalSettings
 
     var body: some View {
+        @Bindable var generalSettings = generalSettings
         LabeledContent("settings.github_proxy.label".localized()) {
             VStack(alignment: .leading) {
                 HStack {
@@ -198,9 +206,11 @@ struct GeneralSettingsGitHubProxyRow: View {
 
 /// A row to toggle the common sheet height limit.
 struct GeneralSettingsCommonSheetHeightLimitRow: View {
-    @EnvironmentObject private var generalSettings: GeneralSettingsManager
+    @Environment(GeneralSettingsManager.self)
+    private var generalSettings
 
     var body: some View {
+        @Bindable var generalSettings = generalSettings
         LabeledContent("settings.common_sheet_height_limit.label".localized()) {
             Toggle(
                 "settings.common_sheet_height_limit.enable".localized(),

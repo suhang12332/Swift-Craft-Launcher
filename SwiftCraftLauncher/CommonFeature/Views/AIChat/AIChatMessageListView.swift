@@ -9,13 +9,13 @@ import SwiftUI
 
 /// Displays the scrollable list of chat messages.
 struct AIChatMessageListView: View {
-    @ObservedObject var chatState: ChatState
+    var chatState: ChatState
     let currentPlayer: Player?
     let cachedAIAvatar: AnyView?
     let cachedUserAvatar: AnyView?
     let aiAvatarURL: String
 
-    @StateObject private var scrollCoordinator = AIChatScrollCoordinatorViewModel()
+    @State private var scrollCoordinator = AIChatScrollCoordinatorViewModel()
 
     private enum Constants {
         static let avatarSize: CGFloat = 32

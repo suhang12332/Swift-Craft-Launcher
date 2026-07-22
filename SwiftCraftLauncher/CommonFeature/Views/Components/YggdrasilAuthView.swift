@@ -9,8 +9,9 @@ import SwiftUI
 
 /// A view for authenticating with Yggdrasil-compatible Minecraft servers.
 struct YggdrasilAuthView: View {
-    @EnvironmentObject private var container: DIContainer
-    @StateObject private var viewModel = YggdrasilAuthViewModel()
+    @Environment(DIContainer.self)
+    private var container
+    @State private var viewModel = YggdrasilAuthViewModel()
     var onLoginSuccess: ((YggdrasilProfile) -> Void)?
 
     private let servers = YggdrasilServerPresets.servers
@@ -23,6 +24,7 @@ struct YggdrasilAuthView: View {
     }
 
     var body: some View {
+        @Bindable var viewModel = viewModel
         VStack {
             if container.system.yggdrasilAuthService.currentServer == nil {
                 serverPickerSection
@@ -69,11 +71,11 @@ struct YggdrasilAuthView: View {
             notAuthenticatedView
         case .waitingForBrowser:
             waitingForBrowserView
-        case .exchangingCode:
+        case .processing:
             exchangingCodeView
         case let .authenticated(profile):
             authenticatedView(profile: profile)
-        case let .failed(message):
+        case let .error(message):
             failedView(message: message)
         }
     }

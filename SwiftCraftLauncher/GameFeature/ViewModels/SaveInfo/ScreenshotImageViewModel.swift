@@ -7,11 +7,13 @@
 
 import AppKit
 import Foundation
+import Observation
 
 /// View model that loads a screenshot thumbnail asynchronously from a file URL.
 @MainActor
-final class ScreenshotThumbnailViewModel: ObservableObject {
-    @Published var image: NSImage?
+@Observable
+final class ScreenshotThumbnailViewModel {
+    var image: NSImage?
 
     func load(path: URL) {
         DispatchQueue.global(qos: .userInitiated).async {
@@ -30,10 +32,11 @@ final class ScreenshotThumbnailViewModel: ObservableObject {
 
 /// View model that loads a full-size screenshot image asynchronously, tracking loading and failure states.
 @MainActor
-final class ScreenshotImageViewModel: ObservableObject {
-    @Published var image: NSImage?
-    @Published var isLoading: Bool = true
-    @Published var loadFailed: Bool = false
+@Observable
+final class ScreenshotImageViewModel {
+    var image: NSImage?
+    var isLoading: Bool = true
+    var loadFailed: Bool = false
 
     func load(path: URL) {
         DispatchQueue.global(qos: .userInitiated).async {

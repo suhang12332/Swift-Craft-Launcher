@@ -9,11 +9,11 @@ import SwiftUI
 
 /// Attaches main-window presentation layers including export sheets, deletion confirmation, and startup announcement.
 struct MainViewPresentationModifier: ViewModifier {
-    @StateObject private var gameDialogsPresenter: GameDialogsPresenter
-    @StateObject private var container: DIContainer
-    @ObservedObject var detailState: ResourceDetailState
+    @State private var gameDialogsPresenter: GameDialogsPresenter
+    @State private var container: DIContainer
+    var detailState: ResourceDetailState
 
-    @StateObject private var startupAnnouncementViewModel = StartupAnnouncementViewModel()
+    @State private var startupAnnouncementViewModel = StartupAnnouncementViewModel()
     @State private var showStartupInfo = false
     @State private var hasPresentedStartupInfo = false
 
@@ -23,11 +23,12 @@ struct MainViewPresentationModifier: ViewModifier {
         container: DIContainer,
     ) {
         self.detailState = detailState
-        _gameDialogsPresenter = StateObject(wrappedValue: gameDialogsPresenter)
-        _container = StateObject(wrappedValue: container)
+        self.gameDialogsPresenter = gameDialogsPresenter
+        self.container = container
     }
 
     func body(content: Content) -> some View {
+        @Bindable var gameDialogsPresenter = gameDialogsPresenter
         content
             .sheet(item: $gameDialogsPresenter.gameForExport) { game in
                 ModPackExportSheet(gameInfo: game)

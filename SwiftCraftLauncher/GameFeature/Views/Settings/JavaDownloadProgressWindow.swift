@@ -9,16 +9,11 @@
 import SwiftUI
 
 struct JavaDownloadProgressWindow: View {
-    @EnvironmentObject private var container: DIContainer
-    @ObservedObject var downloadState: JavaDownloadState
+    @Environment(DIContainer.self)
+    private var container
+    var downloadState: JavaDownloadState
     @Environment(\.dismiss)
     private var dismiss
-
-    init(
-        downloadState: JavaDownloadState,
-    ) {
-        self.downloadState = downloadState
-    }
 
     var body: some View {
         VStack {

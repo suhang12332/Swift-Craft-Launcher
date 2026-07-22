@@ -19,12 +19,13 @@ struct SkinPreviewData {
 
 /// Shared observable store for passing data between auxiliary windows.
 @MainActor
-class WindowDataStore: ObservableObject {
+@Observable
+final class WindowDataStore {
     init() { }
 
-    @Published var aiChatState: ChatState?
+    var aiChatState: ChatState?
 
-    @Published var skinPreviewData: SkinPreviewData?
+    var skinPreviewData: SkinPreviewData?
 
     /// Releases the data associated with the specified window.
     func cleanup(for windowID: AuxiliaryWindowID) {

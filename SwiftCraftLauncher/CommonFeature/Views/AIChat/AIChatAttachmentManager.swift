@@ -8,8 +8,9 @@
 import SwiftUI
 
 /// Manages pending file attachments for AI chat messages.
-class AIChatAttachmentManager: ObservableObject {
-    @Published var pendingAttachments: [MessageAttachmentType] = []
+@Observable
+class AIChatAttachmentManager {
+    var pendingAttachments: [MessageAttachmentType] = []
 
     func handleFileSelection(_ urls: [URL]) {
         for url in urls {

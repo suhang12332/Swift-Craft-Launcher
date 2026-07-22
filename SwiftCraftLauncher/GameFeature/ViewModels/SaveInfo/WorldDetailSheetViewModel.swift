@@ -9,7 +9,8 @@ import Foundation
 
 /// View model for the world detail sheet, parsing NBT data from level.dat to display world metadata.
 @MainActor
-final class WorldDetailSheetViewModel: ObservableObject {
+@Observable
+final class WorldDetailSheetViewModel {
     private enum LoadError: Error {
         case levelDatNotFound
         case invalidStructure
@@ -18,12 +19,12 @@ final class WorldDetailSheetViewModel: ObservableObject {
     let world: WorldInfo
     let gameName: String
 
-    @Published var metadata: WorldDetailMetadata?
-    @Published var rawDataTag: [String: Any]?
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
-    @Published var showError: Bool = false
-    @Published var showRawData: Bool = false
+    var metadata: WorldDetailMetadata?
+    var rawDataTag: [String: Any]?
+    var isLoading: Bool = false
+    var errorMessage: String?
+    var showError: Bool = false
+    var showRawData: Bool = false
 
     init(world: WorldInfo, gameName: String) {
         self.world = world

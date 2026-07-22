@@ -32,7 +32,7 @@ enum NetworkUtils {
     /// - Parameter input: The user-provided address string, optionally including a port.
     /// - Returns: The resolved address and port information.
     static func resolveServerAddress(_ input: String) async -> ResolvedServerAddress {
-        await resolveServerAddress(input, explicitPort: 25565)
+        await resolveServerAddress(input, explicitPort: AppConstants.defaultPort)
     }
 
     /// Resolves a server address, preferring an explicit port over SRV record lookup.
@@ -43,7 +43,7 @@ enum NetworkUtils {
     static func resolveServerAddress(_ input: String, explicitPort: Int) async -> ResolvedServerAddress {
         let trimmed = input.trimmingCharacters(in: .whitespaces)
         var originalAddress = trimmed
-        var originalPort = 25565
+        var originalPort = AppConstants.defaultPort
 
         if let colonIndex = trimmed.lastIndex(of: ":") {
             let afterColon = String(trimmed[trimmed.index(after: colonIndex)...])
@@ -60,7 +60,7 @@ enum NetworkUtils {
             }
         }
 
-        if explicitPort > 0, explicitPort <= 65535, explicitPort != 25565 {
+        if explicitPort > 0, explicitPort <= 65535, explicitPort != AppConstants.defaultPort {
             return ResolvedServerAddress(
                 address: trimmed,
                 port: explicitPort,
@@ -74,15 +74,15 @@ enum NetworkUtils {
                 address: srvResult.address,
                 port: srvResult.port,
                 originalAddress: trimmed,
-                originalPort: 25565,
+                originalPort: AppConstants.defaultPort,
             )
         }
 
         return ResolvedServerAddress(
             address: trimmed,
-            port: 25565,
+            port: AppConstants.defaultPort,
             originalAddress: trimmed,
-            originalPort: 25565,
+            originalPort: AppConstants.defaultPort,
         )
     }
 

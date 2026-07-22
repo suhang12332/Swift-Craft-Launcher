@@ -71,7 +71,7 @@ enum APIClient {
         headers: [String: String]? = nil,
     ) async throws -> Data {
         let request = URLRequest(url: url)
-            .methods(HTTPMethods.get)
+            .method(HTTPMethods.get)
             .headers(headers)
 
         return try await performRequest(request: request)
@@ -90,15 +90,7 @@ enum APIClient {
         body: Data? = nil,
         headers: [String: String]? = nil,
     ) async throws -> Data {
-        var postHeaders = headers ?? [:]
-        if body != nil, !postHeaders.keys.contains(where: { $0.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame }) {
-            postHeaders[Header.contentType] = MimeType.json
-        }
-        let request = URLRequest(url: url)
-            .methods(HTTPMethods.post)
-            .headers(postHeaders)
-            .bodys(body)
-
+        let request = buildPostRequest(url: url, body: body, headers: headers)
         return try await performRequest(request: request)
     }
 
@@ -126,7 +118,7 @@ enum APIClient {
         headers: [String: String]? = nil,
     ) async throws -> (Data, Int) {
         let request = URLRequest(url: url)
-            .methods(HTTPMethods.get)
+            .method(HTTPMethods.get)
             .headers(headers)
         return try await performRequestUnchecked(request: request)
     }
@@ -138,15 +130,7 @@ enum APIClient {
         body: Data? = nil,
         headers: [String: String]? = nil,
     ) async throws -> (Data, Int) {
-        var postHeaders = headers ?? [:]
-        if body != nil, !postHeaders.keys.contains(where: { $0.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame }) {
-            postHeaders[Header.contentType] = MimeType.json
-        }
-        let request = URLRequest(url: url)
-            .methods(HTTPMethods.post)
-            .headers(postHeaders)
-            .bodys(body)
-
+        let request = buildPostRequest(url: url, body: body, headers: headers)
         return try await performRequestUnchecked(request: request)
     }
 
@@ -190,17 +174,32 @@ enum APIClient {
         headers: [String: String]? = nil,
     ) async throws -> Data {
         let request = URLRequest(url: url)
-            .methods(method)
+            .method(method)
             .headers(headers)
-            .bodys(body)
+            .body(body)
 
         return try await performRequest(request: request)
     }
 
-    /// Executes a URL request and returns the response data.
-    private static func performRequest(request: URLRequest) async throws -> Data {
-        let (data, response) = try await sharedSession.data(for: request)
+    /// Builds a POST request, injecting `Content-Type: application/json` if no content type is
+    /// provided and a body is present.
+    private static func buildPostRequest(
+        url: URL,
+        body: Data?,
+        headers: [String: String]?,
+    ) -> URLRequest {
+        var postHeaders = headers ?? [:]
+        if body != nil, !postHeaders.keys.contains(where: { $0.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame }) {
+            postHeaders[Header.contentType] = MimeType.json
+        }
+        return URLRequest(url: url)
+            .method(HTTPMethods.post)
+            .headers(postHeaders)
+            .body(body)
+    }
 
+    /// Casts a `URLResponse` to `HTTPURLResponse`, throwing if the cast fails.
+    private static func asHTTPResponse(_ response: URLResponse, for request: URLRequest) throws -> HTTPURLResponse {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
                 i18nKey: "error.network.invalid_response",
@@ -208,6 +207,13 @@ enum APIClient {
                 message: "Response is not HTTPURLResponse: \(type(of: response)), URL: \(request.url?.absoluteString ?? "nil")",
             )
         }
+        return httpResponse
+    }
+
+    /// Executes a URL request and returns the response data.
+    private static func performRequest(request: URLRequest) async throws -> Data {
+        let (data, response) = try await sharedSession.data(for: request)
+        let httpResponse = try asHTTPResponse(response, for: request)
 
         guard httpResponse.statusCode == 200 else {
             throw GlobalError.network(
@@ -223,29 +229,14 @@ enum APIClient {
     /// Executes a URL request without status code validation, returning the data and status code.
     private static func performRequestUnchecked(request: URLRequest) async throws -> (Data, Int) {
         let (data, response) = try await sharedSession.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                i18nKey: "error.network.invalid_response",
-                message: "Response is not HTTPURLResponse for unchecked request: \(request.url?.absoluteString ?? "nil")",
-            )
-        }
-
+        let httpResponse = try asHTTPResponse(response, for: request)
         return (data, httpResponse.statusCode)
     }
 
     /// Executes a streaming request and returns the async bytes and response.
     static func performStreamRequest(request: URLRequest) async throws -> (URLSession.AsyncBytes, HTTPURLResponse) {
         let (asyncBytes, response) = try await sharedSession.bytes(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                i18nKey: "error.network.invalid_response",
-                level: .notification,
-                message: "Response is not HTTPURLResponse for stream request: \(request.url?.absoluteString ?? "nil")",
-            )
-        }
-
+        let httpResponse = try asHTTPResponse(response, for: request)
         return (asyncBytes, httpResponse)
     }
 }

@@ -11,10 +11,10 @@ import os
 import SwiftUI
 
 /// Handles Microsoft OAuth authentication for Minecraft accounts.
-class MinecraftAuthService: NSObject, ObservableObject {
-    @Published var authState: AuthenticationState = .notAuthenticated
-    @Published var isLoading: Bool = false
-    var webAuthSession: ASWebAuthenticationSession?
+@Observable
+final class MinecraftAuthService {
+    var authState: AuthenticationState = .idle
+    var isLoading: Bool = false
 
     let clientId = AppConstants.minecraftClientId
     let scope = AppConstants.minecraftScope
@@ -22,17 +22,14 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
     let refreshTasksLock = OSAllocatedUnfairLock<[String: Task<Player, Error>]>(initialState: [:])
 
-    override init() {
-        super.init()
-    }
+    private let webAuthenticator = WebAuthenticator()
 
     @MainActor
     func startAuthentication() async {
-        webAuthSession?.cancel()
-        webAuthSession = nil
+        webAuthenticator.cancel()
 
         isLoading = true
-        authState = .waitingForBrowserAuth
+        authState = .waitingForBrowser
 
         guard let authURL = buildAuthorizationURL() else {
             isLoading = false
@@ -41,9 +38,10 @@ class MinecraftAuthService: NSObject, ObservableObject {
         }
 
         await withCheckedContinuation { continuation in
-            webAuthSession = ASWebAuthenticationSession(
-                url: authURL,
-                callbackURLScheme: URL(string: redirectUri)?.scheme,
+            self.webAuthenticator.start(
+                authorizationURL: authURL,
+                callbackScheme: URL(string: self.redirectUri)?.scheme,
+                prefersEphemeral: DIContainer.shared.ui.playerSettingsManager.enableEphemeralWebLogin,
             ) { [weak self] callbackURL, error in
                 Task { @MainActor in
                     if let error {
@@ -63,7 +61,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
                     if authResponse.isUserDenied {
                         AppLog.common.info("User denied Microsoft authorization")
-                        self?.authState = .notAuthenticated
+                        self?.authState = .idle
                         self?.isLoading = false
                         continuation.resume()
                         return
@@ -90,10 +88,6 @@ class MinecraftAuthService: NSObject, ObservableObject {
                     continuation.resume()
                 }
             }
-
-            webAuthSession?.presentationContextProvider = self
-            webAuthSession?.prefersEphemeralWebBrowserSession = DIContainer.shared.ui.playerSettingsManager.enableEphemeralWebLogin
-            webAuthSession?.start()
         }
     }
 
@@ -119,7 +113,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
     @MainActor
     private func handleAuthorizationCode(_ code: String) async {
-        authState = .processingAuthCode
+        authState = .processing
 
         do {
             let tokenResponse = try await exchangeCodeForToken(code: code)
@@ -153,9 +147,8 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
     @MainActor
     func logout() {
-        authState = .notAuthenticated
-        webAuthSession?.cancel()
-        webAuthSession = nil
+        authState = .idle
+        webAuthenticator.cancel()
         isLoading = false
     }
 
@@ -169,7 +162,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         if let authError = error as? ASWebAuthenticationSessionError,
            authError.code == .canceledLogin {
             AppLog.common.info("User cancelled Microsoft authentication")
-            authState = .notAuthenticated
+            authState = .idle
         } else {
             AppLog.common.error("Microsoft authentication failed: \(error.localizedDescription)")
             authState = .error("minecraft.auth.error.authentication_failed".localized())

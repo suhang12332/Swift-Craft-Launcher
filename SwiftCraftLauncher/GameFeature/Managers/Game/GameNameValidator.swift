@@ -9,9 +9,10 @@ import SwiftUI
 
 /// Validates game names to prevent duplicates during creation.
 @MainActor
-class GameNameValidator: ObservableObject {
-    @Published var gameName: String = ""
-    @Published var isGameNameDuplicate: Bool = false
+@Observable
+class GameNameValidator {
+    var gameName: String = ""
+    var isGameNameDuplicate: Bool = false
 
     private let gameSetupService: GameSetupUtil
 

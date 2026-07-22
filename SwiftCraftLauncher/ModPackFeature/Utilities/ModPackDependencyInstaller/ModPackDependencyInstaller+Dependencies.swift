@@ -25,7 +25,7 @@ extension ModPackDependencyInstaller {
         )
 
         let semaphore = AsyncSemaphore(value: downloadSemaphoreValue)
-        let completedCount = ModPackCounter()
+        let completedCount = AtomicCounter()
 
         let results = await withTaskGroup(of: (Int, Bool).self) { group in
             for (index, dep) in requiredDependencies.enumerated() {
@@ -34,7 +34,7 @@ extension ModPackDependencyInstaller {
                     defer { Task { await semaphore.signal() } }
 
                     if await shouldSkipDependency(dep: dep, gameInfo: gameInfo, resourceDir: resourceDir) {
-                        let currentCount = completedCount.increment()
+                        let currentCount = await completedCount.increment()
                         onProgressUpdate?(
                             "modpack.progress.dependency_skipped".localized(),
                             currentCount,
@@ -47,7 +47,7 @@ extension ModPackDependencyInstaller {
                     let success = await installDependency(dep: dep, gameInfo: gameInfo, resourceDir: resourceDir)
 
                     if success {
-                        let currentCount = completedCount.increment()
+                        let currentCount = await completedCount.increment()
                         let dependencyName = dep.projectId ?? "Unknown dependency"
                         onProgressUpdate?(dependencyName, currentCount, requiredDependencies.count, .dependencies)
                     }

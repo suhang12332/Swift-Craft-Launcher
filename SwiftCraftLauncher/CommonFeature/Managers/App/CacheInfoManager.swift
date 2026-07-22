@@ -9,8 +9,9 @@
 import SwiftUI
 
 /// Manages cache size calculations for application data and game profiles.
-class CacheInfoManager: ObservableObject {
-    @Published var cacheInfo: CacheInfo = .init(fileCount: 0, totalSize: 0)
+@Observable
+final class CacheInfoManager {
+    var cacheInfo: CacheInfo = .init(fileCount: 0, totalSize: 0)
 
     init() { }
 

@@ -10,13 +10,16 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct GameAdvancedSettingsView: View {
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var container: DIContainer
-    @StateObject private var viewModel = GameAdvancedSettingsViewModel()
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(DIContainer.self)
+    private var container
+    @State private var viewModel = GameAdvancedSettingsViewModel()
 
     @State private var showJavaPathPicker = false
 
     var body: some View {
+        @Bindable var viewModel = viewModel
         Form {
             LabeledContent("settings.game.java.path".localized()) {
                 HStack(alignment: .top) {

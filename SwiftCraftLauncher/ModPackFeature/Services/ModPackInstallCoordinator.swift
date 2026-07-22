@@ -203,7 +203,6 @@ final class ModPackInstallCoordinator {
         if overridesTotal > 0 {
             input.modPackInstallState.isInstalling = true
             input.modPackInstallState.overridesTotal = overridesTotal
-            input.modPackInstallState.objectWillChange.send()
         }
         try? await Task.sleep(nanoseconds: 100_000_000)
 
@@ -219,7 +218,6 @@ final class ModPackInstallCoordinator {
                     total: total,
                     type: type,
                 )
-                input.modPackInstallState.objectWillChange.send()
             }
         }
     }
@@ -243,7 +241,6 @@ final class ModPackInstallCoordinator {
                     total: total,
                     type: type,
                 )
-                input.modPackInstallState.objectWillChange.send()
             }
         }
     }
@@ -267,7 +264,6 @@ final class ModPackInstallCoordinator {
                     total: total,
                     type: type,
                 )
-                input.modPackInstallState.objectWillChange.send()
             }
         }
     }
@@ -348,48 +344,13 @@ final class ModPackInstallCoordinator {
     }
 
     private func createProfileDirectories(for gameName: String) async -> Bool {
-        let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
-        let subdirs = AppPaths.profileSubdirectories.map {
-            profileDirectory.appendingPathComponent($0)
-        }
-
-        for dir in [profileDirectory] + subdirs {
-            do {
-                try FileManager.default.createDirectory(
-                    at: dir,
-                    withIntermediateDirectories: true,
-                )
-            } catch {
-                AppLog.modPack.error(
-                    "Failed to create directory: \(dir.path), error: \(error.localizedDescription)",
-                )
-                DIContainer.shared.core.errorHandler.handle(
-                    GlobalError.fileSystem(
-                        i18nKey: "error.filesystem.directory_creation_failed",
-                        level: .notification,
-                    ),
-                )
-                return false
-            }
-        }
-        return true
+        await MinecraftFileManager.createProfileDirectories(for: gameName)
     }
 
     private func calculateInstallationCounts(
         from indexInfo: ModrinthIndexInfo,
     ) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
-        let filesToDownload = indexInfo.files.filter { file in
-            if let env = file.env, let client = env.client,
-               client.lowercased() == "unsupported" {
-                return false
-            }
-            return true
-        }
-        let requiredDependencies = indexInfo.dependencies.filter {
-            $0.dependencyType == "required"
-        }
-
-        return (filesToDownload, requiredDependencies)
+        MinecraftFileManager.calculateInstallationCounts(from: indexInfo)
     }
 
     private func updateInstallProgress(
@@ -464,11 +425,6 @@ final class ModPackInstallCoordinator {
     }
 
     private func cleanupGameDirectories(gameName: String) async {
-        do {
-            let fileManager = MinecraftFileManager()
-            try fileManager.cleanupGameDirectories(gameName: gameName)
-        } catch {
-            AppLog.modPack.error("Failed to clean up game directories: \(error.localizedDescription)")
-        }
+        await MinecraftFileManager.cleanupGameDirectoriesSafely(gameName: gameName)
     }
 }

@@ -9,13 +9,15 @@ import SwiftUI
 
 /// A sheet for adding or downloading a project resource with version and dependency selection.
 struct GlobalResourceSheet: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     let project: ModrinthProject
     let resourceType: String
     @Binding var isPresented: Bool
     let preloadedDetail: ModrinthProjectDetail?
     let preloadedCompatibleGames: [GameVersionInfo]
-    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(GameRepository.self)
+    private var gameRepository
     @State private var selectedGame: GameVersionInfo?
     @State private var selectedVersion: ModrinthProjectDetailVersion?
     @State private var availableVersions: [ModrinthProjectDetailVersion] = []

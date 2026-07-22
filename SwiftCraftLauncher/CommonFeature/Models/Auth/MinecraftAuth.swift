@@ -55,18 +55,10 @@ struct XboxLiveTokenResponse: Codable {
 
 struct DisplayClaims: Codable {
     let xui: [XUI]
-
-    enum CodingKeys: String, CodingKey {
-        case xui
-    }
 }
 
 struct XUI: Codable {
     let uhs: String
-
-    enum CodingKeys: String, CodingKey {
-        case uhs
-    }
 }
 
 struct MinecraftProfileResponse: Codable, Equatable {
@@ -146,10 +138,4 @@ enum MinecraftEntitlement: String, CaseIterable {
 }
 
 /// The current state of the Microsoft authentication flow.
-enum AuthenticationState: Equatable {
-    case notAuthenticated
-    case waitingForBrowserAuth
-    case processingAuthCode
-    case authenticated(profile: MinecraftProfileResponse)
-    case error(String)
-}
+typealias AuthenticationState = AuthFlowState<MinecraftProfileResponse>

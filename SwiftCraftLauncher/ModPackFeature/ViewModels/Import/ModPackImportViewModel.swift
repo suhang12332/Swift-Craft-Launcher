@@ -12,10 +12,10 @@ import SwiftUI
 class ModPackImportViewModel: BaseGameFormViewModel {
     let modPackViewModel = ModPackDownloadSheetViewModel()
 
-    @Published var selectedModPackFile: URL?
-    @Published var extractedModPackPath: URL?
-    @Published var modPackIndexInfo: ModrinthIndexInfo?
-    @Published var isProcessingModPack = false
+    var selectedModPackFile: URL?
+    var extractedModPackPath: URL?
+    var modPackIndexInfo: ModrinthIndexInfo?
+    var isProcessingModPack = false
 
     let onProcessingStateChanged: (Bool) -> Void
     var gameRepository: GameRepository?

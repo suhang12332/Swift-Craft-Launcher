@@ -9,13 +9,16 @@ import SwiftUI
 
 /// Root navigation view that orchestrates the sidebar, content, and detail columns.
 struct MainView: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     @State private var columnVisibility = NavigationSplitViewVisibility.all
-    @StateObject private var filterState = ResourceFilterState()
-    @StateObject private var detailState = ResourceDetailState()
-    @EnvironmentObject private var gameRepository: GameRepository
+    @State private var filterState = ResourceFilterState()
+    @State private var detailState = ResourceDetailState()
+    @Environment(GameRepository.self)
+    private var gameRepository
 
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -34,8 +37,8 @@ struct MainView: View {
                 middleColumnContentView
             }
         }
-        .environmentObject(filterState)
-        .environmentObject(detailState)
+        .environment(filterState)
+        .environment(detailState)
         .sheet(
             isPresented: Binding(
                 get: { container.ui.openURLModPackImportPresenter.showImportSheet },
@@ -70,7 +73,7 @@ struct MainView: View {
 
     private var middleColumnDetailView: some View {
         DetailView()
-            .environmentObject(container.core.favoriteStore)
+            .environment(container.core.favoriteStore)
             .toolbar {
                 DetailToolbarView()
             }

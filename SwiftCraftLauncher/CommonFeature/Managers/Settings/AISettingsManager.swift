@@ -7,13 +7,11 @@
 //
 
 import Foundation
-import SwiftUI
 
 /// Represents an available AI service provider.
 enum AIProvider: String, CaseIterable, Identifiable {
     case openai
     case ollama
-//    case gemini = "gemini"
 
     var id: String { rawValue }
 
@@ -23,8 +21,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return "OpenAI"
         case .ollama:
             return "Ollama"
-//        case .gemini:
-//            return "Google Gemini"
         }
     }
 
@@ -34,8 +30,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return URLConfig.API.AIService.openAIBaseURL
         case .ollama:
             return URLConfig.API.AIService.ollamaDefaultBaseURL
-//        case .gemini:
-//            return "https://generativelanguage.googleapis.com"
         }
     }
 
@@ -46,8 +40,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return .openAI
         case .ollama:
             return .ollama
-//        case .gemini:
-//            return .gemini
         }
     }
 
@@ -58,8 +50,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return URLConfig.API.AIService.openAIChatPath
         case .ollama:
             return URLConfig.API.AIService.ollamaChatPath
-//        case .gemini:
-//            return "/v1/models/\(defaultModel):streamGenerateContent"
         }
     }
 }
@@ -68,82 +58,42 @@ enum AIProvider: String, CaseIterable, Identifiable {
 enum APIFormat {
     case openAI // Compatible with DeepSeek and similar services
     case ollama
-//    case gemini
 }
 
 /// Manages persistent AI service settings including provider, API key, and model configuration.
-class AISettingsManager: ObservableObject {
-    @AppStorage(AppConstants.UserDefaultsKeys.aiProvider)
-    private var _selectedProviderRawValue: String = "openai"
-
-    var selectedProvider: AIProvider {
-        get {
-            AIProvider(rawValue: _selectedProviderRawValue) ?? .openai
-        }
-        set {
-            _selectedProviderRawValue = newValue.rawValue
-            objectWillChange.send()
-        }
+@Observable
+final class AISettingsManager {
+    /// The currently selected AI provider, persisted in UserDefaults.
+    var selectedProvider: AIProvider = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.aiProvider, defaultValue: .openai) {
+        didSet { Defaults.save(selectedProvider.rawValue, forKey: AppConstants.UserDefaultsKeys.aiProvider) }
     }
 
-    private var _cachedApiKey: String?
-
-    /// The API key for the selected AI provider, stored securely in Keychain with in-memory caching.
-    var apiKey: String {
-        get {
-            if let cached = _cachedApiKey {
-                return cached
-            }
-
-            if let data = KeychainManager.load(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey),
-               let key = String(data: data, encoding: .utf8) {
-                _cachedApiKey = key
-                return key
-            }
-
-            _cachedApiKey = ""
-            return ""
-        }
-        set {
-            _cachedApiKey = newValue.isEmpty ? "" : newValue
-
-            if newValue.isEmpty {
+    /// The API key for the selected AI provider, stored securely in Keychain.
+    var apiKey: String = KeychainManager.load(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
+        .flatMap { String(data: $0, encoding: .utf8) } ?? "" {
+        didSet {
+            if apiKey.isEmpty {
                 _ = KeychainManager.delete(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
-            } else {
-                if let data = newValue.data(using: .utf8) {
-                    _ = KeychainManager.save(data: data, account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
-                }
+            } else if let data = apiKey.data(using: .utf8) {
+                _ = KeychainManager.save(data: data, account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
             }
-            objectWillChange.send()
         }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.aiOllamaBaseURL)
-    var ollamaBaseURL: String = URLConfig.API.AIService.ollamaDefaultBaseURL {
-        didSet {
-            objectWillChange.send()
-        }
+    var ollamaBaseURL: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.aiOllamaBaseURL, defaultValue: URLConfig.API.AIService.ollamaDefaultBaseURL) {
+        didSet { Defaults.save(ollamaBaseURL, forKey: AppConstants.UserDefaultsKeys.aiOllamaBaseURL) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.aiOpenAIBaseURL)
-    var openAIBaseURL: String = "" {
-        didSet {
-            objectWillChange.send()
-        }
+    var openAIBaseURL: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.aiOpenAIBaseURL) {
+        didSet { Defaults.save(openAIBaseURL, forKey: AppConstants.UserDefaultsKeys.aiOpenAIBaseURL) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.aiModelOverride)
-    var modelOverride: String = "" {
-        didSet {
-            objectWillChange.send()
-        }
+    var modelOverride: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.aiModelOverride) {
+        didSet { Defaults.save(modelOverride, forKey: AppConstants.UserDefaultsKeys.aiModelOverride) }
     }
 
-    @AppStorage(AppConstants.UserDefaultsKeys.aiAvatarURL)
-    var aiAvatarURL: String = URLConfig.API.AIService.defaultAvatarURL {
-        didSet {
-            objectWillChange.send()
-        }
+    var aiAvatarURL: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.aiAvatarURL, defaultValue: URLConfig.API.AIService.defaultAvatarURL) {
+        didSet { Defaults.save(aiAvatarURL, forKey: AppConstants.UserDefaultsKeys.aiAvatarURL) }
     }
 
     /// Returns the full API endpoint URL for the current provider.
@@ -163,6 +113,4 @@ class AISettingsManager: ObservableObject {
     func getModel() -> String {
         modelOverride.trimmingCharacters(in: .whitespacesAndNewlines)
     }
-
-    init() { }
 }

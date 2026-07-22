@@ -11,7 +11,8 @@ import Combine
 import SwiftUI
 
 struct GameHeaderListRow: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     private static let iconSize: CGFloat = 80
     private static let iconPaddingRatio: CGFloat = 0.125
     private static let iconCornerRadiusRatio: CGFloat = 0.2

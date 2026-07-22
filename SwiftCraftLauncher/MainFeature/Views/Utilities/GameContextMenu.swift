@@ -10,7 +10,8 @@
 import SwiftUI
 
 struct GameContextMenu: View {
-    @EnvironmentObject private var container: DIContainer
+    @Environment(DIContainer.self)
+    private var container
     let game: GameVersionInfo
     let onDelete: () -> Void
     let onOpenSettings: () -> Void
@@ -31,10 +32,13 @@ struct GameContextMenu: View {
         self.showsShowInLauncher = showsShowInLauncher
     }
 
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
-    @StateObject private var actionViewModel = GameContextMenuActionViewModel()
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
+    @Environment(GameRepository.self)
+    private var gameRepository
+    @Environment(GameLaunchUseCase.self)
+    private var gameLaunchUseCase
+    @State private var actionViewModel = GameContextMenuActionViewModel()
 
     /// Whether the game is currently running, determined by cached process state.
     private var isRunning: Bool {

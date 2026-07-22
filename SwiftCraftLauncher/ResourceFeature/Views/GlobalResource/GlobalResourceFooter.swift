@@ -24,7 +24,7 @@ struct GlobalResourceFooter: View {
     @Binding var mainVersionId: String
     let compatibleGames: [GameVersionInfo]
 
-    @StateObject private var viewModel: GlobalResourceFooterViewModel
+    @State private var viewModel: GlobalResourceFooterViewModel
 
     init(
         project: ModrinthProject,
@@ -55,7 +55,7 @@ struct GlobalResourceFooter: View {
         _mainVersionId = mainVersionId
         self.compatibleGames = compatibleGames
 
-        _viewModel = StateObject(
+        _viewModel = State(
             wrappedValue: GlobalResourceFooterViewModel(
                 project: project,
                 resourceType: resourceType,

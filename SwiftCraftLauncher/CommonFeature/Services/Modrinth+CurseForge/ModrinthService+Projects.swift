@@ -10,7 +10,9 @@ import Foundation
 /// Provides project detail and version retrieval for Modrinth and CurseForge projects.
 extension ModrinthService {
     static func fetchProjectDetails(id: String, type: String = "") async -> ModrinthProjectDetail? {
-        if id.hasPrefix("cf-") {
+        let projectId = id.asProjectId
+
+        if projectId.isCurseForge {
             return await CurseForgeService.fetchProjectDetailsAsModrinth(id: id)
         }
 
@@ -18,18 +20,15 @@ extension ModrinthService {
             guard let result = await fetchProjectDetailsV3(id: id) else { return nil }
             return ModrinthProjectDetail.fromV3(result)
         }
-        do {
-            return try await fetchProjectDetailsThrowing(id: id)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch project details (ID: \(id)): \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return nil
+        return await withServiceErrorHandling(context: "fetch project details (ID: \(id))", fallback: nil) {
+            try await fetchProjectDetailsThrowing(id: id)
         }
     }
 
     static func fetchProjectDetailsThrowing(id: String) async throws -> ModrinthProjectDetail {
-        if id.hasPrefix("cf-") {
+        let projectId = id.asProjectId
+
+        if projectId.isCurseForge {
             return try await CurseForgeService.fetchProjectDetailsAsModrinthThrowing(id: id)
         }
 
@@ -50,13 +49,8 @@ extension ModrinthService {
     }
 
     static func fetchProjectDetailsV3(id: String) async -> ModrinthProjectDetailV3? {
-        do {
-            return try await fetchProjectDetailsV3Throwing(id: id)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch v3 project details (ID: \(id)): \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return nil
+        await withServiceErrorHandling(context: "fetch v3 project details (ID: \(id))", fallback: nil) {
+            try await fetchProjectDetailsV3Throwing(id: id)
         }
     }
 
@@ -70,22 +64,21 @@ extension ModrinthService {
     }
 
     static func fetchProjectVersions(id: String) async -> [ModrinthProjectDetailVersion] {
-        if id.hasPrefix("cf-") {
+        let projectId = id.asProjectId
+
+        if projectId.isCurseForge {
             return await CurseForgeService.fetchProjectVersionsAsModrinth(id: id)
         }
 
-        do {
-            return try await fetchProjectVersionsThrowing(id: id)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch project version list (ID: \(id)): \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
+        return await withServiceErrorHandling(context: "fetch project version list (ID: \(id))", fallback: []) {
+            try await fetchProjectVersionsThrowing(id: id)
         }
     }
 
     static func fetchProjectVersionsThrowing(id: String) async throws -> [ModrinthProjectDetailVersion] {
-        if id.hasPrefix("cf-") {
+        let projectId = id.asProjectId
+
+        if projectId.isCurseForge {
             return try await CurseForgeService.fetchProjectVersionsAsModrinthThrowing(id: id)
         }
 
@@ -103,7 +96,9 @@ extension ModrinthService {
         selectedLoaders: [String],
         type: String,
     ) async throws -> [ModrinthProjectDetailVersion] {
-        if id.hasPrefix("cf-") {
+        let projectId = id.asProjectId
+
+        if projectId.isCurseForge {
             return try await CurseForgeService.fetchProjectVersionsFilterAsModrinth(
                 id: id,
                 selectedVersions: selectedVersions,
@@ -113,25 +108,12 @@ extension ModrinthService {
         }
 
         let versions = try await fetchProjectVersionsThrowing(id: id)
-        var loaders = selectedLoaders
-        if type == ResourceType.datapack.rawValue {
-            loaders = [ResourceType.datapack.rawValue]
-        } else if type == ResourceType.resourcepack.rawValue {
-            loaders = ["minecraft"]
-        }
-        return versions.filter { version in
-            let versionMatch = selectedVersions.isEmpty
-                || !Set(version.gameVersions).isDisjoint(with: selectedVersions)
-
-            let loaderMatch: Bool
-            if type == ResourceType.shader.rawValue || type == ResourceType.resourcepack.rawValue {
-                loaderMatch = true
-            } else {
-                loaderMatch = loaders.isEmpty || !Set(version.loaders).isDisjoint(with: loaders)
-            }
-
-            return versionMatch && loaderMatch
-        }
+        return VersionFilter.filter(
+            versions,
+            selectedVersions: selectedVersions,
+            selectedLoaders: selectedLoaders,
+            type: type,
+        )
     }
 
     static func fetchProjectVersionThrowing(id: String) async throws -> ModrinthProjectDetailVersion {

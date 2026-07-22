@@ -9,7 +9,8 @@ import SwiftUI
 
 /// A button that toggles the favorite state of a Modrinth project.
 struct FavoriteButton: View {
-    @EnvironmentObject private var favoriteStore: FavoriteStore
+    @Environment(FavoriteStore.self)
+    private var favoriteStore
     let projectId: String
     let query: String
     @State private var isLoading: Bool = false

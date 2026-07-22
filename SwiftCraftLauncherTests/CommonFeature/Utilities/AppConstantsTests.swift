@@ -42,7 +42,6 @@ final class AppConstantsTests: XCTestCase {
 
     func testUserDefaultsKeys_allExist() {
         XCTAssertFalse(AppConstants.UserDefaultsKeys.userProfiles.isEmpty)
-        XCTAssertFalse(AppConstants.UserDefaultsKeys.currentPlayerId.isEmpty)
         XCTAssertFalse(AppConstants.UserDefaultsKeys.aiProvider.isEmpty)
         XCTAssertFalse(AppConstants.UserDefaultsKeys.globalXms.isEmpty)
         XCTAssertFalse(AppConstants.UserDefaultsKeys.globalXmx.isEmpty)

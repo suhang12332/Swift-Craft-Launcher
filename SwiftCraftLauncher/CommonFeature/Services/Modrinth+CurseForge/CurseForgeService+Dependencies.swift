@@ -10,13 +10,6 @@ import Foundation
 /// Provides dependency resolution for CurseForge projects.
 extension CurseForgeService {
     /// Fetches project dependencies mapped to Modrinth format.
-    /// - Parameters:
-    ///   - type: The project type (e.g., "mod", "resourcepack").
-    ///   - cachePath: The local cache directory path.
-    ///   - id: The CurseForge project identifier.
-    ///   - selectedVersions: The selected game versions.
-    ///   - selectedLoaders: The selected mod loader types.
-    /// - Returns: The project dependencies, or empty dependencies on failure.
     static func fetchProjectDependenciesAsModrinth(
         type: String,
         cachePath: URL,
@@ -24,31 +17,18 @@ extension CurseForgeService {
         selectedVersions: [String],
         selectedLoaders: [String],
     ) async -> ModrinthProjectDependency {
-        do {
-            return try await fetchProjectDependenciesThrowingAsModrinth(
+        await withServiceErrorHandling(context: "fetch CurseForge project dependencies (ID: \(id))", fallback: ModrinthProjectDependency(projects: [])) {
+            try await fetchProjectDependenciesThrowingAsModrinth(
                 type: type,
                 cachePath: cachePath,
                 id: id,
                 selectedVersions: selectedVersions,
                 selectedLoaders: selectedLoaders,
             )
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to fetch CurseForge project dependencies (ID: \(id)): \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return ModrinthProjectDependency(projects: [])
         }
     }
 
     /// Fetches project dependencies mapped to Modrinth format, throwing on failure.
-    /// - Parameters:
-    ///   - type: The project type (e.g., "mod", "resourcepack").
-    ///   - cachePath: The local cache directory path.
-    ///   - id: The CurseForge project identifier.
-    ///   - selectedVersions: The selected game versions.
-    ///   - selectedLoaders: The selected mod loader types.
-    /// - Returns: The project dependencies.
-    /// - Throws: A `GlobalError` if the request fails.
     static func fetchProjectDependenciesThrowingAsModrinth(
         type: String,
         cachePath: URL,
@@ -84,17 +64,13 @@ extension CurseForgeService {
                         do {
                             let depVersion: ModrinthProjectDetailVersion
 
-                            let normalizedProjectId: String
-                            if !projectId.hasPrefix("cf-"), Int(projectId) != nil {
-                                normalizedProjectId = "cf-\(projectId)"
-                            } else {
-                                normalizedProjectId = projectId
-                            }
+                            let normalizedProjectId = projectId.asProjectId.normalized
 
                             if let versionId = dep.versionId {
-                                if versionId.hasPrefix("cf-") {
+                                let versionIdentifier = versionId.asProjectId
+                                if versionIdentifier.isCurseForge {
                                     let fileId = Int(versionId.replacingOccurrences(of: "cf-", with: "")) ?? 0
-                                    let (modId, _) = try parseCurseForgeId(normalizedProjectId)
+                                    let (modId, _) = try normalizedProjectId.asProjectId.parseCurseForgeId()
                                     let cfFile = try await fetchFileDetailThrowing(projectId: modId, fileId: fileId)
                                     guard let convertedVersion = CFToModrinthAdapter.convertFile(cfFile, projectId: normalizedProjectId) else {
                                         return nil
@@ -104,7 +80,8 @@ extension CurseForgeService {
                                     depVersion = try await ModrinthService.fetchProjectVersionThrowing(id: versionId)
                                 }
                             } else {
-                                if normalizedProjectId.hasPrefix("cf-") {
+                                let depIdentifier = normalizedProjectId.asProjectId
+                                if depIdentifier.isCurseForge {
                                     let depVersions = try await fetchProjectVersionsFilterAsModrinth(
                                         id: normalizedProjectId,
                                         selectedVersions: selectedVersions,

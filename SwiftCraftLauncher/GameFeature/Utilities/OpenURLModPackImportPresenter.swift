@@ -9,9 +9,10 @@ import Foundation
 
 /// Presents a mod pack import sheet when the app opens a supported file URL.
 @MainActor
-final class OpenURLModPackImportPresenter: ObservableObject {
-    @Published var showImportSheet = false
-    @Published private(set) var preselectedTempFile: URL?
+@Observable
+final class OpenURLModPackImportPresenter {
+    var showImportSheet = false
+    private(set) var preselectedTempFile: URL?
 
     private let importViewModel = GameFormImportViewModel()
 

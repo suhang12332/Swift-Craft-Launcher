@@ -13,12 +13,13 @@ import SwiftUI
 /// Manages reading the exported mod pack file from disk and presenting
 /// it as a shareable document to the user.
 @MainActor
-final class ModPackExportSheetCoordinatorViewModel: ObservableObject {
+@Observable
+final class ModPackExportSheetCoordinatorViewModel {
     /// A Boolean value indicating whether an export document is ready for sharing.
-    @Published var isExporting: Bool = false
+    var isExporting: Bool = false
 
     /// The document containing the exported mod pack data, or `nil` if not yet prepared.
-    @Published var exportDocument: ModPackDocument?
+    var exportDocument: ModPackDocument?
 
     /// Reads the exported mod pack file and prepares it for sharing.
     ///

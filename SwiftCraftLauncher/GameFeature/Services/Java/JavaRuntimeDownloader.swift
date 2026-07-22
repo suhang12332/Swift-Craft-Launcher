@@ -26,11 +26,6 @@ class JavaRuntimeDownloader {
     }
 
     func downloadJavaRuntime(for version: String) async throws {
-        let dir = AppPaths.runtimeDirectory.appendingPathComponent(version)
-        if FileManager.default.fileExists(atPath: dir.path) {
-            try FileManager.default.removeItem(at: dir)
-        }
-
         if let bundledVersionURL = DIContainer.shared.system.javaRuntimeService.specialJavaRuntimeURL(for: version) {
             try await downloadBundledJavaRuntime(version: version, url: bundledVersionURL)
             return
@@ -48,20 +43,19 @@ class JavaRuntimeDownloader {
         }
 
         let targetDirectory = AppPaths.runtimeDirectory.appendingPathComponent(version)
+        if FileManager.default.fileExists(atPath: targetDirectory.path) {
+            try FileManager.default.removeItem(at: targetDirectory)
+        }
         try FileManager.default.createDirectory(at: targetDirectory, withIntermediateDirectories: true)
 
         let totalFiles = files
-            .compactMap { filePath, fileInfo -> Int? in
+            .compactMap { _, fileInfo -> Int? in
                 guard let fileData = fileInfo as? [String: Any],
                       let fileType = fileData["type"] as? String,
                       fileType == "file" else {
                     return nil
                 }
-
-                let localFilePath = targetDirectory.appendingPathComponent(filePath)
-                let fileExists = FileManager.default.fileExists(atPath: localFilePath.path)
-
-                return fileExists ? nil : 1
+                return 1
             }
             .reduce(0, +)
 
@@ -69,7 +63,7 @@ class JavaRuntimeDownloader {
             value: DIContainer.shared.ui.generalSettingsManager.concurrentDownloads,
         )
 
-        let counter = Counter()
+        let counter = AtomicCounter()
 
         try await withThrowingTaskGroup(of: Void.self) { group in
             for (filePath, fileInfo) in files {
@@ -107,8 +101,6 @@ class JavaRuntimeDownloader {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
 
-                    let fileExistsBefore = FileManager.default.fileExists(atPath: localFilePath.path)
-
                     _ = try await DownloadManager.downloadFile(
                         urlString: fileURL,
                         destinationURL: localFilePath,
@@ -119,16 +111,9 @@ class JavaRuntimeDownloader {
                         try setExecutablePermission(for: localFilePath)
                     }
 
-                    if fileType == "file", !fileExistsBefore {
-                        do {
-                            let fileAttributes = try FileManager.default.attributesOfItem(atPath: localFilePath.path)
-                            if let fileSize = fileAttributes[.size] as? Int64, fileSize > 0 {
-                                let completed = await counter.increment()
-                                await progressActor.callProgressUpdate(filePath, completed, totalFiles)
-                            }
-                        } catch {
-                            AppLog.game.error("Unable to verify file \(filePath) download status: \(error.localizedDescription)")
-                        }
+                    if fileType == "file" {
+                        let completed = await counter.increment()
+                        await progressActor.callProgressUpdate(filePath, completed, totalFiles)
                     }
                 }
             }
@@ -160,6 +145,9 @@ class JavaRuntimeDownloader {
 
     private func downloadBundledJavaRuntime(version: String, url: URL) async throws {
         let targetDirectory = AppPaths.runtimeDirectory.appendingPathComponent(version)
+        if FileManager.default.fileExists(atPath: targetDirectory.path) {
+            try FileManager.default.removeItem(at: targetDirectory)
+        }
         try FileManager.default.createDirectory(at: targetDirectory, withIntermediateDirectories: true)
 
         let tempZipPath = targetDirectory.appendingPathComponent("temp_java.zip")
@@ -297,15 +285,6 @@ class JavaRuntimeDownloader {
             destinationURL: destinationURL,
             progressHandler: progressCallback,
         )
-    }
-}
-
-private actor Counter {
-    private var value = 0
-
-    func increment() -> Int {
-        value += 1
-        return value
     }
 }
 

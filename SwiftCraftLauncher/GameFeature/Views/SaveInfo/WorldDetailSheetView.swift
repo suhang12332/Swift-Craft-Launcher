@@ -9,15 +9,16 @@
 import SwiftUI
 
 struct WorldDetailSheetView: View {
-    @StateObject private var viewModel: WorldDetailSheetViewModel
+    @State private var viewModel: WorldDetailSheetViewModel
     @Environment(\.dismiss)
     private var dismiss
 
     init(viewModel: WorldDetailSheetViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+        _viewModel = State(initialValue: viewModel)
     }
 
     var body: some View {
+        @Bindable var viewModel = viewModel
         CommonSheetView(
             header: { headerView },
             body: { bodyView },

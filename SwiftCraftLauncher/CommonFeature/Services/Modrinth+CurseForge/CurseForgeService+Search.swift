@@ -9,6 +9,24 @@ import Foundation
 
 /// Provides search operations for CurseForge projects.
 extension CurseForgeService {
+    /// Encodes a string array as a JSON array string for a URL query item.
+    private static func encodeAsQueryItem(
+        _ values: [String],
+        name: String,
+        i18nKey: String,
+        contextLabel: String,
+    ) throws -> URLQueryItem {
+        let data = try JSONEncoder().encode(values)
+        guard let jsonString = String(data: data, encoding: .utf8) else {
+            throw GlobalError.validation(
+                i18nKey: i18nKey,
+                level: .notification,
+                message: "Failed to encode \(contextLabel) to JSON string: \(values)",
+            )
+        }
+        return URLQueryItem(name: name, value: jsonString)
+    }
+
     /// Searches CurseForge projects.
     /// - Parameters:
     ///   - gameId: The game identifier (432 for Minecraft).
@@ -36,8 +54,8 @@ extension CurseForgeService {
         index: Int = 0,
         pageSize: Int = 20,
     ) async -> CurseForgeSearchResult {
-        do {
-            return try await searchProjectsThrowing(
+        await withServiceErrorHandling(context: "search CurseForge projects", fallback: CurseForgeSearchResult(data: [], pagination: nil)) {
+            try await searchProjectsThrowing(
                 gameId: gameId,
                 classId: classId,
                 categoryId: categoryId,
@@ -50,11 +68,6 @@ extension CurseForgeService {
                 index: index,
                 pageSize: pageSize,
             )
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to search CurseForge projects: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return CurseForgeSearchResult(data: [], pagination: nil)
         }
     }
 
@@ -106,32 +119,15 @@ extension CurseForgeService {
         }
 
         if let categoryIds, !categoryIds.isEmpty {
-            let limitedCategoryIds = Array(categoryIds.prefix(10))
-            let stringIds = limitedCategoryIds.map { String($0) }
-            let data = try JSONEncoder().encode(stringIds)
-            guard let jsonArrayString = String(data: data, encoding: .utf8) else {
-                throw GlobalError.validation(
-                    i18nKey: "error.validation.encode_category_ids_failed",
-                    level: .notification,
-                    message: "Failed to convert categoryIds JSON data to UTF-8 string, ids=\(limitedCategoryIds)",
-                )
-            }
-            queryItems.append(URLQueryItem(name: "categoryIds", value: jsonArrayString))
+            let stringIds = categoryIds.prefix(10).map(String.init)
+            queryItems.append(try encodeAsQueryItem(stringIds, name: "categoryIds", i18nKey: "error.validation.encode_category_ids_failed", contextLabel: "categoryIds"))
         } else if let categoryId {
             queryItems.append(URLQueryItem(name: "categoryId", value: String(categoryId)))
         }
 
         if let gameVersions, !gameVersions.isEmpty {
-            let limitedGameVersions = Array(gameVersions.prefix(4))
-            let data = try JSONEncoder().encode(limitedGameVersions)
-            guard let jsonArrayString = String(data: data, encoding: .utf8) else {
-                throw GlobalError.validation(
-                    i18nKey: "error.validation.encode_game_versions_failed",
-                    level: .notification,
-                    message: "Failed to convert gameVersions JSON data to UTF-8 string, versions=\(limitedGameVersions)",
-                )
-            }
-            queryItems.append(URLQueryItem(name: "gameVersions", value: jsonArrayString))
+            let limited = Array(gameVersions.prefix(4))
+            queryItems.append(try encodeAsQueryItem(limited, name: "gameVersions", i18nKey: "error.validation.encode_game_versions_failed", contextLabel: "gameVersions"))
         } else if let gameVersion {
             queryItems.append(URLQueryItem(name: "gameVersion", value: gameVersion))
         }
@@ -150,17 +146,8 @@ extension CurseForgeService {
         queryItems.append(URLQueryItem(name: "sortOrder", value: sortOrder))
 
         if let modLoaderTypes, !modLoaderTypes.isEmpty {
-            let limitedModLoaderTypes = Array(modLoaderTypes.prefix(5))
-            let stringTypes = limitedModLoaderTypes.map { String($0) }
-            let data = try JSONEncoder().encode(stringTypes)
-            guard let jsonArrayString = String(data: data, encoding: .utf8) else {
-                throw GlobalError.validation(
-                    i18nKey: "error.validation.encode_mod_loader_types_failed",
-                    level: .notification,
-                    message: "Failed to convert modLoaderTypes JSON data to UTF-8 string, types=\(limitedModLoaderTypes)",
-                )
-            }
-            queryItems.append(URLQueryItem(name: "modLoaderTypes", value: jsonArrayString))
+            let stringTypes = modLoaderTypes.prefix(5).map(String.init)
+            queryItems.append(try encodeAsQueryItem(stringTypes, name: "modLoaderTypes", i18nKey: "error.validation.encode_mod_loader_types_failed", contextLabel: "modLoaderTypes"))
         } else if let modLoaderType {
             queryItems.append(URLQueryItem(name: "modLoaderType", value: String(modLoaderType)))
         }

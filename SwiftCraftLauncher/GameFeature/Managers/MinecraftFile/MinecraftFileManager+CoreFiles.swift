@@ -43,7 +43,7 @@ extension MinecraftFileManager {
                 destinationURL: destinationURL,
                 expectedSha1: manifest.downloads.client.sha1,
             )
-            incrementCompletedFilesCount(
+            await incrementCompletedFilesCount(
                 fileName: "client.jar",
                 type: .core,
             )
@@ -191,7 +191,7 @@ extension MinecraftFileManager {
                 expectedSha1: nativeArtifact.sha1,
             )
 
-            incrementCompletedFilesCount(
+            await incrementCompletedFilesCount(
                 fileName: library.name,
                 type: .core,
             )
@@ -225,7 +225,7 @@ extension MinecraftFileManager {
                 destinationURL: destinationURL,
                 expectedSha1: loggingFile.sha1,
             )
-            incrementCompletedFilesCount(
+            await incrementCompletedFilesCount(
                 fileName: "logging.config",
                 type: .core,
             )
@@ -247,7 +247,7 @@ extension MinecraftFileManager {
         metaDirectory: URL,
         minecraftVersion: String,
     ) async {
-        incrementCompletedFilesCount(
+        await incrementCompletedFilesCount(
             fileName: library.name,
             type: .core,
         )
