@@ -24,6 +24,7 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var showEditSkin = false
     @State private var showingMinecraftFriendsSheet = false
     @State private var minecraftFriendsSheetHost: MinecraftFriendsSheetHostAdapter?
+    @State private var isLoadingFriends = false
     @State private var viewModel = ContentToolbarViewModel()
     @State private var minecraftFriendsSheetViewModel = MinecraftFriendsSheetViewModel(friendsService: DIContainer.shared.ui.minecraftFriendsService)
 
@@ -142,15 +143,17 @@ public struct ContentToolbarView: ToolbarContent {
                 Button {
                     Task {
                         guard let p = currentPlayer else { return }
+                        isLoadingFriends = true
+                        defer { isLoadingFriends = false }
                         let host = MinecraftFriendsSheetHostAdapter(player: p)
                         minecraftFriendsSheetHost = host
                         minecraftFriendsSheetViewModel.prepare(playerId: p.id, host: host)
                         await minecraftFriendsSheetViewModel.load(forceRefresh: false)
-                        guard !Task.isCancelled, currentPlayer?.id == p.id else { return }
+                        guard !Task.isCancelled else { return }
                         showingMinecraftFriendsSheet = true
                     }
                 } label: {
-                    if minecraftFriendsSheetViewModel.isLoading, !showingMinecraftFriendsSheet {
+                    if isLoadingFriends {
                         ProgressView()
                             .controlSize(.small)
                     } else {
@@ -158,7 +161,7 @@ public struct ContentToolbarView: ToolbarContent {
                     }
                 }
                 .help("minecraft.friends.toolbar.help".localized())
-                .disabled(minecraftFriendsSheetViewModel.isLoading && !showingMinecraftFriendsSheet)
+                .disabled(isLoadingFriends)
                 .sheet(isPresented: $showingMinecraftFriendsSheet) {
                     if let p = currentPlayer, minecraftFriendsSheetHost != nil {
                         MinecraftFriendsSheetView(
