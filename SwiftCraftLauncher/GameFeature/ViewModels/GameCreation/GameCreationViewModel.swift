@@ -10,26 +10,27 @@ import UniformTypeIdentifiers
 
 /// View model for creating a new game instance, managing version selection, mod loader configuration, and game persistence.
 @MainActor
+@Observable
 class GameCreationViewModel: BaseGameFormViewModel {
-    @Published var gameIcon = AppConstants.defaultGameIcon
-    @Published var iconImage: Image?
-    @Published var selectedGameVersion = ""
-    @Published var versionTime = ""
-    @Published var selectedModLoader = GameLoader.vanilla.displayName {
+    var gameIcon = AppConstants.defaultGameIcon
+    var iconImage: Image?
+    var selectedGameVersion = ""
+    var versionTime = ""
+    var selectedModLoader = GameLoader.vanilla.displayName {
         didSet {
             updateParentState()
         }
     }
 
-    @Published var selectedLoaderVersion = "" {
+    var selectedLoaderVersion = "" {
         didSet {
             updateDefaultGameName()
         }
     }
 
-    @Published var availableLoaderVersions: [String] = []
-    @Published var availableVersions: [String] = []
-    @Published var isLoadingLoaderVersions = false
+    var availableLoaderVersions: [String] = []
+    var availableVersions: [String] = []
+    var isLoadingLoaderVersions = false
 
     var pendingIconData: Data?
     var pendingIconURL: URL?
