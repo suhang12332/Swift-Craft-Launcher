@@ -22,12 +22,6 @@ enum FileDownloadCore {
         }
     }
 
-    static func normalizedDownloadURL(from originalURL: URL) -> URL {
-        autoreleasepool {
-            URLConfig.applyGitProxyIfNeeded(originalURL)
-        }
-    }
-
     static func ensureParentDirectory(for destinationURL: URL, fileManager: FileManager = .default) throws {
         do {
             try fileManager.createDirectory(

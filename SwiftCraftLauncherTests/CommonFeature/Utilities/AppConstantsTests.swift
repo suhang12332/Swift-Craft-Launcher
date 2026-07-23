@@ -79,18 +79,9 @@ final class AppConstantsTests: XCTestCase {
         XCTAssertEqual(AppConstants.DatabaseTables.modCache, "mod_cache")
     }
 
-    func testAuthlibInjector_version() {
-        XCTAssertEqual(AppConstants.AuthlibInjector.version, "1.2.7")
-    }
-
-    func testAuthlibInjector_jarFileName() {
-        XCTAssertEqual(AppConstants.AuthlibInjector.jarFileName, "authlib-injector-1.2.7.jar")
-    }
-
     func testAuthlibInjector_agentArgument() {
         let arg = AppConstants.AuthlibInjector.agentArgument(serverApiRoot: "https://littleskin.cn")
         XCTAssertTrue(arg.hasPrefix("-javaagent:"))
-        XCTAssertTrue(arg.contains("authlib-injector-1.2.7.jar"))
         XCTAssertTrue(arg.contains("https://littleskin.cn"))
     }
 

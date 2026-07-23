@@ -9,44 +9,6 @@
 import XCTest
 
 final class URLConfigTests: XCTestCase {
-    func testApplyGitProxy_githubURL() {
-        let url = URL.require("https://github.com/user/repo/releases/download/v1.0/file.jar")
-        let result = URLConfig.applyGitProxyIfNeeded(url)
-
-        XCTAssertTrue(result.absoluteString.contains("gh-proxy.com"))
-    }
-
-    func testApplyGitProxy_rawGithubURL() {
-        let url = URL.require("https://raw.githubusercontent.com/user/repo/main/file.json")
-        let result = URLConfig.applyGitProxyIfNeeded(url)
-
-        XCTAssertTrue(result.absoluteString.contains("gh-proxy.com"))
-    }
-
-    func testApplyGitProxy_nonGitHubURL_unchanged() {
-        let url = URL.require("https://example.com/file.jar")
-        let result = URLConfig.applyGitProxyIfNeeded(url)
-
-        XCTAssertEqual(result, url)
-    }
-
-    func testApplyGitProxy_stringVersion() {
-        let result = URLConfig.applyGitProxyIfNeeded("https://github.com/user/repo/releases/download/v1.0/file.jar")
-        XCTAssertTrue(result.contains("gh-proxy.com"))
-    }
-
-    func testApplyGitProxy_stringVersion_nonGitHub() {
-        let result = URLConfig.applyGitProxyIfNeeded("https://example.com/file.jar")
-        XCTAssertEqual(result, "https://example.com/file.jar")
-    }
-
-    func testApplyGitProxy_alreadyProxied() {
-        let url = URL.require("https://gh-proxy.com/https://github.com/user/repo/file.jar")
-        let result = URLConfig.applyGitProxyIfNeeded(url)
-
-        XCTAssertEqual(result, url)
-    }
-
     func testAPIAuthentication_urls() {
         let auth = URLConfig.API.Authentication.authorize
         XCTAssertTrue(auth.absoluteString.contains("login.microsoftonline.com"))

@@ -58,20 +58,6 @@ final class FileDownloadCoreExtendedTests: XCTestCase {
         XCTAssertThrowsError(try FileDownloadCore.parseURL(from: "https://exam ple.com/file.jar"))
     }
 
-    func testNormalizedDownloadURL_nonGitHub_passthrough() throws {
-        let url = try FileDownloadCore.parseURL(from: "https://example.com/file.jar")
-        let result = FileDownloadCore.normalizedDownloadURL(from: url)
-        XCTAssertEqual(result.absoluteString, "https://example.com/file.jar")
-    }
-
-    func testNormalizedDownloadURL_githubUrl() throws {
-        let url = try FileDownloadCore.parseURL(from: "https://github.com/user/repo/releases/download/v1.0/file.jar")
-        let result = FileDownloadCore.normalizedDownloadURL(from: url)
-        XCTAssertTrue(
-            result.absoluteString.contains("github.com") || result.absoluteString.contains("gh-proxy"),
-        )
-    }
-
     func testExistingFileSizeIfReusable_missingFile_returnsNil() {
         let url = tmpFile("missing-\(UUID().uuidString).jar")
         XCTAssertNil(FileDownloadCore.existingFileSizeIfReusable(at: url, expectedSha1: nil))

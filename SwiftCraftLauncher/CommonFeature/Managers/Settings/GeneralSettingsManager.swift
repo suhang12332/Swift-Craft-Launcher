@@ -2,7 +2,7 @@
 //  GeneralSettingsManager.swift
 //  CommonFeature
 //
-//  Manages general application settings including proxy, downloads, and layout preferences.
+//  Manages general application settings including downloads and layout preferences.
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
@@ -20,19 +20,11 @@ public enum InterfaceLayoutStyle: String, CaseIterable {
     }
 }
 
-/// Manages general application settings including proxy, downloads, and layout preferences.
+/// Manages general application settings including downloads and layout preferences.
 @Observable
 final class GeneralSettingsManager: WorkingPathProviding {
     /// A Combine subject that fires when the working directory path changes.
     private let workingPathDidChangeSubject = PassthroughSubject<Void, Never>()
-
-    var enableGitHubProxy: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableGitHubProxy, defaultValue: true) {
-        didSet { Defaults.save(enableGitHubProxy, forKey: AppConstants.UserDefaultsKeys.enableGitHubProxy) }
-    }
-
-    var gitProxyURL: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.gitProxyURL, defaultValue: URLConfig.Defaults.gitProxyURL) {
-        didSet { Defaults.save(gitProxyURL, forKey: AppConstants.UserDefaultsKeys.gitProxyURL) }
-    }
 
     var limitCommonSheetHeight: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.limitCommonSheetHeight) {
         didSet { Defaults.save(limitCommonSheetHeight, forKey: AppConstants.UserDefaultsKeys.limitCommonSheetHeight) }

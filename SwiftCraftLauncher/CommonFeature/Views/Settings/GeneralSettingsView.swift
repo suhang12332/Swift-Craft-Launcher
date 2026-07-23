@@ -43,9 +43,6 @@ public struct GeneralSettingsView: View {
 
             GeneralSettingsSystemProxyRow()
 
-            GeneralSettingsGitHubProxyRow()
-                .environment(container.ui.generalSettingsManager)
-
             GeneralSettingsCommonSheetHeightLimitRow()
                 .environment(container.ui.generalSettingsManager)
         }

@@ -11,7 +11,7 @@ env:
 
 jobs:
   test:
-    runs-on: macos-26
+    runs-on: xcode-27
 
     steps:
       # =========================
@@ -19,14 +19,6 @@ jobs:
       # =========================
       - name: Checkout code
         uses: actions/checkout@v6
-
-      # =========================
-      # Xcode
-      # =========================
-      - name: Setup Xcode
-        uses: JohnTitor/setup-xcode@v0.1.1
-        with:
-          xcode-version: latest-stable
 
       # =========================
       # SwiftLint
@@ -70,7 +62,7 @@ jobs:
           xcodebuild test \
             -project SwiftCraftLauncher.xcodeproj \
             -scheme SwiftCraftLauncher \
-            -destination 'platform=macOS' \
+            -destination 'platform=macOS,arch=arm64' \
             -skipPackagePluginValidation \
             CODE_SIGNING_ALLOWED=NO \
             -resultBundlePath TestResults.xcresult | tee xcodebuild.log

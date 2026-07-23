@@ -33,7 +33,6 @@ enum ProgressDownloadManager {
     ) async throws -> URL {
         try Task.checkCancellation()
         let url = try FileDownloadCore.parseURL(from: urlString)
-        let finalURL = FileDownloadCore.normalizedDownloadURL(from: url)
 
         let fileManager = FileManager.default
 
@@ -50,7 +49,7 @@ enum ProgressDownloadManager {
 
         let fileSize: Int64
         if let progressHandler {
-            fileSize = try await getRemoteFileSize(from: finalURL, headers: headers)
+            fileSize = try await getRemoteFileSize(from: url, headers: headers)
             progressHandler(0, fileSize)
         } else {
             fileSize = 0
@@ -61,7 +60,7 @@ enum ProgressDownloadManager {
             try Task.checkCancellation()
             do {
                 let tempURL = try await ProgressDownloadSession.shared.download(
-                    from: finalURL,
+                    from: url,
                     totalSize: fileSize,
                     headers: headers,
                     progressHandler: progressHandler,

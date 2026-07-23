@@ -55,7 +55,7 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate {
 
     func feedURLString(for _: SPUUpdater) -> String? {
         let architecture = getSystemArchitecture()
-        let appcastURL = URLConfig.API.GitHub.appcastURL(architecture: architecture)
+        let appcastURL = URLConfig.API.Sparkle.appcastURL(architecture: architecture)
         return appcastURL.absoluteString
     }
 
@@ -151,15 +151,23 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate {
     }
 }
 
-/// Intercepts download requests to apply proxy prefix for GitHub resource URLs when needed.
+/// Intercepts download requests to rewrite the URL to the configured download mirror.
 extension SparkleUpdateService {
     func updater(_: SPUUpdater, willDownloadUpdate _: SUAppcastItem, with request: NSMutableURLRequest) {
         guard let originalURL = request.url else { return }
 
-        let proxiedURL = URLConfig.applyGitProxyIfNeeded(originalURL)
-        if proxiedURL != originalURL {
-            AppLog.common.info("Update download URL rewritten: \(originalURL.absoluteString) -> \(proxiedURL.absoluteString)")
-            request.url = proxiedURL
+        let version = latestVersion
+        guard !version.isEmpty else {
+            AppLog.common.warning("Update download URL rewrite skipped: latestVersion is empty, using original URL")
+            return
         }
+
+        let fileName = originalURL.lastPathComponent
+        let mirroredURL = URLConfig.API.Sparkle.downloadBaseURL
+            .appendingPathComponent(version)
+            .appendingPathComponent(fileName)
+
+        AppLog.common.info("Update download URL rewritten: \(originalURL.absoluteString) -> \(mirroredURL.absoluteString)")
+        request.url = mirroredURL
     }
 }

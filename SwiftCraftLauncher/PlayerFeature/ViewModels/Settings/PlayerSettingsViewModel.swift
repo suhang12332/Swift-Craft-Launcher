@@ -30,30 +30,54 @@ final class PlayerSettingsViewModel {
 
     /// Updates whether the authlib-injector JAR file exists on disk.
     func refreshAuthlibInjectorExists() {
-        let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(
-            AppConstants.AuthlibInjector.jarFileName,
-        )
-        authlibInjectorExists = FileManager.default.fileExists(atPath: authlibInjectorJarURL.path)
+        authlibInjectorExists = FileManager.default.fileExists(atPath: AppConstants.AuthlibInjector.jarPath)
     }
 
-    /// Downloads the authlib-injector JAR file.
+    /// Fetches the latest authlib-injector version info from GitHub.
+    /// - Returns: A tuple of (version, downloadURL), or nil if the request fails.
+    private func fetchLatestAuthlibInjectorVersion() async -> (version: String, downloadURL: URL)? {
+        guard let data = try? await APIClient.get(url: URLConfig.API.AuthlibInjector.latestRelease),
+              let release = try? JSONDecoder().decode(GitHubRelease.self, from: data) else {
+            return nil
+        }
+        let version = release.tagName.hasPrefix("v") ? String(release.tagName.dropFirst()) : release.tagName
+        let downloadURL = URLConfig.API.AuthlibInjector.downloadURL(version)
+        return (version, downloadURL)
+    }
+
+    /// Downloads the latest authlib-injector JAR from GitHub releases.
     func downloadAuthlibInjector() async {
         guard !isDownloadingAuthlibInjector else { return }
         isDownloadingAuthlibInjector = true
         defer { isDownloadingAuthlibInjector = false }
 
-        let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(
-            AppConstants.AuthlibInjector.jarFileName,
-        )
-
         do {
-            let downloadURL = URLConfig.API.AuthlibInjector.download
+            guard let latest = await fetchLatestAuthlibInjectorVersion() else {
+                throw GlobalError.download(
+                    i18nKey: "error.download.authlib_injector_failed",
+                    level: .notification,
+                )
+            }
+
+            let authDir = AppPaths.authDirectory
+
+            // Remove all existing files in the auth directory
+            if let files = try? FileManager.default.contentsOfDirectory(atPath: authDir.path) {
+                for file in files {
+                    try? FileManager.default.removeItem(at: authDir.appendingPathComponent(file))
+                }
+            }
+
+            let destinationURL = authDir.appendingPathComponent(latest.downloadURL.lastPathComponent)
+
             _ = try await DownloadManager.downloadFile(
-                urlString: downloadURL.absoluteString,
-                destinationURL: authlibInjectorJarURL,
+                urlString: latest.downloadURL.absoluteString,
+                destinationURL: destinationURL,
                 expectedSha1: nil,
             )
+
             authlibInjectorExists = true
+            Defaults.save(latest.version, forKey: AppConstants.UserDefaultsKeys.authlibInjectorVersion)
         } catch {
             let globalError = GlobalError.download(
                 i18nKey: "error.download.authlib_injector_failed",
