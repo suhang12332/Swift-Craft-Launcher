@@ -55,7 +55,7 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate {
 
     func feedURLString(for _: SPUUpdater) -> String? {
         let architecture = getSystemArchitecture()
-        let appcastURL = URLConfig.API.GitHub.appcastURL(architecture: architecture)
+        let appcastURL = URLConfig.API.Sparkle.appcastURL(architecture: architecture)
         return appcastURL.absoluteString
     }
 
@@ -148,5 +148,21 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate {
         isCheckingForUpdates = true
 
         updater.checkForUpdatesInBackground()
+    }
+}
+
+/// Intercepts download requests to rewrite the URL to the configured download mirror.
+extension SparkleUpdateService {
+    func updater(_: SPUUpdater, willDownloadUpdate _: SUAppcastItem, with request: NSMutableURLRequest) {
+        guard let originalURL = request.url else { return }
+
+        let fileName = originalURL.lastPathComponent
+        let version = latestVersion
+        let mirroredURL = URLConfig.API.Sparkle.downloadBaseURL
+            .appendingPathComponent(version)
+            .appendingPathComponent(fileName)
+
+        AppLog.common.info("Update download URL rewritten: \(originalURL.absoluteString) -> \(mirroredURL.absoluteString)")
+        request.url = mirroredURL
     }
 }

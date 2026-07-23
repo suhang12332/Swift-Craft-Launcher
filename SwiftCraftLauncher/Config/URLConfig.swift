@@ -169,16 +169,6 @@ enum URLConfig {
                     .appendingPathComponent(version)
             }
 
-            /// Returns the Sparkle appcast feed URL for the given architecture.
-            ///
-            /// - Parameter architecture: The target architecture identifier (e.g. "arm64", "x86_64").
-            /// - Returns: The appcast XML download URL.
-            static func appcastURL(architecture: String) -> URL {
-                let appcastFileName = "appcast-\(architecture).xml"
-                return URLConfig.url("https://swift-craft-launcher-update.suhang12332.workers.dev")
-                    .appendingPathComponent(appcastFileName)
-            }
-
             /// Returns the URL for the static contributors JSON file.
             static func staticContributors() -> URL {
                 URLConfig.url("https://swift-craft-launcher-contributors.pages.dev")
@@ -222,6 +212,21 @@ enum URLConfig {
                 URLConfig.url("https://swift-craft-launcher-news.pages.dev")
                     .appendingPathComponent(version)
                     .appendingPathComponent("\(language).json")
+            }
+        }
+
+        enum Sparkle {
+            /// The base URL for application update downloads.
+            static let downloadBaseURL = URLConfig.url("https://swift-craft-launcher-download.suhang12332.workers.dev")
+
+            /// Returns the Sparkle appcast feed URL for the given architecture.
+            ///
+            /// - Parameter architecture: The target architecture identifier (e.g. "arm64", "x86_64").
+            /// - Returns: The appcast XML download URL.
+            static func appcastURL(architecture: String) -> URL {
+                let appcastFileName = "appcast-\(architecture).xml"
+                return URLConfig.url("https://swift-craft-launcher-update.suhang12332.workers.dev")
+                    .appendingPathComponent(appcastFileName)
             }
         }
 
