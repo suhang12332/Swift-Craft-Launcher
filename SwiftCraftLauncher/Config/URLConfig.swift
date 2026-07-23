@@ -165,7 +165,7 @@ enum URLConfig {
             /// - Parameter tag: The release tag, e.g. "v1.2.8".
             /// - Returns: The JAR filename, e.g. "authlib-injector-1.2.8.jar".
             static func jarFileName(_ version: String) -> String {
-                return "authlib-injector-\(version).jar"
+                "authlib-injector-\(version).jar"
             }
 
             /// Constructs the download URL for a given release tag.
