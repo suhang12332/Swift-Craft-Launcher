@@ -36,7 +36,7 @@ public struct PlayerSettingsView: View {
 
     public var body: some View {
         @Bindable var playerSettingsManager = playerSettingsManager
-        let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(AppConstants.AuthlibInjector.jarFileName)
+        let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(AppConstants.AuthlibInjector.jarPath)
 
         Form {
             Group {
@@ -140,22 +140,21 @@ public struct PlayerSettingsView: View {
                 }
             }
             LabeledContent("settings.player.authlib_injector".localized()) {
-                if viewModel.authlibInjectorExists {
-                    PathBreadcrumbView(path: authlibInjectorJarURL.path)
-                } else {
+                HStack(spacing: 8) {
+                    if viewModel.authlibInjectorExists {
+                        PathBreadcrumbView(path: authlibInjectorJarURL.path)
+                    }
                     Button {
                         Task { await viewModel.downloadAuthlibInjector() }
                     } label: {
-                        HStack(spacing: 8) {
-                            if viewModel.isDownloadingAuthlibInjector {
-                                ProgressView().controlSize(.small)
-                            } else {
-                                Text("global_resource.download".localized())
-                            }
+                        if viewModel.isDownloadingAuthlibInjector {
+                            ProgressView().controlSize(.small)
+                        } else {
+                            Text(viewModel.authlibInjectorExists ? "resource.update".localized() : "resource.download".localized())
                         }
                     }
-                    .disabled(viewModel.isDownloadingAuthlibInjector)
                 }
+                .disabled(viewModel.isDownloadingAuthlibInjector)
             }
             .labeledContentStyle(.custom)
             .padding(.top, 10)

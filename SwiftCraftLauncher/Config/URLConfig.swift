@@ -155,10 +155,28 @@ enum URLConfig {
         }
 
         enum AuthlibInjector {
-            /// The download URL for the current version of Authlib Injector.
-            static let download = URLConfig.applyGitProxyIfNeeded(
-                URLConfig.url("https://github.com/yushijinhun/authlib-injector/releases/download/v\(AppConstants.AuthlibInjector.version)/\(AppConstants.AuthlibInjector.jarFileName)"),
+            /// The GitHub API URL for fetching the latest Authlib Injector release.
+            static let latestRelease = URLConfig.applyGitProxyIfNeeded(
+                URLConfig.url("https://api.github.com/repos/yushijinhun/authlib-injector/releases/latest"),
             )
+
+            /// Constructs the JAR filename for a given release tag.
+            ///
+            /// - Parameter tag: The release tag, e.g. "v1.2.8".
+            /// - Returns: The JAR filename, e.g. "authlib-injector-1.2.8.jar".
+            static func jarFileName(_ version: String) -> String {
+                return "authlib-injector-\(version).jar"
+            }
+
+            /// Constructs the download URL for a given release tag.
+            ///
+            /// - Parameter tag: The release tag, e.g. "v1.2.8".
+            /// - Returns: The JAR download URL.
+            static func downloadURL(_ version: String) -> URL {
+                URLConfig.applyGitProxyIfNeeded(
+                    URLConfig.url("https://github.com/yushijinhun/authlib-injector/releases/download/v\(version)/\(jarFileName(version))"),
+                )
+            }
 
             /// Returns the normalized API root address expected by Authlib Injector.
             ///
