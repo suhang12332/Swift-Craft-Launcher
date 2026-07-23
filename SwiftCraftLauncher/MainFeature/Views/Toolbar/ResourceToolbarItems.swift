@@ -28,10 +28,11 @@ struct ResourceToolbarItems: View {
 
     /// Opens the project page for the currently loaded resource in the default browser.
     private func openCurrentResourceInBrowser() {
-        guard let slug = detailState.loadedProjectDetail?.slug else { return }
-        guard let id = detailState.loadedProjectDetail?.id else { return }
+        guard let slug = detailState.loadedProjectDetail?.slug,
+              let id = detailState.loadedProjectDetail?.id else { return }
+        let projectIdentifier = ProjectIdentifier(id)
         let useCurseForge = detailState.gameId != nil
-            ? id.starts(with: "cf-")
+            ? projectIdentifier.isCurseForge
             : filterState.dataSource == .curseforge
         let baseURL = useCurseForge
             ? URLConfig.API.CurseForge.webProjectURL(projectType: detailState.gameResourcesType)

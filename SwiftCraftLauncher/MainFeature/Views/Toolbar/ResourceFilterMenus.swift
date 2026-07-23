@@ -24,8 +24,8 @@ enum ResourceFilterMenus {
 
     private static func currentResourceTypeTitle(detailState: ResourceDetailState) -> String {
         detailState.gameType
-            ? "resource.content.type.server".localized()
-            : "resource.content.type.local".localized()
+            ? "resource.content.type.local".localized()
+            : "resource.content.type.server".localized()
     }
 
     /// Toggles the resource content location between local and remote.
@@ -38,7 +38,6 @@ enum ResourceFilterMenus {
                 systemImage: detailState.gameType
                     ? "tray.and.arrow.down" : "icloud.and.arrow.down",
             )
-            .foregroundStyle(.primary)
             .applyReplaceTransition()
         }
         .help("resource.content.location.help".localized())
@@ -54,7 +53,9 @@ enum ResourceFilterMenus {
             }
         } label: {
             Label(currentResourceTitle(detailState: detailState), systemImage: ResourceType(rawValue: detailState.gameResourcesType)?.systemImage ?? "folder")
+                .applyReplaceTransition()
         }
+        .help("sidebar.resources.title".localized())
     }
 
     /// Presents a menu for choosing between data sources such as Modrinth or CurseForge.
@@ -66,9 +67,10 @@ enum ResourceFilterMenus {
                 }
             }
         } label: {
-            Image(systemName: filterState.dataSource == .modrinth ? "m.square" : "c.square")
-                .help(filterState.dataSource.displayName)
+            Label(filterState.dataSource.displayName, systemImage: filterState.dataSource == .modrinth ? "m.square" : "c.square")
+                .applyReplaceTransition()
         }
+        .help(filterState.dataSource.displayName)
     }
 
     /// A toggle button for filtering between all resources and favorites only.
@@ -82,11 +84,10 @@ enum ResourceFilterMenus {
                     : "favorites".localized(),
                 systemImage: filterState.showFavoritesOnly ? "heart.fill" : "heart",
             )
-            .labelStyle(.iconOnly)
             .applyReplaceTransition()
             .foregroundStyle(filterState.showFavoritesOnly ? .red : .secondary)
         }
-        .help(filterState.showFavoritesOnly ? "resource.local_filter.all".localized() : "favorites".localized())
+        .help("favorites".localized())
     }
 
     /// Provides a menu for filtering local resources by status, such as all or disabled.
@@ -99,6 +100,8 @@ enum ResourceFilterMenus {
             }
         } label: {
             Label(filterState.localResourceFilter.title, systemImage: filterState.localResourceFilter.icon)
+                .applyReplaceTransition()
         }
+        .help(filterState.localResourceFilter.title)
     }
 }
