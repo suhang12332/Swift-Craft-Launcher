@@ -30,7 +30,6 @@ class BaseGameFormViewModel: GameFormStateProtocol {
         gameNameValidator = GameNameValidator(gameSetupService: gameSetupService)
 
         setupObservers()
-        updateParentState()
     }
 
     private func setupObservers() {
