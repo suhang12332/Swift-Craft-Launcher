@@ -66,7 +66,6 @@ struct SwiftCraftLauncherApp: App {
                         playerListViewModel: playerListViewModel,
                     )
                 }
-                .onAppear(perform: cleanupWindowDataOnLaunch)
                 .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in
                     ProgressDownloadManager.cleanup()
                 }
@@ -132,11 +131,5 @@ struct SwiftCraftLauncherApp: App {
         Task {
             await NotificationManager.requestAuthorizationIfNeeded()
         }
-    }
-
-    /// Cleans up window‑specific persisted data that should not survive a launch.
-    private func cleanupWindowDataOnLaunch() {
-        container.ui.windowDataStore.cleanup(for: .aiChat)
-        container.ui.windowDataStore.cleanup(for: .skinPreview)
     }
 }
