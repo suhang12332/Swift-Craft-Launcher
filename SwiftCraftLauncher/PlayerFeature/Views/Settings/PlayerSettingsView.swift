@@ -36,7 +36,6 @@ public struct PlayerSettingsView: View {
 
     public var body: some View {
         @Bindable var playerSettingsManager = playerSettingsManager
-        let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(AppConstants.AuthlibInjector.jarPath)
 
         Form {
             Group {
@@ -142,7 +141,7 @@ public struct PlayerSettingsView: View {
             LabeledContent("settings.player.authlib_injector".localized()) {
                 HStack(spacing: 8) {
                     if viewModel.authlibInjectorExists {
-                        PathBreadcrumbView(path: authlibInjectorJarURL.path)
+                        PathBreadcrumbView(path: AppConstants.AuthlibInjector.jarPath)
                     }
                     Button {
                         Task { await viewModel.downloadAuthlibInjector() }
