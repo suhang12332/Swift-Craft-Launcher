@@ -20,7 +20,7 @@ env:
 
 jobs:
   build:
-    runs-on: macos-26
+    runs-on: xcode-27
     strategy:
       matrix:
         arch: [arm64, x86_64]
@@ -28,11 +28,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
-      - name: Setup Xcode
-        uses: JohnTitor/setup-xcode@v0.1.1
-        with:
-          xcode-version: latest-stable
 
       - name: Extract version info
         id: version
@@ -349,7 +344,7 @@ jobs:
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
-    runs-on: macos-15
+    runs-on: xcode-27
     permissions:
       contents: write
 
