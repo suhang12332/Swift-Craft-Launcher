@@ -50,9 +50,8 @@ struct WorldDetailSheetView: View {
                 Link(destination: url) {
                     Image(systemName: "safari")
                 }
-                .controlSize(.large)
+                .font(.title3)
                 .foregroundStyle(.secondary)
-                .bold()
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

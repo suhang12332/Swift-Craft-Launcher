@@ -110,7 +110,7 @@ struct ScreenshotDetailView: View {
             Spacer()
             ShareLink(item: screenshot.path) {
                 Image(systemName: "square.and.arrow.up")
-                    .font(.headline)
+                    .font(.title3)
             }
             .buttonStyle(.borderless)
         }

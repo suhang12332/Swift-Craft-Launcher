@@ -55,7 +55,7 @@ struct LitematicaDetailSheetView: View {
             Spacer()
             ShareLink(item: filePath) {
                 Image(systemName: "square.and.arrow.up")
-                    .font(.headline)
+                    .font(.title3)
             }
             .buttonStyle(.borderless)
         }
