@@ -354,7 +354,7 @@ jobs:
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
-    runs-on: xcode-27  # 改为 xcode-27
+    runs-on: xcode-27
     permissions:
       contents: write
 
