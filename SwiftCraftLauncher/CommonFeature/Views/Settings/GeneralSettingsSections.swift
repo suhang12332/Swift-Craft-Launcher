@@ -170,40 +170,6 @@ struct GeneralSettingsSystemProxyRow: View {
     }
 }
 
-/// A row for configuring a GitHub proxy URL.
-struct GeneralSettingsGitHubProxyRow: View {
-    @Environment(GeneralSettingsManager.self)
-    private var generalSettings
-
-    var body: some View {
-        @Bindable var generalSettings = generalSettings
-        LabeledContent("settings.github_proxy.label".localized()) {
-            VStack(alignment: .leading) {
-                HStack {
-                    Toggle("", isOn: $generalSettings.enableGitHubProxy)
-                        .labelsHidden()
-                    Text("settings.github_proxy.enable".localized())
-                }
-                HStack(spacing: 8) {
-                    TextField("", text: $generalSettings.gitProxyURL)
-                        .labelsHidden()
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 200)
-                        .focusable(false)
-                        .disabled(!generalSettings.enableGitHubProxy)
-                    Button("settings.github_proxy.reset_default".localized()) {
-                        generalSettings.gitProxyURL = URLConfig.Defaults.gitProxyURL
-                    }
-                    .disabled(!generalSettings.enableGitHubProxy)
-                }
-                CommonDescriptionText(text: "settings.github_proxy.description".localized())
-            }
-        }
-        .labeledContentStyle(.custom)
-        .padding(.top, 10)
-    }
-}
-
 /// A row to toggle the common sheet height limit.
 struct GeneralSettingsCommonSheetHeightLimitRow: View {
     @Environment(GeneralSettingsManager.self)

@@ -150,16 +150,3 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate {
         updater.checkForUpdatesInBackground()
     }
 }
-
-/// Intercepts download requests to apply proxy prefix for GitHub resource URLs when needed.
-extension SparkleUpdateService {
-    func updater(_: SPUUpdater, willDownloadUpdate _: SUAppcastItem, with request: NSMutableURLRequest) {
-        guard let originalURL = request.url else { return }
-
-        let proxiedURL = URLConfig.applyGitProxyIfNeeded(originalURL)
-        if proxiedURL != originalURL {
-            AppLog.common.info("Update download URL rewritten: \(originalURL.absoluteString) -> \(proxiedURL.absoluteString)")
-            request.url = proxiedURL
-        }
-    }
-}

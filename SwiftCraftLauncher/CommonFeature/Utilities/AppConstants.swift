@@ -45,8 +45,6 @@ enum AppConstants {
         static let includeSnapshotsForGameVersions = "includeSnapshotsForGameVersions"
         static let syncLanguageForNewGames = "syncLanguageForNewGames"
 
-        static let enableGitHubProxy = "enableGitHubProxy"
-        static let gitProxyURL = "gitProxyURL"
         static let limitCommonSheetHeight = "limitCommonSheetHeight"
         static let concurrentDownloads = "concurrentDownloads"
         static let launcherWorkingDirectory = "launcherWorkingDirectory"
@@ -54,6 +52,7 @@ enum AppConstants {
         static let defaultModPackExportFormat = "defaultModPackExportFormat"
         static let acknowledgedAnnouncementVersion = "acknowledgedAnnouncementVersion"
         static let themeMode = "themeMode"
+        static let authlibInjectorVersion = "authlibInjectorVersion"
     }
 
     enum KeychainAccounts {
@@ -157,13 +156,19 @@ enum AppConstants {
     }
 
     enum AuthlibInjector {
-        static let version = "1.2.7"
-        static let jarFileName = "authlib-injector-\(version).jar"
         static let agentPrefix = "-javaagent:"
 
-        /// The full path to the authlib-injector JAR file.
+        /// The full path to the authlib-injector JAR file, using the version from UserDefaults.
+        /// Falls back to the first `.jar` file in the auth directory when the stored version is empty.
         static var jarPath: String {
-            AppPaths.authDirectory.appendingPathComponent(jarFileName).path
+            let version = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.authlibInjectorVersion)
+            if version.isEmpty,
+               let jarFile = try? FileManager.default.contentsOfDirectory(at: AppPaths.authDirectory, includingPropertiesForKeys: nil)
+                   .first(where: { $0.pathExtension == "jar" }) {
+                return jarFile.path
+            }
+            let jarName = URLConfig.API.AuthlibInjector.jarFileName(version)
+            return AppPaths.authDirectory.appendingPathComponent(jarName).path
         }
 
         /// Returns the `-javaagent` argument string for authlib-injector.

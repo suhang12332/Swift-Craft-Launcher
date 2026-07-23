@@ -17,65 +17,6 @@ enum URLConfig {
         URL(string: string) ?? URL(string: "https://localhost") ?? URL(fileURLWithPath: "/")
     }
 
-    private enum GitHubProxySettings {
-        static var defaultProxy: String { Defaults.gitProxyURL }
-
-        static var isEnabled: Bool {
-            let defaults = UserDefaults.standard
-            return (defaults.object(forKey: AppConstants.UserDefaultsKeys.enableGitHubProxy) as? Bool) ?? true
-        }
-
-        static var proxyString: String {
-            let defaults = UserDefaults.standard
-            return (defaults.string(forKey: AppConstants.UserDefaultsKeys.gitProxyURL) ?? defaultProxy)
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-
-        static var normalizedProxyPrefix: String? {
-            let proxy = proxyString
-            guard !proxy.isEmpty else { return nil }
-            guard let url = URL(string: proxy), let scheme = url.scheme else { return nil }
-            guard scheme == "http" || scheme == "https" else { return nil }
-            return proxy.hasSuffix("/") ? String(proxy.dropLast()) : proxy
-        }
-    }
-
-    private static let githubHost = "github.com"
-    private static let rawGithubHost = "raw.githubusercontent.com"
-
-    /// Returns a proxied version of the given URL when a GitHub proxy is configured and enabled.
-    ///
-    /// Only URLs targeting `github.com` or `raw.githubusercontent.com` are proxied.
-    /// If the URL is already proxied, it is returned unchanged.
-    ///
-    /// - Parameter url: The original URL.
-    /// - Returns: A proxied URL if applicable; otherwise the original URL.
-    static func applyGitProxyIfNeeded(_ url: URL) -> URL {
-        guard let host = url.host else { return url }
-        let isGitHubURL = host == githubHost || host == rawGithubHost
-        guard isGitHubURL else { return url }
-
-        guard GitHubProxySettings.isEnabled else { return url }
-        guard let proxy = GitHubProxySettings.normalizedProxyPrefix else { return url }
-
-        let urlString = url.absoluteString
-        if urlString.hasPrefix("\(proxy)/") { return url }
-
-        let proxiedString = "\(proxy)/\(urlString)"
-        return Self.url(proxiedString)
-    }
-
-    /// Returns a proxied version of the given URL string when a GitHub proxy is configured and enabled.
-    ///
-    /// - Parameter urlString: The original URL string.
-    /// - Returns: A proxied URL string if applicable; otherwise the original string.
-    static func applyGitProxyIfNeeded(_ urlString: String) -> String {
-        autoreleasepool {
-            guard let url = URL(string: urlString) else { return urlString }
-            return applyGitProxyIfNeeded(url).absoluteString
-        }
-    }
-
     enum API {
         enum Authentication {
             /// The Microsoft OAuth authorization endpoint.
@@ -156,9 +97,7 @@ enum URLConfig {
 
         enum AuthlibInjector {
             /// The GitHub API URL for fetching the latest Authlib Injector release.
-            static let latestRelease = URLConfig.applyGitProxyIfNeeded(
-                URLConfig.url("https://api.github.com/repos/yushijinhun/authlib-injector/releases/latest"),
-            )
+            static let latestRelease = URLConfig.url("https://api.github.com/repos/yushijinhun/authlib-injector/releases/latest")
 
             /// Constructs the JAR filename for a given release tag.
             ///
@@ -170,12 +109,10 @@ enum URLConfig {
 
             /// Constructs the download URL for a given release tag.
             ///
-            /// - Parameter tag: The release tag, e.g. "v1.2.8".
+            /// - Parameter version: The release version, e.g. "1.2.8".
             /// - Returns: The JAR download URL.
             static func downloadURL(_ version: String) -> URL {
-                URLConfig.applyGitProxyIfNeeded(
-                    URLConfig.url("https://github.com/yushijinhun/authlib-injector/releases/download/v\(version)/\(jarFileName(version))"),
-                )
+                URLConfig.url("https://github.com/yushijinhun/authlib-injector/releases/download/v\(version)/\(jarFileName(version))")
             }
 
             /// Returns the normalized API root address expected by Authlib Injector.
@@ -235,7 +172,7 @@ enum URLConfig {
             /// Returns the Sparkle appcast feed URL for the given architecture.
             ///
             /// - Parameter architecture: The target architecture identifier (e.g. "arm64", "x86_64").
-            /// - Returns: The appcast XML download URL, routed through the proxy if enabled.
+            /// - Returns: The appcast XML download URL.
             static func appcastURL(architecture: String) -> URL {
                 let appcastFileName = "appcast-\(architecture).xml"
                 return URLConfig.url("https://swift-craft-launcher-update.suhang12332.workers.dev")
@@ -257,7 +194,7 @@ enum URLConfig {
             /// Returns the URL for a game icon asset.
             ///
             /// - Parameter value: The game identifier used as the icon filename.
-            /// - Returns: The icon image URL, routed through the proxy if enabled.
+            /// - Returns: The icon image URL.
             static func gameIcon(_ value: String) -> URL {
                 URLConfig.url("https://swift-craft-launcher-imagebed.pages.dev")
                     .appendingPathComponent("gameicons")
@@ -265,8 +202,6 @@ enum URLConfig {
             }
 
             /// Returns the URL for the LICENSE file on GitHub.
-            ///
-            /// This endpoint bypasses the GitHub proxy.
             ///
             /// - Parameter ref: The git reference. Defaults to `"main"`.
             /// - Returns: The LICENSE file URL.
@@ -282,7 +217,7 @@ enum URLConfig {
             /// - Parameters:
             ///   - version: The application version string.
             ///   - language: A language code (e.g. "zh-Hans", "en").
-            /// - Returns: The announcement JSON URL, routed through the proxy if enabled.
+            /// - Returns: The announcement JSON URL.
             static func announcement(version: String, language: String) -> URL {
                 URLConfig.url("https://swift-craft-launcher-news.pages.dev")
                     .appendingPathComponent(version)
@@ -627,10 +562,5 @@ enum URLConfig {
     enum Store {
         /// The Minecraft purchase page URL on the Xbox store.
         static let minecraftPurchase = URLConfig.url("https://www.xbox.com/zh-CN/games/store/productId/9NXP44L49SHJ")
-    }
-
-    enum Defaults {
-        /// The default GitHub proxy base URL.
-        static let gitProxyURL = "https://gh-proxy.com"
     }
 }
