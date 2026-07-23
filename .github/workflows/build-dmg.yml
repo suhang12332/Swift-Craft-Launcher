@@ -20,7 +20,7 @@ env:
 
 jobs:
   build:
-    runs-on: macos-27
+    runs-on: xcode-27
     strategy:
       matrix:
         arch: [arm64, x86_64]
@@ -28,11 +28,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
-      - name: Setup Xcode
-        uses: JohnTitor/setup-xcode@v0.1.1
-        with:
-          xcode-version: latest-stable
 
       - name: Extract version info
         id: version
@@ -70,23 +65,33 @@ jobs:
           BUILD_DIR="build_${{ matrix.arch }}"
           ARCHIVE_PATH="$BUILD_DIR/SwiftCraftLauncher.xcarchive"
 
-          # 设置要排除的架构（排除非目标架构）
+          # 在同一个运行器上，我们需要为每个架构单独构建
+          # 使用 destination 指定架构，同时排除另一个架构
           if [[ "${{ matrix.arch }}" == "arm64" ]]; then
-            EXCLUDED_ARCHS="x86_64"
+            # 构建 arm64，排除 x86_64
+            xcodebuild -project SwiftCraftLauncher.xcodeproj \
+              -scheme SwiftCraftLauncher \
+              -configuration Release \
+              -destination "platform=macOS,arch=arm64" \
+              -derivedDataPath "$BUILD_DIR" \
+              -archivePath "$ARCHIVE_PATH" \
+              -skipPackagePluginValidation \
+              SPARKLE_PUBLIC_KEY="$SPARKLE_PUBLIC_KEY" \
+              EXCLUDED_ARCHS="x86_64" \
+              archive
           else
-            EXCLUDED_ARCHS="arm64"
+            # 构建 x86_64，排除 arm64
+            xcodebuild -project SwiftCraftLauncher.xcodeproj \
+              -scheme SwiftCraftLauncher \
+              -configuration Release \
+              -destination "platform=macOS,arch=x86_64" \
+              -derivedDataPath "$BUILD_DIR" \
+              -archivePath "$ARCHIVE_PATH" \
+              -skipPackagePluginValidation \
+              SPARKLE_PUBLIC_KEY="$SPARKLE_PUBLIC_KEY" \
+              EXCLUDED_ARCHS="arm64" \
+              archive
           fi
-
-          xcodebuild -project SwiftCraftLauncher.xcodeproj \
-            -scheme SwiftCraftLauncher \
-            -configuration Release \
-            -destination "platform=macOS,arch=${{ matrix.arch }}" \
-            -derivedDataPath "$BUILD_DIR" \
-            -archivePath "$ARCHIVE_PATH" \
-            -skipPackagePluginValidation \
-            SPARKLE_PUBLIC_KEY="$SPARKLE_PUBLIC_KEY" \
-            EXCLUDED_ARCHS="$EXCLUDED_ARCHS" \
-            archive
 
       - name: Fetch help documentation
         run: |
@@ -349,7 +354,7 @@ jobs:
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
-    runs-on: macos-15
+    runs-on: xcode-27  # 改为 xcode-27
     permissions:
       contents: write
 
@@ -364,7 +369,6 @@ jobs:
           SPARKLE_VERSION=2.7.1
           curl -L "https://github.com/sparkle-project/Sparkle/releases/download/$SPARKLE_VERSION/Sparkle-$SPARKLE_VERSION.tar.xz" -o sparkle.tar.xz
           tar -xf sparkle.tar.xz
-
 
           if [[ -f "bin/generate_appcast" ]]; then
             echo "✅ generate_appcast binary found in bin/"
