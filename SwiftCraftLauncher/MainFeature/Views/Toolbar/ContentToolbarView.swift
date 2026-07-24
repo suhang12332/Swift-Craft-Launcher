@@ -20,7 +20,6 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var showingAddPlayerSheet = false
     @State private var playerName = ""
     @State private var isPlayerNameValid = false
-    @State private var showPlayerAlert = false
     @State private var showingGameForm = false
     @State private var showEditSkin = false
     @State private var showingMinecraftFriendsSheet = false
@@ -43,7 +42,6 @@ public struct ContentToolbarView: ToolbarContent {
         ToolbarItemGroup(placement: .primaryAction) {
             AddGameToolbarButton(
                 showingGameForm: $showingGameForm,
-                showPlayerAlert: $showPlayerAlert,
                 currentPlayer: currentPlayer,
             )
 
