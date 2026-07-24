@@ -32,6 +32,7 @@ final class GameLocalResourceViewModel {
     private var searchTask: Task<Void, Never>?
     private var searchGeneration: Int = 0
     private var currentSearchText: String = ""
+    private var suppressNextFileRefresh = false
 
     private static let pageSize: Int = 20
     private var pageSize: Int { Self.pageSize }
@@ -86,12 +87,17 @@ final class GameLocalResourceViewModel {
     }
 
     func refreshResources() {
+        if suppressNextFileRefresh {
+            suppressNextFileRefresh = false
+            return
+        }
         refreshAllFiles()
         resetPagination()
         loadPage(page: 1, append: false, searchText: nil)
     }
 
     func handleLocalDisableStateChanged(projectId: String, oldFileName: String, isDisabled: Bool) {
+        suppressNextFileRefresh = true
         let newFileName: String = {
             if isDisabled { return oldFileName + ".disable" }
             return oldFileName.hasSuffix(".disable")
@@ -116,6 +122,7 @@ final class GameLocalResourceViewModel {
     }
 
     func handleResourceUpdated(projectId: String, oldFileName: String, newFileName: String, newHash: String?) {
+        suppressNextFileRefresh = true
         _ = newHash
 
         if let i = scannedResources.firstIndex(where: { $0.id == projectId }) {

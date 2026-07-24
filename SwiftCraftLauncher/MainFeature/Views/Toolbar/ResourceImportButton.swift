@@ -117,8 +117,5 @@ struct ResourceImportButton: View {
             }
         }
 
-        if importedCount > 0 {
-            NotificationCenter.default.post(name: .localResourceImported, object: nil)
-        }
     }
 }

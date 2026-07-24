@@ -149,7 +149,7 @@ public struct PlayerSettingsView: View {
                         if viewModel.isDownloadingAuthlibInjector {
                             ProgressView().controlSize(.small)
                         } else {
-                            Text(viewModel.authlibInjectorExists ? "resource.update".localized() : "resource.download".localized())
+                            Text(viewModel.authlibInjectorExists ? "resource.update".localized() : "global_resource.download".localized())
                         }
                     }
                 }
