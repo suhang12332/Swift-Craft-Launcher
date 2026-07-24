@@ -11,6 +11,8 @@ import AppKit
 import SwiftUI
 
 struct GameLocalResourceView: View {
+    @Environment(DIContainer.self)
+    private var container
     let game: GameVersionInfo
     let query: String
     let header: AnyView?
@@ -92,23 +94,7 @@ struct GameLocalResourceView: View {
                 searchText: searchText,
             )
         }
-        .alert(
-            "error.notification.validation.title".localized(),
-            isPresented: Binding(
-                get: { viewModel.error != nil },
-                set: { newValue in
-                    if !newValue { viewModel.error = nil }
-                },
-            ),
-        ) {
-            Button("common.close".localized()) {
-                viewModel.error = nil
-            }
-        } message: {
-            if let error = viewModel.error {
-                Text(error.localizedDescription)
-            }
-        }
+        .errorHandler(container.core.errorHandler)
     }
 
     private var loadingMoreIndicator: some View {

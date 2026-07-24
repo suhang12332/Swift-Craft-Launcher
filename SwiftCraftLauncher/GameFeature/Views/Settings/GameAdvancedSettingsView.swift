@@ -145,17 +145,5 @@ struct GameAdvancedSettingsView: View {
             viewModel.onJavaPathChanged()
         }
         .errorHandler(container.core.errorHandler)
-        .alert(
-            "error.notification.validation.title".localized(),
-            isPresented: .constant(viewModel.error != nil && viewModel.error?.level == .popup),
-        ) {
-            Button("common.close".localized()) {
-                viewModel.error = nil
-            }
-        } message: {
-            if let error = viewModel.error {
-                Text(error.localizedDescription)
-            }
-        }
     }
 }

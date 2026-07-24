@@ -21,7 +21,6 @@ final class GameAdvancedSettingsViewModel {
     var environmentVariables: String
     var javaPath: String
     var javaVersionInfo: String
-    var error: GlobalError?
     var isLoadingSettings: Bool
 
     var enableOptimizations: Bool = true
@@ -40,7 +39,6 @@ final class GameAdvancedSettingsViewModel {
         environmentVariables = ""
         javaPath = ""
         javaVersionInfo = ""
-        error = nil
         isLoadingSettings = false
     }
 
@@ -178,10 +176,10 @@ final class GameAdvancedSettingsViewModel {
 
             let fileManager = FileManager.default
             guard fileManager.fileExists(atPath: url.path) else {
-                error = GlobalError.fileSystem(
+                DIContainer.shared.core.errorHandler.handle(GlobalError.fileSystem(
                     i18nKey: "error.filesystem.file_not_found",
                     level: .notification,
-                )
+                ))
                 return
             }
 
@@ -190,17 +188,17 @@ final class GameAdvancedSettingsViewModel {
                 autoSave()
                 AppLog.game.info("Java path set to: \(url.path)")
             } else {
-                error = GlobalError.validation(
+                DIContainer.shared.core.errorHandler.handle(GlobalError.validation(
                     i18nKey: "error.validation.invalid_java_executable",
                     level: .popup,
-                )
+                ))
             }
 
         case .failure:
-            error = GlobalError.fileSystem(
+            DIContainer.shared.core.errorHandler.handle(GlobalError.fileSystem(
                 i18nKey: "error.filesystem.java_path_selection_failed",
                 level: .notification,
-            )
+            ))
         }
     }
 }

@@ -42,7 +42,7 @@ extension GameAdvancedSettingsViewModel {
                     level: .notification,
                 )
                 AppLog.game.error("Failed to auto-save game settings: \(globalError.localizedDescription)")
-                await MainActor.run { self.error = globalError }
+                await MainActor.run { DIContainer.shared.core.errorHandler.handle(globalError) }
             }
         }
     }

@@ -14,7 +14,6 @@ import SwiftUI
 @Observable
 final class GeneralSettingsViewModel {
     var showDirectoryPicker = false
-    var error: GlobalError?
 
     var concurrentDownloadsDraft: Double
     var isEditingConcurrentDownloads = false
@@ -119,11 +118,9 @@ final class GeneralSettingsViewModel {
 
     /// Clears the current error state.
     func clearError() {
-        error = nil
     }
 
     private func present(_ globalError: GlobalError) {
         DIContainer.shared.core.errorHandler.handle(globalError)
-        error = globalError
     }
 }

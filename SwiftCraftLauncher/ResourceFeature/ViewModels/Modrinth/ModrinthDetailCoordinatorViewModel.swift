@@ -42,7 +42,6 @@ struct ModrinthSearchContext: Equatable {
 @MainActor
 @Observable
 final class ModrinthDetailCoordinatorViewModel {
-    var error: GlobalError?
     var hasLoaded: Bool = false
 
     private var currentPage: Int = 1
@@ -64,7 +63,6 @@ final class ModrinthDetailCoordinatorViewModel {
 
     /// Clears the current error.
     func clearError() {
-        error = nil
     }
 
     /// Cancels any pending debounced search.
@@ -185,7 +183,6 @@ final class ModrinthDetailCoordinatorViewModel {
             let globalError = GlobalError.from(error)
             AppLog.resource.error("Search failed: \(globalError.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(globalError)
-            self.error = globalError
         }
     }
 

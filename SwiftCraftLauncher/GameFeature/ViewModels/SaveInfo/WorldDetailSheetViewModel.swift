@@ -22,8 +22,6 @@ final class WorldDetailSheetViewModel {
     var metadata: WorldDetailMetadata?
     var rawDataTag: [String: Any]?
     var isLoading: Bool = false
-    var errorMessage: String?
-    var showError: Bool = false
     var showRawData: Bool = false
 
     init(world: WorldInfo, gameName: String) {
@@ -51,8 +49,6 @@ final class WorldDetailSheetViewModel {
 
     func loadMetadata() async {
         isLoading = true
-        errorMessage = nil
-        showError = false
 
         do {
             let levelDatPath = world.path.appendingPathComponent("level.dat")
@@ -99,20 +95,20 @@ final class WorldDetailSheetViewModel {
             isLoading = false
         } catch LoadError.levelDatNotFound {
             isLoading = false
-            errorMessage = "saveinfo.world.detail.error.level_dat_not_found".localized()
-            showError = true
+            DIContainer.shared.core.errorHandler.handle(GlobalError.fileSystem(
+                i18nKey: "saveinfo.world.detail.error.level_dat_not_found",
+                level: .silent,
+            ))
         } catch LoadError.invalidStructure {
             isLoading = false
-            errorMessage = "saveinfo.world.detail.error.invalid_structure".localized()
-            showError = true
+            DIContainer.shared.core.errorHandler.handle(GlobalError.fileSystem(
+                i18nKey: "saveinfo.world.detail.error.invalid_structure",
+                level: .silent,
+            ))
         } catch {
             AppLog.game.error("Failed to load world details: \(error.localizedDescription)")
             isLoading = false
-            errorMessage = String(
-                format: "saveinfo.world.detail.error.load_failed".localized(),
-                error.localizedDescription,
-            )
-            showError = true
+            DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
         }
     }
 

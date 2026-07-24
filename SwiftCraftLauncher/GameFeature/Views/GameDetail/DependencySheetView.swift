@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct DependencySheetView: View {
+    @Environment(DIContainer.self)
+    private var container
     var viewModel: DependencySheetViewModel
     @Binding var isDownloadingAllDependencies: Bool
     @Binding var isDownloadingMainResourceOnly: Bool
@@ -179,20 +181,6 @@ struct DependencySheetView: View {
                 }
             },
         )
-        .alert(
-            "error.notification.download.title".localized(),
-            isPresented: Binding(
-                get: { actionViewModel.error != nil },
-                set: { if !$0 { actionViewModel.error = nil } },
-            ),
-        ) {
-            Button("common.close".localized()) {
-                actionViewModel.error = nil
-            }
-        } message: {
-            if let error = actionViewModel.error {
-                Text(error.localizedDescription)
-            }
-        }
+        .errorHandler(container.core.errorHandler)
     }
 }

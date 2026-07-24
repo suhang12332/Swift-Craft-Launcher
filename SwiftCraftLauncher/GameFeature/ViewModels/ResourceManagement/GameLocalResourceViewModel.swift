@@ -17,7 +17,6 @@ final class GameLocalResourceViewModel {
     private(set) var isLoadingResources = false
     private(set) var isLoadingMore = false
     private(set) var hasLoaded = false
-    var error: GlobalError?
 
     private(set) var currentPage: Int = 1
     private(set) var hasMoreResults: Bool = true
@@ -155,7 +154,6 @@ final class GameLocalResourceViewModel {
         hasMoreResults = true
         isLoadingResources = false
         isLoadingMore = false
-        error = nil
         scannedResources = []
         searchGeneration &+= 1
     }
@@ -167,7 +165,6 @@ final class GameLocalResourceViewModel {
         scannedResources = []
         isLoadingResources = false
         isLoadingMore = false
-        error = nil
         currentPage = 1
         hasMoreResults = true
         hasLoaded = false
@@ -213,7 +210,6 @@ final class GameLocalResourceViewModel {
             )
             AppLog.game.error("Failed to initialize resource directory: \(globalError.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(globalError)
-            error = globalError
         }
     }
 
@@ -272,7 +268,6 @@ final class GameLocalResourceViewModel {
         }
 
         if append { isLoadingMore = true } else { isLoadingResources = true }
-        error = nil
 
         let effectiveSearchText = searchText ?? currentSearchText
         let isSearching = !effectiveSearchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
