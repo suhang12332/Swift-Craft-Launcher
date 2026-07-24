@@ -121,6 +121,6 @@ final class GeneralSettingsViewModel {
     }
 
     private func present(_ globalError: GlobalError) {
-        DIContainer.shared.core.errorHandler.handle(globalError)
+        DIContainer.shared.core.errorHandler.handle(globalError.withSource(.settings))
     }
 }

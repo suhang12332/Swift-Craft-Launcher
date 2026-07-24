@@ -179,6 +179,7 @@ final class GameAdvancedSettingsViewModel {
                 DIContainer.shared.core.errorHandler.handle(GlobalError.fileSystem(
                     i18nKey: "error.filesystem.file_not_found",
                     level: .notification,
+                    source: .settings,
                 ))
                 return
             }
@@ -191,6 +192,7 @@ final class GameAdvancedSettingsViewModel {
                 DIContainer.shared.core.errorHandler.handle(GlobalError.validation(
                     i18nKey: "error.validation.invalid_java_executable",
                     level: .popup,
+                    source: .settings,
                 ))
             }
 
@@ -198,6 +200,7 @@ final class GameAdvancedSettingsViewModel {
             DIContainer.shared.core.errorHandler.handle(GlobalError.fileSystem(
                 i18nKey: "error.filesystem.java_path_selection_failed",
                 level: .notification,
+                source: .settings,
             ))
         }
     }

@@ -17,6 +17,12 @@ enum ErrorLevel: String, CaseIterable {
     case disabled
 }
 
+/// Identifies which window scope an error belongs to.
+enum ErrorSource: String, CaseIterable, Sendable {
+    case main
+    case settings
+}
+
 /// Categorizes errors by their domain.
 enum GlobalErrorKind: String, CaseIterable {
     case network
@@ -86,6 +92,7 @@ struct GlobalError: Error, LocalizedError, Identifiable {
     let level: ErrorLevel
     let statusCode: Int?
     let message: String?
+    let source: ErrorSource
 
     init(
         kind: GlobalErrorKind,
@@ -93,12 +100,14 @@ struct GlobalError: Error, LocalizedError, Identifiable {
         level: ErrorLevel? = nil,
         statusCode: Int? = nil,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) {
         self.kind = kind
         self.i18nKey = i18nKey
         self.level = level ?? kind.defaultLevel
         self.statusCode = statusCode
         self.message = message
+        self.source = source
     }
 
     var id: String {
@@ -129,113 +138,131 @@ extension GlobalError {
         level: ErrorLevel = .notification,
         statusCode: Int? = nil,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .network, i18nKey: i18nKey, level: level, statusCode: statusCode, message: message)
+        GlobalError(kind: .network, i18nKey: i18nKey, level: level, statusCode: statusCode, message: message, source: source)
     }
 
     static func fileSystem(
         i18nKey: String,
         level: ErrorLevel = .notification,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .fileSystem, i18nKey: i18nKey, level: level, message: message)
+        GlobalError(kind: .fileSystem, i18nKey: i18nKey, level: level, message: message, source: source)
     }
 
     static func authentication(
         i18nKey: String,
         level: ErrorLevel = .popup,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .authentication, i18nKey: i18nKey, level: level, message: message)
+        GlobalError(kind: .authentication, i18nKey: i18nKey, level: level, message: message, source: source)
     }
 
     static func validation(
         i18nKey: String,
         level: ErrorLevel = .notification,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .validation, i18nKey: i18nKey, level: level, message: message)
+        GlobalError(kind: .validation, i18nKey: i18nKey, level: level, message: message, source: source)
     }
 
     static func download(
         i18nKey: String,
         level: ErrorLevel = .notification,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .download, i18nKey: i18nKey, level: level, message: message)
+        GlobalError(kind: .download, i18nKey: i18nKey, level: level, message: message, source: source)
     }
 
     static func installation(
         i18nKey: String,
         level: ErrorLevel = .notification,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .installation, i18nKey: i18nKey, level: level, message: message)
+        GlobalError(kind: .installation, i18nKey: i18nKey, level: level, message: message, source: source)
     }
 
     static func gameLaunch(
         i18nKey: String,
         level: ErrorLevel = .popup,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .gameLaunch, i18nKey: i18nKey, level: level, message: message)
+        GlobalError(kind: .gameLaunch, i18nKey: i18nKey, level: level, message: message, source: source)
     }
 
     static func resource(
         i18nKey: String,
         level: ErrorLevel = .notification,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .resource, i18nKey: i18nKey, level: level, message: message)
+        GlobalError(kind: .resource, i18nKey: i18nKey, level: level, message: message, source: source)
     }
 
     static func player(
         i18nKey: String,
         level: ErrorLevel = .notification,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .player, i18nKey: i18nKey, level: level, message: message)
+        GlobalError(kind: .player, i18nKey: i18nKey, level: level, message: message, source: source)
     }
 
     static func configuration(
         i18nKey: String,
         level: ErrorLevel = .notification,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .configuration, i18nKey: i18nKey, level: level, message: message)
+        GlobalError(kind: .configuration, i18nKey: i18nKey, level: level, message: message, source: source)
     }
 
     static func unknown(
         i18nKey: String,
         level: ErrorLevel = .silent,
         message: String? = nil,
+        source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .unknown, i18nKey: i18nKey, level: level, message: message)
+        GlobalError(kind: .unknown, i18nKey: i18nKey, level: level, message: message, source: source)
+    }
+}
+
+extension GlobalError {
+    /// Returns a copy of this error with the given source.
+    func withSource(_ source: ErrorSource) -> GlobalError {
+        GlobalError(kind: kind, i18nKey: i18nKey, level: level, statusCode: statusCode, message: message, source: source)
     }
 }
 
 extension GlobalError {
     /// Converts an arbitrary error into a GlobalError.
-    static func from(_ error: Error) -> GlobalError {
+    static func from(_ error: Error, source: ErrorSource = .main) -> GlobalError {
         switch error {
         case let globalError as Self:
             return globalError
 
         case let mf as MinecraftFriendsServiceError:
-            return fromMinecraftFriendsServiceError(mf)
+            return fromMinecraftFriendsServiceError(mf, source: source)
 
         default:
             if let urlError = error as? URLError {
                 let level: ErrorLevel = urlError.code == .cancelled ? .silent : .notification
-                return .network(i18nKey: "error.network.url", level: level)
+                return .network(i18nKey: "error.network.url", level: level, source: source)
             }
 
             let nsError = error as NSError
             if nsError.domain == NSCocoaErrorDomain {
-                return .fileSystem(i18nKey: "error.filesystem.cocoa")
+                return .fileSystem(i18nKey: "error.filesystem.cocoa", source: source)
             }
 
-            return .unknown(i18nKey: "error.unknown.generic", level: .silent)
+            return .unknown(i18nKey: "error.unknown.generic", level: .silent, source: source)
         }
     }
 
@@ -247,16 +274,16 @@ extension GlobalError {
         }
     }
 
-    private static func fromMinecraftFriendsServiceError(_ error: MinecraftFriendsServiceError) -> GlobalError {
+    private static func fromMinecraftFriendsServiceError(_ error: MinecraftFriendsServiceError, source: ErrorSource = .main) -> GlobalError {
         switch error {
         case let .network(_, key, level):
-            return .network(i18nKey: key, level: minecraftFriendsErrorLevel(level))
+            return .network(i18nKey: key, level: minecraftFriendsErrorLevel(level), source: source)
 
         case let .authentication(_, key, level):
-            return .authentication(i18nKey: key, level: minecraftFriendsErrorLevel(level))
+            return .authentication(i18nKey: key, level: minecraftFriendsErrorLevel(level), source: source)
 
         case let .validation(_, key, level):
-            return .validation(i18nKey: key, level: minecraftFriendsErrorLevel(level))
+            return .validation(i18nKey: key, level: minecraftFriendsErrorLevel(level), source: source)
         }
     }
 }
@@ -279,8 +306,8 @@ final class GlobalErrorHandler {
 
     init() { }
 
-    func handle(_ error: Error) {
-        handle(GlobalError.from(error))
+    func handle(_ error: Error, source: ErrorSource = .main) {
+        handle(GlobalError.from(error, source: source))
     }
 
     func handle(_ globalError: GlobalError) {

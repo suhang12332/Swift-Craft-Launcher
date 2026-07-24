@@ -252,4 +252,24 @@ final class ErrorHandlerMigrationTests: XCTestCase {
         XCTAssertEqual(handler.errorHistory.count, 1)
         XCTAssertEqual(handler.errorHistory.first?.kind, .fileSystem)
     }
+
+    // MARK: - Source Scoping in Settings ViewModels
+
+    func testGameAdvancedSettings_errorHasSettingsSource() {
+        let vm = GameAdvancedSettingsViewModel()
+        let nonexistentURL = URL(fileURLWithPath: "/nonexistent/java")
+        vm.handleJavaPathSelection(.success([nonexistentURL]))
+        flushMainQueue()
+
+        XCTAssertEqual(DIContainer.shared.core.errorHandler.currentError?.source, .settings)
+    }
+
+    func testGameAdvancedSettings_failureErrorHasSettingsSource() {
+        let vm = GameAdvancedSettingsViewModel()
+        let error = NSError(domain: "test", code: 1, userInfo: nil)
+        vm.handleJavaPathSelection(.failure(error))
+        flushMainQueue()
+
+        XCTAssertEqual(DIContainer.shared.core.errorHandler.currentError?.source, .settings)
+    }
 }
