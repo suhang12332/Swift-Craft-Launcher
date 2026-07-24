@@ -203,10 +203,7 @@ struct InfoIconWithPopover<Content: View>: View {
     let content: Content
     /// The delay in seconds before the popover appears on hover.
     let delay: Double
-
-    @State private var isHovering = false
     @State private var showPopover = false
-    @State private var hoverTask: Task<Void, Never>?
 
     init(
         iconSize _: CGFloat = 14,
@@ -218,38 +215,14 @@ struct InfoIconWithPopover<Content: View>: View {
     }
 
     var body: some View {
-        Group {
-            HelpButton {
-                showPopover.toggle()
-            }
+        HelpButton {
+            showPopover.toggle()
         }
-        .onHover { hovering in
-            isHovering = hovering
-            hoverTask?.cancel()
-
-            if hovering {
-                hoverTask = Task {
-                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-                    if !Task.isCancelled, isHovering {
-                        await MainActor.run {
-                            showPopover = true
-                        }
-                    }
-                }
-            } else {
-                showPopover = false
-            }
-        }
-        .popover(isPresented: $showPopover, arrowEdge: .trailing) {
+        .hoverPopover(isPresented: $showPopover, delay: delay, arrowEdge: .trailing) {
             ScrollView {
                 content
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
             }
-        }
-        .onDisappear {
-            hoverTask?.cancel()
-            showPopover = false
         }
     }
 }

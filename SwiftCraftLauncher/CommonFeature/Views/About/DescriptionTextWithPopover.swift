@@ -9,11 +9,8 @@ import SwiftUI
 
 /// Displays truncated text that reveals the full content in a popover on hover.
 struct DescriptionTextWithPopover: View {
-    private static let hoverDelayNanoseconds: UInt64 = 500_000_000
-
     let description: String
     @State private var showPopover = false
-    @State private var hoverTask: Task<Void, Never>?
 
     var body: some View {
         Button {
@@ -26,45 +23,15 @@ struct DescriptionTextWithPopover: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .buttonStyle(.plain)
-        .onHover { hovering in
-            if hovering {
-                schedulePopover()
-            } else {
-                cancelHoverTask()
-                showPopover = false
-            }
-        }
-        .popover(isPresented: $showPopover, arrowEdge: .top) {
+        .hoverPopover(isPresented: $showPopover, arrowEdge: .top) {
             VStack(alignment: .leading) {
                 Text(description)
-                    .font(.subheadline)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(nil)
                     .multilineTextAlignment(.leading)
             }
-            .padding()
             .fixedSize(horizontal: true, vertical: false)
         }
-        .onDisappear {
-            cancelHoverTask()
-            showPopover = false
-        }
-    }
-
-    private func schedulePopover() {
-        cancelHoverTask()
-        hoverTask = Task {
-            try? await Task.sleep(nanoseconds: Self.hoverDelayNanoseconds)
-            guard !Task.isCancelled else { return }
-            await MainActor.run {
-                showPopover = true
-            }
-        }
-    }
-
-    private func cancelHoverTask() {
-        hoverTask?.cancel()
-        hoverTask = nil
     }
 }

@@ -21,29 +21,31 @@ struct GameAdvancedSettingsView: View {
     var body: some View {
         @Bindable var viewModel = viewModel
         Form {
-            LabeledContent("settings.game.java.path".localized()) {
-                HStack(alignment: .top) {
-                    DirectorySettingRow(
-                        title: "settings.game.java.path".localized(),
-                        path: viewModel.javaPath.isEmpty ? (viewModel.currentGame?.javaPath ?? "") : viewModel.javaPath,
-                        description: "settings.game.java.path.description".localized(),
-                        onChoose: { showJavaPathPicker = true },
-                        onReset: {
-                            viewModel.resetJavaPathSafely()
-                        },
-                    ).fixedSize()
-                        .fileImporter(
-                            isPresented: $showJavaPathPicker,
-                            allowedContentTypes: [.item],
-                            allowsMultipleSelection: false,
-                        ) { result in
-                            viewModel.handleJavaPathSelection(result)
-                        }
-                    InfoIconWithPopover(
-                        text: viewModel.javaDetailsDescription,
-                    )
-                }
-            }.labeledContentStyle(.custom)
+            Group {
+                LabeledContent("settings.game.java.path".localized()) {
+                    HStack(alignment: .top) {
+                        DirectorySettingRow(
+                            title: "settings.game.java.path".localized(),
+                            path: viewModel.javaPath.isEmpty ? (viewModel.currentGame?.javaPath ?? "") : viewModel.javaPath,
+                            description: "settings.game.java.path.description".localized(),
+                            onChoose: { showJavaPathPicker = true },
+                            onReset: {
+                                viewModel.resetJavaPathSafely()
+                            },
+                        ).fixedSize()
+                            .fileImporter(
+                                isPresented: $showJavaPathPicker,
+                                allowedContentTypes: [.item],
+                                allowsMultipleSelection: false,
+                            ) { result in
+                                viewModel.handleJavaPathSelection(result)
+                            }
+                    }
+                }.labeledContentStyle(.custom)
+                InfoIconWithPopover(
+                    text: viewModel.javaDetailsDescription,
+                )
+            }
 
             Group {
                 LabeledContent("settings.game.java.garbage_collector".localized()) {
