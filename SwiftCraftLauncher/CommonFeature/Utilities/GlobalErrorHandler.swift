@@ -18,7 +18,7 @@ enum ErrorLevel: String, CaseIterable {
 }
 
 /// Identifies which window scope an error belongs to.
-enum ErrorSource: String, CaseIterable, Sendable {
+enum ErrorSource: String, CaseIterable {
     case main
     case settings
 }

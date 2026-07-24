@@ -318,8 +318,6 @@ final class GlobalErrorHandlerTests: XCTestCase {
         XCTAssertTrue(handler.errorHistory.isEmpty)
     }
 
-    // MARK: - Source Scoping
-
     func testHandle_errorRecordsSource() {
         let handler = GlobalErrorHandler()
         let mainError = GlobalError.network(i18nKey: "test.src.main", source: .main)

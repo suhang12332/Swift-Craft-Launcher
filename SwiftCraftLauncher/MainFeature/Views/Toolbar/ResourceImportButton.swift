@@ -116,6 +116,5 @@ struct ResourceImportButton: View {
                 container.core.errorHandler.handle(error)
             }
         }
-
     }
 }

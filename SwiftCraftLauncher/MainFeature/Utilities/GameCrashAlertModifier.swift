@@ -23,7 +23,7 @@ struct GameCrashAlertModifier: ViewModifier {
                         NSWorkspace.shared.open(directory)
                     }
                 }
-                Button("common.close".localized(), role: .cancel) {}
+                Button("common.close".localized(), role: .cancel) { }
             } message: {
                 Text("error.game_launch.game_crashed.description".localized())
             }

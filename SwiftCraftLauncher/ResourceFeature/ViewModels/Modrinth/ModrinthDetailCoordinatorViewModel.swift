@@ -62,8 +62,7 @@ final class ModrinthDetailCoordinatorViewModel {
     }
 
     /// Clears the current error.
-    func clearError() {
-    }
+    func clearError() { }
 
     /// Cancels any pending debounced search.
     func cancelDebounce() {

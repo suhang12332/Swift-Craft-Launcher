@@ -33,8 +33,6 @@ final class ErrorHandlerMigrationTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - ServerAddressEditActionViewModel
-
     func testServerAddressEdit_saveWithEmptyName_routesError() {
         let vm = ServerAddressEditActionViewModel()
         let request = ServerAddressEditActionViewModel.SaveRequest(
@@ -47,7 +45,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
             acceptTextures: false,
         )
 
-        vm.saveServer(request: request, dismiss: {}, onRefresh: nil)
+        vm.saveServer(request: request, dismiss: { }, onRefresh: nil)
         flushMainQueue()
 
         XCTAssertNotNil(DIContainer.shared.core.errorHandler.currentError)
@@ -66,7 +64,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
             acceptTextures: false,
         )
 
-        vm.saveServer(request: request, dismiss: {}, onRefresh: nil)
+        vm.saveServer(request: request, dismiss: { }, onRefresh: nil)
         flushMainQueue()
 
         XCTAssertNotNil(DIContainer.shared.core.errorHandler.currentError)
@@ -81,8 +79,6 @@ final class ErrorHandlerMigrationTests: XCTestCase {
         XCTAssertFalse(vm.isSaving)
         XCTAssertFalse(vm.isDeleting)
     }
-
-    // MARK: - ModPackExportViewModel
 
     func testModPackExport_handleSaveFailure_routesError() {
         let vm = ModPackExportViewModel()
@@ -111,8 +107,6 @@ final class ErrorHandlerMigrationTests: XCTestCase {
 
         XCTAssertNil(DIContainer.shared.core.errorHandler.currentError)
     }
-
-    // MARK: - GameAdvancedSettingsViewModel
 
     func testGameAdvancedSettings_handleJavaPathSelection_fileNotFound_routesError() {
         let vm = GameAdvancedSettingsViewModel()
@@ -143,8 +137,6 @@ final class ErrorHandlerMigrationTests: XCTestCase {
         XCTAssertNil(vm.saveTask)
     }
 
-    // MARK: - ModrinthDetailCoordinatorViewModel
-
     func testModrinthDetailCoordinator_clearError_doesNotCrash() {
         let vm = ModrinthDetailCoordinatorViewModel()
 
@@ -156,8 +148,6 @@ final class ErrorHandlerMigrationTests: XCTestCase {
         XCTAssertFalse(vm.hasLoaded)
     }
 
-    // MARK: - GameLocalResourceViewModel
-
     func testGameLocalResource_initialStateClean() {
         let vm = GameLocalResourceViewModel()
         XCTAssertTrue(vm.displayedResources.isEmpty)
@@ -166,8 +156,6 @@ final class ErrorHandlerMigrationTests: XCTestCase {
         XCTAssertFalse(vm.hasLoaded)
     }
 
-    // MARK: - DependencySheetActionViewModel
-
     func testDependencySheetAction_downloadMainOnly_callsClosure() {
         var called = false
         let vm = DependencySheetActionViewModel(
@@ -175,7 +163,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
             isDownloadingMainResourceOnly: .constant(false),
         )
 
-        vm.downloadMainOnly(onDownloadMainOnly: { called = true })
+        vm.downloadMainOnly { called = true }
         flushMainQueue()
 
         XCTAssertTrue(called)
@@ -188,13 +176,11 @@ final class ErrorHandlerMigrationTests: XCTestCase {
             isDownloadingMainResourceOnly: .constant(false),
         )
 
-        vm.downloadAll(onDownloadAll: { called = true })
+        vm.downloadAll { called = true }
         flushMainQueue()
 
         XCTAssertTrue(called)
     }
-
-    // MARK: - GeneralSettingsViewModel
 
     func testGeneralSettings_clearError_doesNotCrash() {
         let vm = GeneralSettingsViewModel()
@@ -206,8 +192,6 @@ final class ErrorHandlerMigrationTests: XCTestCase {
         let vm = GeneralSettingsViewModel()
         XCTAssertFalse(vm.showDirectoryPicker)
     }
-
-    // MARK: - GlobalErrorHandler integration
 
     func testErrorHandler_receivesMultipleErrors() {
         let handler = DIContainer.shared.core.errorHandler
@@ -252,8 +236,6 @@ final class ErrorHandlerMigrationTests: XCTestCase {
         XCTAssertEqual(handler.errorHistory.count, 1)
         XCTAssertEqual(handler.errorHistory.first?.kind, .fileSystem)
     }
-
-    // MARK: - Source Scoping in Settings ViewModels
 
     func testGameAdvancedSettings_errorHasSettingsSource() {
         let vm = GameAdvancedSettingsViewModel()
