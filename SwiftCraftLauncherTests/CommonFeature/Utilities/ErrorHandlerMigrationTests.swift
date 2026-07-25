@@ -34,6 +34,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testServerAddressEdit_saveWithEmptyName_routesError() {
+        resetHandler()
         let vm = ServerAddressEditActionViewModel()
         let request = ServerAddressEditActionViewModel.SaveRequest(
             existing: nil,
@@ -53,6 +54,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testServerAddressEdit_saveWithEmptyAddress_routesError() {
+        resetHandler()
         let vm = ServerAddressEditActionViewModel()
         let request = ServerAddressEditActionViewModel.SaveRequest(
             existing: nil,
@@ -81,6 +83,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testModPackExport_handleSaveFailure_routesError() {
+        resetHandler()
         let vm = ModPackExportViewModel()
 
         vm.handleSaveFailure(error: "Permission denied")
@@ -109,6 +112,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testGameAdvancedSettings_handleJavaPathSelection_fileNotFound_routesError() {
+        resetHandler()
         let vm = GameAdvancedSettingsViewModel()
 
         let nonexistentURL = URL(fileURLWithPath: "/nonexistent/java")
@@ -239,6 +243,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testGameAdvancedSettings_errorHasSettingsSource() {
+        resetHandler()
         let vm = GameAdvancedSettingsViewModel()
         let nonexistentURL = URL(fileURLWithPath: "/nonexistent/java")
         vm.handleJavaPathSelection(.success([nonexistentURL]))
@@ -248,6 +253,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testGameAdvancedSettings_failureErrorHasSettingsSource() {
+        resetHandler()
         let vm = GameAdvancedSettingsViewModel()
         let error = NSError(domain: "test", code: 1, userInfo: nil)
         vm.handleJavaPathSelection(.failure(error))
