@@ -120,6 +120,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testGameAdvancedSettings_handleJavaPathSelection_failure_routesError() {
+        resetHandler()
         let vm = GameAdvancedSettingsViewModel()
         let error = NSError(domain: "test", code: 1, userInfo: nil)
 
