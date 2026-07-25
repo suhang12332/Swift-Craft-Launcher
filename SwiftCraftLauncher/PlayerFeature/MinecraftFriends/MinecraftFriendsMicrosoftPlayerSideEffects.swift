@@ -14,6 +14,12 @@ import Foundation
 @MainActor
 struct MinecraftFriendsMicrosoftPlayerSideEffects {
     let dataManager: PlayerDataManager
+    let source: ErrorSource
+
+    init(dataManager: PlayerDataManager, source: ErrorSource = .main) {
+        self.dataManager = dataManager
+        self.source = source
+    }
 
     /// Loads a credential from disk into the given player if one is not already present.
     ///
@@ -30,6 +36,7 @@ struct MinecraftFriendsMicrosoftPlayerSideEffects {
             GlobalError.authentication(
                 i18nKey: "error.authentication.missing_token",
                 level: .notification,
+                source: source,
             ),
         )
     }
@@ -50,13 +57,13 @@ struct MinecraftFriendsMicrosoftPlayerSideEffects {
     ///
     /// - Parameter error: The error to report.
     func reportGlobalError(_ error: Error) {
-        DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+        DIContainer.shared.core.errorHandler.handle(error, source: source)
     }
 
     /// Forwards a `GlobalError` to the error handler.
     ///
     /// - Parameter error: The error to report.
     func handle(_ error: GlobalError) {
-        DIContainer.shared.core.errorHandler.handle(error)
+        DIContainer.shared.core.errorHandler.handle(error.withSource(source))
     }
 }

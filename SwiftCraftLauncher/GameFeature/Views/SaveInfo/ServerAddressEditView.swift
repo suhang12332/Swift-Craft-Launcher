@@ -56,11 +56,6 @@ struct ServerAddressEditView: View {
             body: { bodyView },
             footer: { footerView },
         )
-        .alert("common.error".localized(), isPresented: $actionViewModel.showError) {
-            Button("common.ok".localized(), role: .cancel) { }
-        } message: {
-            Text(actionViewModel.errorMessage)
-        }
         .confirmationDialog("saveinfo.server.delete_title".localized(), isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
             Button("common.delete".localized(), role: .destructive) {
                 confirmDeleteServer()

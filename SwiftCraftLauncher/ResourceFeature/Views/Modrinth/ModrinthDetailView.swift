@@ -9,6 +9,8 @@ import SwiftUI
 
 /// Displays search results for Modrinth projects with filtering and pagination.
 struct ModrinthDetailView: View {
+    @Environment(DIContainer.self)
+    private var container
     let query: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
@@ -140,21 +142,7 @@ struct ModrinthDetailView: View {
                 )
             }
         }
-        .alert(
-            "error.notification.search.title".localized(),
-            isPresented: Binding(
-                get: { coordinator.error != nil },
-                set: { if !$0 { coordinator.clearError() } },
-            ),
-        ) {
-            Button("common.close".localized()) {
-                coordinator.clearError()
-            }
-        } message: {
-            if let error = coordinator.error {
-                Text(error.localizedDescription)
-            }
-        }
+        .errorHandler(container.core.errorHandler)
         .onDisappear {
             cleanupOnDisappear()
         }

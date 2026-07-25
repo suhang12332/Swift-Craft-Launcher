@@ -116,9 +116,5 @@ struct ResourceImportButton: View {
                 container.core.errorHandler.handle(error)
             }
         }
-
-        if importedCount > 0 {
-            NotificationCenter.default.post(name: .localResourceImported, object: nil)
-        }
     }
 }

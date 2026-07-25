@@ -24,8 +24,6 @@ struct GameActionButtons: View {
     private var gameLaunchUseCase
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
-    @State private var showCrashAlert = false
-    @State private var crashDirectory: URL?
     @State private var activeAlert: ResourceButtonAlertType?
 
     init(
@@ -112,27 +110,8 @@ struct GameActionButtons: View {
                 .alert(item: $activeAlert) { alertType in
                     alertType.alert
                 }
-                .alert(
-                    "error.game_launch.game_crashed".localized(),
-                    isPresented: $showCrashAlert,
-                ) {
-                    Button("menu.open.log".localized()) {
-                        if let directory = crashDirectory {
-                            NSWorkspace.shared.open(directory)
-                        } else {
-                            AppLog.main.error("Unable to open game directory: directory is nil")
-                        }
-                    }
-                    Button("common.close".localized(), role: .cancel) { }
-                } message: {
-                    Text("error.game_launch.game_crashed.description".localized())
-                }
-                .onReceive(NotificationCenter.default.publisher(for: .gameCrashed)) { notification in
-                    let directory = notification.userInfo?["directory"] as? URL
-                    crashDirectory = directory
-                    showCrashAlert = true
-                }
         }
+        .gameCrashAlert()
         .onAppear {
             container.core.gameStatusManager.refreshGameStatus(gameId: game.id, userId: currentUserId)
         }

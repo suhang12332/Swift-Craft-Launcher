@@ -12,8 +12,6 @@ import SwiftUI
 @MainActor
 @Observable
 final class DependencySheetActionViewModel {
-    var error: GlobalError?
-
     private let isDownloadingAllDependencies: Binding<Bool>
     private let isDownloadingMainResourceOnly: Binding<Bool>
 

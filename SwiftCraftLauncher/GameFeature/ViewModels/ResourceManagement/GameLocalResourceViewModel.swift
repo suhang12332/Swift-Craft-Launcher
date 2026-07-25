@@ -17,7 +17,6 @@ final class GameLocalResourceViewModel {
     private(set) var isLoadingResources = false
     private(set) var isLoadingMore = false
     private(set) var hasLoaded = false
-    var error: GlobalError?
 
     private(set) var currentPage: Int = 1
     private(set) var hasMoreResults: Bool = true
@@ -32,6 +31,7 @@ final class GameLocalResourceViewModel {
     private var searchTask: Task<Void, Never>?
     private var searchGeneration: Int = 0
     private var currentSearchText: String = ""
+    private var suppressNextFileRefresh = false
 
     private static let pageSize: Int = 20
     private var pageSize: Int { Self.pageSize }
@@ -86,12 +86,17 @@ final class GameLocalResourceViewModel {
     }
 
     func refreshResources() {
+        if suppressNextFileRefresh {
+            suppressNextFileRefresh = false
+            return
+        }
         refreshAllFiles()
         resetPagination()
         loadPage(page: 1, append: false, searchText: nil)
     }
 
     func handleLocalDisableStateChanged(projectId: String, oldFileName: String, isDisabled: Bool) {
+        suppressNextFileRefresh = true
         let newFileName: String = {
             if isDisabled { return oldFileName + ".disable" }
             return oldFileName.hasSuffix(".disable")
@@ -116,6 +121,7 @@ final class GameLocalResourceViewModel {
     }
 
     func handleResourceUpdated(projectId: String, oldFileName: String, newFileName: String, newHash: String?) {
+        suppressNextFileRefresh = true
         _ = newHash
 
         if let i = scannedResources.firstIndex(where: { $0.id == projectId }) {
@@ -148,7 +154,6 @@ final class GameLocalResourceViewModel {
         hasMoreResults = true
         isLoadingResources = false
         isLoadingMore = false
-        error = nil
         scannedResources = []
         searchGeneration &+= 1
     }
@@ -160,7 +165,6 @@ final class GameLocalResourceViewModel {
         scannedResources = []
         isLoadingResources = false
         isLoadingMore = false
-        error = nil
         currentPage = 1
         hasMoreResults = true
         hasLoaded = false
@@ -206,7 +210,6 @@ final class GameLocalResourceViewModel {
             )
             AppLog.game.error("Failed to initialize resource directory: \(globalError.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(globalError)
-            error = globalError
         }
     }
 
@@ -265,7 +268,6 @@ final class GameLocalResourceViewModel {
         }
 
         if append { isLoadingMore = true } else { isLoadingResources = true }
-        error = nil
 
         let effectiveSearchText = searchText ?? currentSearchText
         let isSearching = !effectiveSearchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty

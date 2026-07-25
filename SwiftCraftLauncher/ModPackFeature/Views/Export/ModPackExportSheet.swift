@@ -41,7 +41,6 @@ struct ModPackExportSheet: View {
     @Environment(\.dismiss)
     private var dismiss
     @State private var viewModel: ModPackExportViewModel
-    @State private var showSaveErrorAlert = false
     @State private var coordinator = ModPackExportSheetCoordinatorViewModel()
 
     init(gameInfo: GameVersionInfo) {
@@ -84,18 +83,6 @@ struct ModPackExportSheet: View {
                 viewModel.handleSaveFailure(error: error.localizedDescription)
             }
             coordinator.reset()
-        }
-        .alert("common.error".localized(), isPresented: $showSaveErrorAlert) {
-            Button("common.ok".localized(), role: .cancel) {
-                viewModel.saveError = nil
-            }
-        } message: {
-            if let error = viewModel.saveError {
-                Text(error)
-            }
-        }
-        .onChange(of: viewModel.saveError) { _, error in
-            showSaveErrorAlert = error != nil
         }
     }
 

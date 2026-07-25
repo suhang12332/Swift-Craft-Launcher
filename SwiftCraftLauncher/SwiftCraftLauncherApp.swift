@@ -84,7 +84,7 @@ struct SwiftCraftLauncherApp: App {
                 .environment(gameRepository)
                 .environment(container)
                 .preferredColorScheme(container.ui.themeManager.preferredColorScheme)
-                .errorAlert(container.core.errorHandler)
+                .errorAlert(container.core.errorHandler, source: .settings)
         }
 
         auxiliaryWindowGroup()

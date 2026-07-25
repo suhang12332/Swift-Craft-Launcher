@@ -26,7 +26,6 @@ class ModPackExportViewModel {
     var summary: String = ""
     var exportError: String?
     var tempExportPath: URL?
-    var saveError: String?
     var selectedFileURLs: [URL] = []
     var currentExportFormat: ModPackExportFormat = .modrinth
 
@@ -53,7 +52,6 @@ class ModPackExportViewModel {
         exportError = nil
         tempExportPath = nil
         hasShownSaveDialog = false
-        saveError = nil
 
         let tempPath = FileManager.default.temporaryDirectory
             .appendingPathComponent("\(gameInfo.gameName).\(currentExportFormat.fileExtension)")
@@ -100,7 +98,6 @@ class ModPackExportViewModel {
         exportProgress = ModPackExporter.ExportProgress()
         exportError = nil
         hasShownSaveDialog = false
-        saveError = nil
     }
 
     /// Records that the save dialog has been shown.
@@ -112,15 +109,18 @@ class ModPackExportViewModel {
     func handleSaveSuccess() {
         cleanupTempFile()
         hasShownSaveDialog = false
-        saveError = nil
         exportState = .idle
         exportProgress = ModPackExporter.ExportProgress()
     }
 
-    /// Handles a save failure and stores the error message.
+    /// Handles a save failure and routes the error through the global error handler.
     /// - Parameter error: The error description.
     func handleSaveFailure(error: String) {
-        saveError = error
+        DIContainer.shared.core.errorHandler.handle(GlobalError.fileSystem(
+            i18nKey: "error.filesystem.modpack_save_failed",
+            level: .silent,
+            message: error,
+        ))
         cleanupTempFile()
         hasShownSaveDialog = false
     }
@@ -136,7 +136,6 @@ class ModPackExportViewModel {
         exportError = nil
         tempExportPath = nil
         hasShownSaveDialog = false
-        saveError = nil
         modPackName = ""
         modPackVersion = "1.0.0"
         summary = ""
@@ -156,7 +155,6 @@ class ModPackExportViewModel {
         exportError = nil
         tempExportPath = nil
         hasShownSaveDialog = false
-        saveError = nil
 
         modPackName = gameInfo.gameName
         modPackVersion = "1.0.0"

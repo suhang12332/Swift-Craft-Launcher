@@ -15,8 +15,6 @@ import SwiftUI
 final class ServerAddressEditActionViewModel {
     var isSaving: Bool = false
     var isDeleting: Bool = false
-    var showError: Bool = false
-    var errorMessage: String = ""
 
     init() { }
 
@@ -35,8 +33,10 @@ final class ServerAddressEditActionViewModel {
         let trimmedAddress = request.address.trimmingCharacters(in: .whitespaces)
 
         guard !trimmedName.isEmpty, !trimmedAddress.isEmpty else {
-            errorMessage = "saveinfo.server.invalid_fields".localized()
-            showError = true
+            DIContainer.shared.core.errorHandler.handle(GlobalError.validation(
+                i18nKey: "saveinfo.server.invalid_fields",
+                level: .silent,
+            ))
             return
         }
 
@@ -83,8 +83,7 @@ final class ServerAddressEditActionViewModel {
                 onRefresh?()
             } catch {
                 isSaving = false
-                errorMessage = error.localizedDescription
-                showError = true
+                DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
             }
         }
     }
@@ -111,8 +110,7 @@ final class ServerAddressEditActionViewModel {
                 onRefresh?()
             } catch {
                 isDeleting = false
-                errorMessage = error.localizedDescription
-                showError = true
+                DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
             }
         }
     }

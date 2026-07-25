@@ -50,17 +50,5 @@ public struct GeneralSettingsView: View {
         .onAppear {
             viewModel.configure(gameRepository: gameRepository)
         }
-        .alert(
-            "error.notification.validation.title".localized(),
-            isPresented: .constant(viewModel.error != nil && viewModel.error?.level == .popup),
-        ) {
-            Button("common.close".localized()) {
-                viewModel.clearError()
-            }
-        } message: {
-            if let error = viewModel.error {
-                Text(error.localizedDescription)
-            }
-        }
     }
 }

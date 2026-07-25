@@ -16,26 +16,26 @@ private func delayedDismiss(_ binding: Binding<Bool>, execute work: @escaping ()
 }
 
 struct AddGameToolbarButton: View {
-    @Binding var showingGameForm: Bool
-    @Binding var showPlayerAlert: Bool
     let currentPlayer: Player?
+    @State private var showForm = false
+    @State private var showNoPlayerAlert = false
 
     var body: some View {
         Button {
             if currentPlayer == nil {
-                showPlayerAlert = true
+                showNoPlayerAlert = true
             } else {
-                showingGameForm.toggle()
+                showForm.toggle()
             }
         } label: {
             Label("game.form.title".localized(), systemImage: "plus")
         }
         .help("game.form.title".localized())
-        .sheet(isPresented: $showingGameForm) {
+        .sheet(isPresented: $showForm) {
             GameFormView()
                 .presentationBackgroundInteraction(.automatic)
         }
-        .alert(isPresented: $showPlayerAlert) {
+        .alert(isPresented: $showNoPlayerAlert) {
             Alert(
                 title: Text("sidebar.alert.no_player.title".localized()),
                 message: Text("sidebar.alert.no_player.message".localized()),
@@ -51,20 +51,20 @@ struct AddPlayerToolbarButton: View {
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
 
-    @Binding var showingAddPlayerSheet: Bool
-    @Binding var playerName: String
-    @Binding var isPlayerNameValid: Bool
+    @State private var showSheet = false
+    @State private var playerName = ""
+    @State private var isPlayerNameValid = false
 
     var body: some View {
         Button {
             playerName = ""
             isPlayerNameValid = false
-            showingAddPlayerSheet = true
+            showSheet = true
         } label: {
             Label("player.add".localized(), systemImage: "person.badge.plus")
         }
         .help("player.add".localized())
-        .sheet(isPresented: $showingAddPlayerSheet) {
+        .sheet(isPresented: $showSheet) {
             AddPlayerSheetView(
                 playerName: $playerName,
                 isPlayerNameValid: $isPlayerNameValid,
@@ -75,10 +75,10 @@ struct AddPlayerToolbarButton: View {
                         AppLog.main.debug("Failed to add player \(playerName) (via ViewModel).")
                     }
                     isPlayerNameValid = true
-                    showingAddPlayerSheet = false
+                    showSheet = false
                 },
                 onCancel: {
-                    delayedDismiss($showingAddPlayerSheet) {
+                    delayedDismiss($showSheet) {
                         container.system.minecraftAuthService.clearAuthenticationData()
                     }
                 },
@@ -86,7 +86,7 @@ struct AddPlayerToolbarButton: View {
                     AppLog.main.debug("Premium login successful, user: \(profile.name)")
                     _ = playerListViewModel.addOnlinePlayer(profile: profile)
                     container.system.premiumAccountFlagManager.setPremiumAccountAdded()
-                    delayedDismiss($showingAddPlayerSheet) {
+                    delayedDismiss($showSheet) {
                         container.system.minecraftAuthService.clearAuthenticationData()
                     }
                 },
@@ -94,7 +94,7 @@ struct AddPlayerToolbarButton: View {
                     AppLog.main.debug("Yggdrasil login successful, user: \(profile.name)")
                     OfflineUserServerMap.setServer(profile)
                     _ = playerListViewModel.addOnlinePlayer(profile: profile)
-                    delayedDismiss($showingAddPlayerSheet) {
+                    delayedDismiss($showSheet) {
                         container.system.yggdrasilAuthService.logout()
                     }
                 },
@@ -105,17 +105,17 @@ struct AddPlayerToolbarButton: View {
 }
 
 struct SkinToolbarButton: View {
-    @Binding var showEditSkin: Bool
     let isLoadingSkin: Bool
     let currentPlayer: Player?
     let viewModel: ContentToolbarViewModel
+    @State private var showSheet = false
 
     var body: some View {
         Button {
             Task {
                 await viewModel.preloadSkinDataForManager(player: currentPlayer)
                 if currentPlayer != nil, !Task.isCancelled {
-                    showEditSkin = true
+                    showSheet = true
                 }
             }
         } label: {
@@ -128,7 +128,7 @@ struct SkinToolbarButton: View {
         }
         .help("skin.title".localized())
         .disabled(isLoadingSkin)
-        .sheet(isPresented: $showEditSkin) {
+        .sheet(isPresented: $showSheet) {
             SkinToolDetailView(
                 preloadedSkinInfo: viewModel.preloadedSkinInfo,
                 preloadedProfile: viewModel.preloadedProfile,
@@ -144,28 +144,27 @@ struct MinecraftFriendsToolbarButton: View {
     @Environment(DIContainer.self)
     private var container
 
-    @Binding var showingMinecraftFriendsSheet: Bool
-    @Binding var minecraftFriendsSheetHost: MinecraftFriendsSheetHostAdapter?
-    @Binding var isLoadingFriends: Bool
-
     let currentPlayer: Player?
     let viewModel: MinecraftFriendsSheetViewModel
+    @State private var showSheet = false
+    @State private var sheetHost: MinecraftFriendsSheetHostAdapter?
+    @State private var isLoading = false
 
     var body: some View {
         Button {
             Task {
                 guard let p = currentPlayer else { return }
-                isLoadingFriends = true
-                defer { isLoadingFriends = false }
+                isLoading = true
+                defer { isLoading = false }
                 let host = MinecraftFriendsSheetHostAdapter(player: p)
-                minecraftFriendsSheetHost = host
+                sheetHost = host
                 viewModel.prepare(playerId: p.id, host: host)
                 await viewModel.load(forceRefresh: false)
                 guard !Task.isCancelled else { return }
-                showingMinecraftFriendsSheet = true
+                showSheet = true
             }
         } label: {
-            if isLoadingFriends {
+            if isLoading {
                 ProgressView()
                     .controlSize(.small)
             } else {
@@ -173,9 +172,9 @@ struct MinecraftFriendsToolbarButton: View {
             }
         }
         .help("minecraft.friends.toolbar.help".localized())
-        .disabled(isLoadingFriends)
-        .sheet(isPresented: $showingMinecraftFriendsSheet) {
-            if let p = currentPlayer, minecraftFriendsSheetHost != nil {
+        .disabled(isLoading)
+        .sheet(isPresented: $showSheet) {
+            if let p = currentPlayer, sheetHost != nil {
                 MinecraftFriendsSheetView(
                     playerId: p.id,
                     viewModel: viewModel,
@@ -196,7 +195,7 @@ struct MinecraftFriendsToolbarButton: View {
                     }
                 }
                 .onDisappear {
-                    minecraftFriendsSheetHost = nil
+                    sheetHost = nil
                 }
             }
         }

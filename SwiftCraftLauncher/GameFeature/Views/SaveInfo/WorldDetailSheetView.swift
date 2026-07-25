@@ -25,19 +25,6 @@ struct WorldDetailSheetView: View {
             footer: { footerView },
         )
         .frame(minWidth: 500, minHeight: 400)
-        .alert(
-            "common.error".localized(),
-            isPresented: Binding(
-                get: { viewModel.showError },
-                set: { viewModel.showError = $0 },
-            ),
-        ) {
-            Button("common.ok".localized(), role: .cancel) { }
-        } message: {
-            if let errorMessage = viewModel.errorMessage {
-                Text(errorMessage)
-            }
-        }
     }
 
     private var headerView: some View {

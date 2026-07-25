@@ -67,11 +67,17 @@ final class GlobalErrorHandlerTests: XCTestCase {
     func testGlobalError_init_defaultLevel() {
         let error = GlobalError(kind: .network, i18nKey: "test.key")
         XCTAssertEqual(error.level, .notification)
+        XCTAssertEqual(error.source, .main)
     }
 
     func testGlobalError_init_customLevel() {
         let error = GlobalError(kind: .network, i18nKey: "test.key", level: .popup)
         XCTAssertEqual(error.level, .popup)
+    }
+
+    func testGlobalError_init_settingsSource() {
+        let error = GlobalError(kind: .network, i18nKey: "test.key", source: .settings)
+        XCTAssertEqual(error.source, .settings)
     }
 
     func testGlobalError_id_containsPrefixAndKey() {
@@ -310,5 +316,46 @@ final class GlobalErrorHandlerTests: XCTestCase {
 
         XCTAssertNil(handler.currentError)
         XCTAssertTrue(handler.errorHistory.isEmpty)
+    }
+
+    func testHandle_errorRecordsSource() {
+        let handler = GlobalErrorHandler()
+        let mainError = GlobalError.network(i18nKey: "test.src.main", source: .main)
+        let settingsError = GlobalError.network(i18nKey: "test.src.settings", source: .settings)
+
+        handler.handle(mainError)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.source, .main)
+
+        handler.handle(settingsError)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.source, .settings)
+    }
+
+    func testFrom_errorPreservesSource() {
+        let error = GlobalError.fileSystem(i18nKey: "test.preserve", source: .settings)
+        let converted = GlobalError.from(error)
+        XCTAssertEqual(converted.source, .settings)
+    }
+
+    func testFrom_unknownError_defaultSource() {
+        let error = NSError(domain: "test", code: 1, userInfo: nil)
+        let converted = GlobalError.from(error)
+        XCTAssertEqual(converted.source, .main)
+    }
+
+    func testFrom_unknownError_explicitSource() {
+        let error = NSError(domain: "test", code: 1, userInfo: nil)
+        let converted = GlobalError.from(error, source: .settings)
+        XCTAssertEqual(converted.source, .settings)
+    }
+
+    func testHandle_withSourceParameter() {
+        let handler = GlobalErrorHandler()
+        let error = NSError(domain: "test", code: 1, userInfo: nil)
+
+        handler.handle(error, source: .settings)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.source, .settings)
     }
 }

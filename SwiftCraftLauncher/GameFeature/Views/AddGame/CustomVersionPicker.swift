@@ -22,7 +22,6 @@ struct CustomVersionPicker: View {
     @Binding var time: String
     let onVersionSelected: (String) async -> String
     @State private var showMenu = false
-    @State private var error: GlobalError?
 
     init(
         selected: Binding<String>,
@@ -61,18 +60,6 @@ struct CustomVersionPicker: View {
                 }
             }
             versionInput
-        }
-        .alert(
-            "error.notification.validation.title".localized(),
-            isPresented: .constant(error != nil),
-        ) {
-            Button("common.close".localized()) {
-                error = nil
-            }
-        } message: {
-            if let error {
-                Text(error.localizedDescription)
-            }
         }
     }
 
@@ -151,6 +138,5 @@ struct CustomVersionPicker: View {
         )
         AppLog.game.error("Version picker error: \(globalError.localizedDescription)")
         container.core.errorHandler.handle(globalError)
-        error = globalError
     }
 }

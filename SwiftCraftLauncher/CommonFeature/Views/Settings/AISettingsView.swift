@@ -70,7 +70,7 @@ public struct AISettingsView: View {
                     TextField(aiSettingsManager.selectedProvider.baseURL, text: $aiSettingsManager.openAIBaseURL)
                         .textFieldStyle(.roundedBorder)
                         .labelsHidden()
-                        .frame(width: 180)
+                        .frame(width: 300)
                         .fixedSize()
                         .focusable(false)
                 }

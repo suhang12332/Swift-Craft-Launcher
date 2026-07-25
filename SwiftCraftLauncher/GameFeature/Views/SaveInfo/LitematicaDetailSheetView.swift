@@ -18,8 +18,6 @@ struct LitematicaDetailSheetView: View {
 
     @State private var metadata: LitematicMetadata?
     @State private var isLoading = true
-    @State private var errorMessage: String?
-    @State private var showError = false
 
     init(
         filePath: URL,
@@ -38,13 +36,6 @@ struct LitematicaDetailSheetView: View {
         .frame(minWidth: 500, minHeight: 400)
         .task {
             await loadMetadata()
-        }
-        .alert("common.error".localized(), isPresented: $showError) {
-            Button("common.ok".localized(), role: .cancel) { }
-        } message: {
-            if let errorMessage {
-                Text(errorMessage)
-            }
         }
     }
 
@@ -88,12 +79,6 @@ struct LitematicaDetailSheetView: View {
                 .foregroundColor(.orange)
             Text("litematica.detail.load_failed".localized())
                 .font(.headline)
-            if let errorMessage {
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
@@ -205,7 +190,6 @@ struct LitematicaDetailSheetView: View {
 
     private func loadMetadata() async {
         isLoading = true
-        errorMessage = nil
 
         do {
             AppLog.game.debug("Starting to load litematica details: \(filePath.lastPathComponent)")
@@ -216,7 +200,10 @@ struct LitematicaDetailSheetView: View {
                     self.metadata = metadata
                 } else {
                     AppLog.game.error("Litematica metadata is nil: \(filePath.lastPathComponent)")
-                    errorMessage = "litematica.detail.error.parse_failed".localized()
+                    DIContainer.shared.core.errorHandler.handle(GlobalError.fileSystem(
+                        i18nKey: "litematica.detail.error.parse_failed",
+                        level: .notification,
+                    ))
                 }
                 isLoading = false
             }
@@ -224,8 +211,7 @@ struct LitematicaDetailSheetView: View {
             AppLog.game.error("Failed to load litematica details: \(error.localizedDescription)")
             await MainActor.run {
                 isLoading = false
-                errorMessage = String(format: "litematica.detail.error.load_failed".localized(), error.localizedDescription)
-                showError = true
+                DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
             }
         }
     }

@@ -25,6 +25,7 @@ final class PlayerSettingsViewModel {
     init() {
         sideEffects = MinecraftFriendsMicrosoftPlayerSideEffects(
             dataManager: DIContainer.shared.ui.playerDataManager,
+            source: .settings,
         )
     }
 

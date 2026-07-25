@@ -40,9 +40,11 @@ extension GameAdvancedSettingsViewModel {
                 let globalError = error as? GlobalError ?? GlobalError.unknown(
                     i18nKey: "error.unknown.settings_save_failed",
                     level: .notification,
+                    source: .settings,
                 )
-                AppLog.game.error("Failed to auto-save game settings: \(globalError.localizedDescription)")
-                await MainActor.run { self.error = globalError }
+                let scoped = globalError.withSource(.settings)
+                AppLog.game.error("Failed to auto-save game settings: \(scoped.localizedDescription)")
+                await MainActor.run { DIContainer.shared.core.errorHandler.handle(scoped) }
             }
         }
     }
