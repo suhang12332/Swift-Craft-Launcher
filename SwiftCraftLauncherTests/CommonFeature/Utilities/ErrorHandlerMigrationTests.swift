@@ -20,7 +20,9 @@ final class ErrorHandlerMigrationTests: XCTestCase {
 
     private func resetHandler() {
         DIContainer.shared.core.errorHandler.cleanup()
-        flushMainQueue()
+        let exp = XCTestExpectation(description: "reset cleanup")
+        DispatchQueue.main.async { exp.fulfill() }
+        _ = XCTWaiter.wait(for: [exp], timeout: 1.0)
     }
 
     override func setUp() {
@@ -199,6 +201,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testErrorHandler_receivesMultipleErrors() {
+        resetHandler()
         let handler = DIContainer.shared.core.errorHandler
 
         handler.handle(GlobalError.network(i18nKey: "test.network.1"))
@@ -211,6 +214,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testErrorHandler_popupLevel_setsCurrentError() {
+        resetHandler()
         let handler = DIContainer.shared.core.errorHandler
 
         handler.handle(GlobalError.authentication(i18nKey: "test.auth.popup", level: .popup))
@@ -221,6 +225,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testErrorHandler_clearCurrentError_works() {
+        resetHandler()
         let handler = DIContainer.shared.core.errorHandler
 
         handler.handle(GlobalError.network(i18nKey: "test.clear"))
@@ -233,6 +238,7 @@ final class ErrorHandlerMigrationTests: XCTestCase {
     }
 
     func testErrorHandler_fileSystemError_recorded() {
+        resetHandler()
         let handler = DIContainer.shared.core.errorHandler
 
         handler.handle(GlobalError.fileSystem(i18nKey: "error.fs.migration.test", level: .popup))
