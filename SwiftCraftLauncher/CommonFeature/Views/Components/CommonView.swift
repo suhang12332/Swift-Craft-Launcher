@@ -203,7 +203,6 @@ struct InfoIconWithPopover<Content: View>: View {
     let content: Content
     /// The delay in seconds before the popover appears on hover.
     let delay: Double
-    @State private var showPopover = false
 
     init(
         iconSize _: CGFloat = 14,
@@ -215,15 +214,13 @@ struct InfoIconWithPopover<Content: View>: View {
     }
 
     var body: some View {
-        HelpButton {
-            showPopover.toggle()
-        }
-        .hoverPopover(isPresented: $showPopover, delay: delay, arrowEdge: .trailing) {
-            ScrollView {
-                content
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        HelpButton { }
+            .hoverPopover(delay: delay, arrowEdge: .trailing) {
+                ScrollView {
+                    content
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
-        }
     }
 }
 
