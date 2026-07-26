@@ -64,6 +64,6 @@ struct OpenSourceLibrary: Codable, Hashable, Identifiable {
 
     let name: String
     let url: String
-    let avatar: String?
-    let description: String?
+    let avatar: String
+    let description: String
 }

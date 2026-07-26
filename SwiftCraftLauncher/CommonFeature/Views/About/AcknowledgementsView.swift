@@ -84,11 +84,23 @@ public struct AcknowledgementsView: View {
                     .fontWeight(.medium)
                     .foregroundColor(.primary)
 
-                if let description = library.description, !description.isEmpty {
-                    DescriptionTextWithPopover(description: description)
-                }
+                Text(library.description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .hoverPopover(arrowEdge: .top) {
+                VStack(alignment: .leading) {
+                    Text(library.description)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(nil)
+                        .multilineTextAlignment(.leading)
+                }
+                .fixedSize(horizontal: true, vertical: false)
+            }
 
             Image(systemName: "globe")
                 .font(.title3)
@@ -101,8 +113,7 @@ public struct AcknowledgementsView: View {
 
     @ViewBuilder
     private func libraryAvatar(_ library: OpenSourceLibrary) -> some View {
-        if let avatarURL = library.avatar,
-           let url = URL(string: avatarURL) {
+        if let url = URL(string: library.avatar) {
             AsyncImage(url: url) { phase in
                 avatarImage(for: phase)
             }
