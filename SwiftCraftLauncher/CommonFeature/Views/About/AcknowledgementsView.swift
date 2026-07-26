@@ -92,14 +92,7 @@ public struct AcknowledgementsView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .hoverPopover(arrowEdge: .top) {
-                VStack(alignment: .leading) {
-                    Text(library.description)
-                        .foregroundColor(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .lineLimit(nil)
-                        .multilineTextAlignment(.leading)
-                }
-                .fixedSize(horizontal: true, vertical: false)
+                descriptionPopover(description: library.description)
             }
 
             Image(systemName: "globe")
@@ -109,6 +102,17 @@ public struct AcknowledgementsView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .contentShape(Rectangle())
+    }
+
+    private func descriptionPopover(description: String) -> some View {
+        VStack(alignment: .leading) {
+            Text(description)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(nil)
+                .multilineTextAlignment(.leading)
+        }
+        .fixedSize(horizontal: true, vertical: false)
     }
 
     @ViewBuilder
