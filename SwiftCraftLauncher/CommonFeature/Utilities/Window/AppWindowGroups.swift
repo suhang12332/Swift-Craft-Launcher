@@ -15,6 +15,7 @@ extension SwiftCraftLauncherApp {
             if let windowID {
                 AuxiliaryWindowScene(
                     windowID: windowID,
+                    onDismiss: { $windowID.wrappedValue = nil },
                     playerListViewModel: playerListViewModel,
                     gameRepository: gameRepository,
                 )
@@ -29,6 +30,7 @@ private struct AuxiliaryWindowScene: View {
     private var container
 
     let windowID: AuxiliaryWindowID
+    var onDismiss: () -> Void
     var playerListViewModel: PlayerListViewModel
     var gameRepository: GameRepository
 
@@ -49,6 +51,7 @@ private struct AuxiliaryWindowScene: View {
                 SkinPreviewWindowContent()
             }
         }
+        .navigationTitle(windowID.localizedTitle)
         .preferredColorScheme(container.ui.themeManager.preferredColorScheme)
         .frame(
             minWidth: windowID.defaultSize.width,
@@ -56,8 +59,18 @@ private struct AuxiliaryWindowScene: View {
             minHeight: windowID.defaultSize.height,
             idealHeight: windowID.defaultSize.height,
         )
-        .windowStyleConfig(for: windowID)
-        .windowCleanup(for: windowID, windowDataStore: container.ui.windowDataStore)
+        .background(
+            WindowAccessor(synchronous: true) { window in
+                WindowStyleHelper.configureAuxiliaryWindow(window)
+            },
+        )
+        .onAppear {
+            container.ui.windowManager.registerDismissAction(onDismiss, for: windowID)
+        }
+        .onDisappear {
+            container.ui.windowManager.unregisterDismissAction(for: windowID)
+            container.ui.windowManager.clearPayload(for: windowID)
+        }
     }
 }
 
@@ -76,7 +89,7 @@ private struct AIChatWindowContent: View {
 
     var body: some View {
         Group {
-            if let chatState = container.ui.windowDataStore.aiChatState {
+            if let chatState = container.ui.windowManager.readPayload(for: .aiChat, as: ChatState.self) {
                 AIChatWindowView(chatState: chatState)
             }
         }
@@ -89,7 +102,7 @@ private struct SkinPreviewWindowContent: View {
 
     var body: some View {
         Group {
-            if let data = container.ui.windowDataStore.skinPreviewData {
+            if let data = container.ui.windowManager.readPayload(for: .skinPreview, as: SkinPreviewData.self) {
                 SkinPreviewWindowView(
                     skinImage: data.skinImage,
                     skinPath: data.skinPath,

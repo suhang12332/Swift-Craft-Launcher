@@ -204,12 +204,13 @@ struct SkinUploadSectionView: View {
     /// Opens a separate 3D skin preview window.
     private func openSkinPreviewWindow() {
         let playerModel = convertToPlayerModel(currentModel)
-        container.ui.windowDataStore.skinPreviewData = SkinPreviewData(
+        let data = SkinPreviewData(
             skinImage: selectedSkinImage ?? currentSkinRenderImage,
             skinPath: selectedSkinPath,
             capeImage: selectedCapeImage,
             playerModel: playerModel,
         )
+        container.ui.windowManager.preparePayload(data, for: .skinPreview)
         container.ui.windowManager.openWindow(id: .skinPreview)
     }
 

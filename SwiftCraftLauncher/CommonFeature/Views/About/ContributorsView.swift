@@ -61,9 +61,9 @@ public struct ContributorsView: View {
                 .padding(.bottom, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            ForEach(staticViewModel.contributors.indices, id: \.self) { index in
+            ForEach(Array(staticViewModel.contributors.enumerated()), id: \.offset) { index, contributor in
                 StaticContributorCardView(
-                    contributor: staticViewModel.contributors[index],
+                    contributor: contributor,
                 )
                 .id("static-\(index)")
 
