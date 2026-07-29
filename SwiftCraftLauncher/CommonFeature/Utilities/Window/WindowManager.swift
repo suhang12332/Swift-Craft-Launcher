@@ -17,12 +17,12 @@ class WindowManager {
     init() { }
 
     /// Stores a payload that the window of the given type can read.
-    func preparePayload<Payload>(_ payload: Payload, for id: AuxiliaryWindowID) {
+    func preparePayload(_ payload: some Any, for id: AuxiliaryWindowID) {
         pendingPayloads[id] = payload
     }
 
     /// Returns the payload for the given window type without removing it.
-    func readPayload<Payload>(for id: AuxiliaryWindowID, as type: Payload.Type) -> Payload? {
+    func readPayload<Payload>(for id: AuxiliaryWindowID, as _: Payload.Type) -> Payload? {
         pendingPayloads[id] as? Payload
     }
 

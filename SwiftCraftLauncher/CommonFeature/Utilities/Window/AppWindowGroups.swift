@@ -103,12 +103,7 @@ private struct SkinPreviewWindowContent: View {
     var body: some View {
         Group {
             if let data = container.ui.windowManager.readPayload(for: .skinPreview, as: SkinPreviewData.self) {
-                SkinPreviewWindowView(
-                    skinImage: data.skinImage,
-                    skinPath: data.skinPath,
-                    capeImage: data.capeImage,
-                    playerModel: data.playerModel,
-                )
+                SkinPreviewWindowView(data: data)
             }
         }
     }
