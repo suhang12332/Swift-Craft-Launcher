@@ -87,7 +87,7 @@ class GameLogCollector {
             attachments.append(.file(logFile, logFile.lastPathComponent))
         }
 
-        DIContainer.shared.ui.windowDataStore.aiChatState = chatState
+        DIContainer.shared.ui.windowManager.preparePayload(chatState, for: .aiChat)
         DIContainer.shared.ui.windowManager.openWindow(id: .aiChat)
 
         try? await Task.sleep(nanoseconds: 100_000_000)

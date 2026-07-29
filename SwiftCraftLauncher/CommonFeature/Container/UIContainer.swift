@@ -12,7 +12,6 @@ final class UIContainer {
     // Window & UI
 
     @MainActorLazy var windowManager: WindowManager = .init()
-    @MainActorLazy var windowDataStore: WindowDataStore = .init()
     @MainActorLazy var iconRefreshNotifier: IconRefreshNotifier = .init()
     @MainActorLazy var gameDialogsPresenter: GameDialogsPresenter = .init()
     @MainActorLazy var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter = .init()

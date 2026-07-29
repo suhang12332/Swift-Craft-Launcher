@@ -374,7 +374,7 @@ class AIChatManager {
     /// Opens the AI chat window with a fresh chat state.
     func openChatWindow() {
         let chatState = ChatState()
-        DIContainer.shared.ui.windowDataStore.aiChatState = chatState
+        DIContainer.shared.ui.windowManager.preparePayload(chatState, for: .aiChat)
         DIContainer.shared.ui.windowManager.openWindow(id: .aiChat)
     }
 }

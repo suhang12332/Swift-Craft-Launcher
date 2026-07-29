@@ -6,65 +6,72 @@
 //
 
 import AppKit
-
-// Manages application window lifecycle, activation, and front-to-back ordering.
 import SwiftUI
 
 @MainActor
 class WindowManager {
-    private var openAuxiliaryWindowAction: ((AuxiliaryWindowID) -> Void)?
+    private var openWindowAction: ((AuxiliaryWindowID) -> Void)?
+    private var dismissActions: [AuxiliaryWindowID: () -> Void] = [:]
+    private var pendingPayloads: [AuxiliaryWindowID: Any] = [:]
 
     init() { }
 
-    func setOpenAuxiliaryWindowAction(_ action: @escaping (AuxiliaryWindowID) -> Void) {
-        openAuxiliaryWindowAction = action
+    /// Stores a payload that the window of the given type can read.
+    func preparePayload(_ payload: some Any, for id: AuxiliaryWindowID) {
+        pendingPayloads[id] = payload
     }
 
-    private func findWindow(id: AuxiliaryWindowID) -> NSWindow? {
-        findWindow(identifier: id.rawValue)
+    /// Returns the payload for the given window type without removing it.
+    func readPayload<Payload>(for id: AuxiliaryWindowID, as _: Payload.Type) -> Payload? {
+        pendingPayloads[id] as? Payload
     }
 
-    private func findWindow(identifier: String) -> NSWindow? {
-        NSApplication.shared.windows.first { $0.identifier?.rawValue == identifier }
+    /// Discards any stored payload for the given window type.
+    func clearPayload(for id: AuxiliaryWindowID) {
+        pendingPayloads.removeValue(forKey: id)
     }
 
-    /// Opens the specified auxiliary window, or brings it to front if already open.
+    func setOpenWindowAction(_ action: @escaping (AuxiliaryWindowID) -> Void) {
+        openWindowAction = action
+    }
+
+    func registerDismissAction(_ action: @escaping () -> Void, for id: AuxiliaryWindowID) {
+        dismissActions[id] = action
+    }
+
+    func unregisterDismissAction(for id: AuxiliaryWindowID) {
+        dismissActions.removeValue(forKey: id)
+    }
+
+    /// Opens the specified auxiliary window via SwiftUI's openWindow environment action.
+    /// SwiftUI automatically brings an already-open window to the front.
     func openWindow(id: AuxiliaryWindowID) {
-        if let existingWindow = findWindow(id: id) {
-            bringWindowToFront(existingWindow)
-            return
-        }
-
-        if let openWindow = openAuxiliaryWindowAction {
-            openWindow(id)
-        } else {
-            NotificationCenter.default.post(
-                name: .openWindow,
-                object: nil,
-                userInfo: ["windowID": id.rawValue],
-            )
-        }
+        openWindowAction?(id)
     }
 
     /// Opens the specified auxiliary window and activates the application.
     func showAndActivateWindow(id: AuxiliaryWindowID) {
         openWindow(id: id)
         NSApplication.shared.activate(ignoringOtherApps: true)
+    }
 
-        DispatchQueue.main.async { [weak self] in
-            guard let self, let window = findWindow(id: id) else { return }
-            bringWindowToFront(window)
-        }
+    /// Closes the specified auxiliary window by invoking its registered dismiss action.
+    func closeWindow(id: AuxiliaryWindowID) {
+        dismissActions[id]?()
     }
 
     /// Activates the application and brings the main window to front.
     func showAndActivateMainWindow() {
         NSApplication.shared.activate(ignoringOtherApps: true)
-        if let window = findWindow(identifier: AppWindowID.main.rawValue) {
+        if let window = findMainWindow() {
             bringWindowToFront(window)
             return
         }
         NSApp.mainWindow?.makeKeyAndOrderFront(nil)
+    }
+
+    private func findMainWindow() -> NSWindow? {
+        NSApplication.shared.windows.first { $0.identifier?.rawValue == AppWindowID.main.rawValue }
     }
 
     private func bringWindowToFront(_ window: NSWindow) {
@@ -79,18 +86,14 @@ class WindowManager {
         }
         window.makeKeyAndOrderFront(nil)
     }
-
-    /// Closes the specified auxiliary window.
-    func closeWindow(id: AuxiliaryWindowID) {
-        if let window = findWindow(id: id) {
-            window.close()
-        }
-    }
 }
 
-struct WindowOpener: ViewModifier {
+/// Bridges SwiftUI's `openWindow` environment action to `WindowManager`,
+/// allowing non-view code to open auxiliary windows.
+struct WindowActionBridge: ViewModifier {
     @Environment(\.openWindow)
     private var openWindow
+
     private let windowManager: WindowManager
 
     init(windowManager: WindowManager) {
@@ -98,27 +101,16 @@ struct WindowOpener: ViewModifier {
     }
 
     func body(content: Content) -> some View {
-        content
-            .onAppear {
-                windowManager.setOpenAuxiliaryWindowAction { windowID in
-                    openWindow(value: windowID)
-                }
+        content.onAppear {
+            windowManager.setOpenWindowAction { windowID in
+                openWindow(value: windowID)
             }
-            .onReceive(NotificationCenter.default.publisher(for: .openWindow)) { notification in
-                if let windowIDString = notification.userInfo?["windowID"] as? String,
-                   let windowID = AuxiliaryWindowID(rawValue: windowIDString) {
-                    openWindow(value: windowID)
-                }
-            }
+        }
     }
 }
 
 extension View {
-    func windowOpener(
-        _ windowManager: WindowManager,
-    ) -> some View {
-        modifier(
-            WindowOpener(windowManager: windowManager),
-        )
+    func windowOpener(_ windowManager: WindowManager) -> some View {
+        modifier(WindowActionBridge(windowManager: windowManager))
     }
 }

@@ -10,30 +10,27 @@ import Foundation
 import SkinRenderKit
 import SwiftUI
 
-/// A window that displays a 3D preview of the selected Minecraft skin and cape.
-struct SkinPreviewWindowView: View {
+/// Data model for skin preview rendering.
+struct SkinPreviewData {
     let skinImage: NSImage?
     let skinPath: String?
     let capeImage: NSImage?
     let playerModel: PlayerModel
+}
+
+/// A window that displays a 3D preview of the selected Minecraft skin and cape.
+struct SkinPreviewWindowView: View {
+    let data: SkinPreviewData
 
     @State private var capeBinding: NSImage?
     @State private var currentSkinImage: NSImage?
     @State private var currentSkinPath: String?
 
-    init(
-        skinImage: NSImage?,
-        skinPath: String?,
-        capeImage: NSImage?,
-        playerModel: PlayerModel,
-    ) {
-        self.skinImage = skinImage
-        self.skinPath = skinPath
-        self.capeImage = capeImage
-        self.playerModel = playerModel
-        _capeBinding = State(initialValue: capeImage)
-        _currentSkinImage = State(initialValue: skinImage)
-        _currentSkinPath = State(initialValue: skinPath)
+    init(data: SkinPreviewData) {
+        self.data = data
+        _capeBinding = State(initialValue: data.capeImage)
+        _currentSkinImage = State(initialValue: data.skinImage)
+        _currentSkinPath = State(initialValue: data.skinPath)
     }
 
     var body: some View {
@@ -54,7 +51,7 @@ struct SkinPreviewWindowView: View {
             SkinRenderView(
                 skinImage: image,
                 capeImage: $capeBinding,
-                playerModel: playerModel,
+                playerModel: data.playerModel,
                 rotationDuration: 0,
                 backgroundColor: NSColor.clear,
                 onSkinDropped: { _ in },

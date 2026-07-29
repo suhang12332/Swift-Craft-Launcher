@@ -17,6 +17,4 @@ extension Notification.Name {
     static let gameCrashed = Notification.Name("SwiftCraftLauncher.GameCrashed")
 
     static let localResourceImported = Notification.Name("SwiftCraftLauncher.LocalResourceImported")
-
-    static let openWindow = Notification.Name("SwiftCraftLauncher.OpenWindow")
 }
