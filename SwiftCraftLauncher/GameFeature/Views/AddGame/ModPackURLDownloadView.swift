@@ -41,7 +41,7 @@ struct ModPackURLDownloadView: View {
         .onChange(of: triggerConfirm.wrappedValue) { _, newValue in
             if newValue {
                 triggerConfirm.wrappedValue = false
-                if viewModel.isURLValid && !viewModel.isDownloading {
+                if viewModel.isURLValid, !viewModel.isDownloading {
                     startDownload()
                 }
             }
@@ -108,7 +108,7 @@ struct ModPackURLDownloadView: View {
             },
             onFailure: {
                 isDownloading = false
-            }
+            },
         )
         isDownloading = true
     }
