@@ -25,9 +25,10 @@ final class ModPackURLDownloadViewModel {
 
     private var downloadTask: Task<Void, Never>?
 
-    func startDownload(onComplete: @escaping (URL) -> Void) {
+    func startDownload(onComplete: @escaping (URL) -> Void, onFailure: @escaping () -> Void = {}) {
         guard let url = URL(string: urlString) else {
             errorMessage = "error.network.invalid_url".localized()
+            onFailure()
             return
         }
 
@@ -77,6 +78,7 @@ final class ModPackURLDownloadViewModel {
                 let globalError = GlobalError.from(error)
                 self.errorMessage = globalError.localizedDescription
                 DIContainer.shared.core.errorHandler.handle(globalError)
+                onFailure()
             }
         }
     }

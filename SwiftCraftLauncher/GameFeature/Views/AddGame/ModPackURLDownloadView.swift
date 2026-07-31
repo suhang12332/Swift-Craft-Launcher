@@ -101,10 +101,15 @@ struct ModPackURLDownloadView: View {
     }
 
     private func startDownload() {
-        viewModel.startDownload { fileURL in
-            isDownloading = false
-            onDownloadComplete(fileURL)
-        }
+        viewModel.startDownload(
+            onComplete: { fileURL in
+                isDownloading = false
+                onDownloadComplete(fileURL)
+            },
+            onFailure: {
+                isDownloading = false
+            }
+        )
         isDownloading = true
     }
 }
