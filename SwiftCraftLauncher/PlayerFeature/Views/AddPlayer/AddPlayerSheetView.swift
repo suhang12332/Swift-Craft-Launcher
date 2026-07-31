@@ -209,7 +209,9 @@ struct AddPlayerSheetView: View {
     private var playerInfoSection: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("addplayer.info.title".localized())
-                .font(.headline).padding(.bottom, 4)
+                .font(.headline)
+                .padding(.bottom, 4)
+
             Text("addplayer.info.line1".localized())
                 .font(.subheadline)
                 .foregroundColor(.secondary)

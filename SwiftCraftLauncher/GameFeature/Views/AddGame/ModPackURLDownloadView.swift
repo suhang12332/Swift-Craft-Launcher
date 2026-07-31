@@ -30,7 +30,9 @@ struct ModPackURLDownloadView: View {
                     subtitle: "modpack.processing.subtitle.remote".localized(),
                 )
             } else {
-                urlInputView
+                urlInfoSection
+                    .padding(.bottom, 10)
+                urlInputSection
             }
         }
         .onChange(of: viewModel.urlString) { _, _ in
@@ -57,20 +59,44 @@ struct ModPackURLDownloadView: View {
         }
     }
 
-    private var urlInputView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("modpack.url_download.description".localized())
+    private var urlInfoSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("modpack.url_download.title".localized())
+                .font(.headline)
+                .padding(.bottom, 4)
+
+            Text("modpack.url_download.info".localized())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+                .padding(.bottom, 4)
 
-            TextField("modpack.url_download.placeholder".localized(), text: $viewModel.urlString)
-                .textFieldStyle(.roundedBorder)
-                .autocorrectionDisabled()
-                .onSubmit {
-                    if viewModel.isURLValid {
-                        startDownload()
-                    }
+            Text("modpack.url_download.example.modrinth".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Text("modpack.url_download.example.curseforge".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Text("modpack.url_download.example.other".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private var urlInputSection: some View {
+        VStack(alignment: .leading) {
+            Text("modpack.url_download.label".localized())
+                .font(.headline.bold())
+            TextField(
+                "modpack.url_download.placeholder".localized(),
+                text: $viewModel.urlString,
+            )
+            .textFieldStyle(.roundedBorder)
+            .autocorrectionDisabled()
+            .onSubmit {
+                if viewModel.isURLValid {
+                    startDownload()
                 }
+            }
         }
     }
 
