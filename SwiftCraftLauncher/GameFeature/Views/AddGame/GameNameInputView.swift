@@ -25,7 +25,6 @@ struct GameNameInputView: View {
                 text: $gameName,
             )
             .textFieldStyle(.roundedBorder)
-            .foregroundColor(.primary)
             .focused($isGameNameFocused)
             .focusEffectDisabled()
             .disabled(isDisabled)

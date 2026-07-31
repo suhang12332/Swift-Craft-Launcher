@@ -40,7 +40,6 @@ public struct AISettingsView: View {
                             }
                         }
                         .frame(width: 300)
-                        .focusable(false)
                         Button(action: {
                             showApiKey.toggle()
                         }, label: {
@@ -60,7 +59,6 @@ public struct AISettingsView: View {
                         .labelsHidden()
                         .frame(maxWidth: 300)
                         .fixedSize()
-                        .focusable(false)
                 }
                 .labeledContentStyle(.custom)
             }
@@ -72,7 +70,6 @@ public struct AISettingsView: View {
                         .labelsHidden()
                         .frame(width: 300)
                         .fixedSize()
-                        .focusable(false)
                 }
                 .labeledContentStyle(.custom)
             }
@@ -101,7 +98,6 @@ public struct AISettingsView: View {
                             .labelsHidden()
                             .frame(maxWidth: 300)
                             .fixedSize()
-                            .focusable(false)
                     }
                     .labeledContentStyle(.custom)
                     CommonDescriptionText(text: "settings.ai.avatar.description".localized())
