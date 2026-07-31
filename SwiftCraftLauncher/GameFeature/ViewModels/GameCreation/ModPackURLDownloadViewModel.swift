@@ -1,0 +1,89 @@
+//
+//  ModPackURLDownloadViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+import Foundation
+import Observation
+
+/// Manages downloading a modpack from a user-provided URL.
+@MainActor
+@Observable
+final class ModPackURLDownloadViewModel {
+    var urlString: String = ""
+    var isDownloading = false
+    var downloadProgress: Int64 = 0
+    var downloadTotalSize: Int64 = 0
+    var errorMessage: String?
+
+    var isURLValid: Bool {
+        guard let url = URL(string: urlString) else { return false }
+        return url.scheme == "http" || url.scheme == "https"
+    }
+
+    private var downloadTask: Task<Void, Never>?
+
+    func startDownload(onComplete: @escaping (URL) -> Void) {
+        guard let url = URL(string: urlString) else {
+            errorMessage = "error.network.invalid_url".localized()
+            return
+        }
+
+        isDownloading = true
+        errorMessage = nil
+        downloadProgress = 0
+        downloadTotalSize = 0
+
+        downloadTask?.cancel()
+        downloadTask = Task { [weak self] in
+            guard let self else { return }
+            do {
+                let tempDir = FileManager.default.temporaryDirectory
+                    .appendingPathComponent("modpack_url_download")
+                    .appendingPathComponent(UUID().uuidString)
+                try FileManager.default.createDirectory(
+                    at: tempDir,
+                    withIntermediateDirectories: true,
+                )
+
+                let filename = url.lastPathComponent.isEmpty ? "modpack.zip" : url.lastPathComponent
+                let savePath = tempDir.appendingPathComponent(filename)
+
+                _ = try await ProgressDownloadManager.downloadFile(
+                    urlString: url.absoluteString,
+                    destinationURL: savePath,
+                    progressHandler: { [weak self] downloaded, total in
+                        guard let self else { return }
+                        Task { @MainActor in
+                            self.downloadProgress = downloaded
+                            if total > 0 {
+                                self.downloadTotalSize = total
+                            }
+                        }
+                    },
+                )
+
+                guard !Task.isCancelled else { return }
+                self.isDownloading = false
+                onComplete(savePath)
+            } catch {
+                guard !Task.isCancelled else { return }
+                self.isDownloading = false
+                if let urlError = error as? URLError, urlError.code == .cancelled {
+                    return
+                }
+                let globalError = GlobalError.from(error)
+                self.errorMessage = globalError.localizedDescription
+                DIContainer.shared.core.errorHandler.handle(globalError)
+            }
+        }
+    }
+
+    func cancel() {
+        downloadTask?.cancel()
+        downloadTask = nil
+        isDownloading = false
+    }
+}
