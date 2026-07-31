@@ -11,7 +11,6 @@ import SwiftUI
 struct AIChatInputAreaView: View {
     @Binding var inputText: String
     @Binding var selectedGameId: String?
-    @FocusState.Binding var isInputFocused: Bool
     let games: [GameVersionInfo]
     let isSending: Bool
     let canSend: Bool
@@ -80,7 +79,6 @@ struct AIChatInputAreaView: View {
     private var textField: some View {
         TextField("ai.chat.input.placeholder".localized(), text: $inputText, axis: .vertical)
             .textFieldStyle(.plain)
-            .focused($isInputFocused)
             .lineLimit(1 ... 6)
             .onSubmit {
                 if canSend {

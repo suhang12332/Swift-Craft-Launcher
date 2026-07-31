@@ -21,7 +21,6 @@ struct AIChatWindowView: View {
     @State private var attachmentManager = AIChatAttachmentManager()
     @State private var viewModel = AIChatWindowViewModel()
     @State private var inputText = ""
-    @FocusState private var isInputFocused: Bool
     @State private var showFilePicker = false
 
     init(
@@ -53,7 +52,6 @@ struct AIChatWindowView: View {
             AIChatInputAreaView(
                 inputText: $inputText,
                 selectedGameId: $viewModel.selectedGameId,
-                isInputFocused: $isInputFocused,
                 games: gameRepository.games,
                 isSending: chatState.isSending,
                 canSend: canSend,
@@ -74,17 +72,11 @@ struct AIChatWindowView: View {
             selectedGame.map { AppPaths.profileDirectory(gameName: $0.gameName) } ?? FileManager.default.homeDirectoryForCurrentUser,
         )
         .onAppear {
-            isInputFocused = true
             viewModel.onAppear(
                 games: gameRepository.games,
                 currentPlayer: playerListViewModel.currentPlayer,
                 aiAvatarURL: container.ui.aiSettingsManager.aiAvatarURL,
             )
-        }
-        .onChange(of: chatState.isSending) { wasSending, isSendingNow in
-            if wasSending, !isSendingNow {
-                isInputFocused = true
-            }
         }
         .onChange(of: gameRepository.games) { _, newGames in
             viewModel.onGamesChanged(newGames)
@@ -115,7 +107,6 @@ struct AIChatWindowView: View {
         viewModel.clearAllData()
         inputText = ""
         attachmentManager.clearAll()
-        isInputFocused = false
     }
 
     private func sendMessage() {
