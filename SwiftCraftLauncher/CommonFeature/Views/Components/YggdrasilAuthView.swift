@@ -30,9 +30,9 @@ struct YggdrasilAuthView: View {
                 serverPickerSection
             } else {
                 authStateSection
+                    .padding(.vertical, 20)
             }
         }
-        .padding(.vertical, 20)
         .onChange(of: viewModel.selectedOption) { _, newValue in
             viewModel.onSelectedOptionChanged(newValue, authService: container.system.yggdrasilAuthService)
         }
@@ -50,9 +50,16 @@ struct YggdrasilAuthView: View {
     }
 
     private var serverPickerSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 4) {
             Text("yggdrasil.server.select".localized())
                 .font(.headline)
+                .padding(.bottom, 4)
+
+            Text("yggdrasil.server.select.description".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(.bottom, 10)
+
             Picker("yggdrasil.server.picker".localized(), selection: $viewModel.selectedOption) {
                 Text("yggdrasil.server.please_select".localized())
                     .tag(nil as YggdrasilServerConfig?)

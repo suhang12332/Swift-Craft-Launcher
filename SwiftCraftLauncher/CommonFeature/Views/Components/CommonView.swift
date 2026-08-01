@@ -184,16 +184,12 @@ extension View {
 }
 
 extension Scene {
-    func conditionalRestorationBehavior() -> some Scene {
+    func applyRestorationBehaviorDisabled() -> some Scene {
         if #available(macOS 15.0, *) {
             return restorationBehavior(.disabled)
         } else {
             return self
         }
-    }
-
-    func applyRestorationBehaviorDisabled() -> some Scene {
-        conditionalRestorationBehavior()
     }
 }
 

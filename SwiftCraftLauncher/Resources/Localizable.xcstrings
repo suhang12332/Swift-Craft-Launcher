@@ -87779,6 +87779,143 @@
           }
         }
       }
+    },
+    "yggdrasil.server.select.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر خادم Yggdrasil للمصادقة واسترجاع البيانات. ندعم حالياً عددًا محدودًا من الخوادم الخارجية ونخطط لإضافة المزيد في المستقبل."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vælg en Yggdrasil-server til godkendelse og hentning af data. I øjeblikket er supporten for tredjepartsservere begrænset, og vi planlægger at integrere flere servere i fremtiden."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wählen Sie einen Yggdrasil-Server für Authentifizierung und Datenabruf. Derzeit ist die Unterstützung für Drittanbieter-Server begrenzt, und wir planen, zukünftig weitere Server zu integrieren."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the Yggdrasil server for account authentication and skin retrieval. Currently, third-party server support is limited, and we plan to integrate more servers in the future."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecciona un servidor Yggdrasil para la autenticación y obtención de datos. Actualmente, el soporte para servidores de terceros es limitado y planeamos integrar más servidores en el futuro."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Valitse Yggdrasil-palvelin tunnistautumiseen ja tietojen hakemiseen. Tällä hetkellä kolmannen osapuolen palvelintuki on rajoitettu, ja suunnittelemme lisäävämmme palvelimia tulevaisuudessa."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionnez un serveur Yggdrasil pour l'authentification et la récupération des données. Actuellement, la prise en charge des serveurs tiers est limitée et nous prévoyons d'intégrer plus de serveurs à l'avenir."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "प्रमाणीकरण और डेटा प्राप्ति के लिए Yggdrasil सर्वर चुनें. वर्तमान में तृतीय-पक्ष सर्वर समर्थन सीमित है, और हम भविष्य में अधिक सर्वर जोड़ने की योजना बना रहे हैं."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seleziona un server Yggdrasil per l'autenticazione e il recupero dei dati. Attualmente, il supporto per i server di terze parti è limitato e prevediamo di integrare più server in futuro."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証およびデータ取得に使用するYggdrasilサーバーを選択してください。現在、サードパーティサーバーのサポートは限られており、将来的に更多のサーバーを追加する予定です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "인증 및 데이터 가져오기에 사용할 Yggdrasil 서버를 선택하세요. 현재 서드파티 서버 지원이 제한적이며, 향후 더 많은 서버를 통합할 계획입니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velg en Yggdrasil-server for autentisering og datahenting. For øyeblikket er støtten for tredjepartsservere begrenset, og vi har planer om å integrere flere servere i fremtiden."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecteer een Yggdrasil-server voor authenticatie en gegevensophaling. Momenteel is de ondersteuning voor externe servers beperkt en zijn we van plan om in de toekomst meer servers te integreren."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wybierz serwer Yggdrasil do uwierzytelniania i pobierania danych. Obecnie obsługa serwerów firm trzecich jest ograniczona, a planujemy integrację większej liczby serwerów w przyszłości."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selecione um servidor Yggdrasil para autenticação e obtenção de dados. Atualmente, o suporte a servidores de terceiros é limitado e planeamos integrar mais servidores no futuro."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выберите сервер Yggdrasil для аутентификации и получения данных. В настоящее время поддержка сторонних серверов ограничена, и мы планируем интегрировать больше серверов в будущем."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Välj en Yggdrasil-server för autentisering och datahämtning. För närvarande är stödet för tredjepartsservere begränsat, och vi planerar att integrera fler servere i framtiden."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เลือกเซิร์ฟเวอร์ Yggdrasil สำหรับการยืนยันตัวตนและดึงข้อมูล ปัจจุบันการรองรับเซิร์ฟเวอร์ของบุคคลที่สามมีจำกัด และเรามีแผนที่จะเพิ่มเซิร์ฟเวอร์มากขึ้นในอนาคต"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kimlik doğrulama ve veri alımı için bir Yggdrasil sunucusu seçin. Şu anda üçüncü taraf sunucu desteği sınırlıdır ve gelecekte daha fazla sunucu entegre etmeyi planlıyoruz."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chọn máy chủ Yggdrasil để xác thực và lấy dữ liệu. Hiện tại, hỗ trợ máy chủ bên thứ ba còn hạn chế và chúng tôi có kế hoạch tích hợp thêm nhiều máy chủ trong tương lai."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择用于账号验证和数据获取的Yggdrasil服务器。现阶段对第三方服务器的支持较少，我们计划在未来对接更多服务器。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇用於帳號驗證和資料獲取的Yggdrasil伺服器。現階段對第三方伺服器的支援較少，我們計劃在未来對接更多伺服器。"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"
