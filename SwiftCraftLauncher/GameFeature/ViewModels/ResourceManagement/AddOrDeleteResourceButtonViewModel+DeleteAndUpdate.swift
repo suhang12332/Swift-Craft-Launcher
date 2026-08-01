@@ -154,7 +154,7 @@ extension AddOrDeleteResourceButtonViewModel {
     func performDeleteThrowing(fileURL: URL) throws {
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
             throw GlobalError.resource(
-                i18nKey: "error.resource.file_not_found",
+                i18nKey: "error.filesystem.file_not_found",
                 level: .notification,
                 message: "File does not exist at path: \(fileURL.path)",
             )

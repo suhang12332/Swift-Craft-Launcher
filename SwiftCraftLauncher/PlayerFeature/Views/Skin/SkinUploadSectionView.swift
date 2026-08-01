@@ -142,7 +142,7 @@ struct SkinUploadSectionView: View {
                 pendingDeletion = nil
                 reloadSkinLibraryItems()
             }
-            Button("skin.cancel".localized(), role: .cancel) {
+            Button("common.cancel".localized(), role: .cancel) {
                 pendingDeletion = nil
             }
         } message: { item in

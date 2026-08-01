@@ -89,7 +89,7 @@ struct LitematicaDetailSheetView: View {
             VStack {
                 HStack {
                     infoSection(title: "litematica.detail.section.basic".localized()) {
-                        infoRow(label: "litematica.detail.field.name".localized(), value: metadata.name)
+                        infoRow(label: "game.form.name".localized(), value: metadata.name)
                         infoRow(label: "litematica.detail.field.author".localized(), value: metadata.author.isEmpty ? "common.unknown".localized() : metadata.author)
                         if !metadata.description.isEmpty {
                             infoRow(label: "litematica.detail.field.description".localized(), value: metadata.description, isMultiline: true)

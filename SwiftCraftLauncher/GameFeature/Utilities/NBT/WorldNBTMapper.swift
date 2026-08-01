@@ -38,7 +38,7 @@ enum WorldNBTMapper {
         case 1: return "saveinfo.world.game_mode.creative".localized()
         case 2: return "saveinfo.world.game_mode.adventure".localized()
         case 3: return "saveinfo.world.game_mode.spectator".localized()
-        default: return "saveinfo.world.game_mode.unknown".localized()
+        default: return "common.unknown".localized()
         }
     }
 
@@ -49,7 +49,7 @@ enum WorldNBTMapper {
         case 1: return "saveinfo.world.difficulty.easy".localized()
         case 2: return "saveinfo.world.difficulty.normal".localized()
         case 3: return "saveinfo.world.difficulty.hard".localized()
-        default: return "saveinfo.world.difficulty.unknown".localized()
+        default: return "common.unknown".localized()
         }
     }
 
@@ -60,7 +60,7 @@ enum WorldNBTMapper {
         case "easy": return "saveinfo.world.difficulty.easy".localized()
         case "normal": return "saveinfo.world.difficulty.normal".localized()
         case "hard": return "saveinfo.world.difficulty.hard".localized()
-        default: return "saveinfo.world.difficulty.unknown".localized()
+        default: return "common.unknown".localized()
         }
     }
 

@@ -155,7 +155,7 @@ struct ModPackDownloadSheet: View {
                     ProgressView()
                         .controlSize(.small)
                 } else {
-                    Text("modpack.download.button".localized())
+                    Text("global_resource.download".localized())
                 }
             }
         }

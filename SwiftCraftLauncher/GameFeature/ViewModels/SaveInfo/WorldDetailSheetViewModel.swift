@@ -125,12 +125,12 @@ final class WorldDetailSheetViewModel {
             lastPlayedDate = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
         }
 
-        var gameMode = "saveinfo.world.game_mode.unknown".localized()
+        var gameMode = "common.unknown".localized()
         if let gt = WorldNBTMapper.readInt64(dataTag["GameType"]) {
             gameMode = WorldNBTMapper.mapGameMode(Int(gt))
         }
 
-        var difficulty = "saveinfo.world.difficulty.unknown".localized()
+        var difficulty = "common.unknown".localized()
         if let diff = WorldNBTMapper.readInt64(dataTag["Difficulty"]) {
             difficulty = WorldNBTMapper.mapDifficulty(Int(diff))
         } else if let ds = dataTag["difficulty_settings"] as? [String: Any],

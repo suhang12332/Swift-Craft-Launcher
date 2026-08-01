@@ -76,7 +76,7 @@ struct GameActionButtons: View {
                 } else {
                     Label(
                         isRunning
-                            ? "stop.fill".localized()
+                            ? "common.stop".localized()
                             : "play.fill".localized(),
                         systemImage: isRunning
                             ? "stop.fill" : "play.fill",
@@ -87,7 +87,7 @@ struct GameActionButtons: View {
             .id(controlActiveState)
             .help(
                 cachedIsGameRunning()
-                    ? "stop.fill"
+                    ? "common.stop"
                     : (container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId) ? "" : "play.fill"),
             )
             .disabled(container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId))

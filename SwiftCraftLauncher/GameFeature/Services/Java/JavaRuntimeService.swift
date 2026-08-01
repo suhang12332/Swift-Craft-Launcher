@@ -107,7 +107,7 @@ class JavaRuntimeService {
     private func fetchDataFromURL(_ urlString: String) async throws -> Data {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
-                i18nKey: "error.validation.invalid_url",
+                i18nKey: "error.network.invalid_url",
                 level: .notification,
                 message: "invalid URL: \(urlString)",
             )

@@ -157,7 +157,7 @@ struct GameFormView: View {
         case .modPackImport:
             return "modpack.import.title".localized()
         case .modPackURLDownload:
-            return "modpack.download.button".localized()
+            return "global_resource.download".localized()
         }
     }
 
@@ -185,14 +185,14 @@ struct GameFormView: View {
             Button("modpack.import.title".localized()) {
                 selectImportMode(.modPack)
             }
-            Button("modpack.download.button".localized()) {
+            Button("global_resource.download".localized()) {
                 selectImportMode(.download)
             }
         } label: {
             Text(currentModeTitle)
         }
         .fixedSize(horizontal: true, vertical: false)
-        .help("game.form.mode.import".localized())
+        .help("modpack.import.title".localized())
     }
 
     private var footerView: some View {

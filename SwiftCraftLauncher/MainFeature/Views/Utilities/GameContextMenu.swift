@@ -51,7 +51,7 @@ struct GameContextMenu: View {
             toggleGameState()
         }, label: {
             Label(
-                isRunning ? "stop.fill".localized() : "play.fill".localized(),
+                isRunning ? "common.stop".localized() : "play.fill".localized(),
                 systemImage: isRunning ? "stop.fill" : "play.fill",
             )
         }).disabled(playerListViewModel.currentPlayer == nil)

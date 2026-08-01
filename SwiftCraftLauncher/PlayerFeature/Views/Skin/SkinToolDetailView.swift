@@ -109,7 +109,7 @@ struct SkinToolDetailView: View {
 
     private var footerView: some View {
         HStack {
-            Button("skin.cancel".localized()) { dismiss() }.keyboardShortcut(.cancelAction)
+            Button("common.cancel".localized()) { dismiss() }.keyboardShortcut(.cancelAction)
             Spacer()
 
             HStack(spacing: 12) {
