@@ -11,7 +11,7 @@ import SwiftUI
 
 /// Manages OAuth2 authentication with Yggdrasil-compatible authentication servers.
 @Observable
-final class YggdrasilAuthService {
+final class YggdrasilAuthService: @unchecked Sendable {
     /// The current authentication state.
     var authState: YggdrasilAuthState = .idle
 

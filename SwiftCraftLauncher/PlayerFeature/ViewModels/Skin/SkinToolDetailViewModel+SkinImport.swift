@@ -12,7 +12,9 @@ import UniformTypeIdentifiers
 extension SkinToolDetailViewModel {
     /// Loads the current skin image from the server for the 3D preview renderer.
     func loadCurrentSkinRenderImageIfNeeded(resolvedPlayer: Player?) {
-        if selectedSkinImage != nil || selectedSkinPath != nil { return }
+        if selectedSkinImage != nil || selectedSkinPath != nil {
+            return
+        }
         guard let urlString = publicSkinInfo?.skinURL?.httpToHttps(),
               let url = URL(string: urlString) else { return }
 

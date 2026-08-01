@@ -36,6 +36,21 @@ struct CommonMenuPicker<Label: View, SelectionValue: Hashable, Content: View>: V
     }
 }
 
+extension CommonMenuPicker where Label == EmptyView {
+    init(
+        selection: Binding<SelectionValue>,
+        hidesLabel: Bool = true,
+        @ViewBuilder content: @escaping () -> Content,
+    ) {
+        self.init(
+            selection: selection,
+            hidesLabel: hidesLabel,
+            label: { EmptyView() },
+            content: content,
+        )
+    }
+}
+
 private struct ConditionalLabelsHidden: ViewModifier {
     let isHidden: Bool
 

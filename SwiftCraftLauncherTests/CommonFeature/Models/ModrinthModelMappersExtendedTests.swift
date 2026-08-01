@@ -177,7 +177,9 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let dateString = try container.decode(String.self)
-            if let date = formatter.date(from: dateString) { return date }
+            if let date = formatter.date(from: dateString) {
+                return date
+            }
             let fallback = ISO8601DateFormatter()
             fallback.formatOptions = [.withInternetDateTime]
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)
@@ -355,7 +357,9 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let dateString = try container.decode(String.self)
-            if let date = formatter.date(from: dateString) { return date }
+            if let date = formatter.date(from: dateString) {
+                return date
+            }
             let fallback = ISO8601DateFormatter()
             fallback.formatOptions = [.withInternetDateTime]
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)
@@ -429,7 +433,9 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let dateString = try container.decode(String.self)
-            if let date = formatter.date(from: dateString) { return date }
+            if let date = formatter.date(from: dateString) {
+                return date
+            }
             let fallback = ISO8601DateFormatter()
             fallback.formatOptions = [.withInternetDateTime]
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)

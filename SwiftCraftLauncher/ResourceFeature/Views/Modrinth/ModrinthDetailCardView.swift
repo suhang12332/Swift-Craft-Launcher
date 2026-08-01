@@ -92,35 +92,33 @@ struct ModrinthDetailCardView: View {
         }
     }
 
-    private var iconView: some View {
-        Group {
-            if project.projectId.hasPrefix("local_") || project.projectId.hasPrefix("file_") {
-                ModrinthDetailCardPlaceholderIcon()
-            } else if let iconUrl = project.iconUrl,
-                      let url = URL(string: iconUrl) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case let .success(image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .transition(.opacity)
-                    default:
-                        ModrinthDetailCardPlaceholderIcon()
-                    }
+    @ViewBuilder private var iconView: some View {
+        if project.projectId.hasPrefix("local_") || project.projectId.hasPrefix("file_") {
+            ModrinthDetailCardPlaceholderIcon()
+        } else if let iconUrl = project.iconUrl,
+                  let url = URL(string: iconUrl) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case let .success(image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .transition(.opacity)
+                default:
+                    ModrinthDetailCardPlaceholderIcon()
                 }
-                .onDisappear {
-                    URLCache.shared.removeCachedResponse(for: URLRequest(url: url))
-                }
-                .frame(
-                    width: ModrinthConstants.UIConstants.iconSize,
-                    height: ModrinthConstants.UIConstants.iconSize,
-                )
-                .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
-                .clipped()
-            } else {
-                ModrinthDetailCardPlaceholderIcon()
             }
+            .onDisappear {
+                URLCache.shared.removeCachedResponse(for: URLRequest(url: url))
+            }
+            .frame(
+                width: ModrinthConstants.UIConstants.iconSize,
+                height: ModrinthConstants.UIConstants.iconSize,
+            )
+            .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
+            .clipped()
+        } else {
+            ModrinthDetailCardPlaceholderIcon()
         }
     }
 

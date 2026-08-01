@@ -53,12 +53,16 @@ extension AddOrDeleteResourceButtonViewModel {
 
         let fileURL = resourceDir.appendingPathComponent(fileName)
         performDelete(fileURL: fileURL)
-        if !isUpdate { onResourceChanged?() }
+        if !isUpdate {
+            onResourceChanged?()
+        }
     }
 
     func handleInstallSuccess(newFileName: String?, newHash: String?) {
         hasDownloadedInSheet = true
-        if let newHash { addScannedHash(newHash) }
+        if let newHash {
+            addScannedHash(newHash)
+        }
 
         let wasUpdate = (oldFileNameForUpdate != nil)
         let oldF = oldFileNameForUpdate

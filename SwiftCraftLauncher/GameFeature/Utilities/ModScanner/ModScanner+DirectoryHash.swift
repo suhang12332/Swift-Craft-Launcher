@@ -96,7 +96,9 @@ extension ModScanner {
         gameNameHint: String?,
     ) async {
         let hint: String? = {
-            if let gameNameHint { return gameNameHint }
+            if let gameNameHint {
+                return gameNameHint
+            }
             guard isModsDirectory(standardizedDirectory) else { return nil }
             return extractGameName(from: standardizedDirectory)
         }()
@@ -119,7 +121,7 @@ extension ModScanner {
     /// Scans the directory for all detail IDs, returning the result via a completion handler.
     public func scanAllDetailIds(
         in dir: URL,
-        completion: @escaping (Set<String>) -> Void,
+        completion: @escaping @Sendable (Set<String>) -> Void,
     ) {
         Task {
             do {

@@ -17,19 +17,17 @@ struct LocalResourceToggle: View {
     let onToggle: () -> Void
 
     var body: some View {
-        Group {
-            if isVisible {
-                Toggle(
-                    "",
-                    isOn: Binding(
-                        get: { !isDisabled },
-                        set: { _ in onToggle() },
-                    ),
-                )
-                .toggleStyle(.switch)
-                .labelsHidden()
-                .controlSize(.mini)
-            }
+        if isVisible {
+            Toggle(
+                "",
+                isOn: Binding(
+                    get: { !isDisabled },
+                    set: { _ in onToggle() },
+                ),
+            )
+            .toggleStyle(.switch)
+            .labelsHidden()
+            .controlSize(.mini)
         }
     }
 }

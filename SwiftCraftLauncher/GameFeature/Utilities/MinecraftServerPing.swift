@@ -10,7 +10,7 @@ import Foundation
 @preconcurrency import Network
 
 /// Represents information about a Minecraft server.
-struct MinecraftServerInfo: Codable {
+struct MinecraftServerInfo: Codable, Sendable {
     /// The server version information.
     struct Version: Codable {
         let name: String
@@ -203,6 +203,7 @@ enum MinecraftServerPing {
             state.setTimeoutTask(timeoutTask)
             DispatchQueue.global().asyncAfter(deadline: .now() + timeout, execute: timeoutTask)
 
+            @Sendable
             func receiveData() {
                 guard !state.hasResumed else { return }
 

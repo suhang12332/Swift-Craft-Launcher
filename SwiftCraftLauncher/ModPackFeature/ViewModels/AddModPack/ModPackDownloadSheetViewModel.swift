@@ -29,7 +29,9 @@ class ModPackDownloadSheetViewModel {
     private let downloadService = ModPackDownloadService()
     private var _installCoordinator: ModPackInstallCoordinator?
     private var installCoordinator: ModPackInstallCoordinator {
-        if let _installCoordinator { return _installCoordinator }
+        if let _installCoordinator {
+            return _installCoordinator
+        }
         let coordinator = ModPackInstallCoordinator(downloadService: downloadService)
         _installCoordinator = coordinator
         return coordinator

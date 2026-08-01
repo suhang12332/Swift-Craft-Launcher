@@ -10,7 +10,7 @@ import Sparkle
 
 /// Manages application updates using the Sparkle framework.
 @Observable
-final class SparkleUpdateService: NSObject, SPUUpdaterDelegate {
+final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Sendable {
     private var updater: SPUUpdater?
     private var hasStartedUpdater = false
     private var hasScheduledStartupCheck = false

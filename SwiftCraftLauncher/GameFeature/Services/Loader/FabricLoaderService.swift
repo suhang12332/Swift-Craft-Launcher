@@ -66,7 +66,7 @@ enum FabricLoaderService {
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void,
+        onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
     ) async -> (loaderVersion: String, classpath: String, mainClass: String)? {
         do {
             return try await setupWithSpecificVersionThrowing(
@@ -87,7 +87,7 @@ enum FabricLoaderService {
         for gameVersion: String,
         loaderVersion: String,
         gameInfo _: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void,
+        onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         AppLog.game.info("Starting to set specified Fabric loader version: \(loaderVersion)")
 

@@ -11,7 +11,7 @@ import SwiftUI
 
 /// Manages the player list and coordinates with ``PlayerDataManager`` for persistence.
 @Observable
-class PlayerListViewModel {
+class PlayerListViewModel: @unchecked Sendable {
     var players: [Player] = []
     var currentPlayer: Player?
 

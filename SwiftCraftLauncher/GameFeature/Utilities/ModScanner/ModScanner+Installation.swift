@@ -99,7 +99,7 @@ extension ModScanner {
     func isModInstalled(
         hash: String,
         in modsDir: URL,
-        completion: @escaping (Bool) -> Void,
+        completion: @Sendable @escaping (Bool) -> Void,
     ) {
         Task {
             do {

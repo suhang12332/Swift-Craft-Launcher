@@ -20,7 +20,9 @@ enum ModPackArchiver {
         outputPath: URL,
         rootFiles: [String] = [AppConstants.modrinthIndexFileName],
     ) throws {
-        if Task.isCancelled { throw CancellationError() }
+        if Task.isCancelled {
+            throw CancellationError()
+        }
 
         if FileManager.default.fileExists(atPath: outputPath.path) {
             try FileManager.default.removeItem(at: outputPath)
@@ -38,7 +40,9 @@ enum ModPackArchiver {
         }
 
         for fileName in rootFiles {
-            if Task.isCancelled { throw CancellationError() }
+            if Task.isCancelled {
+                throw CancellationError()
+            }
             let filePath = tempDir.appendingPathComponent(fileName)
             if FileManager.default.fileExists(atPath: filePath.path) {
                 let fileData = try Data(contentsOf: filePath)
@@ -69,7 +73,9 @@ enum ModPackArchiver {
                 : overridesDirPath + "/"
 
             while let fileURL = overridesEnumerator?.nextObject() as? URL {
-                if Task.isCancelled { throw CancellationError() }
+                if Task.isCancelled {
+                    throw CancellationError()
+                }
                 if let isRegularFile = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
                    isRegularFile {
                     let filePath = (fileURL.path as NSString).standardizingPath

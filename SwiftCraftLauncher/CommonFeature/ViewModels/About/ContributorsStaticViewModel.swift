@@ -30,6 +30,7 @@ final class ContributorsStaticViewModel {
             do {
                 let contributorsData: ContributorsData = try await DIContainer.shared.system.gitHubService.fetchStaticContributors()
                 guard !Task.isCancelled else { return }
+                let count = contributorsData.contributors.count
                 contributors = contributorsData.contributors.map { contributorData in
                     StaticContributor(
                         name: contributorData.name,
@@ -42,7 +43,7 @@ final class ContributorsStaticViewModel {
                 }
                 loaded = true
                 loadFailed = false
-                AppLog.common.info("Successfully loaded \(contributors.count) libraries from GitHubService")
+                AppLog.common.info("Successfully loaded \(count) libraries from GitHubService")
             } catch {
                 guard !Task.isCancelled else { return }
                 AppLog.common.error("Failed to load contributors from GitHubService: \(error)")

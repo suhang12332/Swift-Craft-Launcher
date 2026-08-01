@@ -142,10 +142,18 @@ class GameSetupUtil {
     }
 
     private func isSaveGameDownloadCancelled(_ error: Error) -> Bool {
-        if Task.isCancelled { return true }
-        if downloadState.isCancelled { return true }
-        if error is CancellationError { return true }
-        if let urlError = error as? URLError, urlError.code == .cancelled { return true }
+        if Task.isCancelled {
+            return true
+        }
+        if downloadState.isCancelled {
+            return true
+        }
+        if error is CancellationError {
+            return true
+        }
+        if let urlError = error as? URLError, urlError.code == .cancelled {
+            return true
+        }
         return false
     }
 
@@ -295,7 +303,7 @@ class GameSetupUtil {
             modLoader: selectedModLoader,
         )
 
-        let progressCallback: (String, Int, Int) -> Void = { [weak self] fileName, completed, total in
+        let progressCallback: @Sendable (String, Int, Int) -> Void = { [weak self] fileName, completed, total in
             Task { @MainActor in
                 guard let self else { return }
                 switch loaderType {

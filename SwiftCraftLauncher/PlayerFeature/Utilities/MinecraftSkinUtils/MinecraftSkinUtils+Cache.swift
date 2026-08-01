@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import CoreImage
+@preconcurrency import CoreImage
 import Foundation
 import SwiftUI
 

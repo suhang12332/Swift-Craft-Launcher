@@ -20,7 +20,7 @@ enum BatchJarDownloader {
     static func download(
         tasks: [JarDownloadTask],
         metaLibrariesDir: URL,
-        onProgressUpdate: ((String, Int, Int) -> Void)? = nil,
+        onProgressUpdate: (@MainActor @Sendable (String, Int, Int) -> Void)? = nil,
     ) async throws {
         let total = tasks.count
         let counter = AtomicCounter()
@@ -42,9 +42,7 @@ enum BatchJarDownloader {
                         expectedSha1: task.expectedSha1,
                     )
                     let completed = await counter.increment()
-                    await MainActor.run {
-                        onProgressUpdate?(task.name, completed, total)
-                    }
+                    await onProgressUpdate?(task.name, completed, total)
                 }
             }
             try await group.waitForAll()

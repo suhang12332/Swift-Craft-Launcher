@@ -275,6 +275,7 @@ struct MiniRangeSlider: NSViewRepresentable {
         }
     }
 
+    @MainActor
     final class Coordinator: NSObject {
         var parent: MiniRangeSlider
 

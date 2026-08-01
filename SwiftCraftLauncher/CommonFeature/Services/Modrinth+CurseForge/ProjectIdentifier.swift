@@ -22,8 +22,12 @@ struct ProjectIdentifier: Equatable, Hashable {
 
     /// The normalized form: always `"cf-<numericId>"` for CurseForge, unchanged for Modrinth.
     var normalized: String {
-        if isCurseForge { return raw }
-        if Int(raw) != nil { return "cf-\(raw)" }
+        if isCurseForge {
+            return raw
+        }
+        if Int(raw) != nil {
+            return "cf-\(raw)"
+        }
         return raw
     }
 

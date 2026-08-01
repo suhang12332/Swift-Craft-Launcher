@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 func errorView(_ error: GlobalError) -> some View {
     ContentUnavailableView {
         Label(error.notificationTitle, systemImage: "exclamationmark.triangle")
@@ -15,6 +16,7 @@ func errorView(_ error: GlobalError) -> some View {
     }
 }
 
+@MainActor
 func emptyDropBackground() -> some View {
     RoundedRectangle(cornerRadius: 12)
         .fill(Color.gray.opacity(0.05))
@@ -25,6 +27,7 @@ func emptyDropBackground() -> some View {
         )
 }
 
+@MainActor
 func spacerView() -> some View {
     Spacer().frame(maxHeight: 20)
 }

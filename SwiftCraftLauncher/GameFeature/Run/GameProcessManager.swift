@@ -241,7 +241,8 @@ final class GameProcessManager: @unchecked Sendable {
             process.terminate()
             DispatchQueue.global(qos: .utility).async { [weak self] in
                 process.waitUntilExit()
-                self?.queue.async {
+                guard let self else { return }
+                self.queue.async { [weak self] in
                     self?.gameProcesses.removeValue(forKey: key)
                     self?.manuallyStoppedGames.remove(key)
                 }

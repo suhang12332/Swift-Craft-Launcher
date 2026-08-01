@@ -15,14 +15,12 @@ struct ContributorCardView: View {
     let contributionsText: String
 
     var body: some View {
-        Group {
-            if let url = URL(string: contributor.htmlUrl) {
-                Link(destination: url) {
-                    contributorContent
-                }
-            } else {
+        if let url = URL(string: contributor.htmlUrl) {
+            Link(destination: url) {
                 contributorContent
             }
+        } else {
+            contributorContent
         }
     }
 

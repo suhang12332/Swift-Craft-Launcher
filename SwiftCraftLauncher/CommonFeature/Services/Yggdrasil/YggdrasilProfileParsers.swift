@@ -8,14 +8,14 @@
 import Foundation
 
 /// Defines the interface for parsing Yggdrasil profile list responses.
-protocol YggdrasilProfileListParser {
+protocol YggdrasilProfileListParser: Sendable {
     var id: YggdrasilProfileParserID { get }
 
     func parse(data: Data) async -> [YggdrasilProfileCandidate]?
 }
 
 /// Provides profile list parsers for different Yggdrasil server types.
-protocol YggdrasilProfileParserProvider {
+protocol YggdrasilProfileParserProvider: Sendable {
     func makeParser(
         for id: YggdrasilProfileParserID,
         baseURL: String,
@@ -24,13 +24,33 @@ protocol YggdrasilProfileParserProvider {
 
 /// Central registry for creating Yggdrasil profile parsers.
 enum YggdrasilProfileParsers {
-    private static var provider: YggdrasilProfileParserProvider?
+    private final class Registry: @unchecked Sendable {
+        private let lock = NSLock()
+        private var provider: (any YggdrasilProfileParserProvider)?
 
-    static func configure(provider: YggdrasilProfileParserProvider) {
-        self.provider = provider
+        func configure(provider: any YggdrasilProfileParserProvider) {
+            lock.withLock {
+                self.provider = provider
+            }
+        }
+
+        func make(
+            _ id: YggdrasilProfileParserID,
+            baseURL: String,
+        ) -> (any YggdrasilProfileListParser)? {
+            lock.withLock {
+                provider?.makeParser(for: id, baseURL: baseURL)
+            }
+        }
+    }
+
+    private static let registry = Registry()
+
+    static func configure(provider: any YggdrasilProfileParserProvider) {
+        registry.configure(provider: provider)
     }
 
     static func make(_ id: YggdrasilProfileParserID, baseURL: String) -> (any YggdrasilProfileListParser)? {
-        provider?.makeParser(for: id, baseURL: baseURL)
+        registry.make(id, baseURL: baseURL)
     }
 }

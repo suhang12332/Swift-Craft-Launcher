@@ -52,9 +52,7 @@ final class GameSettingsJavaRuntimeViewModel {
 
         loadTask = Task { [weak self] in
             guard let self else { return }
-            let info = await Task.detached {
-                await DIContainer.shared.system.javaManager.getJavaVersionInfo(at: path) ?? ""
-            }.value
+            let info = DIContainer.shared.system.javaManager.getJavaVersionInfo(at: path) ?? ""
             guard generation == loadGeneration else { return }
             javaVersionInfo = info
         }
@@ -66,9 +64,7 @@ final class GameSettingsJavaRuntimeViewModel {
         }
         Task { [weak self] in
             guard let self else { return }
-            let list = await Task.detached(priority: .utility) {
-                await DIContainer.shared.system.javaManager.listInstalledRuntimeComponents()
-            }.value
+            let list = DIContainer.shared.system.javaManager.listInstalledRuntimeComponents()
             installedRuntimeComponents = list
             if list.isEmpty {
                 selectedRuntimeComponent = ""

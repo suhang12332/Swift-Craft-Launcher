@@ -13,7 +13,7 @@ extension ModPackDependencyInstaller {
         dependencies: [ModrinthIndexProjectDependency],
         gameInfo: GameVersionInfo,
         resourceDir: URL,
-        onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?,
+        onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)?,
     ) async -> Bool {
         let requiredDependencies = dependencies.filter { $0.dependencyType == "required" }
 

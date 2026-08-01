@@ -12,7 +12,7 @@ extension ModPackDependencyInstaller {
     static func installOverrides(
         extractedPath: URL,
         resourceDir: URL,
-        onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?,
+        onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)?,
     ) async -> Bool {
         var overridesPath = extractedPath.appendingPathComponent("overrides")
 

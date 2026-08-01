@@ -57,7 +57,9 @@ struct MainView: View {
         }
         .onChange(of: container.core.selectedGameManager.selectedGameId) { _, newId in
             guard let gameId = newId else { return }
-            if case .game(gameId) = detailState.selectedItem { return }
+            if case .game(gameId) = detailState.selectedItem {
+                return
+            }
             detailState.selectedItem = .game(gameId)
         }
         .onChange(of: gameRepository.workingPathChanged) { _, _ in

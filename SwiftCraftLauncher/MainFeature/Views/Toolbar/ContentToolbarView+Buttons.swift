@@ -10,9 +10,12 @@ import SwiftUI
 
 /// Dismisses a sheet binding after a 0.3s delay, allowing the sheet animation to complete
 /// before resetting auth state.
-private func delayedDismiss(_ binding: Binding<Bool>, execute work: @escaping () -> Void) {
+private func delayedDismiss(_ binding: Binding<Bool>, execute work: @escaping @MainActor @Sendable () -> Void) {
     binding.wrappedValue = false
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: work)
+    Task { @MainActor in
+        try? await Task.sleep(for: .milliseconds(300))
+        work()
+    }
 }
 
 struct AddGameToolbarButton: View {

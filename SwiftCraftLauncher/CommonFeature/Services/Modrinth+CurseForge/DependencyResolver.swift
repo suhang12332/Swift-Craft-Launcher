@@ -20,8 +20,8 @@ enum DependencyResolver {
         let id: String
         let selectedVersions: [String]
         let selectedLoaders: [String]
-        let fetchVersions: (String) async throws -> [ModrinthProjectDetailVersion]
-        let fetchVersionById: (String) async throws -> ModrinthProjectDetailVersion
+        let fetchVersions: @Sendable (String) async throws -> [ModrinthProjectDetailVersion]
+        let fetchVersionById: @Sendable (String) async throws -> ModrinthProjectDetailVersion
     }
 
     /// Resolves missing dependencies for a project.

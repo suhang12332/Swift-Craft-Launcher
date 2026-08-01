@@ -44,11 +44,9 @@ struct WorldDetailSheetView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var bodyView: some View {
-        Group {
-            if let metadata = viewModel.metadata {
-                metadataContentView(metadata: metadata)
-            }
+    @ViewBuilder private var bodyView: some View {
+        if let metadata = viewModel.metadata {
+            metadataContentView(metadata: metadata)
         }
     }
 

@@ -98,7 +98,9 @@ final class GameLocalResourceViewModel {
     func handleLocalDisableStateChanged(projectId: String, oldFileName: String, isDisabled: Bool) {
         suppressNextFileRefresh = true
         let newFileName: String = {
-            if isDisabled { return oldFileName + ".disable" }
+            if isDisabled {
+                return oldFileName + ".disable"
+            }
             return oldFileName.hasSuffix(".disable")
                 ? String(oldFileName.dropLast(".disable".count))
                 : oldFileName
@@ -145,7 +147,9 @@ final class GameLocalResourceViewModel {
         self.game = game
         self.query = query
         self.localFilter = localFilter
-        if forceResetDirectory { resourceDirectory = nil }
+        if forceResetDirectory {
+            resourceDirectory = nil
+        }
         initializeResourceDirectoryIfNeeded()
     }
 
@@ -197,7 +201,9 @@ final class GameLocalResourceViewModel {
 
         if let existingDir = resourceDirectory {
             let expectedDir = AppPaths.resourceDirectory(for: query, gameName: game.gameName)
-            if existingDir == expectedDir { return }
+            if existingDir == expectedDir {
+                return
+            }
             resourceDirectory = nil
         }
 
@@ -214,7 +220,9 @@ final class GameLocalResourceViewModel {
     }
 
     private func currentResourceDirectory() -> URL? {
-        if let resourceDirectory { return resourceDirectory }
+        if let resourceDirectory {
+            return resourceDirectory
+        }
         guard let game else { return nil }
         return AppPaths.resourceDirectory(for: query, gameName: game.gameName)
     }
@@ -238,7 +246,9 @@ final class GameLocalResourceViewModel {
     private func filterResourcesByTitle(_ details: [ModrinthProjectDetail], searchText: String) -> [ModrinthProjectDetail] {
         let queryLower = query.lowercased()
         let filteredByType = details.filter { detail in
-            if detail.id.hasPrefix("local_") || detail.id.hasPrefix("file_") { return true }
+            if detail.id.hasPrefix("local_") || detail.id.hasPrefix("file_") {
+                return true
+            }
             return detail.type?.lowercased() == queryLower
         }
 
@@ -267,7 +277,11 @@ final class GameLocalResourceViewModel {
             return
         }
 
-        if append { isLoadingMore = true } else { isLoadingResources = true }
+        if append {
+            isLoadingMore = true
+        } else {
+            isLoadingResources = true
+        }
 
         let effectiveSearchText = searchText ?? currentSearchText
         let isSearching = !effectiveSearchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty

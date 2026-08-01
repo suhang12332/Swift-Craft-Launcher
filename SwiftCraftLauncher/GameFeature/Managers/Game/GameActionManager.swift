@@ -10,7 +10,7 @@ import SwiftUI
 
 /// Provides game-related actions such as revealing in Finder and deletion.
 @Observable
-class GameActionManager {
+class GameActionManager: @unchecked Sendable {
     init() { }
 
     /// Reveals the game directory in Finder.
@@ -33,19 +33,23 @@ class GameActionManager {
     ///   - gameRepository: The game repository for record management.
     ///   - selectedItem: An optional binding to the current sidebar selection, updated after deletion.
     ///   - gameType: An optional binding set to `true` when navigating to the resource page.
+    @MainActor
     func deleteGame(
         game: GameVersionInfo,
         gameRepository: GameRepository,
         selectedItem: Binding<SidebarItem>? = nil,
         gameType: Binding<Bool>? = nil,
     ) {
-        Task {
+        let hasSelectedItem = selectedItem != nil
+        let gameId = game.id
+        let gameName = game.gameName
+        Task { @MainActor in
             do {
                 let gameProcessManager = DIContainer.shared.core.gameProcessManager
                 let gameStatusManager = DIContainer.shared.core.gameStatusManager
                 let modScanner = DIContainer.shared.core.modScanner
 
-                if gameProcessManager.isGameRunningForAnyUser(gameId: game.id) {
+                if gameProcessManager.isGameRunningForAnyUser(gameId: gameId) {
                     let error = GlobalError.validation(
                         i18nKey: "error.validation.game_running_cannot_delete",
                         level: .notification,
@@ -54,10 +58,10 @@ class GameActionManager {
                     return
                 }
 
-                if let selectedItem {
+                if hasSelectedItem, let selectedItem {
                     await MainActor.run {
                         if let firstGame = gameRepository.games.first(where: {
-                            $0.id != game.id
+                            $0.id != gameId
                         }) {
                             selectedItem.wrappedValue = .game(firstGame.id)
                         } else {
@@ -67,21 +71,21 @@ class GameActionManager {
                     }
                 }
 
-                gameProcessManager.removeGameState(gameId: game.id)
-                gameStatusManager.removeGameState(gameId: game.id)
+                gameProcessManager.removeGameState(gameId: gameId)
+                gameStatusManager.removeGameState(gameId: gameId)
 
-                let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
+                let profileDir = AppPaths.profileDirectory(gameName: gameName)
                 if FileManager.default.fileExists(atPath: profileDir.path) {
                     try FileManager.default.removeItem(at: profileDir)
                 } else {
                     AppLog.game.error("Game directory not found when deleting game, skipping file deletion: \(profileDir.path)")
                 }
 
-                await modScanner.clearModCache(for: game.gameName)
+                await modScanner.clearModCache(for: gameName)
 
-                try await gameRepository.deleteGame(id: game.id)
+                try await gameRepository.deleteGame(id: gameId)
 
-                AppLog.game.info("Successfully deleted game: \(game.gameName)")
+                AppLog.game.info("Successfully deleted game: \(gameName)")
             } catch {
                 let globalError = GlobalError.fileSystem(
                     i18nKey: "error.filesystem.game_deletion_failed",

@@ -295,8 +295,8 @@ enum ModrinthDependencyDownloader {
     /// Downloads dependencies and the main mod manually, without recursion.
     static func downloadManualDependenciesAndMain(
         input: ManualDownloadInput,
-        onDependencyDownloadStart: @escaping (String) -> Void,
-        onDependencyDownloadFinish: @escaping (String, Bool) -> Void,
+        onDependencyDownloadStart: @escaping @Sendable (String) -> Void,
+        onDependencyDownloadFinish: @escaping @Sendable (String, Bool) -> Void,
     ) async -> Bool {
         var resourcesToAdd: [ModrinthProjectDetail] = []
         var allSuccess = true
