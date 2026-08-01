@@ -60,9 +60,9 @@ extension ModScanner {
     }
 
     /// Synchronously checks whether a mod is installed by consulting the cache.
-    func isModInstalledSync(hash: String, in modsDir: URL) -> Bool {
+    func isModInstalledSync(hash: String, in modsDir: URL) async -> Bool {
         do {
-            return try isModInstalledSyncThrowing(
+            return try await isModInstalledSyncThrowing(
                 hash: hash,
                 in: modsDir,
             )
@@ -78,21 +78,11 @@ extension ModScanner {
     func isModInstalledSyncThrowing(
         hash: String,
         in modsDir: URL,
-    ) throws -> Bool {
+    ) async throws -> Bool {
         guard let gameName = extractGameName(from: modsDir) else {
             return false
         }
-
-        let semaphore = DispatchSemaphore(value: 0)
-        var result = false
-
-        Task {
-            result = await checkModInstalledCore(hash: hash, gameName: gameName)
-            semaphore.signal()
-        }
-
-        semaphore.wait()
-        return result
+        return await checkModInstalledCore(hash: hash, gameName: gameName)
     }
 
     /// Asynchronously checks whether a mod is installed, returning the result via a completion handler.

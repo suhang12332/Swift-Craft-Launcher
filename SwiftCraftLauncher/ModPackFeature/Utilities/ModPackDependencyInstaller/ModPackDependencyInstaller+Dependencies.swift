@@ -93,7 +93,7 @@ extension ModPackDependencyInstaller {
             if let versionId = dep.versionId {
                 if let version = try? await ModrinthService.fetchProjectVersionThrowing(id: versionId),
                    let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) {
-                    if DIContainer.shared.core.modScanner.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
+                    if await DIContainer.shared.core.modScanner.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
                         return true
                     }
                 }
@@ -106,7 +106,7 @@ extension ModPackDependencyInstaller {
                 )
                 if let version = versions?.first,
                    let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) {
-                    if DIContainer.shared.core.modScanner.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
+                    if await DIContainer.shared.core.modScanner.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
                         return true
                     }
                 }
