@@ -19,7 +19,7 @@ struct GameNameInputView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("game.form.name".localized())
-                .foregroundColor(.primary)
+                .font(.headline)
             TextField(
                 "game.form.name.placeholder".localized(),
                 text: $gameName,

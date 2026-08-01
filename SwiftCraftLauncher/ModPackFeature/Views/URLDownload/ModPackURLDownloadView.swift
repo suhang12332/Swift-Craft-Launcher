@@ -85,7 +85,7 @@ struct ModPackURLDownloadView: View {
     private var urlInputSection: some View {
         VStack(alignment: .leading) {
             Text("modpack.url_download.label".localized())
-                .font(.headline.bold())
+                .font(.headline)
             TextField(
                 "modpack.url_download.placeholder".localized(),
                 text: $viewModel.urlString,

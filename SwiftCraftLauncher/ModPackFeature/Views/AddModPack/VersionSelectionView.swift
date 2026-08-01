@@ -35,10 +35,7 @@ struct VersionSelectionView: View {
                 .foregroundColor(.primary)
             CommonMenuPicker(
                 selection: $selectedGameVersion,
-                hidesLabel: true,
             ) {
-                Text("")
-            } content: {
                 if availableGameVersions.isEmpty {
                     Text(String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline))
                         .tag("")
@@ -72,10 +69,7 @@ struct VersionSelectionView: View {
                     .foregroundColor(.primary)
                 CommonMenuPicker(
                     selection: $selectedModPackVersion,
-                    hidesLabel: true,
                 ) {
-                    Text("")
-                } content: {
                     ForEach(filteredModPackVersions, id: \.id) { version in
                         Text(version.name).tag(
                             version as ModrinthProjectDetailVersion?,

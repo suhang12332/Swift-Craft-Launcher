@@ -228,7 +228,7 @@ struct AddPlayerSheetView: View {
     private var playerNameInputSection: some View {
         VStack(alignment: .leading) {
             Text("addplayer.name.label".localized())
-                .font(.headline.bold())
+                .font(.headline)
             TextField(
                 "addplayer.name.placeholder".localized(),
                 text: $playerName,
