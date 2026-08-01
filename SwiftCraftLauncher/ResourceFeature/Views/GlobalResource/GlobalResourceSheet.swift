@@ -72,6 +72,10 @@ struct GlobalResourceSheet: View {
                             ModrinthProjectTitleView(
                                 projectDetail: detail,
                             ).padding(.bottom, 18)
+
+                            Text("settings.game.tab".localized())
+                                .font(.headline)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             CommonSheetGameBody(
                                 compatibleGames: preloadedCompatibleGames,
                                 selectedGame: $selectedGame,

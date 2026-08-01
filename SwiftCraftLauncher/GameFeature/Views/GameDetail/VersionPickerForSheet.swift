@@ -24,10 +24,9 @@ struct VersionPickerForSheet: View {
             if isLoading {
                 ProgressView().controlSize(.small)
             } else if !availableVersions.isEmpty {
-                Text(project.title).font(.headline).bold().frame(
-                    maxWidth: .infinity,
-                    alignment: .leading,
-                )
+                Text(project.title)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 CommonMenuPicker(
                     selection: $selectedVersion,
                 ) {
