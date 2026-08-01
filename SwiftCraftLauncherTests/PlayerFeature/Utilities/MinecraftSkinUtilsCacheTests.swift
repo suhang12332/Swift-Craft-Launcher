@@ -11,11 +11,11 @@ import XCTest
 @MainActor
 final class MinecraftSkinUtilsCacheTests: XCTestCase {
     override func setUp() async throws {
-         MinecraftSkinUtils.clearCache()
+        MinecraftSkinUtils.clearCache()
     }
 
     override func tearDown() async throws {
-         MinecraftSkinUtils.clearCache()
+        MinecraftSkinUtils.clearCache()
     }
 
     func testClearCache_removesAllObjects() {
