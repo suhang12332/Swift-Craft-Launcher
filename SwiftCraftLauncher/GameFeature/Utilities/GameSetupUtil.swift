@@ -118,7 +118,7 @@ class GameSetupUtil {
                 configureGameLanguage(for: gameInfo.gameName)
             }
 
-            Task.detached(priority: .utility) {
+            Task.detached(priority: .utility) { [gameInfo] in
                 await DIContainer.shared.core.modScanner.scanGameModsDirectory(game: gameInfo)
             }
 
