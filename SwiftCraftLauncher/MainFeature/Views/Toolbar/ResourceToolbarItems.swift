@@ -119,70 +119,68 @@ struct ResourceToolbarItems: View {
     }
 
     var body: some View {
-        Group {
-            if detailState.selectedProjectId != nil {
-                Button {
-                    if let id = detailState.gameId {
-                        detailState.selectedItem = .game(id)
-                    } else {
-                        detailState.selectedProjectId = nil
-                        filterState.selectedTab = 0
-                    }
-                } label: {
-                    Label("return".localized(), systemImage: "chevron.backward")
+        if detailState.selectedProjectId != nil {
+            Button {
+                if let id = detailState.gameId {
+                    detailState.selectedItem = .game(id)
+                } else {
+                    detailState.selectedProjectId = nil
+                    filterState.selectedTab = 0
                 }
-                .help("return".localized())
-                .id(controlActiveState)
-                Spacer()
-                Button {
-                    openInstallSheet()
-                } label: {
-                    Label("resource.add".localized(), systemImage: "arrow.down.circle")
-                }
-                .help("resource.add".localized())
-                .sheet(isPresented: detailState.showInstallSheetBinding) {
-                    if let project = detailState.currentProject,
-                       let detail = detailState.loadedProjectDetail {
-                        if detailState.gameResourcesType == ResourceType.modpack.rawValue {
-                            ModPackDownloadSheet(
-                                projectId: project.projectId,
-                                gameInfo: nil,
-                                query: detailState.gameResourcesType,
-                                preloadedDetail: detail,
-                            )
-                        } else {
-                            GlobalResourceSheet(
-                                project: project,
-                                resourceType: detailState.gameResourcesType,
-                                isPresented: detailState.showInstallSheetBinding,
-                                preloadedDetail: detail,
-                                preloadedCompatibleGames: detailState.compatibleGames,
-                            )
-                        }
-                    }
-                }
-                .onChange(of: detailState.showInstallSheet) { _, newValue in
-                    if !newValue {
-                        detailState.compatibleGames = []
-                    }
-                }
-                Button {
-                    openCurrentResourceInBrowser()
-                } label: {
-                    Label("common.browser".localized(), systemImage: "safari")
-                }
-                .id(controlActiveState)
-                .help("resource.open_in_browser".localized())
-            } else {
-                if detailState.gameType {
-                    ResourceFilterMenus.dataSourceMenu(filterState: filterState)
-                        .disabled(
-                            detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue,
+            } label: {
+                Label("return".localized(), systemImage: "chevron.backward")
+            }
+            .help("return".localized())
+            .id(controlActiveState)
+            Spacer()
+            Button {
+                openInstallSheet()
+            } label: {
+                Label("resource.add".localized(), systemImage: "arrow.down.circle")
+            }
+            .help("resource.add".localized())
+            .sheet(isPresented: detailState.showInstallSheetBinding) {
+                if let project = detailState.currentProject,
+                   let detail = detailState.loadedProjectDetail {
+                    if detailState.gameResourcesType == ResourceType.modpack.rawValue {
+                        ModPackDownloadSheet(
+                            projectId: project.projectId,
+                            gameInfo: nil,
+                            query: detailState.gameResourcesType,
+                            preloadedDetail: detail,
                         )
-                        .id(controlActiveState)
-                    ResourceFilterMenus.favoritesFilterButton(filterState: filterState)
-                        .id(controlActiveState)
+                    } else {
+                        GlobalResourceSheet(
+                            project: project,
+                            resourceType: detailState.gameResourcesType,
+                            isPresented: detailState.showInstallSheetBinding,
+                            preloadedDetail: detail,
+                            preloadedCompatibleGames: detailState.compatibleGames,
+                        )
+                    }
                 }
+            }
+            .onChange(of: detailState.showInstallSheet) { _, newValue in
+                if !newValue {
+                    detailState.compatibleGames = []
+                }
+            }
+            Button {
+                openCurrentResourceInBrowser()
+            } label: {
+                Label("common.browser".localized(), systemImage: "safari")
+            }
+            .id(controlActiveState)
+            .help("resource.open_in_browser".localized())
+        } else {
+            if detailState.gameType {
+                ResourceFilterMenus.dataSourceMenu(filterState: filterState)
+                    .disabled(
+                        detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue,
+                    )
+                    .id(controlActiveState)
+                ResourceFilterMenus.favoritesFilterButton(filterState: filterState)
+                    .id(controlActiveState)
             }
         }
     }

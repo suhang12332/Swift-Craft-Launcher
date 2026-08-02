@@ -118,10 +118,14 @@ struct GameInfoDetailView: View {
             scanAllResources()
         }
         .onChange(of: searchText) { _, _ in
-            if gameType { scanAllResources() }
+            if gameType {
+                scanAllResources()
+            }
         }
         .onChange(of: dataSource) { _, _ in
-            if gameType { scanAllResources() }
+            if gameType {
+                scanAllResources()
+            }
         }
         .onAppear {
             updateHeaders()

@@ -58,7 +58,7 @@ final class WorldDetailSheetViewModel {
                 .appendingPathComponent("world_gen_settings.dat")
             let pathForBackground = levelDatPath
 
-            let (dataTag, seedOverride): ([String: Any], Int64?) = try await Task.detached(priority: .userInitiated) {
+            let (dataTag, seedOverride): ([String: Any], Int64?) = try {
                 guard FileManager.default.fileExists(atPath: pathForBackground.path) else {
                     throw LoadError.levelDatNotFound
                 }
@@ -81,7 +81,7 @@ final class WorldDetailSheetViewModel {
                 }
 
                 return (tag, seed)
-            }.value
+            }()
 
             let parsedMetadata = parseWorldDetail(
                 from: dataTag,
@@ -252,17 +252,39 @@ final class WorldDetailSheetViewModel {
     }
 
     private func stringifyNBTValue(_ value: Any) -> String {
-        if let v = value as? String { return v }
-        if let v = value as? Bool { return v ? "true" : "false" }
-        if let v = value as? Int8 { return "\(v)" }
-        if let v = value as? Int16 { return "\(v)" }
-        if let v = value as? Int32 { return "\(v)" }
-        if let v = value as? Int64 { return "\(v)" }
-        if let v = value as? Int { return "\(v)" }
-        if let v = value as? Double { return "\(v)" }
-        if let v = value as? Float { return "\(v)" }
-        if let v = value as? Data { return "Data(\(v.count) bytes)" }
-        if let v = value as? URL { return v.path }
+        if let v = value as? String {
+            return v
+        }
+        if let v = value as? Bool {
+            return v ? "true" : "false"
+        }
+        if let v = value as? Int8 {
+            return "\(v)"
+        }
+        if let v = value as? Int16 {
+            return "\(v)"
+        }
+        if let v = value as? Int32 {
+            return "\(v)"
+        }
+        if let v = value as? Int64 {
+            return "\(v)"
+        }
+        if let v = value as? Int {
+            return "\(v)"
+        }
+        if let v = value as? Double {
+            return "\(v)"
+        }
+        if let v = value as? Float {
+            return "\(v)"
+        }
+        if let v = value as? Data {
+            return "Data(\(v.count) bytes)"
+        }
+        if let v = value as? URL {
+            return v.path
+        }
         return String(describing: value)
     }
 }

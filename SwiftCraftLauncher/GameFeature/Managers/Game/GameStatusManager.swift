@@ -9,7 +9,7 @@ import Foundation
 
 /// Tracks game running and launching states per player using process keys.
 @Observable
-final class GameStatusManager {
+final class GameStatusManager: @unchecked Sendable {
     /// Running states keyed by processKey(gameId, userId).
     private var gameRunningStates: [String: Bool] = [:]
     /// Launching states keyed by processKey(gameId, userId).
@@ -56,11 +56,11 @@ final class GameStatusManager {
         return actuallyRunning
     }
 
-    private func applyOnMain(_ block: @escaping () -> Void) {
+    private func applyOnMain(_ block: @escaping @Sendable () -> Void) {
         if Thread.isMainThread {
             block()
         } else {
-            DispatchQueue.main.async(execute: block)
+            DispatchQueue.main.async { @Sendable in block() }
         }
     }
 

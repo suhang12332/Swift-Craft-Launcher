@@ -19,7 +19,7 @@ public enum ThemeMode: String, CaseIterable {
         "settings.theme.\(rawValue)".localized()
     }
 
-    public var preferredColorScheme: ColorScheme? {
+    @MainActor public var preferredColorScheme: ColorScheme? {
         switch self {
         case .light: .light
         case .dark: .dark
@@ -35,6 +35,7 @@ public enum ThemeMode: String, CaseIterable {
         }
     }
 
+    @MainActor
     static func resolveSystemColorScheme() -> ColorScheme {
         let appearance = NSApp?.effectiveAppearance ?? NSApplication.shared.effectiveAppearance
         let bestMatch = appearance.bestMatch(from: [.aqua, .darkAqua])
@@ -43,6 +44,7 @@ public enum ThemeMode: String, CaseIterable {
 }
 
 /// Manages the app's visual theme and applies the selected appearance.
+@MainActor
 @Observable
 final class ThemeManager {
     var themeMode: ThemeMode = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.themeMode, defaultValue: .system) {
@@ -66,10 +68,6 @@ final class ThemeManager {
     init() {
         applyAppAppearance()
         setupAppearanceObserverIfNeeded()
-    }
-
-    deinit {
-        appearanceObserver?.invalidate()
     }
 
     func applyAppAppearance() {

@@ -145,7 +145,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
         }
 
         while !Task.isCancelled {
-            let tickCompleted = await RoutineAuthDiagnosticsLogContext.withSuppressedRoutineDebugLogs {
+            let tickCompleted: Bool = await {
                 let boundPlayer = preparedBoundPlayer(from: playerListViewModel.currentPlayer)
                 guard let boundPlayer, Self.canUseMicrosoftMinecraftServices(for: boundPlayer) else {
                     return false
@@ -165,7 +165,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
                 )
                 await friendListMonitor.tick(context: friendListContext)
                 return true
-            }
+            }()
 
             guard tickCompleted else { break }
 

@@ -186,25 +186,24 @@ struct YggdrasilAuthView: View {
         )
     }
 
+    @ViewBuilder
     private func profileNameSection(
         profiles: [YggdrasilProfile],
         selection: Binding<String>,
         currentProfile: YggdrasilProfile,
     ) -> some View {
-        Group {
-            if profiles.count > 1 {
-                Picker("", selection: selection) {
-                    ForEach(profiles, id: \.id) { p in
-                        Text(p.name).tag(p.id)
-                    }
+        if profiles.count > 1 {
+            Picker("", selection: selection) {
+                ForEach(profiles, id: \.id) { p in
+                    Text(p.name).tag(p.id)
                 }
-                .pickerStyle(.menu)
-                .fixedSize()
-                .labelsHidden()
-            } else {
-                Text(currentProfile.name)
-                    .font(.headline)
             }
+            .pickerStyle(.menu)
+            .fixedSize()
+            .labelsHidden()
+        } else {
+            Text(currentProfile.name)
+                .font(.headline)
         }
     }
 

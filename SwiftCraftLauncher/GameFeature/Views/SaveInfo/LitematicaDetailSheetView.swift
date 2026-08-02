@@ -53,15 +53,13 @@ struct LitematicaDetailSheetView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var bodyView: some View {
-        Group {
-            if isLoading {
-                loadingView
-            } else if let metadata {
-                metadataContentView(metadata: metadata)
-            } else {
-                errorView
-            }
+    @ViewBuilder private var bodyView: some View {
+        if isLoading {
+            loadingView
+        } else if let metadata {
+            metadataContentView(metadata: metadata)
+        } else {
+            errorView
         }
     }
 

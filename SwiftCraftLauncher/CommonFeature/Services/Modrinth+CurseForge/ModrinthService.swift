@@ -82,19 +82,18 @@ enum ModrinthService {
         files?.first { $0.primary == true }
     }
 
-    static func fetchModrinthDetail(by hash: String, completion: @escaping (ModrinthProjectDetail?) -> Void) {
+    static func fetchModrinthDetail(
+        by hash: String,
+        completion: @escaping @MainActor @Sendable (ModrinthProjectDetail?) -> Void,
+    ) {
         Task {
             do {
                 let detail = try await fetchModrinthDetailThrowing(by: hash)
-                await MainActor.run {
-                    completion(detail)
-                }
+                await completion(detail)
             } catch {
                 let globalError = GlobalError.from(error)
                 AppLog.common.error("Failed to fetch project details by hash (Hash: \(hash)): \(globalError.localizedDescription)")
-                await MainActor.run {
-                    completion(nil)
-                }
+                await completion(nil)
             }
         }
     }

@@ -6,7 +6,7 @@
 //
 
 import AppKit
-import CoreImage
+@preconcurrency import CoreImage
 import Foundation
 import SwiftUI
 

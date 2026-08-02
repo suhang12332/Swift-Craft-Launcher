@@ -19,7 +19,7 @@ final class ModPackInstallCoordinator {
     }
 
     /// Input parameters for the installation run.
-    struct RunInput {
+    struct RunInput: @unchecked Sendable {
         let archivePath: URL
         let projectDetailForIcon: ModrinthProjectDetail?
         let gameName: String

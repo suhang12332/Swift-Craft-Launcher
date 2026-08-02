@@ -8,7 +8,7 @@
 import Foundation
 
 /// A response containing announcement data from the server.
-public struct AnnouncementResponse: Codable {
+public struct AnnouncementResponse: Codable, Sendable {
     public let success: Bool
     public let data: AnnouncementData?
 
@@ -19,7 +19,7 @@ public struct AnnouncementResponse: Codable {
 }
 
 /// A single announcement with title, content, and author.
-public struct AnnouncementData: Codable {
+public struct AnnouncementData: Codable, Sendable {
     public let title: String
     public let content: String
     public let author: String

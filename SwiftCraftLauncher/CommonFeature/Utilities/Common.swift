@@ -230,7 +230,7 @@ enum CommonUtil {
         for address: String,
         port: Int = 25565,
         timeout: TimeInterval = 5.0,
-        setStatus: @escaping (ServerConnectionStatus) -> Void,
+        setStatus: @escaping @MainActor @Sendable (ServerConnectionStatus) -> Void,
     ) async {
         guard !address.isEmpty else { return }
 

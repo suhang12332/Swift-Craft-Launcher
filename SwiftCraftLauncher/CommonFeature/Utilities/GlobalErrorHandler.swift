@@ -290,7 +290,7 @@ extension GlobalError {
 
 /// Manages global error state, including presentation and history.
 @Observable
-final class GlobalErrorHandler {
+final class GlobalErrorHandler: @unchecked Sendable {
     var currentError: GlobalError?
     var errorHistory: [GlobalError] = []
 

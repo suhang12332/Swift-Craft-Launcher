@@ -9,6 +9,7 @@ import AppKit
 import SwiftUI
 
 /// Configures auxiliary window appearance by disabling miniaturize, resize, and full-screen.
+@MainActor
 enum WindowStyleHelper {
     static func configureAuxiliaryWindow(_ window: NSWindow) {
         window.styleMask.remove([.miniaturizable, .resizable])

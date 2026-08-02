@@ -244,7 +244,9 @@ enum PlayerSkinService {
         ) {
             var part = Data()
             func appendString(_ s: String) {
-                if let d = s.data(using: .utf8) { part.append(d) }
+                if let d = s.data(using: .utf8) {
+                    part.append(d)
+                }
             }
             appendString("--\(boundary)\r\n")
             appendString(

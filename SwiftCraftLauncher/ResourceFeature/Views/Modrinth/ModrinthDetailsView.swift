@@ -47,7 +47,7 @@ struct ModrinthDetailsSection: View, Equatable {
         }
     }
 
-    static func == (lhs: Self, rhs: Self) -> Bool {
+    nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.isLoading == rhs.isLoading &&
             lhs.project?.id == rhs.project?.id &&
             lhs.project?.license?.id == rhs.project?.license?.id &&

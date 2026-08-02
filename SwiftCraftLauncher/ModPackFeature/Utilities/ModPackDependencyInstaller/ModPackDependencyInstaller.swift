@@ -24,7 +24,7 @@ enum ModPackDependencyInstaller {
         indexInfo: ModrinthIndexInfo,
         gameInfo: GameVersionInfo,
         extractedPath _: URL? = nil,
-        onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)? = nil,
+        onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)? = nil,
     ) async -> Bool {
         let resourceDir = AppPaths.profileDirectory(gameName: gameInfo.gameName)
 

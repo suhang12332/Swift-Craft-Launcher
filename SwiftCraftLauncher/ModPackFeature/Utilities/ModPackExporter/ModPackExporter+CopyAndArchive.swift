@@ -13,7 +13,7 @@ extension ModPackExporter {
         params: CopyFilesParams,
         copyCounter: CopyCounter,
         progressUpdater: ProgressUpdater,
-        progressCallback: ((ExportProgress) -> Void)?,
+        progressCallback: (@Sendable (ExportProgress) -> Void)?,
     ) async throws {
         try Task.checkCancellation()
 
@@ -30,7 +30,9 @@ extension ModPackExporter {
         await withTaskGroup(of: Void.self) { group in
             for (file, relativePath) in filesToCopy {
                 group.addTask {
-                    if Task.isCancelled { return }
+                    if Task.isCancelled {
+                        return
+                    }
                     do {
                         try ResourceProcessor.copyToOverrides(
                             file: file,
@@ -71,7 +73,7 @@ extension ModPackExporter {
         tempDir: URL,
         outputPath: URL,
         progressUpdater: ProgressUpdater,
-        progressCallback: ((ExportProgress) -> Void)?,
+        progressCallback: (@Sendable (ExportProgress) -> Void)?,
     ) async throws {
         try Task.checkCancellation()
         let rootFileNames = try await writeManifestFile(params: params, tempDir: tempDir)

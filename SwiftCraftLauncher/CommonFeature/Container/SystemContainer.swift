@@ -8,7 +8,7 @@
 import MinecraftFriendsKit
 
 /// System layer for IO heavy / network / runtime operations.
-final class SystemContainer {
+final class SystemContainer: @unchecked Sendable {
     // Authentication & Network
 
     @Lazy var gitHubService: GitHubService = .init()
@@ -18,7 +18,7 @@ final class SystemContainer {
 
     // Java
 
-    @MainActorLazy var javaManager: JavaManager = .init()
+    @Lazy var javaManager: JavaManager = .init()
     @Lazy var javaRuntimeService: JavaRuntimeService = .init()
     @Lazy var javaRuntimeDownloader: JavaRuntimeDownloader = .init()
     @Lazy var javaDownloadManager: JavaDownloadManager = .init()

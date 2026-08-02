@@ -203,7 +203,9 @@ struct MinecraftLaunchCommand {
                 .filter { !$0.isEmpty }
             var seen = Set<String>()
             let uniqueAdvancedArgs = advancedArgs.filter { arg in
-                if seen.contains(arg) { return false }
+                if seen.contains(arg) {
+                    return false
+                }
                 seen.insert(arg)
                 return true
             }

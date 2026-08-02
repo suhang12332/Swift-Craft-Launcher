@@ -163,42 +163,40 @@ struct ModrinthDetailView: View {
         viewModel.clearResults()
     }
 
-    private var listContent: some View {
-        Group {
-            if viewModel.isLoading {
-                ModrinthDetailListSkeletonRows()
-            } else {
-                let displayedResults = applyFavoritesFilter(to: viewModel.results)
-                ForEach(displayedResults, id: \.projectId) { mod in
-                    ModrinthDetailCardView(
-                        project: mod,
-                        selectedVersions: selectedVersions,
-                        selectedLoaders: selectedLoader,
-                        gameInfo: gameInfo,
-                        query: query,
-                        type: true,
-                        selectedItem: $selectedItem,
-                        scannedDetailIds: $scannedDetailIds,
-                    )
-                    .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
-                    .listRowInsets(
-                        EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8),
-                    )
-                    .listRowSeparator(.hidden)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selectedProjectId = mod.projectId
-                        if let type = ResourceType(rawValue: query) {
-                            selectedItem = .resource(type)
-                        }
+    @ViewBuilder private var listContent: some View {
+        if viewModel.isLoading {
+            ModrinthDetailListSkeletonRows()
+        } else {
+            let displayedResults = applyFavoritesFilter(to: viewModel.results)
+            ForEach(displayedResults, id: \.projectId) { mod in
+                ModrinthDetailCardView(
+                    project: mod,
+                    selectedVersions: selectedVersions,
+                    selectedLoaders: selectedLoader,
+                    gameInfo: gameInfo,
+                    query: query,
+                    type: true,
+                    selectedItem: $selectedItem,
+                    scannedDetailIds: $scannedDetailIds,
+                )
+                .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
+                .listRowInsets(
+                    EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8),
+                )
+                .listRowSeparator(.hidden)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectedProjectId = mod.projectId
+                    if let type = ResourceType(rawValue: query) {
+                        selectedItem = .resource(type)
                     }
-                    .onAppear {
-                        coordinator.loadNextPageIfNeeded(
-                            currentItem: mod,
-                            searchViewModel: viewModel,
-                            context: currentSearchContext,
-                        )
-                    }
+                }
+                .onAppear {
+                    coordinator.loadNextPageIfNeeded(
+                        currentItem: mod,
+                        searchViewModel: viewModel,
+                        context: currentSearchContext,
+                    )
                 }
             }
         }

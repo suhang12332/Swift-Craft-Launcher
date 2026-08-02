@@ -10,7 +10,7 @@ import Foundation
 import Network
 
 /// The status of a server connection check.
-enum ServerConnectionStatus {
+enum ServerConnectionStatus: Sendable {
     case unknown
     case checking
     case success(serverInfo: MinecraftServerInfo?)

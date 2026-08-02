@@ -8,6 +8,7 @@
 @testable import SwiftCraftLauncher
 import XCTest
 
+@MainActor
 final class PlayerFeatureExtendedTests: XCTestCase {
     func testSkinSelectionStore_select_setsId() {
         let store = SkinSelectionStore()

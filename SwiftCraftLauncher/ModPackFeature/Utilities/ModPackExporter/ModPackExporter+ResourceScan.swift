@@ -40,7 +40,7 @@ extension ModPackExporter {
         totalResources: Int,
         exportFormat: ModPackExportFormat,
         progressUpdater: ProgressUpdater,
-        progressCallback: ((ExportProgress) -> Void)?,
+        progressCallback: (@Sendable (ExportProgress) -> Void)?,
     ) async -> SelectedResourcesResult {
         var indexFiles: [ModrinthIndexFile] = []
         var curseForgeFiles: [CurseForgeManifestBuilder.ManifestFile] = []
@@ -58,7 +58,9 @@ extension ModPackExporter {
         }
 
         for file in selectedFiles where !shouldScan(file) {
-            if Task.isCancelled { break }
+            if Task.isCancelled {
+                break
+            }
             let relativePath = makeRelativePath(for: file, gameDirectory: gameDirectory)
             filesToCopy.append((file: file, relativePath: relativePath))
         }

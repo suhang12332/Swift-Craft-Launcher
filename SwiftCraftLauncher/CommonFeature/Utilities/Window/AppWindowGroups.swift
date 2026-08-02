@@ -88,10 +88,8 @@ private struct AIChatWindowContent: View {
     private var container
 
     var body: some View {
-        Group {
-            if let chatState = container.ui.windowManager.readPayload(for: .aiChat, as: ChatState.self) {
-                AIChatWindowView(chatState: chatState)
-            }
+        if let chatState = container.ui.windowManager.readPayload(for: .aiChat, as: ChatState.self) {
+            AIChatWindowView(chatState: chatState)
         }
     }
 }
@@ -101,10 +99,8 @@ private struct SkinPreviewWindowContent: View {
     private var container
 
     var body: some View {
-        Group {
-            if let data = container.ui.windowManager.readPayload(for: .skinPreview, as: SkinPreviewData.self) {
-                SkinPreviewWindowView(data: data)
-            }
+        if let data = container.ui.windowManager.readPayload(for: .skinPreview, as: SkinPreviewData.self) {
+            SkinPreviewWindowView(data: data)
         }
     }
 }

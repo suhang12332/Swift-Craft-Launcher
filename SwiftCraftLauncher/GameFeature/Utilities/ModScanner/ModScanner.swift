@@ -9,7 +9,7 @@ import CryptoKit
 import Foundation
 
 /// Scans mod and resource files, resolving details from Modrinth and CurseForge.
-class ModScanner {
+class ModScanner: @unchecked Sendable {
     init() { }
 
     /// Schedules an asynchronous rebuild of directory hashes.
@@ -41,7 +41,7 @@ class ModScanner {
     /// Retrieves a Modrinth project detail for the given file, returning the result via a completion handler.
     func getModrinthProjectDetail(
         for fileURL: URL,
-        completion: @escaping (ModrinthProjectDetail?) -> Void,
+        completion: @escaping @Sendable (ModrinthProjectDetail?) -> Void,
     ) {
         Task {
             do {

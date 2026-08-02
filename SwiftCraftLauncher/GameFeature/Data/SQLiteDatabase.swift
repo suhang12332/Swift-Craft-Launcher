@@ -16,13 +16,28 @@ import SQLite3
 /// Instances are shared by path: calling ``database(at:)`` with the same path
 /// returns the same connection, avoiding redundant opens and file descriptors.
 class SQLiteDatabase {
+    private final class InstanceRegistry: @unchecked Sendable {
+        private let lock = NSLock()
+        private var instances: [String: SQLiteDatabase] = [:]
+
+        func database(at path: String) -> SQLiteDatabase {
+            lock.withLock {
+                if let existing = instances[path] {
+                    return existing
+                }
+                let database = SQLiteDatabase(path: path)
+                instances[path] = database
+                return database
+            }
+        }
+    }
+
     private var db: OpaquePointer?
     private let dbPath: String
     private let queue: DispatchQueue
     private static let queueKey = DispatchSpecificKey<Bool>()
 
-    private static var instances: [String: SQLiteDatabase] = [:]
-    private static let instancesLock = NSLock()
+    private static let instanceRegistry = InstanceRegistry()
 
     /// Returns a shared `SQLiteDatabase` instance for the given file path.
     ///
@@ -32,14 +47,7 @@ class SQLiteDatabase {
     /// - Parameter path: The file path of the SQLite database.
     /// - Returns: A shared database instance.
     static func database(at path: String) -> SQLiteDatabase {
-        instancesLock.lock()
-        defer { instancesLock.unlock() }
-        if let existing = instances[path] {
-            return existing
-        }
-        let db = SQLiteDatabase(path: path)
-        instances[path] = db
-        return db
+        instanceRegistry.database(at: path)
     }
 
     private init(path: String) {

@@ -28,7 +28,11 @@ struct DeleteGameConfirmationModifier: ViewModifier {
     private var isDialogPresented: Binding<Bool> {
         Binding(
             get: { gamePendingDeletion != nil },
-            set: { if !$0 { gamePendingDeletion = nil } },
+            set: {
+                if !$0 {
+                    gamePendingDeletion = nil
+                }
+            },
         )
     }
 

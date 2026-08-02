@@ -12,7 +12,9 @@ import UniformTypeIdentifiers
 extension SkinToolDetailViewModel {
     /// Loads the current skin image from the server for the 3D preview renderer.
     func loadCurrentSkinRenderImageIfNeeded(resolvedPlayer: Player?) {
-        if selectedSkinImage != nil || selectedSkinPath != nil { return }
+        if selectedSkinImage != nil || selectedSkinPath != nil {
+            return
+        }
         guard let urlString = publicSkinInfo?.skinURL?.httpToHttps(),
               let url = URL(string: urlString) else { return }
 
@@ -99,9 +101,9 @@ extension SkinToolDetailViewModel {
     func handleDrop(_ providers: [NSItemProvider]) -> Bool {
         guard let provider = providers.first else { return false }
 
-        provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in
+        provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { [weak self] data, _ in
             guard let data else { return }
-            Task { @MainActor [weak self] in
+            Task { @MainActor in
                 guard let self else { return }
                 let tempURL = await Task.detached(priority: .userInitiated) { () -> URL? in
                     let tempDir = FileManager.default.temporaryDirectory
@@ -115,7 +117,7 @@ extension SkinToolDetailViewModel {
                         return nil
                     }
                 }.value
-                processSkinData(data, filePath: tempURL?.path)
+                self.processSkinData(data, filePath: tempURL?.path)
             }
         }
         return true

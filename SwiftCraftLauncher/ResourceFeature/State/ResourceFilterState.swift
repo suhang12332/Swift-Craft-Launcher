@@ -11,6 +11,7 @@ import SwiftUI
 /// Aggregates resource filter, pagination, tab, data source, search, and local filter state.
 ///
 /// Intended to be provided via `@Environment` to reduce `@Binding` proliferation.
+@MainActor
 @Observable
 final class ResourceFilterState {
     var selectedVersions: [String] = []

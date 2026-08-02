@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Represents a game version's metadata and launch configuration.
-struct GameVersionInfo: Codable, Identifiable, Hashable {
+struct GameVersionInfo: Codable, Identifiable, Hashable, Sendable {
     /// The unique identifier for this game version.
     let id: String
 

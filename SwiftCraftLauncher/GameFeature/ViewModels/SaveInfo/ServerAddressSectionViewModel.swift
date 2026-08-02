@@ -10,7 +10,7 @@ import Observation
 
 /// View model that manages server connection status checks and visibility computation for a list of server addresses.
 @Observable
-final class ServerAddressSectionViewModel {
+final class ServerAddressSectionViewModel: @unchecked Sendable {
     var serverStatuses: [String: ServerConnectionStatus] = [:]
     var serverInfos: [String: MinecraftServerInfo] = [:]
 
@@ -31,19 +31,15 @@ final class ServerAddressSectionViewModel {
             await withTaskGroup(of: (String, ServerConnectionStatus, MinecraftServerInfo?).self) { group in
                 for server in servers {
                     group.addTask {
-                        var latestStatus: ServerConnectionStatus = .unknown
-                        var serverInfo: MinecraftServerInfo?
-                        await CommonUtil.updateServerConnectionStatus(
-                            for: server.address,
+                        let status = await NetworkUtils.checkServerConnectionStatus(
+                            address: server.address,
                             port: server.port,
                             timeout: 5.0,
-                        ) { newStatus in
-                            latestStatus = newStatus
-                            if case let .success(info) = newStatus {
-                                serverInfo = info
-                            }
+                        )
+                        if case let .success(info) = status {
+                            return (server.id, status, info)
                         }
-                        return (server.id, latestStatus, serverInfo)
+                        return (server.id, status, nil)
                     }
                 }
 

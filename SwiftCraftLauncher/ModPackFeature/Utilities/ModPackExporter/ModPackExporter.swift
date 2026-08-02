@@ -37,7 +37,7 @@ enum ModPackExporter {
         summary: String? = nil,
         exportFormat: ModPackExportFormat = .modrinth,
         selectedFiles: [URL],
-        progressCallback: ((ExportProgress) -> Void)? = nil,
+        progressCallback: (@Sendable (ExportProgress) -> Void)? = nil,
     ) async -> ExportResult {
         do {
             try Task.checkCancellation()

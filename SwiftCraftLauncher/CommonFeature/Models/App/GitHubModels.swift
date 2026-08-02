@@ -8,7 +8,7 @@
 import Foundation
 
 /// A contributor to the GitHub repository.
-public struct GitHubContributor: Codable, Identifiable {
+public struct GitHubContributor: Codable, Identifiable, Sendable {
     public let id: Int
     public let login: String
     public let avatarUrl: String

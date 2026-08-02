@@ -172,12 +172,14 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         ]
         let data = try JSONSerialization.data(withJSONObject: dict)
         let decoder = JSONDecoder()
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let dateString = try container.decode(String.self)
-            if let date = formatter.date(from: dateString) { return date }
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = formatter.date(from: dateString) {
+                return date
+            }
             let fallback = ISO8601DateFormatter()
             fallback.formatOptions = [.withInternetDateTime]
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)
@@ -350,12 +352,14 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         // swiftlint:disable:next force_try
         let data = try! JSONSerialization.data(withJSONObject: dict)
         let decoder = JSONDecoder()
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let dateString = try container.decode(String.self)
-            if let date = formatter.date(from: dateString) { return date }
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = formatter.date(from: dateString) {
+                return date
+            }
             let fallback = ISO8601DateFormatter()
             fallback.formatOptions = [.withInternetDateTime]
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)
@@ -424,12 +428,14 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         // swiftlint:disable:next force_try
         let data = try! JSONSerialization.data(withJSONObject: dict)
         let decoder = JSONDecoder()
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
             let dateString = try container.decode(String.self)
-            if let date = formatter.date(from: dateString) { return date }
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = formatter.date(from: dateString) {
+                return date
+            }
             let fallback = ISO8601DateFormatter()
             fallback.formatOptions = [.withInternetDateTime]
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)

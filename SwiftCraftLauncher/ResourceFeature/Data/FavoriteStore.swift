@@ -16,7 +16,7 @@ import SQLite3
 /// serial queue. The in-memory map is updated on the main thread so SwiftUI
 /// observations remain responsive.
 @Observable
-final class FavoriteStore {
+final class FavoriteStore: @unchecked Sendable {
     private let db: SQLiteDatabase
     private let tableName = AppConstants.DatabaseTables.favorites
     private let initQueue = DispatchQueue(label: "com.swiftcraftlauncher.favoritestore.init")

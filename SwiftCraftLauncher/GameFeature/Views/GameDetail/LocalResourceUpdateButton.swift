@@ -19,23 +19,21 @@ struct LocalResourceUpdateButton: View {
     let onTap: () -> Void
 
     var body: some View {
-        Group {
-            if isVisible {
-                Button(action: onTap) {
-                    if isUpdateButtonLoading {
-                        ProgressView()
-                            .controlSize(.mini)
-                            .scaleEffect(1.3)
-                    } else {
-                        Text("resource.update".localized())
-                    }
+        if isVisible {
+            Button(action: onTap) {
+                if isUpdateButtonLoading {
+                    ProgressView()
+                        .controlSize(.mini)
+                        .scaleEffect(1.3)
+                } else {
+                    Text("resource.update".localized())
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.accentColor)
-                .font(.caption2)
-                .controlSize(.small)
-                .disabled(addButtonState == .loading || isUpdateButtonLoading)
             }
+            .buttonStyle(.borderedProminent)
+            .tint(.accentColor)
+            .font(.caption2)
+            .controlSize(.small)
+            .disabled(addButtonState == .loading || isUpdateButtonLoading)
         }
     }
 }

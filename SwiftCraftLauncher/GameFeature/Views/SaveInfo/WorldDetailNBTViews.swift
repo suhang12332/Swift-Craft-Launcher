@@ -127,17 +127,39 @@ struct NBTEntryView: View {
     }
 
     private func formatNBTValue(_ value: Any) -> String {
-        if let v = value as? String { return "\"\(v)\"" }
-        if let v = value as? Bool { return v ? "true" : "false" }
-        if let v = value as? Int8 { return "\(v)b" }
-        if let v = value as? Int16 { return "\(v)s" }
-        if let v = value as? Int32 { return "\(v)" }
-        if let v = value as? Int64 { return "\(v)L" }
-        if let v = value as? Int { return "\(v)" }
-        if let v = value as? Double { return "\(v)d" }
-        if let v = value as? Float { return "\(v)f" }
-        if let v = value as? Data { return "Data(\(v.count) bytes)" }
-        if let v = value as? URL { return v.path }
+        if let v = value as? String {
+            return "\"\(v)\""
+        }
+        if let v = value as? Bool {
+            return v ? "true" : "false"
+        }
+        if let v = value as? Int8 {
+            return "\(v)b"
+        }
+        if let v = value as? Int16 {
+            return "\(v)s"
+        }
+        if let v = value as? Int32 {
+            return "\(v)"
+        }
+        if let v = value as? Int64 {
+            return "\(v)L"
+        }
+        if let v = value as? Int {
+            return "\(v)"
+        }
+        if let v = value as? Double {
+            return "\(v)d"
+        }
+        if let v = value as? Float {
+            return "\(v)f"
+        }
+        if let v = value as? Data {
+            return "Data(\(v.count) bytes)"
+        }
+        if let v = value as? URL {
+            return v.path
+        }
         return String(describing: value)
     }
 }

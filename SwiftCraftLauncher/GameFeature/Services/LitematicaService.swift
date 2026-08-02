@@ -57,10 +57,18 @@ private func parseListMetadata(filePath: URL) -> ListMetadata? {
     var regionCount: Int?
     var totalBlocks: Int?
     if let rc = meta["RegionCount"] {
-        if let rcInt = rc as? Int32 { regionCount = Int(rcInt) } else if let rcInt = rc as? Int { regionCount = rcInt }
+        if let rcInt = rc as? Int32 {
+            regionCount = Int(rcInt)
+        } else if let rcInt = rc as? Int {
+            regionCount = rcInt
+        }
     }
     if let tb = meta["TotalBlocks"] {
-        if let tbInt = tb as? Int32 { totalBlocks = Int(tbInt) } else if let tbInt = tb as? Int { totalBlocks = tbInt }
+        if let tbInt = tb as? Int32 {
+            totalBlocks = Int(tbInt)
+        } else if let tbInt = tb as? Int {
+            totalBlocks = tbInt
+        }
     }
     return ListMetadata(author: author, description: description, version: version, regionCount: regionCount, totalBlocks: totalBlocks)
 }
@@ -106,10 +114,22 @@ private func loadFullMetadataSync(filePath: URL) throws -> LitematicMetadata? {
     let description = (metadata["Description"] as? String) ?? ""
     var timeCreated: Int64 = 0, timeModified: Int64 = 0
     if let tc = metadata["TimeCreated"] {
-        if let tcLong = tc as? Int64 { timeCreated = tcLong } else if let tcInt = tc as? Int32 { timeCreated = Int64(tcInt) } else if let tcInt = tc as? Int { timeCreated = Int64(tcInt) }
+        if let tcLong = tc as? Int64 {
+            timeCreated = tcLong
+        } else if let tcInt = tc as? Int32 {
+            timeCreated = Int64(tcInt)
+        } else if let tcInt = tc as? Int {
+            timeCreated = Int64(tcInt)
+        }
     }
     if let tm = metadata["TimeModified"] {
-        if let tmLong = tm as? Int64 { timeModified = tmLong } else if let tmInt = tm as? Int32 { timeModified = Int64(tmInt) } else if let tmInt = tm as? Int { timeModified = Int64(tmInt) }
+        if let tmLong = tm as? Int64 {
+            timeModified = tmLong
+        } else if let tmInt = tm as? Int32 {
+            timeModified = Int64(tmInt)
+        } else if let tmInt = tm as? Int {
+            timeModified = Int64(tmInt)
+        }
     }
     var enclosingSize = Size(x: 0, y: 0, z: 0)
     if let sizeData = metadata["EnclosingSize"] as? [String: Any] {
@@ -120,9 +140,27 @@ private func loadFullMetadataSync(filePath: URL) throws -> LitematicMetadata? {
         )
     }
     var totalVolume: Int32 = 0, totalBlocks: Int32 = 0, regionCount: Int32 = 0
-    if let tv = metadata["TotalVolume"] { if let v = tv as? Int32 { totalVolume = v } else if let v = tv as? Int { totalVolume = Int32(v) } }
-    if let tb = metadata["TotalBlocks"] { if let v = tb as? Int32 { totalBlocks = v } else if let v = tb as? Int { totalBlocks = Int32(v) } }
-    if let rc = metadata["RegionCount"] { if let v = rc as? Int32 { regionCount = v } else if let v = rc as? Int { regionCount = Int32(v) } }
+    if let tv = metadata["TotalVolume"] {
+        if let v = tv as? Int32 {
+            totalVolume = v
+        } else if let v = tv as? Int {
+            totalVolume = Int32(v)
+        }
+    }
+    if let tb = metadata["TotalBlocks"] {
+        if let v = tb as? Int32 {
+            totalBlocks = v
+        } else if let v = tb as? Int {
+            totalBlocks = Int32(v)
+        }
+    }
+    if let rc = metadata["RegionCount"] {
+        if let v = rc as? Int32 {
+            regionCount = v
+        } else if let v = rc as? Int {
+            regionCount = Int32(v)
+        }
+    }
     return LitematicMetadata(
         name: name,
         author: author,

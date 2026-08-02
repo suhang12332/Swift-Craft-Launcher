@@ -11,6 +11,7 @@ import SwiftUI
 /// Aggregates sidebar selection, game/resource type, and project detail state.
 ///
 /// Intended to be provided via `@Environment` to reduce `@Binding` proliferation.
+@MainActor
 @Observable
 public final class ResourceDetailState {
     public var selectedItem: SidebarItem
@@ -77,7 +78,9 @@ public final class ResourceDetailState {
         Binding(
             get: { [weak self] in self?.selectedItem },
             set: { [weak self] value in
-                if let value { self?[keyPath: \.selectedItem] = value }
+                if let value {
+                    self?[keyPath: \.selectedItem] = value
+                }
             },
         )
     }

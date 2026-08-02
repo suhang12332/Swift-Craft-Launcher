@@ -76,7 +76,9 @@ final class FileTreeViewModel {
                     return child
                 }
                 .sorted { lhs, rhs in
-                    if lhs.isDirectory != rhs.isDirectory { return lhs.isDirectory && !rhs.isDirectory }
+                    if lhs.isDirectory != rhs.isDirectory {
+                        return lhs.isDirectory && !rhs.isDirectory
+                    }
                     return lhs.displayName.localizedStandardCompare(rhs.displayName) == .orderedAscending
                 }
         } catch {
