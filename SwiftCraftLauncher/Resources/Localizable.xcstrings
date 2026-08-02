@@ -52157,6 +52157,12 @@
             "value" : "• CurseForge: https://edge.forgecdn.net/files/xxx/yyy/modpack.zip"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• CurseForge: https://edge.forgecdn.net/files/xxx/yyy/modpack.zip"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -52422,6 +52428,12 @@
           }
         },
         "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "• CurseForge: https://edge.forgecdn.net/files/xxx/yyy/modpack.zip"
+          }
+        },
+        "vi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "• CurseForge: https://edge.forgecdn.net/files/xxx/yyy/modpack.zip"
@@ -52830,6 +52842,12 @@
           }
         },
         "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https://example.com/modpack.zip"
+          }
+        },
+        "vi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "https://example.com/modpack.zip"
