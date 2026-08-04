@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A skeleton placeholder for loading Modrinth list cards.
-struct ModrinthDetailCardSkeletonView: View {
+private struct ModrinthDetailCardSkeletonView: View {
     var body: some View {
         ModrinthDetailCardLayout(
             icon: { ModrinthDetailCardPlaceholderIcon() },

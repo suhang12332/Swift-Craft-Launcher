@@ -43,18 +43,6 @@ enum CurseForgeService {
         return try await tryFetchFileDetail(from: url.absoluteString)
     }
 
-    /// Fetches mod details from CurseForge.
-    /// - Parameter modId: The mod identifier.
-    /// - Returns: The mod details, or `nil` if the request fails.
-    static func fetchModDetail(modId: Int) async -> CurseForgeModDetail? {
-        do {
-            return try await fetchModDetailThrowing(modId: modId)
-        } catch {
-            AppLog.common.error("Failed to fetch CurseForge mod details: \(error.localizedDescription)")
-            return nil
-        }
-    }
-
     /// Fetches mod details from CurseForge, throwing on failure.
     /// - Parameter modId: The mod identifier.
     /// - Returns: The mod details.
@@ -73,21 +61,6 @@ enum CurseForgeService {
         let url = URLConfig.API.CurseForge.modDescription(modId: modId)
 
         return try await tryFetchModDescription(from: url.absoluteString)
-    }
-
-    /// Fetches the file list for a CurseForge project.
-    /// - Parameters:
-    ///   - projectId: The CurseForge project identifier.
-    ///   - gameVersion: An optional game version filter.
-    ///   - modLoaderType: An optional mod loader type filter.
-    /// - Returns: The file list, or `nil` if the request fails.
-    static func fetchProjectFiles(projectId: Int, gameVersion: String? = nil, modLoaderType: Int? = nil) async -> [CurseForgeModFileDetail]? {
-        do {
-            return try await fetchProjectFilesThrowing(projectId: projectId, gameVersion: gameVersion, modLoaderType: modLoaderType)
-        } catch {
-            AppLog.common.error("Failed to fetch CurseForge project file list: \(error.localizedDescription)")
-            return nil
-        }
     }
 
     /// Fetches the file list for a CurseForge project, throwing on failure.

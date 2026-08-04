@@ -102,7 +102,7 @@ struct GameResourceInstallSheet: View {
 }
 
 /// Footer with download action buttons for the resource install sheet.
-struct GameResourceInstallFooter: View {
+private struct GameResourceInstallFooter: View {
     @Binding var isPresented: Bool
     let projectDetail: ModrinthProjectDetail?
     var viewModel: GameResourceInstallSheetViewModel

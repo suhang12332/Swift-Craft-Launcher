@@ -31,23 +31,6 @@ struct CacheInfo: Equatable {
 class CacheCalculator {
     init() { }
 
-    /// Calculates cache information for game resource metadata.
-    /// - Throws: A ``GlobalError`` if the operation fails.
-    func calculateMetaCacheInfo() throws -> CacheInfo {
-        let resourceTypes = AppConstants.cacheResourceTypes
-        var totalFileCount = 0
-        var totalSize: Int64 = 0
-
-        for type in resourceTypes {
-            let typeDir = AppPaths.metaDirectory.appendingPathComponent(type)
-            let (fileCount, size) = try calculateDirectorySize(typeDir)
-            totalFileCount += fileCount
-            totalSize += size
-        }
-
-        return CacheInfo(fileCount: totalFileCount, totalSize: totalSize)
-    }
-
     /// Calculates cache information for the application cache directory.
     /// - Throws: A ``GlobalError`` if the operation fails.
     func calculateCacheInfo() throws -> CacheInfo {

@@ -46,11 +46,6 @@ class PlayerListViewModel: @unchecked Sendable {
         loadPlayersSafely()
     }
 
-    /// Loads the player list, returning an empty list on failure.
-    func loadPlayers() {
-        loadPlayersSafely()
-    }
-
     /// Loads the player list, throwing on failure.
     ///
     /// - Throws: A `GlobalError` if loading fails.

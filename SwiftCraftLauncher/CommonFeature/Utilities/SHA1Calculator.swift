@@ -6,7 +6,6 @@
 //
 
 import CommonCrypto
-import CryptoKit
 import Foundation
 
 /// Provides SHA1 hash computation for data and files.
@@ -72,14 +71,6 @@ public enum SHA1Calculator {
             DIContainer.shared.core.errorHandler.handle(globalError)
             return nil
         }
-    }
-
-    /// Computes the SHA1 hash of in-memory data using CryptoKit.
-    /// - Parameter data: The data to hash.
-    /// - Returns: A lowercase hexadecimal SHA1 string.
-    public static func sha1WithCryptoKit(of data: Data) -> String {
-        let hash = Insecure.SHA1.hash(data: data)
-        return hash.map { String(format: "%02hhx", $0) }.joined()
     }
 }
 

@@ -132,20 +132,6 @@ final class GameAdvancedSettingsViewModel {
         autoSave()
     }
 
-    func resetToDefaults() {
-        isLoadingSettings = true
-        defer { isLoadingSettings = false }
-
-        memoryRange = Double(DIContainer.shared.ui.gameSettingsManager.globalXms) ... Double(DIContainer.shared.ui.gameSettingsManager.globalXmx)
-        selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
-        optimizationPreset = .balanced
-        applyOptimizationPreset(.balanced)
-        customJvmArguments = ""
-        environmentVariables = ""
-        resetJavaPathSafely()
-        autoSave()
-    }
-
     func resetJavaPathSafely() {
         guard let game = currentGame else { return }
 

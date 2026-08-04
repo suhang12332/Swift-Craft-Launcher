@@ -28,13 +28,6 @@ public class ContributorsViewModel {
         }
     }
 
-    /// Returns the profile URL for a contributor.
-    public func getContributorProfileURL(
-        _ contributor: GitHubContributor,
-    ) -> URL? {
-        URL(string: contributor.htmlUrl)
-    }
-
     /// Formats a contribution count for display.
     public func formatContributions(_ count: Int) -> String {
         count >= 1000

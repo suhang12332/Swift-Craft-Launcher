@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SkinRenderKit
 import SwiftUI
 
 extension SkinToolDetailViewModel {
@@ -86,29 +85,6 @@ extension SkinToolDetailViewModel {
             AppLog.player.error("Failed to load current active cape: \(error)")
             isCapeLoading = false
             capeLoadCompleted = false
-        }
-    }
-
-    /// Downloads a cape texture and caches it to a temporary file if needed.
-    func downloadCapeTextureIfNeeded(from urlString: String) async {
-        if let current = selectedCapeImageURL, current == urlString, selectedCapeLocalPath != nil {
-            return
-        }
-        guard URL(string: urlString.httpToHttps()) != nil else {
-            return
-        }
-        do {
-            let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent("cape_\(UUID().uuidString).png")
-            _ = try await DownloadManager.downloadFile(
-                urlString: urlString.httpToHttps(),
-                destinationURL: tempFile,
-                expectedSha1: nil,
-            )
-            if selectedCapeImageURL == urlString {
-                selectedCapeLocalPath = tempFile.path
-            }
-        } catch {
-            AppLog.player.error("Cape download error: \(error)")
         }
     }
 
