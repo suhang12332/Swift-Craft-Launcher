@@ -116,6 +116,8 @@ enum AppConstants {
         static let libraries = "libraries"
         static let natives = "natives"
         static let assets = "assets"
+        static let indexes = "indexes"
+        static let objects = "objects"
         static let versions = "versions"
         static let shaderpacks = "shaderpacks"
         static let resourcepacks = "resourcepacks"
