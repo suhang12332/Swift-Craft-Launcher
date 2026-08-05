@@ -169,9 +169,7 @@ struct GameFormView: View {
             mode = .creation
         case .modPack:
             filePickerType = .modPack
-            DispatchQueue.main.async {
-                showFilePicker = true
-            }
+            showFilePicker = true
         case .download:
             mode = .modPackURLDownload
         }

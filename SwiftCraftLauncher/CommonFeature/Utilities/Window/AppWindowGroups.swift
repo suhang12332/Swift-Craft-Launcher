@@ -60,7 +60,7 @@ private struct AuxiliaryWindowScene: View {
             idealHeight: windowID.defaultSize.height,
         )
         .background(
-            WindowAccessor(synchronous: true) { window in
+            WindowAccessor { window in
                 WindowStyleHelper.configureAuxiliaryWindow(window)
             },
         )

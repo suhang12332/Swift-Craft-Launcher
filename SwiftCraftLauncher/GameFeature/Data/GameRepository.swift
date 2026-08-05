@@ -55,9 +55,7 @@ class GameRepository: @unchecked Sendable {
 
         lastWorkingPath = currentWorkingPath
 
-        DispatchQueue.main.async { [weak self] in
-            self?.setupWorkingPathObserver()
-        }
+        setupWorkingPathObserver()
     }
 
     private func initializeDatabase() async throws {
