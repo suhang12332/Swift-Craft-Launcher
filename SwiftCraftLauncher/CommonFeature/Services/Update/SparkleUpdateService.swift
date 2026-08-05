@@ -156,7 +156,7 @@ extension SparkleUpdateService {
     func updater(_: SPUUpdater, willDownloadUpdate _: SUAppcastItem, with request: NSMutableURLRequest) {
         guard let originalURL = request.url else { return }
 
-        let version = latestVersion
+        let version = versionString
         guard !version.isEmpty else {
             AppLog.common.warning("Update download URL rewrite skipped: latestVersion is empty, using original URL")
             return
