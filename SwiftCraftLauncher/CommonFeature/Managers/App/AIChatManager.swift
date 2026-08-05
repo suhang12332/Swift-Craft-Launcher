@@ -125,7 +125,10 @@ class AIChatManager {
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
         guard (200 ... 299).contains(httpResponse.statusCode) else {
-            let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
+            var errorData = Data()
+            for try await byte in asyncBytes {
+                errorData.append(byte)
+            }
             let errorMessage = String(data: errorData, encoding: .utf8) ?? "Unknown error"
             throw GlobalError.network(
                 i18nKey: "error.network.api_error",
@@ -239,7 +242,10 @@ class AIChatManager {
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
         guard (200 ... 299).contains(httpResponse.statusCode) else {
-            let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
+            var errorData = Data()
+            for try await byte in asyncBytes {
+                errorData.append(byte)
+            }
             let errorMessage = String(data: errorData, encoding: .utf8) ?? "Unknown error"
             throw GlobalError.network(
                 i18nKey: "error.network.api_error",
@@ -345,9 +351,15 @@ class AIChatManager {
                 return nil
             }
 
-            if let size = attributes[.size] as? Int64 { return size }
-            if let size = attributes[.size] as? Int { return Int64(size) }
-            if let size = attributes[.size] as? NSNumber { return size.int64Value }
+            if let size = attributes[.size] as? Int64 {
+                return size
+            }
+            if let size = attributes[.size] as? Int {
+                return Int64(size)
+            }
+            if let size = attributes[.size] as? NSNumber {
+                return size.int64Value
+            }
             return nil
         }.value
     }

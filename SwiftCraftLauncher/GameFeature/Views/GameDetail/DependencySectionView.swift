@@ -29,7 +29,6 @@ struct DependencySectionView: View {
                     VStack {
                         Text(dep.title)
                             .font(.headline)
-                            .bold()
                             .frame(maxWidth: .infinity, alignment: .leading)
                         if let versions = state.versions[dep.id],
                            !versions.isEmpty {

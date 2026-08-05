@@ -62,15 +62,14 @@ public struct AcknowledgementsView: View {
         }
     }
 
+    @ViewBuilder
     private func libraryRow(_ library: OpenSourceLibrary) -> some View {
-        Group {
-            if let url = URL(string: library.url) {
-                Link(destination: url) {
-                    libraryRowContent(library)
-                }
-            } else {
+        if let url = URL(string: library.url) {
+            Link(destination: url) {
                 libraryRowContent(library)
             }
+        } else {
+            libraryRowContent(library)
         }
     }
 

@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class CoreContainer {
+final class CoreContainer: @unchecked Sendable {
     // Error handling
 
     @Lazy var errorHandler: GlobalErrorHandler = .init()

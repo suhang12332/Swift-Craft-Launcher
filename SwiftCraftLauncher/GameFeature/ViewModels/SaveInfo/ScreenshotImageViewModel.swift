@@ -9,27 +9,6 @@ import AppKit
 import Foundation
 import Observation
 
-/// View model that loads a screenshot thumbnail asynchronously from a file URL.
-@MainActor
-@Observable
-final class ScreenshotThumbnailViewModel {
-    var image: NSImage?
-
-    func load(path: URL) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            if let nsImage = NSImage(contentsOf: path) {
-                DispatchQueue.main.async {
-                    self.image = nsImage
-                }
-            }
-        }
-    }
-
-    func reset() {
-        image = nil
-    }
-}
-
 /// View model that loads a full-size screenshot image asynchronously, tracking loading and failure states.
 @MainActor
 @Observable

@@ -117,6 +117,16 @@ struct GameInfoDetailView: View {
             resetScanState()
             scanAllResources()
         }
+        .onChange(of: searchText) { _, _ in
+            if gameType {
+                scanAllResources()
+            }
+        }
+        .onChange(of: dataSource) { _, _ in
+            if gameType {
+                scanAllResources()
+            }
+        }
         .onAppear {
             updateHeaders()
             container.core.cacheInfoManager.calculateGameCacheInfo(game.gameName)

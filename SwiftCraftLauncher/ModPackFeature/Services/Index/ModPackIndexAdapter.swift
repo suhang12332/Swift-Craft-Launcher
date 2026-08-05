@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol ModPackIndexAdapter {
+protocol ModPackIndexAdapter: Sendable {
     /// The unique identifier for this adapter.
     var id: String { get }
 

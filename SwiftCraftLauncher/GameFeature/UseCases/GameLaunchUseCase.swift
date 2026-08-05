@@ -10,7 +10,7 @@ import Observation
 
 /// A use case that manages launching and stopping a Minecraft game session.
 @Observable
-final class GameLaunchUseCase {
+final class GameLaunchUseCase: @unchecked Sendable {
     /// Launches a Minecraft game session.
     /// - Parameters:
     ///   - player: The current player.

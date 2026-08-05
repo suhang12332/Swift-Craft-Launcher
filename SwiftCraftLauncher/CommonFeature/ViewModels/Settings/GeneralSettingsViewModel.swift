@@ -116,9 +116,6 @@ final class GeneralSettingsViewModel {
         }
     }
 
-    /// Clears the current error state.
-    func clearError() { }
-
     private func present(_ globalError: GlobalError) {
         DIContainer.shared.core.errorHandler.handle(globalError.withSource(.settings))
     }

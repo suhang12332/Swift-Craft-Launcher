@@ -25,18 +25,22 @@ final class AsyncSemaphoreTests: XCTestCase {
 
     func testConcurrentAccess() async {
         let semaphore = AsyncSemaphore(value: 2)
-        var counter = 0
 
-        await withTaskGroup(of: Void.self) { group in
+        let total = await withTaskGroup(of: Int.self) { group in
             for _ in 0 ..< 5 {
                 group.addTask {
                     await semaphore.wait()
-                    counter += 1
                     await semaphore.signal()
+                    return 1
                 }
             }
+            var sum = 0
+            for await value in group {
+                sum += value
+            }
+            return sum
         }
 
-        XCTAssertEqual(counter, 5)
+        XCTAssertEqual(total, 5)
     }
 }

@@ -12,14 +12,12 @@ struct StaticContributorCardView: View {
     let contributor: StaticContributor
 
     var body: some View {
-        Group {
-            if !contributor.url.isEmpty, let url = URL(string: contributor.url) {
-                Link(destination: url) {
-                    contributorContent
-                }
-            } else {
+        if !contributor.url.isEmpty, let url = URL(string: contributor.url) {
+            Link(destination: url) {
                 contributorContent
             }
+        } else {
+            contributorContent
         }
     }
 

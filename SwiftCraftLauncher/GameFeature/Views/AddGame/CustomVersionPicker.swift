@@ -43,7 +43,7 @@ struct CustomVersionPicker: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("game.form.version".localized())
-                    .foregroundColor(.primary)
+                    .font(.headline)
                 Spacer()
                 if let articleURL = releaseArticleURL, !time.isEmpty {
                     Link(

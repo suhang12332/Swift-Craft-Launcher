@@ -12,7 +12,7 @@ extension ModScanner {
     /// Scans a resource directory and returns all recognized `ModrinthProjectDetail` instances.
     func scanResourceDirectory(
         _ dir: URL,
-        completion: @escaping ([ModrinthProjectDetail]) -> Void,
+        completion: @escaping @Sendable ([ModrinthProjectDetail]) -> Void,
     ) {
         Task {
             do {
@@ -137,7 +137,7 @@ extension ModScanner {
         _ dir: URL,
         page: Int,
         pageSize: Int,
-        completion: @escaping ([ModrinthProjectDetail], Bool) -> Void,
+        completion: @escaping @Sendable ([ModrinthProjectDetail], Bool) -> Void,
     ) {
         Task {
             do {
@@ -161,7 +161,7 @@ extension ModScanner {
         fileURLs: [URL],
         page: Int,
         pageSize: Int,
-        completion: @escaping ([ModrinthProjectDetail], Bool) -> Void,
+        completion: @escaping @Sendable ([ModrinthProjectDetail], Bool) -> Void,
     ) {
         Task {
             do {

@@ -11,7 +11,7 @@ import ZIPFoundation
 /// Downloads modpack archives and game icons with progress reporting.
 @MainActor
 final class ModPackDownloadService {
-    var progressHandler: ((Int64, Int64) -> Void)?
+    var progressHandler: (@Sendable (Int64, Int64) -> Void)?
     var onError: ((String, String) -> Void)?
 
     /// Cleans up temporary download and extraction directories.
@@ -171,12 +171,13 @@ final class ModPackDownloadService {
         destinationURL: URL,
         expectedSha1: String?,
     ) async throws -> URL {
-        try await ProgressDownloadManager.downloadFile(
+        let handler = progressHandler
+        return try await ProgressDownloadManager.downloadFile(
             urlString: urlString,
             destinationURL: destinationURL,
             expectedSha1: expectedSha1,
-        ) { [weak self] downloadedBytes, totalBytes in
-            self?.progressHandler?(downloadedBytes, totalBytes)
+        ) { downloadedBytes, totalBytes in
+            handler?(downloadedBytes, totalBytes)
         }
     }
 

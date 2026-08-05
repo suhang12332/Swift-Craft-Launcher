@@ -53,15 +53,13 @@ struct LitematicaDetailSheetView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var bodyView: some View {
-        Group {
-            if isLoading {
-                loadingView
-            } else if let metadata {
-                metadataContentView(metadata: metadata)
-            } else {
-                errorView
-            }
+    @ViewBuilder private var bodyView: some View {
+        if isLoading {
+            loadingView
+        } else if let metadata {
+            metadataContentView(metadata: metadata)
+        } else {
+            errorView
         }
     }
 
@@ -89,7 +87,7 @@ struct LitematicaDetailSheetView: View {
             VStack {
                 HStack {
                     infoSection(title: "litematica.detail.section.basic".localized()) {
-                        infoRow(label: "litematica.detail.field.name".localized(), value: metadata.name)
+                        infoRow(label: "game.form.name".localized(), value: metadata.name)
                         infoRow(label: "litematica.detail.field.author".localized(), value: metadata.author.isEmpty ? "common.unknown".localized() : metadata.author)
                         if !metadata.description.isEmpty {
                             infoRow(label: "litematica.detail.field.description".localized(), value: metadata.description, isMultiline: true)

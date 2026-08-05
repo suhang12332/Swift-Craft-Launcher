@@ -142,7 +142,7 @@ struct SkinUploadSectionView: View {
                 pendingDeletion = nil
                 reloadSkinLibraryItems()
             }
-            Button("skin.cancel".localized(), role: .cancel) {
+            Button("common.cancel".localized(), role: .cancel) {
                 pendingDeletion = nil
             }
         } message: { item in
@@ -160,35 +160,34 @@ struct SkinUploadSectionView: View {
             .conditionalDrop(isEnabled: !hasSkinRenderView, perform: onDrop)
     }
 
+    @ViewBuilder
     private func skinRenderContent(playerModel: PlayerModel) -> some View {
-        Group {
-            if let image = selectedSkinImage ?? currentSkinRenderImage {
-                SkinRenderView(
-                    skinImage: image,
-                    capeImage: $selectedCapeImage,
-                    playerModel: playerModel,
-                    rotationDuration: 0,
-                    backgroundColor: NSColor.clear,
-                    onSkinDropped: { dropped in
-                        onSkinDropped(dropped)
-                    },
-                    onCapeDropped: { _ in },
-                )
-            } else if let skinPath = selectedSkinPath {
-                SkinRenderView(
-                    texturePath: skinPath,
-                    capeImage: $selectedCapeImage,
-                    playerModel: playerModel,
-                    rotationDuration: 0,
-                    backgroundColor: NSColor.clear,
-                    onSkinDropped: { dropped in
-                        onSkinDropped(dropped)
-                    },
-                    onCapeDropped: { _ in },
-                )
-            } else {
-                Color.clear
-            }
+        if let image = selectedSkinImage ?? currentSkinRenderImage {
+            SkinRenderView(
+                skinImage: image,
+                capeImage: $selectedCapeImage,
+                playerModel: playerModel,
+                rotationDuration: 0,
+                backgroundColor: NSColor.clear,
+                onSkinDropped: { dropped in
+                    onSkinDropped(dropped)
+                },
+                onCapeDropped: { _ in },
+            )
+        } else if let skinPath = selectedSkinPath {
+            SkinRenderView(
+                texturePath: skinPath,
+                capeImage: $selectedCapeImage,
+                playerModel: playerModel,
+                rotationDuration: 0,
+                backgroundColor: NSColor.clear,
+                onSkinDropped: { dropped in
+                    onSkinDropped(dropped)
+                },
+                onCapeDropped: { _ in },
+            )
+        } else {
+            Color.clear
         }
     }
 

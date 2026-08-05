@@ -13,7 +13,7 @@ extension ModPackDependencyInstaller {
         files: [ModrinthIndexFile],
         resourceDir: URL,
         gameInfo _: GameVersionInfo,
-        onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?,
+        onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)?,
     ) async -> Bool {
         let filesToDownload = filterDownloadableFiles(files)
 

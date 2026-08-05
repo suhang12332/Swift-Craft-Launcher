@@ -8,6 +8,7 @@
 import SwiftUI
 
 /// Provides static menu builders for filtering resources in the detail toolbar.
+@MainActor
 enum ResourceFilterMenus {
     private static func resourceTypesForCurrentGame(currentGame: GameVersionInfo?) -> [String] {
         var types = [ResourceType.datapack.rawValue, ResourceType.resourcepack.rawValue]

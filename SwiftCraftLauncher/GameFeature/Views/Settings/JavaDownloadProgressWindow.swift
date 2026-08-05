@@ -52,7 +52,7 @@ struct JavaDownloadProgressWindow: View {
 }
 
 /// A single download item row with icon, progress, and action button.
-struct DownloadItemView: View {
+private struct DownloadItemView: View {
     let icon: String
     let title: String
     let subtitle: String

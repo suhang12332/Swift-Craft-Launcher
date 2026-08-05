@@ -12,20 +12,20 @@ import SwiftUI
 
 /// Centralized dependency container that owns all shared service instances.
 @Observable
-final class DIContainer {
+final class DIContainer: @unchecked Sendable {
     static let shared = DIContainer()
 
     // UI
 
-    var ui = UIContainer()
+    let ui = UIContainer()
 
     // Core
 
-    var core = CoreContainer()
+    let core = CoreContainer()
 
     // System
 
-    var system = SystemContainer()
+    let system = SystemContainer()
 
     init() { }
 }

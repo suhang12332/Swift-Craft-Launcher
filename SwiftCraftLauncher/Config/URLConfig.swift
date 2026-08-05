@@ -71,10 +71,8 @@ enum URLConfig {
         }
 
         enum JavaRuntime {
-            /// The base URL for the Mojang Java Runtime manifest.
-            static let baseURL = URLConfig.url("https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871")
             /// The URL for the complete Java Runtime manifest listing all available runtimes.
-            static let allRuntimes = baseURL.appendingPathComponent("all.json")
+            static let allRuntimes = URLConfig.url("https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json")
         }
 
         enum JavaRuntimeARM {

@@ -175,7 +175,7 @@ struct AttachmentPreview: View {
 }
 
 /// Displays an attachment within a chat message.
-struct AttachmentView: View {
+private struct AttachmentView: View {
     let attachment: MessageAttachmentType
 
     private enum Constants {

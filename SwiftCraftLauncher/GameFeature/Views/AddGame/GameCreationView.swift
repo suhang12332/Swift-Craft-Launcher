@@ -124,7 +124,7 @@ struct GameCreationView: View {
     private var gameIconView: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("game.form.icon".localized())
-                .foregroundColor(.primary)
+                .font(.headline)
 
             iconContainer
                 .applyPointerHandIfAvailable()
@@ -217,13 +217,10 @@ struct GameCreationView: View {
         @Bindable var vm = viewModel
         return VStack(alignment: .leading, spacing: 8) {
             Text("game.form.modloader".localized())
-                .foregroundColor(.primary)
+                .font(.headline)
             CommonMenuPicker(
                 selection: $vm.selectedModLoader,
-                hidesLabel: true,
             ) {
-                Text("")
-            } content: {
                 ForEach(AppConstants.modLoaders, id: \.self) { loader in
                     switch loader {
                     case GameLoader.vanilla.displayName:
@@ -251,14 +248,19 @@ struct GameCreationView: View {
     private var loaderVersionPicker: some View {
         @Bindable var vm = viewModel
         return VStack(alignment: .leading, spacing: 8) {
-            Text("game.form.loader.version".localized())
-                .foregroundColor(.primary)
+            HStack {
+                Text("game.form.loader.version".localized())
+                    .font(.headline)
+                Spacer()
+                if viewModel.isLoadingLoaderVersions {
+                    ProgressView()
+                        .controlSize(.small)
+                        .scaleEffect(0.85)
+                }
+            }
             CommonMenuPicker(
                 selection: $vm.selectedLoaderVersion,
-                hidesLabel: true,
             ) {
-                Text("")
-            } content: {
                 ForEach(viewModel.availableLoaderVersions, id: \.self) { version in
                     Text(version).tag(version)
                 }

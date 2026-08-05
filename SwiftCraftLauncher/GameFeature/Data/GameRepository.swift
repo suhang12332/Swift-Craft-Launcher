@@ -14,7 +14,7 @@ import Observation
 /// `GameRepository` serves as the primary data access layer for game instances,
 /// coordinating between the local SQLite database and the in-memory cache.
 @Observable
-class GameRepository {
+class GameRepository: @unchecked Sendable {
     /// A dictionary of game instances keyed by their working path.
     private(set) var gamesByWorkingPath: [String: [GameVersionInfo]] = [:]
 

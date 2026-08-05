@@ -18,6 +18,8 @@ class SkinSelectionStore {
     ///
     /// - Parameter id: The identifier to select, or `nil` to clear the selection.
     func select(_ id: String?) {
-        if selectedPlayerId != id { selectedPlayerId = id }
+        if selectedPlayerId != id {
+            selectedPlayerId = id
+        }
     }
 }

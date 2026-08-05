@@ -13,22 +13,20 @@ struct GeneralSettingsLanguageRow: View {
     let languageManager: LanguageManager
 
     var body: some View {
-        Group {
-            LabeledContent("settings.language.picker".localized()) {
-                Button {
-                    SystemSettings.open(AppConstants.SystemSettingsDeepLinks.localizationApps)
-                } label: {
-                    Text(languageManager.selectedLanguageDisplayName)
-                        .foregroundColor(.primary)
-                        .lineLimit(1)
-                        .foregroundColor(.primary)
-                }
-                .help("settings.language.picker".localized())
+        LabeledContent("settings.language.picker".localized()) {
+            Button {
+                SystemSettings.open(AppConstants.SystemSettingsDeepLinks.localizationApps)
+            } label: {
+                Text(languageManager.selectedLanguageDisplayName)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                    .foregroundColor(.primary)
             }
-            .labeledContentStyle(.custom)
-            CommonDescriptionText(text: "settings.language.translation.notice".localized())
-                .padding(.bottom, 10)
+            .help("settings.language.picker".localized())
         }
+        .labeledContentStyle(.custom)
+        CommonDescriptionText(text: "settings.language.translation.notice".localized())
+            .padding(.bottom, 10)
     }
 }
 

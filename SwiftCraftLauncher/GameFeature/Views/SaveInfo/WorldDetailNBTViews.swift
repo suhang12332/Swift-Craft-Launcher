@@ -31,7 +31,7 @@ struct NBTStructureView: View {
 }
 
 /// A single NBT entry that renders as a disclosure group for compounds and arrays, or a value row for primitives.
-struct NBTEntryView: View {
+private struct NBTEntryView: View {
     let key: String
     let value: Any
     @Binding var expandedKeys: Set<String>
@@ -127,23 +127,45 @@ struct NBTEntryView: View {
     }
 
     private func formatNBTValue(_ value: Any) -> String {
-        if let v = value as? String { return "\"\(v)\"" }
-        if let v = value as? Bool { return v ? "true" : "false" }
-        if let v = value as? Int8 { return "\(v)b" }
-        if let v = value as? Int16 { return "\(v)s" }
-        if let v = value as? Int32 { return "\(v)" }
-        if let v = value as? Int64 { return "\(v)L" }
-        if let v = value as? Int { return "\(v)" }
-        if let v = value as? Double { return "\(v)d" }
-        if let v = value as? Float { return "\(v)f" }
-        if let v = value as? Data { return "Data(\(v.count) bytes)" }
-        if let v = value as? URL { return v.path }
+        if let v = value as? String {
+            return "\"\(v)\""
+        }
+        if let v = value as? Bool {
+            return v ? "true" : "false"
+        }
+        if let v = value as? Int8 {
+            return "\(v)b"
+        }
+        if let v = value as? Int16 {
+            return "\(v)s"
+        }
+        if let v = value as? Int32 {
+            return "\(v)"
+        }
+        if let v = value as? Int64 {
+            return "\(v)L"
+        }
+        if let v = value as? Int {
+            return "\(v)"
+        }
+        if let v = value as? Double {
+            return "\(v)d"
+        }
+        if let v = value as? Float {
+            return "\(v)f"
+        }
+        if let v = value as? Data {
+            return "Data(\(v.count) bytes)"
+        }
+        if let v = value as? URL {
+            return v.path
+        }
         return String(describing: value)
     }
 }
 
 /// A disclosure button styled for macOS, used to expand or collapse NBT compound and array entries.
-struct NBTDisclosureButton: View {
+private struct NBTDisclosureButton: View {
     let isExpanded: Bool
     let label: String
     let suffix: String
@@ -186,7 +208,7 @@ struct NBTDisclosureButton: View {
 }
 
 /// A row displaying a label-value pair from NBT data with monospaced font.
-struct NBTValueRow: View {
+private struct NBTValueRow: View {
     let label: String
     let value: String
     let indentLevel: Int

@@ -11,7 +11,7 @@ import Observation
 /// Loads and manages save information including worlds, screenshots, servers,
 /// litematica files, and logs for a specific game instance.
 @Observable
-final class SaveInfoManager {
+final class SaveInfoManager: @unchecked Sendable {
     private struct WorldParseResult {
         let lastPlayed: Date?
         let gameMode: String?
@@ -474,7 +474,12 @@ final class SaveInfoManager {
                 let isCrashLog = fileNameLower.contains("crash") || fileNameLower.contains("error") || fileNameLower.contains("exception")
                 loaded.append(LogInfo(name: name, path: logPath, createdDate: creationDate, fileSize: Int64(fileSize), isCrashLog: isCrashLog))
             }
-            loaded.sort { if $0.isCrashLog != $1.isCrashLog { return $0.isCrashLog }; return ($0.createdDate ?? .distantPast) > ($1.createdDate ?? .distantPast) }
+            loaded.sort {
+                if $0.isCrashLog != $1.isCrashLog {
+                    return $0.isCrashLog
+                }
+                return ($0.createdDate ?? .distantPast) > ($1.createdDate ?? .distantPast)
+            }
             return loaded
         } catch {
             AppLog.game.error("Failed to load log info: \(error.localizedDescription)")

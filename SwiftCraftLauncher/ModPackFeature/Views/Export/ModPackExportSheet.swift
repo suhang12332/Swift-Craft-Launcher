@@ -128,7 +128,7 @@ struct ModPackExportSheet: View {
     private var exportFormView: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("modpack.export.version".localized())
+                Text("modpack.version".localized())
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 TextField("modpack.export.version.placeholder".localized(), text: $viewModel.modPackVersion)

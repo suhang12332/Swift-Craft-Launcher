@@ -21,77 +21,71 @@ struct DownloadProgressView: View {
         }
     }
 
-    private var gameDownloadProgress: some View {
-        Group {
-            progressRow(
-                title: "download.core.title".localized(),
-                state: gameSetupService.downloadState,
-                type: .core,
-            )
-            progressRow(
-                title: "download.resources.title".localized(),
-                state: gameSetupService.downloadState,
-                type: .resources,
-            )
-        }
+    @ViewBuilder private var gameDownloadProgress: some View {
+        progressRow(
+            title: "download.core.title".localized(),
+            state: gameSetupService.downloadState,
+            type: .core,
+        )
+        progressRow(
+            title: "download.resources.title".localized(),
+            state: gameSetupService.downloadState,
+            type: .resources,
+        )
     }
 
-    private var modLoaderDownloadProgress: some View {
-        Group {
-            if let indexInfo = lastParsedIndexInfo {
-                let loaderType = indexInfo.loaderType.lowercased()
-                let title = getLoaderTitle(for: indexInfo.loaderType)
+    @ViewBuilder private var modLoaderDownloadProgress: some View {
+        if let indexInfo = lastParsedIndexInfo {
+            let loaderType = indexInfo.loaderType.lowercased()
+            let title = getLoaderTitle(for: indexInfo.loaderType)
 
-                if loaderType == GameLoader.fabric.displayName || loaderType == GameLoader.quilt.rawValue {
-                    progressRow(
-                        title: title,
-                        state: gameSetupService.fabricDownloadState,
-                        type: .core,
-                        version: indexInfo.loaderVersion,
-                    )
-                } else if loaderType == GameLoader.forge.displayName {
-                    progressRow(
-                        title: title,
-                        state: gameSetupService.forgeDownloadState,
-                        type: .core,
-                        version: indexInfo.loaderVersion,
-                    )
-                } else if loaderType == GameLoader.neoforge.displayName {
-                    progressRow(
-                        title: title,
-                        state: gameSetupService.neoForgeDownloadState,
-                        type: .core,
-                        version: indexInfo.loaderVersion,
-                    )
-                }
+            if loaderType == GameLoader.fabric.displayName || loaderType == GameLoader.quilt.rawValue {
+                progressRow(
+                    title: title,
+                    state: gameSetupService.fabricDownloadState,
+                    type: .core,
+                    version: indexInfo.loaderVersion,
+                )
+            } else if loaderType == GameLoader.forge.displayName {
+                progressRow(
+                    title: title,
+                    state: gameSetupService.forgeDownloadState,
+                    type: .core,
+                    version: indexInfo.loaderVersion,
+                )
+            } else if loaderType == GameLoader.neoforge.displayName {
+                progressRow(
+                    title: title,
+                    state: gameSetupService.neoForgeDownloadState,
+                    type: .core,
+                    version: indexInfo.loaderVersion,
+                )
             }
         }
     }
 
-    private var modPackInstallProgress: some View {
-        Group {
-            if modPackInstallState.isInstalling {
-                if modPackInstallState.overridesTotal > 0 {
-                    progressRow(
-                        title: "modpack.copying_files".localized(),
-                        installState: modPackInstallState,
-                        type: .overrides,
-                    )
-                }
-
+    @ViewBuilder private var modPackInstallProgress: some View {
+        if modPackInstallState.isInstalling {
+            if modPackInstallState.overridesTotal > 0 {
                 progressRow(
-                    title: "modpack.files.title".localized(),
+                    title: "modpack.copying_files".localized(),
                     installState: modPackInstallState,
-                    type: .files,
+                    type: .overrides,
                 )
+            }
 
-                if modPackInstallState.dependenciesTotal > 0 {
-                    progressRow(
-                        title: "modpack.dependencies.title".localized(),
-                        installState: modPackInstallState,
-                        type: .dependencies,
-                    )
-                }
+            progressRow(
+                title: "modpack.files.title".localized(),
+                installState: modPackInstallState,
+                type: .files,
+            )
+
+            if modPackInstallState.dependenciesTotal > 0 {
+                progressRow(
+                    title: "modpack.dependencies.title".localized(),
+                    installState: modPackInstallState,
+                    type: .dependencies,
+                )
             }
         }
     }

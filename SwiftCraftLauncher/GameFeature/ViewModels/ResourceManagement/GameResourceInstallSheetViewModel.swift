@@ -148,8 +148,8 @@ final class GameResourceInstallSheetViewModel {
                     resourceType: resourceType,
                     gameRepository: gameRepository,
                 ),
-                onDependencyDownloadStart: { _ in },
-                onDependencyDownloadFinish: { _, _ in },
+                onDependencyDownloadStart: { @Sendable _ in },
+                onDependencyDownloadFinish: { @Sendable _, _ in },
             )
 
         if !success {

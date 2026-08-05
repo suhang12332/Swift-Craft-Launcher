@@ -148,29 +148,27 @@ struct CategoryContentView: View {
         )
     }
 
-    private var projectSpecificSections: some View {
-        Group {
-            switch project {
-            case ProjectType.modpack, ProjectType.mod:
-                if type == "resource" {
-                    loaderSection
-                }
-                environmentSection
-            case ProjectType.minecraftJavaServer:
-                serverMetaSection
-                serverGameplaySection
-                serverFeaturesSection
-                serverCommunitySection
-            case ProjectType.resourcepack:
-                resourcePackSections
-            case ProjectType.shader:
-                if dataSource == .modrinth {
-                    loaderSection
-                }
-                shaderSections
-            default:
-                EmptyView()
+    @ViewBuilder private var projectSpecificSections: some View {
+        switch project {
+        case ProjectType.modpack, ProjectType.mod:
+            if type == "resource" {
+                loaderSection
             }
+            environmentSection
+        case ProjectType.minecraftJavaServer:
+            serverMetaSection
+            serverGameplaySection
+            serverFeaturesSection
+            serverCommunitySection
+        case ProjectType.resourcepack:
+            resourcePackSections
+        case ProjectType.shader:
+            if dataSource == .modrinth {
+                loaderSection
+            }
+            shaderSections
+        default:
+            EmptyView()
         }
     }
 
@@ -183,8 +181,27 @@ struct CategoryContentView: View {
         )
     }
 
-    private var resourcePackSections: some View {
-        Group {
+    @ViewBuilder private var resourcePackSections: some View {
+        CategorySectionView(
+            title: "filter.behavior",
+            items: viewModel.features.map {
+                FilterItem(id: $0.name, name: $0.name)
+            },
+            selectedItems: $selectedFeatures,
+            isLoading: viewModel.isLoading,
+        )
+        CategorySectionView(
+            title: "filter.resolutions",
+            items: viewModel.resolutions.map {
+                FilterItem(id: $0.name, name: $0.name)
+            },
+            selectedItems: $selectedResolutions,
+            isLoading: viewModel.isLoading,
+        )
+    }
+
+    @ViewBuilder private var shaderSections: some View {
+        if dataSource == .modrinth {
             CategorySectionView(
                 title: "filter.behavior",
                 items: viewModel.features.map {
@@ -194,37 +211,13 @@ struct CategoryContentView: View {
                 isLoading: viewModel.isLoading,
             )
             CategorySectionView(
-                title: "filter.resolutions",
-                items: viewModel.resolutions.map {
+                title: "filter.performance",
+                items: viewModel.performanceImpacts.map {
                     FilterItem(id: $0.name, name: $0.name)
                 },
-                selectedItems: $selectedResolutions,
+                selectedItems: $selectedPerformanceImpacts,
                 isLoading: viewModel.isLoading,
             )
-        }
-    }
-
-    private var shaderSections: some View {
-        Group {
-            // CurseForge does not support performance impact filtering.
-            if dataSource == .modrinth {
-                CategorySectionView(
-                    title: "filter.behavior",
-                    items: viewModel.features.map {
-                        FilterItem(id: $0.name, name: $0.name)
-                    },
-                    selectedItems: $selectedFeatures,
-                    isLoading: viewModel.isLoading,
-                )
-                CategorySectionView(
-                    title: "filter.performance",
-                    items: viewModel.performanceImpacts.map {
-                        FilterItem(id: $0.name, name: $0.name)
-                    },
-                    selectedItems: $selectedPerformanceImpacts,
-                    isLoading: viewModel.isLoading,
-                )
-            }
         }
     }
 

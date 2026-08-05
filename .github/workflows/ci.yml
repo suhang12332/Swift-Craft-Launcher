@@ -5,6 +5,7 @@ on:
     branches: [main, dev]
   push:
     branches: [main, dev]
+  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -32,14 +33,14 @@ jobs:
       # =========================
       # SwiftFormat
       # =========================
-      - name: Install SwiftFormat 0.61.1
+      - name: Install SwiftFormat 0.62.1
         run: |
-          curl -sL https://github.com/nicklockwood/SwiftFormat/releases/download/0.61.1/swiftformat.zip -o swiftformat.zip
+          curl -sL https://github.com/nicklockwood/SwiftFormat/releases/download/0.62.1/swiftformat.zip -o swiftformat.zip
           unzip -o swiftformat.zip -d /usr/local/bin
           chmod +x /usr/local/bin/swiftformat
 
       - name: Run SwiftFormat lint
-        run: /usr/local/bin/swiftformat . --swift-version 6.1 --lint
+        run: /usr/local/bin/swiftformat . --swift-version 6.2 --lint
 
       # =========================
       # Code Rules Check
@@ -143,4 +144,25 @@ jobs:
         with:
           name: xcodebuild-log
           path: xcodebuild.log
+          retention-days: 7
+
+  periphery:
+    runs-on: xcode-27
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install Periphery
+        run: brew install peripheryapp/periphery/periphery
+
+      - name: Run Periphery scan
+        run: periphery scan --format github-actions --strict --verbose -- -skipPackagePluginValidation
+
+      - name: Upload results
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: periphery-results
+          path: .periphery-results.json
           retention-days: 7

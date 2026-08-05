@@ -9,7 +9,7 @@ import Foundation
 
 /// Manages Java runtime downloads and tracks their progress.
 @Observable
-class JavaDownloadManager {
+class JavaDownloadManager: @unchecked Sendable {
     var downloadState = JavaDownloadState()
     var isWindowVisible = false
 
@@ -37,7 +37,7 @@ class JavaDownloadManager {
 
             await showDownloadWindow()
 
-            DIContainer.shared.system.javaRuntimeDownloader.setProgressCallback { [weak self] fileName, completed, total in
+            DIContainer.shared.system.javaRuntimeDownloader.setProgressCallback { @Sendable [weak self] fileName, completed, total in
                 Task { @MainActor in
                     guard let self, !self.downloadState.isCancelled else { return }
                     let progress = total > 0 ? Double(completed) / Double(total) : 0.0
@@ -45,7 +45,7 @@ class JavaDownloadManager {
                 }
             }
 
-            DIContainer.shared.system.javaRuntimeDownloader.setCancelCallback { [weak self] in
+            DIContainer.shared.system.javaRuntimeDownloader.setCancelCallback { @Sendable [weak self] in
                 return self?.cancelRequested ?? false
             }
 

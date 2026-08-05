@@ -11,23 +11,45 @@ import Foundation
 enum WorldNBTMapper {
     /// Attempts to convert any NBT numeric type to an `Int64`, supporting Int, Int8, Int16, Int32, UInt, and other variants.
     static func readInt64(_ any: Any?) -> Int64? {
-        if let v = any as? Int64 { return v }
-        if let v = any as? Int { return Int64(v) }
-        if let v = any as? Int32 { return Int64(v) }
-        if let v = any as? Int16 { return Int64(v) }
-        if let v = any as? Int8 { return Int64(v) }
-        if let v = any as? UInt64 { return Int64(v) }
-        if let v = any as? UInt32 { return Int64(v) }
-        if let v = any as? UInt16 { return Int64(v) }
-        if let v = any as? UInt8 { return Int64(v) }
+        if let v = any as? Int64 {
+            return v
+        }
+        if let v = any as? Int {
+            return Int64(v)
+        }
+        if let v = any as? Int32 {
+            return Int64(v)
+        }
+        if let v = any as? Int16 {
+            return Int64(v)
+        }
+        if let v = any as? Int8 {
+            return Int64(v)
+        }
+        if let v = any as? UInt64 {
+            return Int64(v)
+        }
+        if let v = any as? UInt32 {
+            return Int64(v)
+        }
+        if let v = any as? UInt16 {
+            return Int64(v)
+        }
+        if let v = any as? UInt8 {
+            return Int64(v)
+        }
         return nil
     }
 
     /// Converts an NBT numeric or boolean value to a `Bool` (non-zero is `true`), returning `false` if parsing fails.
     static func readBoolFlag(_ any: Any?) -> Bool {
         guard let any else { return false }
-        if let b = any as? Bool { return b }
-        if let v = readInt64(any) { return v != 0 }
+        if let b = any as? Bool {
+            return b
+        }
+        if let v = readInt64(any) {
+            return v != 0
+        }
         return false
     }
 
@@ -38,7 +60,7 @@ enum WorldNBTMapper {
         case 1: return "saveinfo.world.game_mode.creative".localized()
         case 2: return "saveinfo.world.game_mode.adventure".localized()
         case 3: return "saveinfo.world.game_mode.spectator".localized()
-        default: return "saveinfo.world.game_mode.unknown".localized()
+        default: return "common.unknown".localized()
         }
     }
 
@@ -49,7 +71,7 @@ enum WorldNBTMapper {
         case 1: return "saveinfo.world.difficulty.easy".localized()
         case 2: return "saveinfo.world.difficulty.normal".localized()
         case 3: return "saveinfo.world.difficulty.hard".localized()
-        default: return "saveinfo.world.difficulty.unknown".localized()
+        default: return "common.unknown".localized()
         }
     }
 
@@ -60,7 +82,7 @@ enum WorldNBTMapper {
         case "easy": return "saveinfo.world.difficulty.easy".localized()
         case "normal": return "saveinfo.world.difficulty.normal".localized()
         case "hard": return "saveinfo.world.difficulty.hard".localized()
-        default: return "saveinfo.world.difficulty.unknown".localized()
+        default: return "common.unknown".localized()
         }
     }
 

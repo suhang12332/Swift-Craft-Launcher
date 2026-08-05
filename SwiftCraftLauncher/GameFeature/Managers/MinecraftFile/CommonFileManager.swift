@@ -9,9 +9,9 @@ import Foundation
 
 /// Manages common file operations for mod loader installations, including
 /// Forge and Fabric JAR downloads and processor execution.
-class CommonFileManager {
+class CommonFileManager: @unchecked Sendable {
     let librariesDir: URL
-    var onProgressUpdate: ((String, Int, Int) -> Void)?
+    var onProgressUpdate: (@Sendable (String, Int, Int) -> Void)?
 
     init(librariesDir: URL) {
         self.librariesDir = librariesDir
@@ -59,7 +59,9 @@ class CommonFileManager {
             try await BatchJarDownloader.download(
                 tasks: tasks,
                 metaLibrariesDir: AppPaths.librariesDirectory,
-                onProgressUpdate: onProgressUpdate,
+                onProgressUpdate: onProgressUpdate.map { callback in
+                    { @MainActor @Sendable name, current, total in callback(name, current, total) }
+                },
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -102,7 +104,9 @@ class CommonFileManager {
             try await BatchJarDownloader.download(
                 tasks: tasks,
                 metaLibrariesDir: AppPaths.librariesDirectory,
-                onProgressUpdate: onProgressUpdate,
+                onProgressUpdate: onProgressUpdate.map { callback in
+                    { @MainActor @Sendable name, current, total in callback(name, current, total) }
+                },
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -161,7 +165,7 @@ class CommonFileManager {
         }
 
         let versionInfo = try await ModrinthService.fetchVersionInfo(from: gameVersion)
-        let javaPath = await DIContainer.shared.system.javaManager.findJavaExecutable(version: versionInfo.javaVersion.component)
+        let javaPath = DIContainer.shared.system.javaManager.findJavaExecutable(version: versionInfo.javaVersion.component)
 
         for (index, processor) in clientProcessors.enumerated() {
             let processorName = String(describing: processor.jar)

@@ -24,7 +24,9 @@ final class Lazy<T>: @unchecked Sendable {
     var wrappedValue: T {
         lock.lock()
         defer { lock.unlock() }
-        if let instance { return instance }
+        if let instance {
+            return instance
+        }
         let created = factory()
         instance = created
         return created
@@ -44,7 +46,7 @@ final class Lazy<T>: @unchecked Sendable {
 /// Usage: `@MainActorLazy var manager: Manager = Manager()`
 /// The property becomes implicitly `@MainActor`.
 @propertyWrapper
-final class MainActorLazy<T> {
+final class MainActorLazy<T>: @unchecked Sendable {
     private let factory: @MainActor () -> T
     private var storage: T?
 
@@ -53,7 +55,9 @@ final class MainActorLazy<T> {
     }
 
     @MainActor var wrappedValue: T {
-        if let storage { return storage }
+        if let storage {
+            return storage
+        }
         let v = factory()
         storage = v
         return v

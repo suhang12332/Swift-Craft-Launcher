@@ -9,17 +9,17 @@ import Foundation
 import ZIPFoundation
 
 /// Downloads and installs Java runtime distributions.
-class JavaRuntimeDownloader {
+class JavaRuntimeDownloader: @unchecked Sendable {
     private let progressActor = ProgressActor()
     private let cancelActor = CancelActor()
 
-    func setProgressCallback(_ callback: @escaping (String, Int, Int) -> Void) {
+    func setProgressCallback(_ callback: @escaping @Sendable (String, Int, Int) -> Void) {
         Task {
             await progressActor.setCallback(callback)
         }
     }
 
-    func setCancelCallback(_ callback: @escaping () -> Bool) {
+    func setCancelCallback(_ callback: @escaping @Sendable () -> Bool) {
         Task {
             await cancelActor.setCallback(callback)
         }
@@ -67,7 +67,23 @@ class JavaRuntimeDownloader {
 
         try await withThrowingTaskGroup(of: Void.self) { group in
             for (filePath, fileInfo) in files {
-                group.addTask { [progressActor, cancelActor, self] in
+                guard let fileData = fileInfo as? [String: Any],
+                      let downloads = fileData["downloads"] as? [String: Any] else {
+                    continue
+                }
+
+                let fileType = fileData["type"] as? String
+                let isExecutable = fileData["executable"] as? Bool ?? false
+
+                guard let raw = downloads["raw"] as? [String: Any],
+                      let fileURL = raw["url"] as? String else {
+                    continue
+                }
+
+                let expectedSHA1 = raw["sha1"] as? String
+                let localFilePath = targetDirectory.appendingPathComponent(filePath)
+
+                group.addTask { @Sendable [progressActor, cancelActor, self] in
                     if await cancelActor.shouldCancel() {
                         AppLog.game.info("Java download cancelled")
                         throw GlobalError.download(
@@ -76,27 +92,6 @@ class JavaRuntimeDownloader {
                             message: "Java runtime download cancelled by user",
                         )
                     }
-
-                    guard let fileData = fileInfo as? [String: Any],
-                          let downloads = fileData["downloads"] as? [String: Any] else {
-                        return
-                    }
-
-                    let fileType = fileData["type"] as? String
-                    let isExecutable = fileData["executable"] as? Bool ?? false
-
-                    guard let raw = downloads["raw"] as? [String: Any] else {
-                        AppLog.game.error("File \(filePath) does not have RAW format, skipping")
-                        return
-                    }
-
-                    guard let fileURL = raw["url"] as? String else {
-                        return
-                    }
-
-                    let expectedSHA1 = raw["sha1"] as? String
-
-                    let localFilePath = targetDirectory.appendingPathComponent(filePath)
 
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
@@ -124,7 +119,7 @@ class JavaRuntimeDownloader {
     private func fetchDataFromURL(_ urlString: String) async throws -> Data {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
-                i18nKey: "error.validation.invalid_url",
+                i18nKey: "error.network.invalid_url",
                 level: .notification,
                 message: "invalid URL: \(urlString)",
             )
@@ -275,7 +270,7 @@ class JavaRuntimeDownloader {
     }
 
     private func downloadZipWithProgress(from url: URL, to destinationURL: URL, fileName: String) async throws {
-        let progressCallback: (Int64, Int64) -> Void = { [progressActor] downloadedBytes, totalBytes in
+        let progressCallback: @Sendable (Int64, Int64) -> Void = { [progressActor] downloadedBytes, totalBytes in
             Task {
                 await progressActor.callProgressUpdate(fileName, Int(downloadedBytes), Int(totalBytes))
             }
@@ -289,9 +284,9 @@ class JavaRuntimeDownloader {
 }
 
 private actor ProgressActor {
-    private var callback: ((String, Int, Int) -> Void)?
+    private var callback: (@Sendable (String, Int, Int) -> Void)?
 
-    func setCallback(_ callback: @escaping (String, Int, Int) -> Void) {
+    func setCallback(_ callback: @escaping @Sendable (String, Int, Int) -> Void) {
         self.callback = callback
     }
 
@@ -301,9 +296,9 @@ private actor ProgressActor {
 }
 
 private actor CancelActor {
-    private var callback: (() -> Bool)?
+    private var callback: (@Sendable () -> Bool)?
 
-    func setCallback(_ callback: @escaping () -> Bool) {
+    func setCallback(_ callback: @escaping @Sendable () -> Bool) {
         self.callback = callback
     }
 

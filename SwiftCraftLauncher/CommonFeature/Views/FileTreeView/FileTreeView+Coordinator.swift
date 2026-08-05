@@ -10,6 +10,7 @@ import SwiftUI
 
 public extension FileTreeView {
     /// The coordinator for managing NSOutlineView data source and delegate.
+    @MainActor
     final class Coordinator: NSObject, NSOutlineViewDataSource, NSOutlineViewDelegate {
         private let viewModel: FileTreeViewModel
 

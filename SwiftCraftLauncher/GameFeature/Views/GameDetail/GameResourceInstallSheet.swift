@@ -102,7 +102,7 @@ struct GameResourceInstallSheet: View {
 }
 
 /// Footer with download action buttons for the resource install sheet.
-struct GameResourceInstallFooter: View {
+private struct GameResourceInstallFooter: View {
     @Binding var isPresented: Bool
     let projectDetail: ModrinthProjectDetail?
     var viewModel: GameResourceInstallSheetViewModel
@@ -110,40 +110,16 @@ struct GameResourceInstallFooter: View {
     var onDownloadSuccess: ((String?, String?) -> Void)?
 
     var body: some View {
-        Group {
-            if projectDetail != nil {
-                HStack {
-                    Button("common.close".localized()) { isPresented = false }
-                    Spacer()
-                    if viewModel.resourceType == ResourceType.mod.rawValue,
-                       !viewModel.isUpdateMode {
-                        if !viewModel.dependencyState.isLoading {
-                            if viewModel.selectedVersion != nil {
-                                Button {
-                                    viewModel.downloadAllManual(
-                                        onSuccess: { fileName, hash in
-                                            onDownloadSuccess?(fileName, hash)
-                                        },
-                                        dismiss: { isPresented = false },
-                                    )
-                                } label: {
-                                    if viewModel.isDownloadingAll {
-                                        ProgressView().controlSize(.small)
-                                    } else {
-                                        Text(
-                                            "global_resource.download_all"
-                                                .localized(),
-                                        )
-                                    }
-                                }
-                                .disabled(viewModel.isDownloadingAll)
-                                .keyboardShortcut(.defaultAction)
-                            }
-                        }
-                    } else {
+        if projectDetail != nil {
+            HStack {
+                Button("common.close".localized()) { isPresented = false }
+                Spacer()
+                if viewModel.resourceType == ResourceType.mod.rawValue,
+                   !viewModel.isUpdateMode {
+                    if !viewModel.dependencyState.isLoading {
                         if viewModel.selectedVersion != nil {
                             Button {
-                                viewModel.downloadResource(
+                                viewModel.downloadAllManual(
                                     onSuccess: { fileName, hash in
                                         onDownloadSuccess?(fileName, hash)
                                     },
@@ -153,19 +129,41 @@ struct GameResourceInstallFooter: View {
                                 if viewModel.isDownloadingAll {
                                     ProgressView().controlSize(.small)
                                 } else {
-                                    Text("global_resource.download".localized())
+                                    Text(
+                                        "global_resource.download_all"
+                                            .localized(),
+                                    )
                                 }
                             }
                             .disabled(viewModel.isDownloadingAll)
                             .keyboardShortcut(.defaultAction)
                         }
                     }
+                } else {
+                    if viewModel.selectedVersion != nil {
+                        Button {
+                            viewModel.downloadResource(
+                                onSuccess: { fileName, hash in
+                                    onDownloadSuccess?(fileName, hash)
+                                },
+                                dismiss: { isPresented = false },
+                            )
+                        } label: {
+                            if viewModel.isDownloadingAll {
+                                ProgressView().controlSize(.small)
+                            } else {
+                                Text("global_resource.download".localized())
+                            }
+                        }
+                        .disabled(viewModel.isDownloadingAll)
+                        .keyboardShortcut(.defaultAction)
+                    }
                 }
-            } else {
-                HStack {
-                    Spacer()
-                    Button("common.close".localized()) { isPresented = false }
-                }
+            }
+        } else {
+            HStack {
+                Spacer()
+                Button("common.close".localized()) { isPresented = false }
             }
         }
     }

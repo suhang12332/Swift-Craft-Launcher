@@ -8,15 +8,14 @@
 @testable import SwiftCraftLauncher
 import XCTest
 
+@MainActor
 final class MinecraftSkinUtilsCacheTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
         MinecraftSkinUtils.clearCache()
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         MinecraftSkinUtils.clearCache()
-        super.tearDown()
     }
 
     func testClearCache_removesAllObjects() {

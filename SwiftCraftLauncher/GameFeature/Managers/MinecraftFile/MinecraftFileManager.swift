@@ -9,13 +9,13 @@ import CommonCrypto
 import Foundation
 
 /// Manages Minecraft version file downloads, verification, and directory setup.
-class MinecraftFileManager {
+class MinecraftFileManager: @unchecked Sendable {
     private let fileManager = FileManager.default
     let coreFilesCount = AtomicCounter()
     let resourceFilesCount = AtomicCounter()
     var coreTotalFiles = 0
     var resourceTotalFiles = 0
-    var onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
+    var onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)?
 
     enum DownloadType {
         case core

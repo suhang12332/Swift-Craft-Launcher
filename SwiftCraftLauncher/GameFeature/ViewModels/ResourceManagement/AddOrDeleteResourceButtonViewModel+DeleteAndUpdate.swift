@@ -53,12 +53,16 @@ extension AddOrDeleteResourceButtonViewModel {
 
         let fileURL = resourceDir.appendingPathComponent(fileName)
         performDelete(fileURL: fileURL)
-        if !isUpdate { onResourceChanged?() }
+        if !isUpdate {
+            onResourceChanged?()
+        }
     }
 
     func handleInstallSuccess(newFileName: String?, newHash: String?) {
         hasDownloadedInSheet = true
-        if let newHash { addScannedHash(newHash) }
+        if let newHash {
+            addScannedHash(newHash)
+        }
 
         let wasUpdate = (oldFileNameForUpdate != nil)
         let oldF = oldFileNameForUpdate
@@ -154,7 +158,7 @@ extension AddOrDeleteResourceButtonViewModel {
     func performDeleteThrowing(fileURL: URL) throws {
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
             throw GlobalError.resource(
-                i18nKey: "error.resource.file_not_found",
+                i18nKey: "error.filesystem.file_not_found",
                 level: .notification,
                 message: "File does not exist at path: \(fileURL.path)",
             )

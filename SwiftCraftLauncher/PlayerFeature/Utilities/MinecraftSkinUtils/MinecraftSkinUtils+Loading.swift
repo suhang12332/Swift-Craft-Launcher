@@ -24,7 +24,7 @@ extension MinecraftSkinUtils {
         case .url:
             guard let url = URL(string: src) else {
                 throw GlobalError.validation(
-                    i18nKey: "error.validation.invalid_url",
+                    i18nKey: "error.network.invalid_url",
                     level: .silent,
                     message: "Invalid URL string: \"\(src)\"",
                 )

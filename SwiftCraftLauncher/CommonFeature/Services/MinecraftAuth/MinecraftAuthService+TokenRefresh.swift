@@ -62,8 +62,9 @@ extension MinecraftAuthService {
             if let existingTask = tasks[player.id] {
                 return (existingTask, false)
             }
-            let newTask = Task<Player, Error> {
-                try await self.doRefreshPlayerToken(for: player)
+            let newTask = Task<Player, Error> { @MainActor [weak self] in
+                guard let self else { throw CancellationError() }
+                return try await doRefreshPlayerToken(for: player)
             }
             tasks[player.id] = newTask
             return (newTask, true)

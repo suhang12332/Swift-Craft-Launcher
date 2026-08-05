@@ -1,0 +1,7 @@
+project: SwiftCraftLauncher.xcodeproj
+schemes:
+  - SwiftCraftLauncher
+targets:
+  - SwiftCraftLauncher
+  - SwiftCraftLauncherTests
+retain_public: true

@@ -86,7 +86,7 @@ struct WorldDetailBasicInfoSectionView: View {
             WorldDetailInfoRow(label: "saveinfo.world.detail.label.level_name".localized(), value: metadata.levelName)
             WorldDetailInfoRow(label: "saveinfo.world.detail.label.folder_name".localized(), value: metadata.folderName)
             if let versionName = metadata.versionName {
-                WorldDetailInfoRow(label: "saveinfo.world.detail.label.game_version".localized(), value: versionName)
+                WorldDetailInfoRow(label: "game.version".localized(), value: versionName)
             }
             if let versionId = metadata.versionId {
                 WorldDetailInfoRow(label: "saveinfo.world.detail.label.version_id".localized(), value: "\(versionId)")

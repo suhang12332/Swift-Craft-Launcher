@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 enum GameFormMode {
     case creation
     case modPackImport(file: URL, shouldProcess: Bool)
+    case modPackURLDownload
 }
 
 struct GameFormView: View {
@@ -42,6 +43,7 @@ struct GameFormView: View {
     private enum ImportModePickerValue: Hashable {
         case manual
         case modPack
+        case download
     }
 
     init(initialMode: GameFormMode = .creation) {
@@ -92,6 +94,18 @@ struct GameFormView: View {
                             }
                         }
                         .id(file)
+                    case .modPackURLDownload:
+                        ModPackURLDownloadView(
+                            onDownloadComplete: { fileURL in
+                                mode = .modPackImport(file: fileURL, shouldProcess: true)
+                                isModPackParsed = false
+                            },
+                            onCancel: { dismiss() },
+                            isFormValid: $isFormValid,
+                            triggerConfirm: $triggerConfirm,
+                            triggerCancel: $triggerCancel,
+                            isDownloading: $isDownloading,
+                        )
                     }
                 }
             },
@@ -142,6 +156,8 @@ struct GameFormView: View {
             return "game.form.mode.manual".localized()
         case .modPackImport:
             return "modpack.import.title".localized()
+        case .modPackURLDownload:
+            return "global_resource.download".localized()
         }
     }
 
@@ -156,6 +172,8 @@ struct GameFormView: View {
             DispatchQueue.main.async {
                 showFilePicker = true
             }
+        case .download:
+            mode = .modPackURLDownload
         }
     }
 
@@ -167,11 +185,14 @@ struct GameFormView: View {
             Button("modpack.import.title".localized()) {
                 selectImportMode(.modPack)
             }
+            Button("global_resource.download".localized()) {
+                selectImportMode(.download)
+            }
         } label: {
             Text(currentModeTitle)
         }
         .fixedSize(horizontal: true, vertical: false)
-        .help("game.form.mode.import".localized())
+        .help("modpack.import.title".localized())
     }
 
     private var footerView: some View {
@@ -209,6 +230,8 @@ struct GameFormView: View {
                         case .modPackImport:
                             return "modpack.import.button".localized()
                         case .creation:
+                            return "common.confirm".localized()
+                        case .modPackURLDownload:
                             return "common.confirm".localized()
                         }
                     }()

@@ -29,7 +29,7 @@ enum ProgressDownloadManager {
         destinationURL: URL,
         expectedSha1: String? = nil,
         headers: [String: String]? = nil,
-        progressHandler: ((Int64, Int64) -> Void)? = nil,
+        progressHandler: (@Sendable (Int64, Int64) -> Void)? = nil,
     ) async throws -> URL {
         try Task.checkCancellation()
         let url = try FileDownloadCore.parseURL(from: urlString)
@@ -159,9 +159,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
 
         return try await withTaskCancellationHandler(operation: {
             try await withCheckedThrowingContinuation { continuation in
-                tracker.setCompletionHandler { result in
-                    continuation.resume(with: result)
-                }
+                tracker.setContinuation(continuation)
 
                 let request = URLRequest(url: url).headers(headers)
                 let task = self.session.downloadTask(with: request)
@@ -282,7 +280,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
 private final class ProgressDownloadTracker: @unchecked Sendable {
     private let totalFileSize: Int64
     private let progressCallback: ((Int64, Int64) -> Void)?
-    private let state = OSAllocatedUnfairLock<(isCompleted: Bool, completionHandler: ((Result<URL, Error>) -> Void)?)>(initialState: (false, nil))
+    private let state = OSAllocatedUnfairLock<(isCompleted: Bool, continuation: CheckedContinuation<URL, Error>?)>(initialState: (false, nil))
 
     init(totalSize: Int64, progressCallback: ((Int64, Int64) -> Void)?) {
         totalFileSize = totalSize
@@ -298,18 +296,23 @@ private final class ProgressDownloadTracker: @unchecked Sendable {
     }
 
     func complete(_ result: Result<URL, Error>) {
-        let handler = state.withLock { state -> ((Result<URL, Error>) -> Void)? in
+        let continuation = state.withLock { state -> CheckedContinuation<URL, Error>? in
             guard !state.isCompleted else { return nil }
             state.isCompleted = true
-            let handler = state.completionHandler
-            state.completionHandler = nil
-            return handler
+            let continuation = state.continuation
+            state.continuation = nil
+            return continuation
         }
-        handler?(result)
+        switch result {
+        case let .success(url):
+            continuation?.resume(returning: url)
+        case let .failure(error):
+            continuation?.resume(throwing: error)
+        }
     }
 
-    func setCompletionHandler(_ handler: @escaping (Result<URL, Error>) -> Void) {
-        state.withLock { $0.completionHandler = handler }
+    func setContinuation(_ continuation: CheckedContinuation<URL, Error>) {
+        state.withLock { $0.continuation = continuation }
     }
 }
 

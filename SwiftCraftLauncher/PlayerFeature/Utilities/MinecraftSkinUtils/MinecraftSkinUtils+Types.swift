@@ -6,7 +6,7 @@
 //
 
 import AppKit
-import CoreImage
+@preconcurrency import CoreImage
 import Foundation
 import SwiftUI
 
@@ -21,7 +21,7 @@ enum SkinType {
 }
 
 /// A cached rendering of a Minecraft skin head and its overlay layer.
-final class RenderedImageCache: NSObject {
+final class RenderedImageCache: NSObject, @unchecked Sendable {
     /// The rendered head image.
     let headImage: CGImage
     /// The overlay layer image (hat or second layer).

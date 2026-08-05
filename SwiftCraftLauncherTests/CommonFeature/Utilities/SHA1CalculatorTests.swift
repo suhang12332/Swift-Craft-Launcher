@@ -81,16 +81,6 @@ final class SHA1CalculatorTests: XCTestCase {
         XCTAssertThrowsError(try SHA1Calculator.sha1(ofFileAt: file))
     }
 
-    func testSha1WithCryptoKit_knownValue() {
-        let hash = SHA1Calculator.sha1WithCryptoKit(of: Data("hello".utf8))
-        XCTAssertEqual(hash, "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d")
-    }
-
-    func testSha1WithCryptoKit_matchesSha1() {
-        let data = Data("test data".utf8)
-        XCTAssertEqual(SHA1Calculator.sha1(of: data), SHA1Calculator.sha1WithCryptoKit(of: data))
-    }
-
     func testDataSha1_extension() {
         let data = Data("hello".utf8)
         XCTAssertEqual(data.sha1, "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d")

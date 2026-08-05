@@ -10,10 +10,6 @@ import AppKit
 // Displays screenshots as selectable chips with thumbnail and detail views.
 import SwiftUI
 
-private enum ScreenshotSectionConstants {
-    static let thumbnailSize: CGFloat = 60
-}
-
 struct ScreenshotSectionView: View {
     let screenshots: [ScreenshotInfo]
     let isLoading: Bool
@@ -45,45 +41,6 @@ struct ScreenshotSectionView: View {
             isLoading: false,
             maxTextWidth: 150,
         )
-    }
-}
-
-/// A thumbnail button that lazily loads and displays a screenshot image.
-struct ScreenshotThumbnail: View {
-    let screenshot: ScreenshotInfo
-    let action: () -> Void
-
-    @State private var viewModel = ScreenshotThumbnailViewModel()
-
-    var body: some View {
-        Button(action: action) {
-            Group {
-                if let image = viewModel.image {
-                    Image(nsImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } else {
-                    Image(systemName: "photo.fill")
-                        .foregroundColor(.secondary)
-                }
-            }
-            .frame(
-                width: ScreenshotSectionConstants.thumbnailSize,
-                height: ScreenshotSectionConstants.thumbnailSize,
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 4))
-            .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1),
-            )
-        }
-        .buttonStyle(.plain)
-        .task {
-            viewModel.load(path: screenshot.path)
-        }
-        .onDisappear {
-            viewModel.reset()
-        }
     }
 }
 

@@ -52,7 +52,11 @@ enum LocalResourceInstaller {
         }
 
         let needsSecurity = fileURL.startAccessingSecurityScopedResource()
-        defer { if needsSecurity { fileURL.stopAccessingSecurityScopedResource() } }
+        defer {
+            if needsSecurity {
+                fileURL.stopAccessingSecurityScopedResource()
+            }
+        }
         if !needsSecurity {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.security_scope_failed",

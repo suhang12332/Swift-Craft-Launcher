@@ -27,7 +27,7 @@ public struct AboutView: View {
             footerSection
         }
         .padding(.vertical, 16)
-        .frame(width: 280, height: 600)
+        .frame(width: 300, height: 600)
     }
 
     private var headerSection: some View {

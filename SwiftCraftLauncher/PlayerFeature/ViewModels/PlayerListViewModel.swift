@@ -11,7 +11,7 @@ import SwiftUI
 
 /// Manages the player list and coordinates with ``PlayerDataManager`` for persistence.
 @Observable
-class PlayerListViewModel {
+class PlayerListViewModel: @unchecked Sendable {
     var players: [Player] = []
     var currentPlayer: Player?
 
@@ -43,11 +43,6 @@ class PlayerListViewModel {
     /// Loads the player list on first invocation; subsequent calls are ignored.
     func loadPlayersIfNeeded() {
         guard !hasLoadedPlayers else { return }
-        loadPlayersSafely()
-    }
-
-    /// Loads the player list, returning an empty list on failure.
-    func loadPlayers() {
         loadPlayersSafely()
     }
 

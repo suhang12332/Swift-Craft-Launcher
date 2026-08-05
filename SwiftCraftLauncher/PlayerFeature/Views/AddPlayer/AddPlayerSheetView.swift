@@ -30,7 +30,6 @@ struct AddPlayerSheetView: View {
 
     @Environment(\.openURL)
     private var openURL
-    @FocusState private var isTextFieldFocused: Bool
     @State private var showErrorPopover: Bool = false
 
     init(
@@ -200,7 +199,6 @@ struct AddPlayerSheetView: View {
         authenticatedProfile = nil
         isPremium = false
         container.system.minecraftAuthService.isLoading = false
-        isTextFieldFocused = false
         showErrorPopover = false
         container.system.yggdrasilAuthService.logout()
         viewModel.reset()
@@ -209,7 +207,9 @@ struct AddPlayerSheetView: View {
     private var playerInfoSection: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("addplayer.info.title".localized())
-                .font(.headline).padding(.bottom, 4)
+                .font(.headline)
+                .padding(.bottom, 4)
+
             Text("addplayer.info.line1".localized())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -228,18 +228,12 @@ struct AddPlayerSheetView: View {
     private var playerNameInputSection: some View {
         VStack(alignment: .leading) {
             Text("addplayer.name.label".localized())
-                .font(.headline.bold())
+                .font(.headline)
             TextField(
                 "addplayer.name.placeholder".localized(),
                 text: $playerName,
             )
             .textFieldStyle(.roundedBorder)
-            .focused($isTextFieldFocused)
-            .focusEffectDisabled()
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(borderColor, lineWidth: 2),
-            )
             .popover(isPresented: $showErrorPopover, arrowEdge: .trailing) {
                 if let errorMessage = playerNameError {
                     Text(errorMessage)
@@ -250,14 +244,6 @@ struct AddPlayerSheetView: View {
             .onChange(of: playerName) { _, newValue in
                 checkPlayerName(newValue)
             }
-        }
-    }
-
-    private var borderColor: Color {
-        if isTextFieldFocused {
-            return .blue
-        } else {
-            return .clear
         }
     }
 

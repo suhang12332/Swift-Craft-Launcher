@@ -8,7 +8,7 @@
 import MinecraftFriendsKit
 import SwiftUI
 
-final class UIContainer {
+final class UIContainer: @unchecked Sendable {
     // Window & UI
 
     @MainActorLazy var windowManager: WindowManager = .init()
@@ -25,7 +25,7 @@ final class UIContainer {
     @Lazy var gameSettingsManager: GameSettingsManager = .init()
     @Lazy var playerSettingsManager: PlayerSettingsManager = .init()
     @Lazy var playerDataManager: PlayerDataManager = .init()
-    @Lazy var themeManager: ThemeManager = .init()
+    @MainActorLazy var themeManager: ThemeManager = .init()
     @Lazy var languageManager: LanguageManager = .init()
     @Lazy var aiSettingsManager: AISettingsManager = .init()
 

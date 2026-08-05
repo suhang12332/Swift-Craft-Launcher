@@ -23,9 +23,6 @@ final class URLConfigTests: XCTestCase {
     }
 
     func testAPIJavaRuntime_urls() {
-        let baseURL = URLConfig.API.JavaRuntime.baseURL
-        XCTAssertTrue(baseURL.absoluteString.contains("launchermeta.mojang.com"))
-
         let allRuntimes = URLConfig.API.JavaRuntime.allRuntimes
         XCTAssertTrue(allRuntimes.absoluteString.contains("all.json"))
     }

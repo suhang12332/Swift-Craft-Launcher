@@ -68,79 +68,77 @@ struct GlobalResourceFooter: View {
     }
 
     var body: some View {
-        Group {
-            if projectDetail != nil {
-                if compatibleGames.isEmpty {
-                    HStack {
-                        Spacer()
-                        Button("common.close".localized()) { isPresented = false }
-                    }
-                } else {
-                    HStack {
-                        Button("common.close".localized()) { isPresented = false }
-                        Spacer()
-                        if resourceType == ResourceType.mod.rawValue {
-                            if !dependencyState.isLoading {
-                                if selectedVersion != nil {
-                                    Button(action: {
-                                        viewModel.downloadAllManual(
-                                            selectedGame: selectedGame,
-                                            dependencyState: dependencyState,
-                                            mainVersionId: mainVersionId,
-                                        )
-                                    }, label: {
-                                        if isDownloadingAll {
-                                            ProgressView().controlSize(.small)
-                                        } else {
-                                            Text(
-                                                "global_resource.download_all"
-                                                    .localized(),
-                                            )
-                                        }
-                                    })
-                                    .disabled(isDownloadingAll)
-                                    .keyboardShortcut(.defaultAction)
-                                }
-                            }
-                        } else if resourceType == ResourceType.minecraftJavaServer.rawValue {
-                            if selectedGame != nil {
+        if projectDetail != nil {
+            if compatibleGames.isEmpty {
+                HStack {
+                    Spacer()
+                    Button("common.close".localized()) { isPresented = false }
+                }
+            } else {
+                HStack {
+                    Button("common.close".localized()) { isPresented = false }
+                    Spacer()
+                    if resourceType == ResourceType.mod.rawValue {
+                        if !dependencyState.isLoading {
+                            if selectedVersion != nil {
                                 Button(action: {
-                                    viewModel.addServerResource(
+                                    viewModel.downloadAllManual(
                                         selectedGame: selectedGame,
-                                        projectDetail: projectDetail,
+                                        dependencyState: dependencyState,
+                                        mainVersionId: mainVersionId,
                                     )
                                 }, label: {
                                     if isDownloadingAll {
                                         ProgressView().controlSize(.small)
                                     } else {
-                                        Text("saveinfo.server.add".localized())
-                                    }
-                                })
-                                .disabled(isDownloadingAll)
-                                .keyboardShortcut(.defaultAction)
-                            }
-                        } else {
-                            if selectedVersion != nil {
-                                Button(action: {
-                                    viewModel.downloadResource(selectedGame: selectedGame)
-                                }, label: {
-                                    if isDownloadingAll {
-                                        ProgressView().controlSize(.small)
-                                    } else {
-                                        Text("global_resource.download".localized())
+                                        Text(
+                                            "global_resource.download_all"
+                                                .localized(),
+                                        )
                                     }
                                 })
                                 .disabled(isDownloadingAll)
                                 .keyboardShortcut(.defaultAction)
                             }
                         }
+                    } else if resourceType == ResourceType.minecraftJavaServer.rawValue {
+                        if selectedGame != nil {
+                            Button(action: {
+                                viewModel.addServerResource(
+                                    selectedGame: selectedGame,
+                                    projectDetail: projectDetail,
+                                )
+                            }, label: {
+                                if isDownloadingAll {
+                                    ProgressView().controlSize(.small)
+                                } else {
+                                    Text("saveinfo.server.add".localized())
+                                }
+                            })
+                            .disabled(isDownloadingAll)
+                            .keyboardShortcut(.defaultAction)
+                        }
+                    } else {
+                        if selectedVersion != nil {
+                            Button(action: {
+                                viewModel.downloadResource(selectedGame: selectedGame)
+                            }, label: {
+                                if isDownloadingAll {
+                                    ProgressView().controlSize(.small)
+                                } else {
+                                    Text("global_resource.download".localized())
+                                }
+                            })
+                            .disabled(isDownloadingAll)
+                            .keyboardShortcut(.defaultAction)
+                        }
                     }
                 }
-            } else {
-                HStack {
-                    Spacer()
-                    Button("common.close".localized()) { isPresented = false }
-                }
+            }
+        } else {
+            HStack {
+                Spacer()
+                Button("common.close".localized()) { isPresented = false }
             }
         }
     }
