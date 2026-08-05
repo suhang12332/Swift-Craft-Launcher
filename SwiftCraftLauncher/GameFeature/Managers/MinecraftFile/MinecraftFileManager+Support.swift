@@ -9,13 +9,13 @@ import Foundation
 
 /// Support types and helpers for MinecraftFileManager.
 enum MinecraftFileManagerConstants {
-    static let metaSubdirectories = [
-        AppConstants.DirectoryNames.versions,
-        AppConstants.DirectoryNames.libraries,
-        AppConstants.DirectoryNames.natives,
-        AppConstants.DirectoryNames.assets,
-        "\(AppConstants.DirectoryNames.assets)/indexes",
-        "\(AppConstants.DirectoryNames.assets)/objects",
+    static let metaSubdirectories: [URL] = [
+        AppPaths.versionsDirectory,
+        AppPaths.librariesDirectory,
+        AppPaths.nativesDirectory,
+        AppPaths.assetsDirectory,
+        AppPaths.indexsDirectory,
+        AppPaths.objetcsDirectory,
     ]
     static let assetChunkSize = 500
     static let downloadTimeout: TimeInterval = 30

@@ -21,10 +21,7 @@ extension MinecraftFileManager {
     private func downloadAssetIndex(
         manifest: MinecraftVersionManifest,
     ) async throws -> DownloadedAssetIndex {
-        let destinationURL = AppPaths.metaDirectory.appendingPathComponent(
-            "assets/indexes",
-        )
-        .appendingPathComponent("\(manifest.assetIndex.id).json")
+        let destinationURL = AppPaths.indexsDirectory.appendingPathComponent("\(manifest.assetIndex.id).json")
 
         do {
             _ = try await DownloadManager.downloadFile(
@@ -64,9 +61,6 @@ extension MinecraftFileManager {
     private func downloadAllAssets(
         assetIndex: DownloadedAssetIndex,
     ) async throws {
-        let objectsDirectory = AppPaths.metaDirectory.appendingPathComponent(
-            "assets/objects",
-        )
         let assets = Array(assetIndex.objects)
 
         let semaphore = AsyncSemaphore(
@@ -90,7 +84,7 @@ extension MinecraftFileManager {
                         try await self?.downloadAsset(
                             asset: asset,
                             path: path,
-                            objectsDirectory: objectsDirectory,
+                            objectsDirectory: AppPaths.objetcsDirectory,
                         )
                     }
                 }

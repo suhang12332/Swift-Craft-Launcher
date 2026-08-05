@@ -151,9 +151,7 @@ class MinecraftFileManager: @unchecked Sendable {
     ) throws {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
         let directoriesToCreate =
-            MinecraftFileManagerConstants.metaSubdirectories.map {
-                AppPaths.metaDirectory.appendingPathComponent($0)
-            } + [
+            MinecraftFileManagerConstants.metaSubdirectories + [
                 AppPaths.metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.versions)
                     .appendingPathComponent(manifestId),
                 profileDirectory,

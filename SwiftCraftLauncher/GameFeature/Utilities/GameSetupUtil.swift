@@ -241,7 +241,7 @@ class GameSetupUtil {
     }
 
     private func downloadAssetIndex(manifest: MinecraftVersionManifest) async throws -> DownloadedAssetIndex {
-        let destinationURL = AppPaths.metaDirectory.appendingPathComponent("assets/indexes").appendingPathComponent("\(manifest.assetIndex.id).json")
+        let destinationURL = AppPaths.indexsDirectory.appendingPathComponent("\(manifest.assetIndex.id).json")
 
         do {
             _ = try await DownloadManager.downloadFile(urlString: manifest.assetIndex.url.absoluteString, destinationURL: destinationURL, expectedSha1: manifest.assetIndex.sha1)
