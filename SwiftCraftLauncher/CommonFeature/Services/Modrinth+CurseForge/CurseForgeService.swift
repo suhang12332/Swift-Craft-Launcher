@@ -40,7 +40,7 @@ enum CurseForgeService {
     static func fetchFileDetailThrowing(projectId: Int, fileId: Int) async throws -> CurseForgeModFileDetail {
         let url = URLConfig.API.CurseForge.fileDetail(projectId: projectId, fileId: fileId)
 
-        return try await tryFetchFileDetail(from: url.absoluteString)
+        return try await tryFetch(CurseForgeFileResponse.self, from: url.absoluteString)
     }
 
     /// Fetches mod details from CurseForge, throwing on failure.
@@ -50,7 +50,7 @@ enum CurseForgeService {
     static func fetchModDetailThrowing(modId: Int) async throws -> CurseForgeModDetail {
         let url = URLConfig.API.CurseForge.modDetail(modId: modId)
 
-        return try await tryFetchModDetail(from: url.absoluteString)
+        return try await tryFetch(CurseForgeModDetailResponse.self, from: url.absoluteString)
     }
 
     /// Fetches the HTML description for a CurseForge mod, throwing on failure.
@@ -60,7 +60,7 @@ enum CurseForgeService {
     static func fetchModDescriptionThrowing(modId: Int) async throws -> String {
         let url = URLConfig.API.CurseForge.modDescription(modId: modId)
 
-        return try await tryFetchModDescription(from: url.absoluteString)
+        return try await tryFetch(CurseForgeModDescriptionResponse.self, from: url.absoluteString)
     }
 
     /// Fetches the file list for a CurseForge project, throwing on failure.
