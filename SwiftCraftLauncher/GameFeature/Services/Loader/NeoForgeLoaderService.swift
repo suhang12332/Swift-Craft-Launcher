@@ -11,7 +11,7 @@ import Foundation
 enum NeoForgeLoaderService {
     private static let config = ForgeLikeLoaderService.Config(
         gameLoader: .neoforge,
-        displayName: "NeoForge",
+        labelName: GameLoader.neoforge.labelName,
         versionNotFoundErrorKey: "error.resource.neoforge_loader_version_not_found",
         missingVersionErrorKey: "error.resource.neoforge_missing_version",
     )

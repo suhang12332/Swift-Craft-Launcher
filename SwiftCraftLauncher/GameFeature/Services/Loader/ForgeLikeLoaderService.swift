@@ -11,7 +11,7 @@ import Foundation
 enum ForgeLikeLoaderService {
     struct Config {
         let gameLoader: GameLoader
-        let displayName: String
+        let labelName: String
         let versionNotFoundErrorKey: String
         let missingVersionErrorKey: String
     }
@@ -21,7 +21,7 @@ enum ForgeLikeLoaderService {
             throw GlobalError.resource(
                 i18nKey: config.versionNotFoundErrorKey,
                 level: .notification,
-                message: "\(config.displayName) loader version not found for Minecraft \(minecraftVersion)",
+                message: "\(config.labelName) loader version not found for Minecraft \(minecraftVersion)",
             )
         }
         return result
@@ -62,7 +62,7 @@ enum ForgeLikeLoaderService {
             )
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.game.error("Failed to set \(config.displayName) specified version: \(globalError.localizedDescription)")
+            AppLog.game.error("Failed to set \(config.labelName) specified version: \(globalError.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(globalError)
             return nil
         }
@@ -75,7 +75,7 @@ enum ForgeLikeLoaderService {
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
-        AppLog.game.info("Starting to set specified \(config.displayName) loader version: \(loaderVersion)")
+        AppLog.game.info("Starting to set specified \(config.labelName) loader version: \(loaderVersion)")
 
         let profile = try await fetchSpecificProfile(config: config, for: gameVersion, loaderVersion: loaderVersion)
         let librariesDirectory = AppPaths.librariesDirectory
@@ -111,7 +111,7 @@ enum ForgeLikeLoaderService {
             throw GlobalError.resource(
                 i18nKey: config.missingVersionErrorKey,
                 level: .notification,
-                message: "\(config.displayName) profile missing version for game \(gameVersion), loaderVersion \(loaderVersion)",
+                message: "\(config.labelName) profile missing version for game \(gameVersion), loaderVersion \(loaderVersion)",
             )
         }
         return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)

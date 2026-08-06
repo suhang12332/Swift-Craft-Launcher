@@ -11,7 +11,7 @@ import Foundation
 enum ForgeLoaderService {
     private static let config = ForgeLikeLoaderService.Config(
         gameLoader: .forge,
-        displayName: "Forge",
+        labelName: GameLoader.forge.labelName,
         versionNotFoundErrorKey: "error.resource.forge_loader_version_not_found",
         missingVersionErrorKey: "error.resource.missing_forge_version",
     )

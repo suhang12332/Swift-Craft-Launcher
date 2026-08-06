@@ -28,6 +28,17 @@ enum GameLoader: String, CaseIterable, Identifiable, Codable {
         }
     }
 
+    /// The capitalized name for user-facing messages (logs, errors).
+    var labelName: String {
+        switch self {
+        case .vanilla: "Vanilla"
+        case .fabric: "Fabric"
+        case .forge: "Forge"
+        case .neoforge: "NeoForge"
+        case .quilt: "Quilt"
+        }
+    }
+
     /// The Modrinth API loader identifier.
     var modrinthLoaderId: String {
         switch self {
