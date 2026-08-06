@@ -85,36 +85,11 @@ enum DownloadManager {
         expectedSha1: String? = nil,
         headers: [String: String]? = nil,
     ) async throws -> URL {
-        do {
-            return try await ProgressDownloadManager.downloadFile(
-                urlString: urlString,
-                destinationURL: destinationURL,
-                expectedSha1: expectedSha1,
-                headers: headers,
-            )
-        } catch {
-            throw mapDownloadError(error)
-        }
-    }
-
-    private static func mapDownloadError(_ error: Error) -> Error {
-        if error is CancellationError {
-            return error
-        }
-        if let globalError = error as? GlobalError {
-            return globalError
-        }
-        if error is URLError {
-            return GlobalError.download(
-                i18nKey: "error.download.network_request_failed",
-                level: .notification,
-                message: "Network error: \((error as NSError).domain) code \((error as NSError).code)",
-            )
-        }
-        return GlobalError.download(
-            i18nKey: "error.download.general_failure",
-            level: .notification,
-            message: "Unexpected download error: \(error.localizedDescription)",
+        try await ProgressDownloadManager.downloadFile(
+            urlString: urlString,
+            destinationURL: destinationURL,
+            expectedSha1: expectedSha1,
+            headers: headers,
         )
     }
 
@@ -123,10 +98,6 @@ enum DownloadManager {
     /// - Returns: The downloaded data.
     /// - Throws: A ``GlobalError`` if the operation fails.
     static func downloadData(from url: URL) async throws -> Data {
-        do {
-            return try await APIClient.get(url: url)
-        } catch {
-            throw mapDownloadError(error)
-        }
+        try await APIClient.get(url: url)
     }
 }

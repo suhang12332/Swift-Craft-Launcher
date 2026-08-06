@@ -127,6 +127,12 @@ enum ProgressDownloadManager {
     }
 
     private static func mapDownloadError(_ error: Error) -> Error {
+        if error is CancellationError {
+            return error
+        }
+        if let globalError = error as? GlobalError {
+            return globalError
+        }
         if case ProgressDownloadError.httpStatus = error {
             return GlobalError.download(
                 i18nKey: "error.download.http_status_error",
@@ -134,7 +140,18 @@ enum ProgressDownloadManager {
                 message: "HTTP error from download: \(error.localizedDescription)",
             )
         }
-        return error
+        if error is URLError {
+            return GlobalError.download(
+                i18nKey: "error.download.network_request_failed",
+                level: .notification,
+                message: "Network error: \((error as NSError).domain) code \((error as NSError).code)",
+            )
+        }
+        return GlobalError.download(
+            i18nKey: "error.download.general_failure",
+            level: .notification,
+            message: "Unexpected download error: \(error.localizedDescription)",
+        )
     }
 }
 
