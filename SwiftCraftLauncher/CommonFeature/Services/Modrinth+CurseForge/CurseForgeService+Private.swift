@@ -14,9 +14,9 @@ protocol CurseForgeResponseDecodable: Decodable {
     var data: Data { get }
 }
 
-extension CurseForgeModDetailResponse: CurseForgeResponseDecodable {}
+extension CurseForgeModDetailResponse: CurseForgeResponseDecodable { }
 
-extension CurseForgeModDescriptionResponse: CurseForgeResponseDecodable {}
+extension CurseForgeModDescriptionResponse: CurseForgeResponseDecodable { }
 
 /// Provides internal CurseForge API request and parsing utilities.
 extension CurseForgeService {

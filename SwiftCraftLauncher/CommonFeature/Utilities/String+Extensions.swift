@@ -12,10 +12,9 @@ extension String {
     func replacingJVMPlaceholders(
         gameVersion: String,
         libraryDirectory: String = AppPaths.librariesDirectory.path,
-        classpathSeparator: String = ":"
+        classpathSeparator: String = ":",
     ) -> String {
-        self
-            .replacingOccurrences(of: AppConstants.JVMArgumentPlaceholders.versionName, with: gameVersion)
+        replacingOccurrences(of: AppConstants.JVMArgumentPlaceholders.versionName, with: gameVersion)
             .replacingOccurrences(of: AppConstants.JVMArgumentPlaceholders.classpathSeparator, with: classpathSeparator)
             .replacingOccurrences(of: AppConstants.JVMArgumentPlaceholders.libraryDirectory, with: libraryDirectory)
     }

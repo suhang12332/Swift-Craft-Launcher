@@ -193,6 +193,13 @@ enum AppConstants {
         static let workingDir = "{WORKING_DIR}"
     }
 
+    /// JVM argument placeholder constants used by Forge/NeoForge loaders.
+    enum JVMArgumentPlaceholders {
+        static let versionName = "${version_name}"
+        static let classpathSeparator = "${classpath_separator}"
+        static let libraryDirectory = "${library_directory}"
+    }
+
     /// Database table name constants.
     enum DatabaseTables {
         static let gameVersions = "game_versions"

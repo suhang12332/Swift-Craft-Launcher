@@ -22,7 +22,7 @@ struct GameAdvancedSettingsView: View {
         @Bindable var viewModel = viewModel
         Form {
             LabeledContent("settings.game.java.path".localized()) {
-                HStack(alignment: .top) {
+                HStack(alignment: .top, spacing: 8) {
                     DirectorySettingRow(
                         title: "settings.game.java.path".localized(),
                         path: viewModel.javaPath.isEmpty ? (viewModel.currentGame?.javaPath ?? "") : viewModel.javaPath,
@@ -39,10 +39,10 @@ struct GameAdvancedSettingsView: View {
                         ) { result in
                             viewModel.handleJavaPathSelection(result)
                         }
+                    InfoIconWithPopover(
+                        text: viewModel.javaDetailsDescription,
+                    )
                 }
-                InfoIconWithPopover(
-                    text: viewModel.javaDetailsDescription,
-                )
             }.labeledContentStyle(.custom)
 
             Group {
