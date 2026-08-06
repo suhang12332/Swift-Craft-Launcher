@@ -73,9 +73,7 @@ final class AIChatScrollCoordinatorViewModel {
     private func scheduleScroll(scrollToBottom: @escaping @MainActor () -> Void) {
         scrollTask?.cancel()
         scrollTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 200_000_000) // 0.2s throttle
-            guard !Task.isCancelled else { return }
-            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1s delay
+            try? await Task.sleep(nanoseconds: 50_000_000) // 0.05s throttle
             guard !Task.isCancelled else { return }
             scrollToBottom()
         }
@@ -94,7 +92,7 @@ final class AIChatScrollCoordinatorViewModel {
                     lastContentLength = currentLength
                     scrollToBottom()
                 }
-                try? await Task.sleep(nanoseconds: 300_000_000)
+                try? await Task.sleep(nanoseconds: 100_000_000)
             }
         }
     }

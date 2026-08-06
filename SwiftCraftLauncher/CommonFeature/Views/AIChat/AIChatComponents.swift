@@ -24,57 +24,52 @@ struct AIAvatarView: View {
 }
 
 /// Displays a chat message with avatar, content, and timestamp.
-struct MessageBubble: View {
+struct MessageBubble: View, Equatable {
     let message: ChatMessage
     let currentPlayer: Player?
     let cachedAIAvatar: AnyView?
     let cachedUserAvatar: AnyView?
     let aiAvatarURL: String
 
+    nonisolated static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.message == rhs.message
+            && lhs.aiAvatarURL == rhs.aiAvatarURL
+    }
+
     private enum Constants {
         static let avatarSize: CGFloat = 32
-        static let messageFontSize: CGFloat = 13
-        static let messageCornerRadius: CGFloat = 10
         static let messageMaxWidth: CGFloat = 500
         static let messageSpacing: CGFloat = 16
         static let messageVerticalPadding: CGFloat = 2
-        static let contentHorizontalPadding: CGFloat = 12
-        static let contentVerticalPadding: CGFloat = 8
         static let timestampHorizontalPadding: CGFloat = 4
         static let timestampTopPadding: CGFloat = 2
         static let attachmentSpacing: CGFloat = 6
         static let attachmentBottomPadding: CGFloat = 4
-        static let spacerMinLength: CGFloat = 40
     }
 
     var body: some View {
         HStack(alignment: .top, spacing: Constants.messageSpacing) {
             if message.role == .user {
-                userMessageView
+                messageContentView(alignment: .trailing)
+                userAvatarView
             } else {
-                aiMessageView
+                aiAvatarView
+                messageContentView(alignment: .leading)
             }
         }
+        .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing : .leading)
         .padding(.vertical, Constants.messageVerticalPadding)
     }
 
-    @ViewBuilder private var userMessageView: some View {
-        Spacer(minLength: Constants.spacerMinLength)
-        messageContentView(alignment: .trailing, isUser: true)
-        userAvatarView
-    }
-
-    @ViewBuilder private var aiMessageView: some View {
+    @ViewBuilder private var aiAvatarView: some View {
         if let cachedAvatar = cachedAIAvatar {
             cachedAvatar
         } else {
             AIAvatarView(size: Constants.avatarSize, url: aiAvatarURL)
         }
-        messageContentView(alignment: .leading, isUser: false)
-        Spacer(minLength: Constants.spacerMinLength)
     }
 
-    private func messageContentView(alignment: HorizontalAlignment, isUser _: Bool) -> some View {
+    private func messageContentView(alignment: HorizontalAlignment) -> some View {
         VStack(alignment: alignment, spacing: 4) {
             if !message.attachments.isEmpty {
                 attachmentsView(alignment: alignment)
@@ -82,12 +77,11 @@ struct MessageBubble: View {
             }
 
             if !message.content.isEmpty {
-                messageTextBubble
+                messageTextBubble(alignment: alignment)
             }
 
-            timestampView
+            timestampView(alignment: alignment)
         }
-        .frame(maxWidth: Constants.messageMaxWidth)
     }
 
     private func attachmentsView(alignment: HorizontalAlignment) -> some View {
@@ -96,17 +90,19 @@ struct MessageBubble: View {
                 AttachmentView(attachment: attachment)
             }
         }
+        .fixedSize()
     }
 
-    private var messageTextBubble: some View {
-        Text(message.content)
+    private func messageTextBubble(alignment: HorizontalAlignment) -> some View {
+        let textAlignment: Alignment = alignment == .trailing ? .trailing : .leading
+        return Text(message.content)
             .font(.body)
             .textSelection(.enabled)
             .foregroundStyle(.primary)
-            .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing : .leading)
+            .frame(maxWidth: Constants.messageMaxWidth, alignment: textAlignment)
     }
 
-    private var timestampView: some View {
+    private func timestampView(alignment: HorizontalAlignment) -> some View {
         Text(message.timestamp, style: .time)
             .font(.caption2)
             .foregroundStyle(.tertiary)
@@ -125,7 +121,8 @@ struct MessageBubble: View {
             )
         } else {
             Image(systemName: "person.fill")
-                .font(.largeTitle)
+                .font(.caption)
+                .frame(width: Constants.avatarSize, height: Constants.avatarSize)
                 .foregroundStyle(.secondary)
         }
     }
@@ -179,13 +176,10 @@ private struct AttachmentView: View {
     let attachment: MessageAttachmentType
 
     private enum Constants {
-        static let imageMaxSize: CGFloat = 300
-        static let imageCornerRadius: CGFloat = 12
         static let fileIconSize: CGFloat = 32
         static let fileSpacing: CGFloat = 8
         static let filePadding: CGFloat = 10
         static let fileCornerRadius: CGFloat = 8
-        static let fileMaxWidth: CGFloat = 180
         static let fileNameMaxWidth: CGFloat = 120
     }
 
@@ -228,7 +222,7 @@ private struct AttachmentView: View {
         .padding(Constants.filePadding)
         .background(Color(nsColor: .controlBackgroundColor))
         .clipShape(RoundedRectangle(cornerRadius: Constants.fileCornerRadius))
-        .frame(maxWidth: Constants.fileMaxWidth)
+        .fixedSize()
         .contentShape(Rectangle())
         .onTapGesture {
             NSWorkspace.shared.activateFileViewerSelecting([url])
