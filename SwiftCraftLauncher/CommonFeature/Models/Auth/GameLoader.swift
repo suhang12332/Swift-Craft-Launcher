@@ -27,4 +27,12 @@ enum GameLoader: String, CaseIterable, Identifiable, Codable {
         case .quilt: "quilt"
         }
     }
+
+    /// The Modrinth API loader identifier.
+    var modrinthLoaderId: String {
+        switch self {
+        case .neoforge: "neo"
+        default: displayName
+        }
+    }
 }
