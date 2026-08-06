@@ -68,7 +68,7 @@ final class ModPackInstallState {
         currentFile = fileName
         filesCompleted = completed
         filesTotal = total
-        filesProgress = calculateProgress(completed: completed, total: total)
+        filesProgress = ProgressUtil.calculateProgress(completed: completed, total: total)
     }
 
     /// Updates progress for a dependency download.
@@ -80,7 +80,7 @@ final class ModPackInstallState {
         currentDependency = dependencyName
         dependenciesCompleted = completed
         dependenciesTotal = total
-        dependenciesProgress = calculateProgress(
+        dependenciesProgress = ProgressUtil.calculateProgress(
             completed: completed,
             total: total,
         )
@@ -95,14 +95,9 @@ final class ModPackInstallState {
         currentOverride = overrideName
         overridesCompleted = completed
         overridesTotal = total
-        overridesProgress = calculateProgress(
+        overridesProgress = ProgressUtil.calculateProgress(
             completed: completed,
             total: total,
         )
-    }
-
-    private func calculateProgress(completed: Int, total: Int) -> Double {
-        guard total > 0 else { return 0.0 }
-        return max(0.0, min(1.0, Double(completed) / Double(total)))
     }
 }

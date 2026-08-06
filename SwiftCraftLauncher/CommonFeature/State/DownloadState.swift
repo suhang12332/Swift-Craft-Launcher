@@ -81,18 +81,13 @@ class DownloadState {
         currentCoreFile = fileName
         coreCompletedFiles = completed
         coreTotalFiles = total
-        coreProgress = calculateProgress(completed: completed, total: total)
+        coreProgress = ProgressUtil.calculateProgress(completed: completed, total: total)
     }
 
     private func updateResourcesProgress(fileName: String, completed: Int, total: Int) {
         currentResourceFile = fileName
         resourcesCompletedFiles = completed
         resourcesTotalFiles = total
-        resourcesProgress = calculateProgress(completed: completed, total: total)
-    }
-
-    private func calculateProgress(completed: Int, total: Int) -> Double {
-        guard total > 0 else { return 0.0 }
-        return max(0.0, min(1.0, Double(completed) / Double(total)))
+        resourcesProgress = ProgressUtil.calculateProgress(completed: completed, total: total)
     }
 }
