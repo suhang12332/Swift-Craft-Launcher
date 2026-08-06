@@ -102,7 +102,7 @@ struct MessageBubble: View, Equatable {
             .frame(maxWidth: Constants.messageMaxWidth, alignment: textAlignment)
     }
 
-    private func timestampView(alignment: HorizontalAlignment) -> some View {
+    private func timestampView(alignment _: HorizontalAlignment) -> some View {
         Text(message.timestamp, style: .time)
             .font(.caption2)
             .foregroundStyle(.tertiary)
