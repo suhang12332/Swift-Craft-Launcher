@@ -11,7 +11,6 @@ import Foundation
 enum AppConstants {
     static let defaultGameIcon = "default_game_icon.png"
     static let defaultPort = 25565
-    static let modLoaders = GameLoader.allCases.map(\.rawValue)
     static let modrinthIndex = "relevance"
     static let modrinthIndexFileName = "modrinth.index.json"
 

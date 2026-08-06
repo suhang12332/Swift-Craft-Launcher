@@ -221,21 +221,8 @@ struct GameCreationView: View {
             CommonMenuPicker(
                 selection: $vm.selectedModLoader,
             ) {
-                ForEach(AppConstants.modLoaders, id: \.self) { loader in
-                    switch loader {
-                    case GameLoader.vanilla.displayName:
-                        Text("modloader.vanilla.text".localized()).tag(loader)
-                    case GameLoader.fabric.displayName:
-                        Text("modloader.fabric.text".localized()).tag(loader)
-                    case GameLoader.forge.displayName:
-                        Text("modloader.forge.text".localized()).tag(loader)
-                    case GameLoader.neoforge.displayName:
-                        Text("modloader.neoforge.text".localized()).tag(loader)
-                    case GameLoader.quilt.rawValue:
-                        Text("modloader.quilt.text".localized()).tag(loader)
-                    default:
-                        Text(loader.capitalized).tag(loader)
-                    }
+                ForEach(GameLoader.allCases) { loader in
+                    Text(loader.labelName).tag(loader.rawValue)
                 }
             }
             .disabled(viewModel.gameSetupService.downloadState.isDownloading)
