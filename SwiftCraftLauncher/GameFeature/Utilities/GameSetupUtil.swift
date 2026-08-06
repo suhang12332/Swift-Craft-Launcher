@@ -378,11 +378,7 @@ class GameSetupUtil {
                     let gameArgs = forgeLoader.arguments.game ?? []
                     updatedGameInfo.gameArguments = gameArgs
                     let jvmArgs = forgeLoader.arguments.jvm ?? []
-                    updatedGameInfo.modJvm = jvmArgs.map { arg in
-                        arg.replacingOccurrences(of: "${version_name}", with: selectedGameVersion)
-                            .replacingOccurrences(of: "${classpath_separator}", with: ":")
-                            .replacingOccurrences(of: "${library_directory}", with: AppPaths.librariesDirectory.path)
-                    }
+                    updatedGameInfo.modJvm = jvmArgs.map { $0.replacingJVMPlaceholders(gameVersion: selectedGameVersion) }
                 }
             }
 
@@ -397,28 +393,7 @@ class GameSetupUtil {
                     updatedGameInfo.gameArguments = gameArgs
 
                     let jvmArgs = neoForgeLoader.arguments.jvm ?? []
-                    updatedGameInfo.modJvm = jvmArgs.map { arg -> String in
-                        let mutableArg = NSMutableString(string: arg)
-                        mutableArg.replaceOccurrences(
-                            of: "${version_name}",
-                            with: selectedGameVersion,
-                            options: [],
-                            range: NSRange(location: 0, length: mutableArg.length),
-                        )
-                        mutableArg.replaceOccurrences(
-                            of: "${classpath_separator}",
-                            with: ":",
-                            options: [],
-                            range: NSRange(location: 0, length: mutableArg.length),
-                        )
-                        mutableArg.replaceOccurrences(
-                            of: "${library_directory}",
-                            with: AppPaths.librariesDirectory.path,
-                            options: [],
-                            range: NSRange(location: 0, length: mutableArg.length),
-                        )
-                        return mutableArg as String
-                    }
+                    updatedGameInfo.modJvm = jvmArgs.map { $0.replacingJVMPlaceholders(gameVersion: selectedGameVersion) }
                 }
             }
 
