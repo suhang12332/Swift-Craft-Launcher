@@ -47,11 +47,11 @@ enum AppPaths {
         metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.versions)
     }
 
-    static var indexsDirectory: URL {
+    static var indexesDirectory: URL {
         assetsDirectory.appendingPathComponent(AppConstants.DirectoryNames.indexes)
     }
 
-    static var objetcsDirectory: URL {
+    static var objectsDirectory: URL {
         assetsDirectory.appendingPathComponent(AppConstants.DirectoryNames.objects)
     }
 
