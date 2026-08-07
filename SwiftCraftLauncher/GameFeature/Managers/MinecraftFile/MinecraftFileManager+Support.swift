@@ -14,8 +14,8 @@ enum MinecraftFileManagerConstants {
         AppPaths.librariesDirectory,
         AppPaths.nativesDirectory,
         AppPaths.assetsDirectory,
-        AppPaths.indexsDirectory,
-        AppPaths.objetcsDirectory,
+        AppPaths.indexesDirectory,
+        AppPaths.objectsDirectory,
     ]
     static let assetChunkSize = 500
     static let downloadTimeout: TimeInterval = 30
