@@ -55,15 +55,6 @@ struct AIChatMessageListView: View {
                     scrollToBottom(proxy: proxy)
                 }
             }
-            .onChange(of: chatState.messages.last?.id) { _, _ in
-                if let lastMessage = chatState.messages.last {
-                    scrollCoordinator.onLastMessageChanged(
-                        contentLength: lastMessage.content.count,
-                    ) {
-                        scrollToBottom(proxy: proxy)
-                    }
-                }
-            }
             .onChange(of: chatState.isSending) { oldValue, newValue in
                 scrollCoordinator.onSendingChanged(
                     wasSending: oldValue,

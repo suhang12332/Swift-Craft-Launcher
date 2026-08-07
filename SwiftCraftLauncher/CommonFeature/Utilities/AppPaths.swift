@@ -47,6 +47,14 @@ enum AppPaths {
         metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.versions)
     }
 
+    static var indexesDirectory: URL {
+        assetsDirectory.appendingPathComponent(AppConstants.DirectoryNames.indexes)
+    }
+
+    static var objectsDirectory: URL {
+        assetsDirectory.appendingPathComponent(AppConstants.DirectoryNames.objects)
+    }
+
     static var profileRootDirectory: URL {
         let customPath = DIContainer.shared.ui.generalSettingsManager.launcherWorkingDirectory
         let workingDirectory = customPath.isEmpty ? launcherSupportDirectory.path : customPath

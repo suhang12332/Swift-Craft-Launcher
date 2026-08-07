@@ -364,15 +364,11 @@ final class GlobalErrorHandler: @unchecked Sendable {
     }
 
     func clearCurrentError() {
-        DispatchQueue.main.async {
-            self.currentError = nil
-        }
+        currentError = nil
     }
 
     func clearHistory() {
-        DispatchQueue.main.async {
-            self.errorHistory.removeAll()
-        }
+        errorHistory.removeAll()
     }
 
     private func addToHistory(_ error: GlobalError) {
@@ -384,12 +380,10 @@ final class GlobalErrorHandler: @unchecked Sendable {
     }
 
     func cleanup() {
-        DispatchQueue.main.async {
-            self.currentError = nil
-            self.errorHistory.removeAll(keepingCapacity: false)
-            self.lastErrorId = nil
-            self.recentErrorTimestamps.removeAll(keepingCapacity: false)
-        }
+        currentError = nil
+        errorHistory.removeAll(keepingCapacity: false)
+        lastErrorId = nil
+        recentErrorTimestamps.removeAll(keepingCapacity: false)
     }
 
     private func logError(_ error: GlobalError) {

@@ -11,7 +11,6 @@ import Foundation
 enum AppConstants {
     static let defaultGameIcon = "default_game_icon.png"
     static let defaultPort = 25565
-    static let modLoaders = GameLoader.allCases.map(\.rawValue)
     static let modrinthIndex = "relevance"
     static let modrinthIndexFileName = "modrinth.index.json"
 
@@ -116,6 +115,8 @@ enum AppConstants {
         static let libraries = "libraries"
         static let natives = "natives"
         static let assets = "assets"
+        static let indexes = "indexes"
+        static let objects = "objects"
         static let versions = "versions"
         static let shaderpacks = "shaderpacks"
         static let resourcepacks = "resourcepacks"
@@ -190,6 +191,13 @@ enum AppConstants {
         static let versionName = "{VERSION_NAME}"
         static let libraryDir = "{LIBRARY_DIR}"
         static let workingDir = "{WORKING_DIR}"
+    }
+
+    /// JVM argument placeholder constants used by Forge/NeoForge loaders.
+    enum JVMArgumentPlaceholders {
+        static let versionName = "${version_name}"
+        static let classpathSeparator = "${classpath_separator}"
+        static let libraryDirectory = "${library_directory}"
     }
 
     /// Database table name constants.

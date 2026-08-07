@@ -7,65 +7,35 @@
 
 import Foundation
 
+/// A CurseForge API response that wraps a `data` payload.
+protocol CurseForgeResponseDecodable: Decodable {
+    associatedtype Data
+
+    var data: Data { get }
+}
+
+extension CurseForgeModDetailResponse: CurseForgeResponseDecodable { }
+
+extension CurseForgeModDescriptionResponse: CurseForgeResponseDecodable { }
+
 /// Provides internal CurseForge API request and parsing utilities.
 extension CurseForgeService {
-    /// Fetches file details from a specified URL.
+    /// Fetches and decodes a CurseForge API response from a specified URL.
     /// - Parameter urlString: The API endpoint URL.
-    /// - Returns: The file details.
+    /// - Returns: The unwrapped `data` payload.
     /// - Throws: A network or parsing error.
-    static func tryFetchFileDetail(from urlString: String) async throws -> CurseForgeModFileDetail {
+    static func tryFetch<T: CurseForgeResponseDecodable>(_: T.Type, from urlString: String) async throws -> T.Data {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
                 i18nKey: "error.network.url",
                 level: .notification,
-                message: "Invalid CurseForge file detail URL: \(urlString)",
+                message: "Invalid CurseForge URL: \(urlString)",
             )
         }
 
         let headers = getHeaders()
         let data = try await APIClient.get(url: url, headers: headers)
-
-        let result = try JSONDecoder().decode(CurseForgeFileResponse.self, from: data)
-        return result.data
-    }
-
-    /// Fetches mod details from a specified URL.
-    /// - Parameter urlString: The API endpoint URL.
-    /// - Returns: The mod details.
-    /// - Throws: A network or parsing error.
-    static func tryFetchModDetail(from urlString: String) async throws -> CurseForgeModDetail {
-        guard let url = URL(string: urlString) else {
-            throw GlobalError.validation(
-                i18nKey: "error.network.url",
-                level: .notification,
-                message: "Invalid CurseForge mod detail URL: \(urlString)",
-            )
-        }
-
-        let headers = getHeaders()
-        let data = try await APIClient.get(url: url, headers: headers)
-
-        let result = try JSONDecoder().decode(CurseForgeModDetailResponse.self, from: data)
-        return result.data
-    }
-
-    /// Fetches the HTML description for a mod from a specified URL.
-    /// - Parameter urlString: The API endpoint URL.
-    /// - Returns: The HTML-formatted description content.
-    /// - Throws: A network or parsing error.
-    static func tryFetchModDescription(from urlString: String) async throws -> String {
-        guard let url = URL(string: urlString) else {
-            throw GlobalError.validation(
-                i18nKey: "error.network.url",
-                level: .notification,
-                message: "Invalid CurseForge mod description URL: \(urlString)",
-            )
-        }
-
-        let headers = getHeaders()
-        let data = try await APIClient.get(url: url, headers: headers)
-
-        let result = try JSONDecoder().decode(CurseForgeModDescriptionResponse.self, from: data)
+        let result = try JSONDecoder().decode(T.self, from: data)
         return result.data
     }
 
@@ -87,6 +57,6 @@ extension CurseForgeService {
 }
 
 /// Represents a CurseForge API file response.
-struct CurseForgeFileResponse: Codable {
+struct CurseForgeFileResponse: CurseForgeResponseDecodable {
     let data: CurseForgeModFileDetail
 }
