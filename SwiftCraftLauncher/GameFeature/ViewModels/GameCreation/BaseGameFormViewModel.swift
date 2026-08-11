@@ -12,7 +12,7 @@ import SwiftUI
 /// Base view model for game form views, providing common download management and form validation.
 @MainActor
 @Observable
-class BaseGameFormViewModel: GameFormStateProtocol {
+class BaseGameFormViewModel {
     var isDownloading: Bool = false
     var isFormValid: Bool = false
     var triggerConfirm: Bool = false
