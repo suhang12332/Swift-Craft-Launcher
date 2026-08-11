@@ -9,6 +9,8 @@ import Foundation
 
 /// Fetches and manages Fabric mod loader versions and profiles.
 enum FabricLoaderService {
+    private static let config = FabricLikeLoaderService.Config(gameLoader: .fabric)
+
     static func fetchAllLoaderVersions(for minecraftVersion: String) async -> [FabricLoader] {
         do {
             return try await fetchAllLoaderVersionsThrowing(for: minecraftVersion)
@@ -46,20 +48,7 @@ enum FabricLoaderService {
     }
 
     static func fetchSpecificLoaderVersion(for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
-        let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
-
-        if let cached = DIContainer.shared.core.appCacheManager.get(namespace: GameLoader.fabric.displayName, key: cacheKey, as: ModrinthLoader.self) {
-            return cached
-        }
-
-        let url = URLConfig.API.Modrinth.loaderProfile(loader: GameLoader.fabric.displayName, version: loaderVersion)
-        let data = try await APIClient.get(url: url)
-
-        var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
-        result.version = loaderVersion
-        result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
-        DIContainer.shared.core.appCacheManager.setSilently(namespace: GameLoader.fabric.displayName, key: cacheKey, value: result)
-        return result
+        try await FabricLikeLoaderService.fetchSpecificLoaderVersion(config: config, for: minecraftVersion, loaderVersion: loaderVersion)
     }
 
     static func setupWithSpecificVersion(

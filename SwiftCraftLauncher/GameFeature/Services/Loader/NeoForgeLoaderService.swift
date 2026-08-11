@@ -9,7 +9,7 @@ import Foundation
 
 /// Fetches and manages NeoForge mod loader versions and profiles.
 enum NeoForgeLoaderService {
-    private static let config = ForgeLikeLoaderService.Config(
+    static let config = ForgeLikeLoaderService.Config(
         gameLoader: .neoforge,
         labelName: GameLoader.neoforge.labelName,
         versionNotFoundErrorKey: "error.resource.neoforge_loader_version_not_found",
@@ -18,10 +18,6 @@ enum NeoForgeLoaderService {
 
     static func fetchAllNeoForgeVersions(for minecraftVersion: String) async throws -> LoaderVersion {
         try await ForgeLikeLoaderService.fetchAllVersions(config: config, for: minecraftVersion)
-    }
-
-    static func fetchSpecificNeoForgeProfile(for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
-        try await ForgeLikeLoaderService.fetchSpecificProfile(config: config, for: minecraftVersion, loaderVersion: loaderVersion)
     }
 
     static func setupWithSpecificVersion(

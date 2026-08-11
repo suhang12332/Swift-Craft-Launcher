@@ -346,72 +346,53 @@ class GameSetupUtil {
 
         switch selectedModLoader.lowercased() {
         case GameLoader.fabric.displayName, GameLoader.quilt.rawValue:
-            if let result = selectedModLoader.lowercased() == GameLoader.fabric.displayName ? fabricResult : quiltResult {
-                updatedGameInfo.modVersion = result.loaderVersion
-                updatedGameInfo.modClassPath = result.classpath
-                updatedGameInfo.mainClass = result.mainClass
+            let loader = selectedModLoader.lowercased() == GameLoader.fabric.displayName ? GameLoader.fabric : GameLoader.quilt
+            if let result = loader == .fabric ? fabricResult : quiltResult {
+                applyModLoaderResult(result, to: &updatedGameInfo)
 
-                if selectedModLoader.lowercased() == GameLoader.fabric.displayName {
-                    if let fabricLoader = try? await FabricLoaderService.fetchSpecificLoaderVersion(for: selectedGameVersion, loaderVersion: specifiedLoaderVersion) {
-                        let jvmArgs = fabricLoader.arguments.jvm ?? []
-                        updatedGameInfo.modJvm = jvmArgs
-                        let gameArgs = fabricLoader.arguments.game ?? []
-                        updatedGameInfo.gameArguments = gameArgs
-                    }
-                } else {
-                    if let quiltLoader = try? await QuiltLoaderService.fetchSpecificLoaderVersion(for: selectedGameVersion, loaderVersion: specifiedLoaderVersion) {
-                        let jvmArgs = quiltLoader.arguments.jvm ?? []
-                        updatedGameInfo.modJvm = jvmArgs
-                        let gameArgs = quiltLoader.arguments.game ?? []
-                        updatedGameInfo.gameArguments = gameArgs
-                    }
+                if let profile = try? await FabricLikeLoaderService.fetchSpecificLoaderVersion(
+                    config: .init(gameLoader: loader),
+                    for: selectedGameVersion,
+                    loaderVersion: specifiedLoaderVersion
+                ) {
+                    updatedGameInfo.modJvm = profile.arguments.jvm ?? []
+                    updatedGameInfo.gameArguments = profile.arguments.game ?? []
                 }
             }
 
-        case GameLoader.forge.displayName:
-            if let result = forgeResult {
-                updatedGameInfo.modVersion = result.loaderVersion
-                updatedGameInfo.modClassPath = result.classpath
-                updatedGameInfo.mainClass = result.mainClass
+        case GameLoader.forge.displayName, GameLoader.neoforge.displayName:
+            let isForge = selectedModLoader.lowercased() == GameLoader.forge.displayName
+            guard let result = isForge ? forgeResult : neoForgeResult else { break }
 
-                if let forgeLoader = try? await ForgeLoaderService.fetchSpecificForgeProfile(for: selectedGameVersion, loaderVersion: specifiedLoaderVersion) {
-                    let gameArgs = forgeLoader.arguments.game ?? []
-                    updatedGameInfo.gameArguments = gameArgs
-                    let jvmArgs = forgeLoader.arguments.jvm ?? []
-                    updatedGameInfo.modJvm = jvmArgs.map { $0.replacingJVMPlaceholders(gameVersion: selectedGameVersion) }
-                }
-            }
+            applyModLoaderResult(result, to: &updatedGameInfo)
 
-        case GameLoader.neoforge.displayName:
-            if let result = neoForgeResult {
-                updatedGameInfo.modVersion = result.loaderVersion
-                updatedGameInfo.modClassPath = result.classpath
-                updatedGameInfo.mainClass = result.mainClass
-
-                if let neoForgeLoader = try? await NeoForgeLoaderService.fetchSpecificNeoForgeProfile(for: selectedGameVersion, loaderVersion: specifiedLoaderVersion) {
-                    let gameArgs = neoForgeLoader.arguments.game ?? []
-                    updatedGameInfo.gameArguments = gameArgs
-
-                    let jvmArgs = neoForgeLoader.arguments.jvm ?? []
-                    updatedGameInfo.modJvm = jvmArgs.map { $0.replacingJVMPlaceholders(gameVersion: selectedGameVersion) }
-                }
+            let config = isForge ? ForgeLoaderService.config : NeoForgeLoaderService.config
+            if let profile = try? await ForgeLikeLoaderService.fetchSpecificProfile(config: config, for: selectedGameVersion, loaderVersion: specifiedLoaderVersion) {
+                updatedGameInfo.gameArguments = profile.arguments.game ?? []
+                updatedGameInfo.modJvm = (profile.arguments.jvm ?? []).map { $0.replacingJVMPlaceholders(gameVersion: selectedGameVersion) }
             }
 
         default:
             updatedGameInfo.mainClass = manifest.mainClass
         }
 
-        let launcherBrand = Bundle.main.appName
-        let launcherVersion = Bundle.main.fullVersion
-
         updatedGameInfo.launchCommand = MinecraftLaunchCommandBuilder.build(
             manifest: manifest,
             gameInfo: updatedGameInfo,
-            launcherBrand: launcherBrand,
-            launcherVersion: launcherVersion,
+            launcherBrand: Bundle.main.appName,
+            launcherVersion: Bundle.main.fullVersion,
         )
 
         return updatedGameInfo
+    }
+
+    private func applyModLoaderResult(
+        _ result: (loaderVersion: String, classpath: String, mainClass: String),
+        to gameInfo: inout GameVersionInfo,
+    ) {
+        gameInfo.modVersion = result.loaderVersion
+        gameInfo.modClassPath = result.classpath
+        gameInfo.mainClass = result.mainClass
     }
 
     /// Checks whether a game instance with the given name already exists.

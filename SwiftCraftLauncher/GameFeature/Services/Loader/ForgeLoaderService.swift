@@ -9,7 +9,7 @@ import Foundation
 
 /// Fetches and manages Forge mod loader versions and profiles.
 enum ForgeLoaderService {
-    private static let config = ForgeLikeLoaderService.Config(
+    static let config = ForgeLikeLoaderService.Config(
         gameLoader: .forge,
         labelName: GameLoader.forge.labelName,
         versionNotFoundErrorKey: "error.resource.forge_loader_version_not_found",
@@ -18,10 +18,6 @@ enum ForgeLoaderService {
 
     static func fetchAllForgeVersions(for minecraftVersion: String) async throws -> LoaderVersion {
         try await ForgeLikeLoaderService.fetchAllVersions(config: config, for: minecraftVersion)
-    }
-
-    static func fetchSpecificForgeProfile(for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
-        try await ForgeLikeLoaderService.fetchSpecificProfile(config: config, for: minecraftVersion, loaderVersion: loaderVersion)
     }
 
     static func setupWithSpecificVersion(
