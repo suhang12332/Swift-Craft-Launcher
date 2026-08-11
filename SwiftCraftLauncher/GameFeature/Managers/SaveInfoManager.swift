@@ -17,7 +17,90 @@ final class SaveInfoManager: @unchecked Sendable {
         let gameMode: String?
         let difficulty: String?
         let version: String?
+        let hardcore: Bool
+        let cheats: Bool
         let seed: Int64?
+    }
+
+    private static func parseLevelDat(at levelDatPath: URL) -> WorldParseResult? {
+        guard let data = try? Data(contentsOf: levelDatPath),
+              let nbtData = try? NBTParser(data: data).parse(),
+              let dataTag = nbtData["Data"] as? [String: Any] else {
+            return nil
+        }
+
+        var lastPlayed: Date?
+        if let ts = WorldNBTMapper.readInt64(dataTag["LastPlayed"]) {
+            lastPlayed = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
+        }
+
+        let gameMode: String? = {
+            if let v = WorldNBTMapper.readInt64(dataTag["GameType"]) {
+                return WorldNBTMapper.mapGameMode(Int(v))
+            }
+            return nil
+        }()
+
+        let difficulty: String? = {
+            if let v = WorldNBTMapper.readInt64(dataTag["Difficulty"]) {
+                return WorldNBTMapper.mapDifficulty(Int(v))
+            }
+            if let ds = dataTag["difficulty_settings"] as? [String: Any],
+               let diffStr = ds["difficulty"] as? String {
+                return WorldNBTMapper.mapDifficultyString(diffStr)
+            }
+            return nil
+        }()
+
+        let version: String? = (dataTag["Version"] as? [String: Any])?["Name"] as? String
+        let hardcore: Bool = {
+            if let ds = dataTag["difficulty_settings"] as? [String: Any] {
+                return WorldNBTMapper.readBoolFlag(ds["hardcore"])
+            }
+            return WorldNBTMapper.readBoolFlag(dataTag["hardcore"])
+        }()
+        let cheats: Bool = WorldNBTMapper.readBoolFlag(dataTag["allowCommands"])
+        let seed: Int64? = WorldNBTMapper.readSeed(from: dataTag, worldPath: levelDatPath.deletingLastPathComponent())
+
+        return WorldParseResult(
+            lastPlayed: lastPlayed,
+            gameMode: gameMode,
+            difficulty: difficulty,
+            version: version,
+            hardcore: hardcore,
+            cheats: cheats,
+            seed: seed,
+        )
+    }
+
+    private static func buildWorldInfo(worldPath: URL, parsed: WorldParseResult?) -> WorldInfo {
+        let worldName = worldPath.lastPathComponent
+        var fileLastPlayed: Date?
+        if let modDate = try? worldPath.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate {
+            fileLastPlayed = modDate
+        }
+        if let parsed {
+            return WorldInfo(
+                name: worldName,
+                path: worldPath,
+                lastPlayed: parsed.lastPlayed ?? fileLastPlayed,
+                gameMode: parsed.gameMode,
+                difficulty: parsed.difficulty,
+                hardcore: parsed.hardcore,
+                cheats: parsed.cheats,
+                version: parsed.version,
+                seed: parsed.seed,
+            )
+        }
+        return WorldInfo(
+            name: worldName,
+            path: worldPath,
+            lastPlayed: fileLastPlayed,
+            gameMode: nil,
+            difficulty: nil,
+            version: nil,
+            seed: nil,
+        )
     }
 
     let gameName: String
@@ -335,91 +418,28 @@ final class SaveInfoManager: @unchecked Sendable {
             .appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
         let fm = FileManager.default
         guard fm.fileExists(atPath: savesPath.path) else { return [] }
+
+        let contents: [URL]
         do {
-            let contents = try fm.contentsOfDirectory(
+            contents = try fm.contentsOfDirectory(
                 at: savesPath,
-                includingPropertiesForKeys: [.isDirectoryKey, .contentModificationDateKey],
+                includingPropertiesForKeys: [.isDirectoryKey],
                 options: [.skipsHiddenFiles],
             )
-            var loadedWorlds: [WorldInfo] = []
-            for worldPath in contents {
-                guard let isDirectory = try? worldPath.resourceValues(forKeys: [.isDirectoryKey]).isDirectory,
-                      isDirectory == true else { continue }
-                let worldName = worldPath.lastPathComponent
-                let levelDatPath = worldPath.appendingPathComponent("level.dat")
-                var lastPlayed: Date?
-                if let modDate = try? worldPath.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate {
-                    lastPlayed = modDate
-                }
-                guard fm.fileExists(atPath: levelDatPath.path) else {
-                    loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil))
-                    continue
-                }
-                do {
-                    let data = try Data(contentsOf: levelDatPath)
-                    let parser = NBTParser(data: data)
-                    let nbtData = try parser.parse()
-                    guard let dataTag = nbtData["Data"] as? [String: Any] else {
-                        loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil))
-                        continue
-                    }
-                    if let ts = WorldNBTMapper.readInt64(dataTag["LastPlayed"]) {
-                        lastPlayed = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
-                    }
-
-                    let gameMode: String? = {
-                        if let v = WorldNBTMapper.readInt64(dataTag["GameType"]) {
-                            return WorldNBTMapper.mapGameMode(Int(v))
-                        }
-                        return nil
-                    }()
-
-                    let difficulty: String? = {
-                        if let v = WorldNBTMapper.readInt64(dataTag["Difficulty"]) {
-                            return WorldNBTMapper.mapDifficulty(Int(v))
-                        }
-                        if let ds = dataTag["difficulty_settings"] as? [String: Any],
-                           let diffStr = ds["difficulty"] as? String {
-                            return WorldNBTMapper.mapDifficultyString(diffStr)
-                        }
-                        return nil
-                    }()
-
-                    let version: String? = (dataTag["Version"] as? [String: Any])?["Name"] as? String
-                    let hardcore: Bool = {
-                        if let ds = dataTag["difficulty_settings"] as? [String: Any] {
-                            return WorldNBTMapper.readBoolFlag(ds["hardcore"])
-                        }
-                        return WorldNBTMapper.readBoolFlag(dataTag["hardcore"])
-                    }()
-                    let cheats: Bool = WorldNBTMapper.readBoolFlag(dataTag["allowCommands"])
-
-                    let seed: Int64? = WorldNBTMapper.readSeed(from: dataTag, worldPath: worldPath)
-
-                    loadedWorlds.append(
-                        WorldInfo(
-                            name: worldName,
-                            path: worldPath,
-                            lastPlayed: lastPlayed,
-                            gameMode: gameMode,
-                            difficulty: difficulty,
-                            hardcore: hardcore,
-                            cheats: cheats,
-                            version: version,
-                            seed: seed,
-                        ),
-                    )
-                } catch {
-                    AppLog.game.error("Failed to parse level.dat (\(worldName)): \(error.localizedDescription)")
-                    loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil))
-                }
-            }
-            loadedWorlds.sort { ($0.lastPlayed ?? .distantPast) > ($1.lastPlayed ?? .distantPast) }
-            return loadedWorlds
         } catch {
             AppLog.game.error("Failed to load world info: \(error.localizedDescription)")
             return []
         }
+
+        let loadedWorlds = contents.compactMap { worldPath -> WorldInfo? in
+            guard let isDirectory = try? worldPath.resourceValues(forKeys: [.isDirectoryKey]).isDirectory,
+                  isDirectory == true else { return nil }
+            let levelDatPath = worldPath.appendingPathComponent("level.dat")
+            let parsed = fm.fileExists(atPath: levelDatPath.path) ? Self.parseLevelDat(at: levelDatPath) : nil
+            return Self.buildWorldInfo(worldPath: worldPath, parsed: parsed)
+        }
+
+        return loadedWorlds.sorted { ($0.lastPlayed ?? .distantPast) > ($1.lastPlayed ?? .distantPast) }
     }
 
     nonisolated private static func loadScreenshotsFromDirectory(gameName: String) -> [ScreenshotInfo] {
