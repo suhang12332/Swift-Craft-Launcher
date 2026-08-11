@@ -353,7 +353,7 @@ class GameSetupUtil {
                 if let profile = try? await FabricLikeLoaderService.fetchSpecificLoaderVersion(
                     config: .init(gameLoader: loader),
                     for: selectedGameVersion,
-                    loaderVersion: specifiedLoaderVersion
+                    loaderVersion: specifiedLoaderVersion,
                 ) {
                     updatedGameInfo.modJvm = profile.arguments.jvm ?? []
                     updatedGameInfo.gameArguments = profile.arguments.game ?? []
