@@ -22,7 +22,7 @@ public enum InterfaceLayoutStyle: String, CaseIterable {
 
 /// Manages general application settings including downloads and layout preferences.
 @Observable
-final class GeneralSettingsManager: WorkingPathProviding {
+final class GeneralSettingsManager {
     /// A Combine subject that fires when the working directory path changes.
     private let workingPathDidChangeSubject = PassthroughSubject<Void, Never>()
 

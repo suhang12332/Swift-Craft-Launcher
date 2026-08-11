@@ -118,7 +118,7 @@ extension YggdrasilAuthService {
 
     func getMinecraftToken(profile: YggdrasilProfile, server: YggdrasilServerConfig) async throws -> String {
         guard let parser = YggdrasilMinecraftTokenParsers.make(for: server.parserId) else {
-            AppLog.common.error("TODO: Minecraft token fetch not yet implemented for this server (\(server.name)), falling back to OAuth2 token")
+            AppLog.common.error("Minecraft token fetch not yet implemented for this server (\(server.name)), falling back to OAuth2 token")
             return profile.accessToken
         }
 

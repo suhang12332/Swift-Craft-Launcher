@@ -5,19 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-// Protocols and configuration types for game form state management.
+// Configuration types for game form state management.
 import SwiftUI
-
-@MainActor
-protocol GameFormStateProtocol {
-    var isDownloading: Bool { get set }
-    var isFormValid: Bool { get set }
-    var triggerConfirm: Bool { get set }
-
-    func handleCancel()
-    func handleConfirm()
-    func updateParentState()
-}
 
 /// Action callbacks for game form confirm and cancel operations.
 struct GameFormActions {

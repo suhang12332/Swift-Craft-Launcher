@@ -5,6 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import CFModrinthAdapterKit
 import Foundation
 import os
 
@@ -61,114 +62,22 @@ enum ModrinthDependencyDownloader {
             ) { group in
                 for depVersion in dependencies.projects {
                     group.addTask {
-                        await semaphore.wait()
-                        defer { Task { await semaphore.signal() } }
-
-                        guard
-                            let projectDetail =
-                            await ModrinthService.fetchProjectDetails(
-                                id: depVersion.projectId,
-                            )
-                        else {
-                            AppLog.resource.error(
-                                "Unable to get dependency project details (ID: \(depVersion.projectId))",
-                            )
-                            return nil
-                        }
-
-                        let result = ModrinthService.filterPrimaryFiles(
-                            from: depVersion.files,
+                        await Self.downloadDependency(
+                            depVersion,
+                            semaphore: semaphore,
+                            gameInfo: gameInfo,
+                            query: query,
                         )
-                        if let file = result {
-                            let fileURL =
-                                try? await DownloadManager.downloadResource(
-                                    for: gameInfo,
-                                    urlString: file.url,
-                                    resourceType: query,
-                                    expectedSha1: file.hashes.sha1,
-                                )
-                            var detailWithFile = projectDetail
-                            detailWithFile.fileName = file.filename
-                            detailWithFile.type = query
-                            if let fileURL,
-                               let hash = DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
-                                DIContainer.shared.core.modScanner.saveToCache(
-                                    hash: hash,
-                                    detail: detailWithFile,
-                                )
-                                if query.lowercased() == ResourceType.mod.rawValue {
-                                    DIContainer.shared.core.modScanner.addModHash(
-                                        hash,
-                                        to: gameInfo.gameName,
-                                    )
-                                }
-                            }
-                            return detailWithFile
-                        }
-                        return nil
                     }
                 }
-                // Process the main mod.
                 group.addTask {
-                    await semaphore.wait()
-                    defer { Task { await semaphore.signal() } }
-
-                    do {
-                        guard
-                            var mainProjectDetail =
-                            await ModrinthService.fetchProjectDetails(
-                                id: projectId,
-                            )
-                        else {
-                            AppLog.resource.error("Unable to get main project details (ID: \(projectId))")
-                            return nil
-                        }
-                        let filteredVersions =
-                            try await ModrinthService.fetchProjectVersionsFilter(
-                                id: projectId,
-                                selectedVersions: [gameInfo.gameVersion],
-                                selectedLoaders: [gameInfo.modLoader],
-                                type: query,
-                            )
-                        let result = ModrinthService.filterPrimaryFiles(
-                            from: filteredVersions.first?.files,
-                        )
-                        if let file = result {
-                            let fileURL =
-                                try? await DownloadManager.downloadResource(
-                                    for: gameInfo,
-                                    urlString: file.url,
-                                    resourceType: query,
-                                    expectedSha1: file.hashes.sha1,
-                                )
-                            mainProjectDetail.fileName = file.filename
-                            mainProjectDetail.type = query
-                            if let fileURL,
-                               let hash = DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
-                                DIContainer.shared.core.modScanner.saveToCache(
-                                    hash: hash,
-                                    detail: mainProjectDetail,
-                                )
-                                if query.lowercased() == ResourceType.mod.rawValue {
-                                    DIContainer.shared.core.modScanner.addModHash(
-                                        hash,
-                                        to: gameInfo.gameName,
-                                    )
-                                }
-                            }
-                            return mainProjectDetail
-                        }
-                        return nil
-                    } catch {
-                        let globalError = GlobalError.from(error)
-                        AppLog.resource.error(
-                            "Failed to download main resource \(projectId): \(globalError.localizedDescription)",
-                        )
-                        DIContainer.shared.core.errorHandler.handle(globalError)
-                        return nil
-                    }
+                    await Self.downloadMainModForRecursive(
+                        projectId: projectId,
+                        semaphore: semaphore,
+                        gameInfo: gameInfo,
+                        query: query,
+                    )
                 }
-                // Collect all download results.
                 var localResults: [ModrinthProjectDetail] = []
                 for await result in group {
                     if let project = result {
@@ -179,6 +88,101 @@ enum ModrinthDependencyDownloader {
             }
 
             actuallyDownloaded.append(contentsOf: allDownloaded)
+        }
+    }
+
+    /// Downloads a single dependency from a pre-resolved version entry.
+    private static func downloadDependency(
+        _ depVersion: ModrinthProjectDetailVersion,
+        semaphore: AsyncSemaphore,
+        gameInfo: GameVersionInfo,
+        query: String,
+    ) async -> ModrinthProjectDetail? {
+        await semaphore.wait()
+        defer { Task { await semaphore.signal() } }
+
+        guard
+            let projectDetail =
+            await ModrinthService.fetchProjectDetails(id: depVersion.projectId)
+        else {
+            AppLog.resource.error(
+                "Unable to get dependency project details (ID: \(depVersion.projectId))",
+            )
+            return nil
+        }
+
+        guard let file = ModrinthService.filterPrimaryFiles(from: depVersion.files) else {
+            return nil
+        }
+
+        let fileURL = try? await DownloadManager.downloadResource(
+            for: gameInfo,
+            urlString: file.url,
+            resourceType: query,
+            expectedSha1: file.hashes.sha1,
+        )
+        var detail = projectDetail
+        detail.fileName = file.filename
+        detail.type = query
+        if let fileURL,
+           let hash = DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
+            DIContainer.shared.core.modScanner.saveToCache(hash: hash, detail: detail)
+            if query.lowercased() == ResourceType.mod.rawValue {
+                DIContainer.shared.core.modScanner.addModHash(hash, to: gameInfo.gameName)
+            }
+        }
+        return detail
+    }
+
+    /// Downloads the main mod during recursive dependency resolution.
+    private static func downloadMainModForRecursive(
+        projectId: String,
+        semaphore: AsyncSemaphore,
+        gameInfo: GameVersionInfo,
+        query: String,
+    ) async -> ModrinthProjectDetail? {
+        await semaphore.wait()
+        defer { Task { await semaphore.signal() } }
+
+        do {
+            guard
+                var mainDetail = await ModrinthService.fetchProjectDetails(id: projectId)
+            else {
+                AppLog.resource.error("Unable to get main project details (ID: \(projectId))")
+                return nil
+            }
+            let filteredVersions = try await ModrinthService.fetchProjectVersionsFilter(
+                id: projectId,
+                selectedVersions: [gameInfo.gameVersion],
+                selectedLoaders: [gameInfo.modLoader],
+                type: query,
+            )
+            guard let file = ModrinthService.filterPrimaryFiles(from: filteredVersions.first?.files) else {
+                return nil
+            }
+            let fileURL = try? await DownloadManager.downloadResource(
+                for: gameInfo,
+                urlString: file.url,
+                resourceType: query,
+                expectedSha1: file.hashes.sha1,
+            )
+            mainDetail.fileName = file.filename
+            mainDetail.type = query
+            if let fileURL,
+               let hash = DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
+                DIContainer.shared.core.modScanner.saveToCache(hash: hash, detail: mainDetail)
+                if query.lowercased() == ResourceType.mod.rawValue {
+                    DIContainer.shared.core.modScanner.addModHash(hash, to: gameInfo.gameName)
+                }
+            }
+            return mainDetail
+        } catch {
+            let globalError = GlobalError.from(error)
+            AppLog.resource.error(
+                "Failed to download main resource \(projectId): \(globalError.localizedDescription)",
+            )
+            DIContainer.shared.core.errorHandler.handle(globalError)
+            return nil
         }
     }
 
