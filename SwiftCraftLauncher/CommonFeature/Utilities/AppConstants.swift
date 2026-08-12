@@ -221,6 +221,11 @@ enum AppConstants {
         "java-runtime-beta",
     ]
 
+    enum JavaPath {
+        static let relative = "Contents/Home/bin/java"
+        static let jreBundle = "jre.bundle/\(relative)"
+    }
+
     /// Default memory allocation constants (in megabytes).
     enum MemoryDefaults {
         static let xms = 512

@@ -24,7 +24,11 @@ enum AppPaths {
 
     /// Returns the path to the Java executable for a given runtime version.
     static func javaExecutablePath(version: String) -> String {
-        runtimeDirectory.appendingPathComponent(version).appendingPathComponent("jre.bundle/Contents/Home/bin/java").path
+        runtimeDirectory.appendingPathComponent(version).appendingPathComponent(AppConstants.JavaPath.jreBundle).path
+    }
+
+    static func javaExecutablePath(url: URL) -> String {
+        url.appendingPathComponent(AppConstants.JavaPath.relative).path
     }
 
     static var metaDirectory: URL {
@@ -163,5 +167,11 @@ extension AppPaths {
     /// The path to the game version database file.
     static var gameVersionDatabase: URL {
         dataDirectory.appendingPathComponent("data.db")
+    }
+}
+
+extension URL {
+    var javaPath: String {
+        pathExtension == "bundle" ? AppPaths.javaExecutablePath(url: self) : path
     }
 }
