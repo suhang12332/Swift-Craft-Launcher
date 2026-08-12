@@ -241,13 +241,8 @@ struct MinecraftLaunchCommand {
 
         if !game.environmentVariables.isEmpty {
             var env = ProcessInfo.processInfo.environment
-            let envItems = game.environmentVariables.split(whereSeparator: \.isWhitespace)
-            for pair in envItems {
-                if let equalIndex = pair.firstIndex(of: "=") {
-                    let key = String(pair[..<equalIndex])
-                    let value = String(pair[pair.index(after: equalIndex)...])
-                    env[key] = value
-                }
+            for (key, value) in EnvironmentVariablesParser.parse(game.environmentVariables) {
+                env[key] = value
             }
             process.environment = env
         }
