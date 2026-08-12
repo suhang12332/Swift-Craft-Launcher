@@ -170,10 +170,10 @@ final class GameAdvancedSettingsViewModel {
                 return
             }
 
-            if DIContainer.shared.system.javaManager.canJavaRun(at: url.path) {
-                javaPath = url.path
+            if DIContainer.shared.system.javaManager.canJavaRun(at: url.javaPath) {
+                javaPath = url.javaPath
                 autoSave()
-                AppLog.game.info("Java path set to: \(url.path)")
+                AppLog.game.info("Java path set to: \(url.javaPath)")
             } else {
                 DIContainer.shared.core.errorHandler.handle(GlobalError.validation(
                     i18nKey: "error.validation.invalid_java_executable",
