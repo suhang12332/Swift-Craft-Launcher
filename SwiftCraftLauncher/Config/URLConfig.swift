@@ -19,51 +19,30 @@ enum URLConfig {
 
     enum API {
         enum Authentication {
-            /// The Microsoft OAuth authorization endpoint.
             static let authorize = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize")
-            /// The Microsoft OAuth token endpoint.
             static let token = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/token")
             /// The OAuth redirect URI registered for this application.
             static let redirectUri = "com.su.code.swiftcraftlauncher://oauth"
-            /// The Xbox Live authentication endpoint.
             static let xboxLiveAuth = URLConfig.url("https://user.auth.xboxlive.com/user/authenticate")
-            /// The Xbox XSTS authorization endpoint.
             static let xstsAuth = URLConfig.url("https://xsts.auth.xboxlive.com/xsts/authorize")
-            /// The Xbox Live SiteName value used in authentication requests.
             static let xboxLiveSiteName = "user.auth.xboxlive.com"
-            /// The Xbox Live RelyingParty identifier.
             static let xboxLiveRelyingParty = "http://auth.xboxlive.com"
 
-            /// The Minecraft Services login endpoint.
             static let minecraftLogin = URLConfig.url("https://api.minecraftservices.com/authentication/login_with_xbox")
-            /// The Minecraft profile endpoint.
             static let minecraftProfile = URLConfig.url("https://api.minecraftservices.com/minecraft/profile")
-            /// The Minecraft entitlements verification endpoint.
             static let minecraftEntitlements = URLConfig.url("https://api.minecraftservices.com/entitlements/mcstore")
-            /// The Minecraft Services RelyingParty identifier.
             static let minecraftRelyingParty = "rp://api.minecraftservices.com/"
-            /// The Minecraft profile skins endpoint.
             static let minecraftProfileSkins = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins")
-            /// The Minecraft profile active skin endpoint.
             static let minecraftProfileActiveSkin = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins/active")
-            /// The Minecraft profile active cape endpoint.
             static let minecraftProfileActiveCape = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/capes/active")
         }
 
         enum MinecraftNews {
-            /// Returns the news article URL for a Java Edition release version.
-            ///
-            /// - Parameter version: A release version string (e.g. "1.26.1").
-            /// - Returns: The full article URL.
             static func javaEditionRelease(version: String) -> URL {
                 let slug = CommonUtil.minecraftReleaseNewsSlug(version: version)
                 return URLConfig.url("https://www.minecraft.net/en-us/article/\(slug)")
             }
 
-            /// Returns the news article URL for a snapshot version.
-            ///
-            /// - Parameter version: A snapshot version string (e.g. "26w11a").
-            /// - Returns: The full article URL.
             static func snapshot(version: String) -> URL {
                 let slug = CommonUtil.minecraftSnapshotNewsSlug(version: version)
                 return URLConfig.url("https://www.minecraft.net/en-us/article/\(slug)")
@@ -97,18 +76,10 @@ enum URLConfig {
             /// The GitHub API URL for fetching the latest Authlib Injector release.
             static let latestRelease = URLConfig.url("https://api.github.com/repos/yushijinhun/authlib-injector/releases/latest")
 
-            /// Constructs the JAR filename for a given release tag.
-            ///
-            /// - Parameter tag: The release tag, e.g. "v1.2.8".
-            /// - Returns: The JAR filename, e.g. "authlib-injector-1.2.8.jar".
             static func jarFileName(_ version: String) -> String {
                 "authlib-injector-\(version).jar"
             }
 
-            /// Constructs the download URL for a given release tag.
-            ///
-            /// - Parameter version: The release version, e.g. "1.2.8".
-            /// - Returns: The JAR download URL.
             static func downloadURL(_ version: String) -> URL {
                 URLConfig.url("https://github.com/yushijinhun/authlib-injector/releases/download/v\(version)/\(jarFileName(version))")
             }
@@ -129,11 +100,8 @@ enum URLConfig {
         }
 
         enum Yggdrasil {
-            /// The LittleSkin Yggdrasil server base URL.
             static let littleSkinBaseURL = URLConfig.url("https://littleskin.cn")
-            /// The MUA skin server base URL.
             static let muaBaseURL = URLConfig.url("https://skin.mualliance.ltd")
-            /// The Ely.by Yggdrasil server base URL.
             static let elyBaseURL = URLConfig.url("https://account.ely.by")
         }
 
@@ -144,22 +112,16 @@ enum URLConfig {
             static let repositoryOwner = "suhang12332"
             static let repositoryName = "Swift-Craft-Launcher"
 
-            /// Returns the web URL for the project repository.
             static func repositoryURL() -> URL {
                 baseURL
                     .appendingPathComponent(repositoryOwner)
                     .appendingPathComponent(repositoryName)
             }
 
-            /// Returns the contributors API URL.
             static func contributors() -> URL {
                 URLConfig.url("https://swift-craft-launcher-contributors.suhang12332.workers.dev/contributors")
             }
 
-            /// Returns the release page URL for the specified version tag.
-            ///
-            /// - Parameter version: The release version tag.
-            /// - Returns: The release page URL.
             static func releaseTag(version: String) -> URL {
                 repositoryURL()
                     .appendingPathComponent("releases")
@@ -167,32 +129,22 @@ enum URLConfig {
                     .appendingPathComponent(version)
             }
 
-            /// Returns the URL for the static contributors JSON file.
             static func staticContributors() -> URL {
                 URLConfig.url("https://swift-craft-launcher-contributors.pages.dev")
                     .appendingPathComponent("contributors.json")
             }
 
-            /// Returns the URL for the acknowledgements JSON file.
             static func acknowledgements() -> URL {
                 URLConfig.url("https://swift-craft-launcher-contributors.pages.dev")
                     .appendingPathComponent("acknowledgements.json")
             }
 
-            /// Returns the URL for a game icon asset.
-            ///
-            /// - Parameter value: The game identifier used as the icon filename.
-            /// - Returns: The icon image URL.
             static func gameIcon(_ value: String) -> URL {
                 URLConfig.url("https://swift-craft-launcher-imagebed.pages.dev")
                     .appendingPathComponent("gameicons")
                     .appendingPathComponent("\(value).png")
             }
 
-            /// Returns the URL for the LICENSE file on GitHub.
-            ///
-            /// - Parameter ref: The git reference. Defaults to `"main"`.
-            /// - Returns: The LICENSE file URL.
             static func license(ref: String = "main") -> URL {
                 repositoryURL()
                     .appendingPathComponent("blob")
@@ -200,12 +152,6 @@ enum URLConfig {
                     .appendingPathComponent("LICENSE")
             }
 
-            /// Returns the announcement URL for the specified version and language.
-            ///
-            /// - Parameters:
-            ///   - version: The application version string.
-            ///   - language: A language code (e.g. "zh-Hans", "en").
-            /// - Returns: The announcement JSON URL.
             static func announcement(version: String, language: String) -> URL {
                 URLConfig.url("https://swift-craft-launcher-news.pages.dev")
                     .appendingPathComponent(version)
@@ -229,167 +175,106 @@ enum URLConfig {
         }
 
         enum Community {
-            /// Returns the project website URL.
             static func website() -> URL {
                 URLConfig.url("https://swift-craft-launcher-web.pages.dev")
             }
 
-            /// Returns the GitHub Discussions URL.
             static func discussions() -> URL {
                 URLConfig.url("https://github.com/suhang12332/Swift-Craft-Launcher/discussions")
             }
 
-            /// Returns the GitHub Issues URL for bug reports.
             static func issues() -> URL {
                 URLConfig.url("https://github.com/suhang12332/Swift-Craft-Launcher/issues")
             }
 
-            /// Returns the Discord invite URL.
             static func discord() -> URL {
                 URLConfig.url("https://discord.gg/gYESVa3CZd")
             }
 
-            /// Returns the QQ group invite URL.
             static func qq() -> URL {
                 URLConfig.url("https://qm.qq.com/cgi-bin/qm/qr?k=1057517524")
             }
 
-            /// Returns the AI documentation URL.
             static func aiDocumentation() -> URL {
                 URLConfig.url("https://zread.ai/suhang12332/Swift-Craft-Launcher")
             }
         }
 
         enum Modrinth {
-            /// The Modrinth API v2 base URL.
             static let baseURL = URLConfig.url("https://api.modrinth.com/v2")
-            /// The Modrinth API v3 base URL.
             static let baseURLV3 = URLConfig.url("https://api.modrinth.com/v3")
-            /// The Modrinth web project base URL for building project links.
             static let webProjectBase = "https://modrinth.com/mod/"
 
-            /// Returns the v2 API URL for the specified project.
-            ///
-            /// - Parameter id: The Modrinth project identifier.
-            /// - Returns: The project detail URL.
             static func project(id: String) -> URL {
                 baseURL.appendingPathComponent("project/\(id)")
             }
 
-            /// Returns the v3 API URL for the specified project, including server-related fields.
-            ///
-            /// - Parameter id: The Modrinth project identifier.
-            /// - Returns: The project detail URL.
             static func projectV3(id: String) -> URL {
                 baseURLV3.appendingPathComponent("project/\(id)")
             }
 
-            /// Returns the URL for listing versions of a project.
-            ///
-            /// - Parameter id: The Modrinth project identifier.
-            /// - Returns: The version list URL.
             static func version(id: String) -> URL {
                 baseURL.appendingPathComponent("project/\(id)/version")
             }
 
-            /// Returns the URL for a specific version.
-            ///
-            /// - Parameter versionId: The Modrinth version identifier.
-            /// - Returns: The version detail URL.
             static func versionId(versionId: String) -> URL {
                 baseURL.appendingPathComponent("version/\(versionId)")
             }
 
-            /// The Modrinth search endpoint.
             static var search: URL {
                 baseURL.appendingPathComponent("search")
             }
 
-            /// Returns the URL for looking up a version by file hash.
-            ///
-            /// - Parameter hash: The file hash value.
-            /// - Returns: The version lookup URL.
             static func versionFile(hash: String) -> URL {
                 baseURL.appendingPathComponent("version_file/\(hash)")
             }
 
-            /// The game version tag endpoint.
             static var gameVersionTag: URL {
                 baseURL.appendingPathComponent("tag/game_version")
             }
 
-            /// The mod loader tag endpoint.
             static var loaderTag: URL {
                 baseURL.appendingPathComponent("tag/loader")
             }
 
-            /// The category tag endpoint.
             static var categoryTag: URL {
                 baseURL.appendingPathComponent("tag/category")
             }
 
-            /// Returns the loader metadata manifest URL.
-            ///
-            /// - Parameter loader: The mod loader name (e.g. "fabric", "forge").
-            /// - Returns: The manifest JSON URL.
             static func loaderManifest(loader: String) -> URL {
                 URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/manifest.json")
             }
 
-            /// Returns the Minecraft version metadata URL.
-            ///
-            /// - Parameter version: The Minecraft version string.
-            /// - Returns: The version metadata JSON URL.
             static func versionInfo(version: String) -> URL {
                 URLConfig.url("https://launcher-meta.modrinth.com/minecraft/v0/versions/\(version).json")
             }
 
-            /// Returns the loader profile URL for a specific loader and Minecraft version.
-            ///
-            /// - Parameters:
-            ///   - loader: The mod loader name (e.g. "fabric", "forge").
-            ///   - version: The Minecraft version string.
-            /// - Returns: The loader profile JSON URL.
             static func loaderProfile(loader: String, version: String) -> URL {
                 URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/versions/\(version).json")
             }
         }
 
         enum ChunkBase {
-            /// The ChunkBase seed map base URL.
             static let seedMapBase = "https://www.chunkbase.com/apps/seed-map"
 
-            /// Returns the ChunkBase seed map URL for the given world seed.
-            ///
-            /// - Parameter seed: The world seed value.
-            /// - Returns: The seed map URL, or `nil` if the URL cannot be constructed.
             static func seedMap(seed: Int64) -> URL? {
                 URL(string: "\(seedMapBase)#seed=\(seed)")
             }
         }
 
         enum Fabric {
-            /// The Fabric meta API URL for loader versions.
             static let loader = URLConfig.url("https://meta.fabricmc.net/v2/versions/loader")
         }
 
         enum Quilt {
-            /// The Quilt meta API base URL for loader versions.
             static let loaderBase = URLConfig.url("https://meta.quiltmc.org/v3/versions/loader/")
         }
 
         enum CurseForge {
-            /// The CurseForge API v1 base URL.
             static let mirrorBaseURL = URLConfig.url("https://api.curseforge.com/v1")
-            /// The CurseForge CDN fallback base URL for file downloads.
             static let fallbackDownloadBaseURL = URLConfig.url("https://edge.forgecdn.net/files")
-            /// The CurseForge web project base URL for building project links.
             static let webProjectBase = "https://www.curseforge.com/minecraft/"
 
-            /// Returns the CurseForge web project list URL for the specified resource type.
-            ///
-            /// - Parameter projectType: The resource type (e.g. "mod", "resourcepack", "datapack", "shader", "modpack").
-            /// - Returns: The project list base URL string.
             static func webProjectURL(projectType: String) -> String {
                 let type = projectType.lowercased()
                 let pathPrefix = switch type {
@@ -409,38 +294,18 @@ enum URLConfig {
                 return "\(webProjectBase)\(pathPrefix)"
             }
 
-            /// Returns the CurseForge API URL for a specific file.
-            ///
-            /// - Parameters:
-            ///   - projectId: The CurseForge project identifier.
-            ///   - fileId: The CurseForge file identifier.
-            /// - Returns: The file detail URL.
             static func fileDetail(projectId: Int, fileId: Int) -> URL {
                 mirrorBaseURL.appendingPathComponent("mods/\(projectId)/files/\(fileId)")
             }
 
-            /// Returns the CurseForge API URL for a mod's details.
-            ///
-            /// - Parameter modId: The CurseForge mod identifier.
-            /// - Returns: The mod detail URL.
             static func modDetail(modId: Int) -> URL {
                 mirrorBaseURL.appendingPathComponent("mods/\(modId)")
             }
 
-            /// Returns the CurseForge API URL for a mod's description.
-            ///
-            /// - Parameter modId: The CurseForge mod identifier.
-            /// - Returns: The mod description URL.
             static func modDescription(modId: Int) -> URL {
                 mirrorBaseURL.appendingPathComponent("mods/\(modId)/description")
             }
 
-            /// Returns a fallback download URL from the CurseForge CDN.
-            ///
-            /// - Parameters:
-            ///   - fileId: The CurseForge file identifier.
-            ///   - fileName: The filename to append.
-            /// - Returns: The fallback download URL.
             static func fallbackDownloadUrl(fileId: Int, fileName: String) -> URL {
                 fallbackDownloadBaseURL
                     .appendingPathComponent("\(fileId / 1000)")
@@ -448,13 +313,6 @@ enum URLConfig {
                     .appendingPathComponent(fileName)
             }
 
-            /// Returns the CurseForge API URL for a project's file list.
-            ///
-            /// - Parameters:
-            ///   - projectId: The CurseForge project identifier.
-            ///   - gameVersion: An optional Minecraft version to filter by.
-            ///   - modLoaderType: An optional mod loader type to filter by.
-            /// - Returns: The file list URL with the specified query parameters.
             static func projectFiles(projectId: Int, gameVersion: String? = nil, modLoaderType: Int? = nil) -> URL {
                 let url = mirrorBaseURL.appendingPathComponent("mods/\(projectId)/files")
 
@@ -476,37 +334,26 @@ enum URLConfig {
                 return components?.url ?? url
             }
 
-            /// The CurseForge mods search endpoint.
             static var search: URL {
                 mirrorBaseURL.appendingPathComponent("mods/search")
             }
 
-            /// The CurseForge categories endpoint.
             static var categories: URL {
                 mirrorBaseURL.appendingPathComponent("categories")
             }
 
-            /// The CurseForge game versions endpoint.
             static var gameVersions: URL {
                 mirrorBaseURL.appendingPathComponent("minecraft/version")
             }
 
-            /// The CurseForge file fingerprint matching endpoint.
             static var fingerprints: URL {
                 mirrorBaseURL.appendingPathComponent("fingerprints/432")
             }
         }
 
         enum MinecraftResources {
-            /// The Minecraft content delivery base URL.
             static let baseURL = "https://resources.download.minecraft.net"
 
-            /// Returns the download URL for a Minecraft asset.
-            ///
-            /// - Parameters:
-            ///   - hashPrefix: The first two characters of the asset hash.
-            ///   - hash: The full asset hash.
-            /// - Returns: The asset download URL.
             static func asset(hashPrefix: String, hash: String) -> URL {
                 URLConfig.url("\(baseURL)/\(hashPrefix)/\(hash)")
             }
@@ -526,34 +373,23 @@ enum URLConfig {
         }
 
         enum AIService {
-            /// The OpenAI API base URL.
             static let openAIBaseURL = "https://api.openai.com"
-            /// The default Ollama local server base URL.
             static let ollamaDefaultBaseURL = "http://localhost:11434"
-            /// The default avatar URL for AI assistant responses.
             static let defaultAvatarURL = "https://mcskins.top/assets/snippets/download/skin.php?n=7050"
 
-            /// The API endpoint path for OpenAI chat completions.
             static let openAIChatPath = "/v1/chat/completions"
-            /// The API endpoint path for Ollama chat completions.
             static let ollamaChatPath = "/api/chat"
         }
 
         enum IPLocation {
-            /// The IP geolocation lookup endpoint.
             static var currentLocation: URL {
                 URLConfig.url("https://ipapi.co/json/")
             }
         }
 
         enum Ely {
-            /// The Ely.by skin system base URL.
             static let baseURL = URLConfig.url("https://skinsystem.ely.by")
 
-            /// Returns the skin texture URL for the specified player.
-            ///
-            /// - Parameter nickname: The player's Ely.by nickname.
-            /// - Returns: The skin texture URL.
             static func textures(nickname: String) -> URL {
                 baseURL
                     .appendingPathComponent("textures")
