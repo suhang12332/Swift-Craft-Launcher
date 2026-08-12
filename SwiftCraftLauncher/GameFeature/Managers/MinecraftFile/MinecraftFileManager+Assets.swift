@@ -23,13 +23,18 @@ extension MinecraftFileManager {
     ) async throws -> DownloadedAssetIndex {
         let destinationURL = AppPaths.indexesDirectory.appendingPathComponent("\(manifest.assetIndex.id).json")
 
+        try await downloadAndSaveFile(
+            from: manifest.assetIndex.url,
+            to: destinationURL,
+            sha1: manifest.assetIndex.sha1,
+            type: .core,
+            i18nKey: "error.download.asset_index_failed",
+            errorMessage: "Failed to download asset index for manifestId=\(manifest.id), url=\(manifest.assetIndex.url.absoluteString)",
+        )
+
+        let data: Data
         do {
-            _ = try await DownloadManager.downloadFile(
-                urlString: manifest.assetIndex.url.absoluteString,
-                destinationURL: destinationURL,
-                expectedSha1: manifest.assetIndex.sha1,
-            )
-            let data = try Data(contentsOf: destinationURL)
+            data = try Data(contentsOf: destinationURL)
             let assetIndexData = try JSONDecoder().decode(
                 AssetIndexData.self,
                 from: data,
@@ -46,15 +51,11 @@ extension MinecraftFileManager {
                 objects: assetIndexData.objects,
             )
         } catch {
-            if let globalError = error as? GlobalError {
-                throw globalError
-            } else {
-                throw GlobalError.download(
-                    i18nKey: "error.download.asset_index_failed",
-                    level: .notification,
-                    message: "Failed to download asset index for manifestId=\(manifest.id), url=\(manifest.assetIndex.url.absoluteString): \(error.localizedDescription)",
-                )
-            }
+            throw GlobalError.download(
+                i18nKey: "error.download.asset_index_failed",
+                level: .notification,
+                message: "Failed to read asset index for manifestId=\(manifest.id), url=\(manifest.assetIndex.url.absoluteString): \(error.localizedDescription)",
+            )
         }
     }
 
@@ -102,28 +103,15 @@ extension MinecraftFileManager {
         let assetDirectory = objectsDirectory.appendingPathComponent(hashPrefix)
         let destinationURL = assetDirectory.appendingPathComponent(asset.hash)
 
-        do {
-            let urlString = URLConfig.API.MinecraftResources.asset(hashPrefix: hashPrefix, hash: asset.hash).absoluteString
-            _ = try await DownloadManager.downloadFile(
-                urlString: urlString,
-                destinationURL: destinationURL,
-                expectedSha1: asset.hash,
-            )
-            let fileName = path.components(separatedBy: "/").last ?? path
-            await incrementCompletedFilesCount(
-                fileName: fileName,
-                type: .resources,
-            )
-        } catch {
-            if let globalError = error as? GlobalError {
-                throw globalError
-            } else {
-                throw GlobalError.download(
-                    i18nKey: "error.download.asset_file_failed",
-                    level: .notification,
-                    message: "Failed to download asset hash=\(asset.hash), path=\(path): \(error.localizedDescription)",
-                )
-            }
-        }
+        let fileName = path.components(separatedBy: "/").last ?? path
+        try await downloadAndSaveFile(
+            from: URLConfig.API.MinecraftResources.asset(hashPrefix: hashPrefix, hash: asset.hash),
+            to: destinationURL,
+            sha1: asset.hash,
+            fileNameForNotification: fileName,
+            type: .resources,
+            i18nKey: "error.download.asset_file_failed",
+            errorMessage: "Failed to download asset hash=\(asset.hash), path=\(path)",
+        )
     }
 }

@@ -208,12 +208,19 @@ class MinecraftFileManager: @unchecked Sendable {
         try SHA1Calculator.sha1(ofFileAt: url)
     }
 
+    /// Downloads a file, verifies its SHA1, and increments the progress counter.
+    ///
+    /// Non-`GlobalError` failures are wrapped into a `GlobalError.download` with
+    /// the given `i18nKey` and `errorMessage` (the underlying error detail is
+    /// appended automatically) so each caller keeps its own error copy.
     func downloadAndSaveFile(
         from url: URL,
         to destinationURL: URL,
         sha1: String?,
         fileNameForNotification: String? = nil,
         type: DownloadType,
+        i18nKey: String = "error.download.file_download_failed",
+        errorMessage: String? = nil,
     ) async throws {
         do {
             _ = try await DownloadManager.downloadFile(
@@ -222,19 +229,20 @@ class MinecraftFileManager: @unchecked Sendable {
                 expectedSha1: sha1,
             )
 
-            await incrementCompletedFilesCount(
-                fileName: fileNameForNotification
-                    ?? destinationURL.lastPathComponent,
-                type: type,
-            )
+            if let fileNameForNotification {
+                await incrementCompletedFilesCount(
+                    fileName: fileNameForNotification,
+                    type: type,
+                )
+            }
         } catch {
             if let globalError = error as? GlobalError {
                 throw globalError
             } else {
                 throw GlobalError.download(
-                    i18nKey: "error.download.file_download_failed",
+                    i18nKey: i18nKey,
                     level: .notification,
-                    message: "Failed to download file from \(url.absoluteString) to \(destinationURL.path): \(error.localizedDescription)",
+                    message: "\(errorMessage ?? "Failed to download file from \(url.absoluteString) to \(destinationURL.path)"): \(error.localizedDescription)",
                 )
             }
         }
