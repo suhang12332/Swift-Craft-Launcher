@@ -164,35 +164,35 @@ final class CommonServiceModLoaderTests: XCTestCase {
         XCTAssertTrue(classpath.isEmpty)
     }
 
-    func testMavenCoordinateToDefaultPath_standard() {
-        let result = CommonService.mavenCoordinateToDefaultPath("org.example:lib:1.0")
+    func testMavenCoordinateToRelativePathForURL_standard() {
+        let result = CommonService.mavenCoordinateToRelativePathForURL("org.example:lib:1.0")
         XCTAssertEqual(result, "org/example/lib/1.0/lib-1.0.jar")
     }
 
-    func testMavenCoordinateToDefaultPath_withClassifier() {
-        let result = CommonService.mavenCoordinateToDefaultPath("org.example:lib:1.0:natives-macos")
+    func testMavenCoordinateToRelativePathForURL_withClassifier() {
+        let result = CommonService.mavenCoordinateToRelativePathForURL("org.example:lib:1.0:natives-macos")
         XCTAssertEqual(result, "org/example/lib/1.0/lib-1.0-natives-macos.jar")
     }
 
-    func testMavenCoordinateToDefaultPath_withAtSymbol() {
-        let result = CommonService.mavenCoordinateToDefaultPath("org.example:lib:1.0@lzma")
+    func testMavenCoordinateToRelativePathForURL_withAtSymbol() {
+        let result = CommonService.mavenCoordinateToRelativePathForURL("org.example:lib:1.0@lzma")
         XCTAssertTrue(result.contains("lib-1.0.lzma"))
     }
 
-    func testMavenCoordinateToDefaultPath_invalid_returnsOriginal() {
-        let result = CommonService.mavenCoordinateToDefaultPath("invalid")
+    func testMavenCoordinateToRelativePathForURL_invalid_returnsOriginal() {
+        let result = CommonService.mavenCoordinateToRelativePathForURL("invalid")
         XCTAssertEqual(result, "invalid")
     }
 
-    func testMavenCoordinateToDefaultURL_standard() {
+    func testMavenCoordinateToURL_standard() {
         let baseURL = URL(fileURLWithPath: "/tmp/libraries")
-        let result = CommonService.mavenCoordinateToDefaultURL("org.example:lib:1.0", url: baseURL)
+        let result = CommonService.mavenCoordinateToURL("org.example:lib:1.0", baseURL: baseURL)
         XCTAssertTrue(result.path.contains("org/example/lib/1.0/lib-1.0.jar"))
     }
 
-    func testMavenCoordinateToDefaultURL_withClassifier() {
+    func testMavenCoordinateToURL_withClassifier() {
         let baseURL = URL(fileURLWithPath: "/tmp/libraries")
-        let result = CommonService.mavenCoordinateToDefaultURL("org.example:lib:1.0:natives-macos", url: baseURL)
+        let result = CommonService.mavenCoordinateToURL("org.example:lib:1.0:natives-macos", baseURL: baseURL)
         XCTAssertTrue(result.path.contains("lib-1.0-natives-macos.jar"))
     }
 
