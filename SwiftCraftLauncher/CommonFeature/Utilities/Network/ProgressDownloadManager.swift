@@ -162,8 +162,38 @@ private enum ProgressDownloadError: Error {
 private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
     static let shared = ProgressDownloadSession()
 
-    private let lock = OSAllocatedUnfairLock<[Int: ProgressDownloadTracker]>(initialState: [:])
-    private lazy var session: URLSession = NetworkSession.makeSession(delegate: self)
+    private let lock = OSAllocatedUnfairLock<[ObjectIdentifier: ProgressDownloadTracker]>(initialState: [:])
+    private let sessionState = OSAllocatedUnfairLock<SessionCache>(initialState: SessionCache())
+
+    private struct SessionCache {
+        var session: URLSession?
+        var connectionsPerHost: Int = 0
+        /// Sessions retired after a setting change; kept alive until their in-flight tasks finish.
+        var retiring: [URLSession] = []
+    }
+
+    /// The active session, recreated when the concurrent download setting changes
+    /// because the per-host connection limit is fixed at session creation time.
+    /// The previous session is retired with `finishTasksAndInvalidate()` so in-flight
+    /// downloads complete instead of being cancelled by session deallocation.
+    private var session: URLSession {
+        let connectionsPerHost = max(1, DIContainer.shared.ui.generalSettingsManager.concurrentDownloads)
+        let (session, retiredSession) = sessionState.withLock { cache -> (URLSession, URLSession?) in
+            if let cachedSession = cache.session, cache.connectionsPerHost == connectionsPerHost {
+                return (cachedSession, nil)
+            }
+            let newSession = NetworkSession.makeSession(delegate: self)
+            let previousSession = cache.session
+            if let previousSession {
+                cache.retiring.append(previousSession)
+            }
+            cache.session = newSession
+            cache.connectionsPerHost = connectionsPerHost
+            return (newSession, previousSession)
+        }
+        retiredSession?.finishTasksAndInvalidate()
+        return session
+    }
 
     func download(
         from url: URL,
@@ -210,12 +240,19 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
 
     func invalidateAndCancel() {
         cancelPendingHandlers()
-        session.invalidateAndCancel()
+        takeAndClearSession()?.invalidateAndCancel()
     }
 
     func finishTasksAndInvalidate() {
         cancelPendingHandlers()
-        session.finishTasksAndInvalidate()
+        takeAndClearSession()?.finishTasksAndInvalidate()
+    }
+
+    private func takeAndClearSession() -> URLSession? {
+        sessionState.withLock { cache in
+            defer { cache.session = nil }
+            return cache.session
+        }
     }
 
     private func cancelPendingHandlers() {
@@ -281,16 +318,22 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
         removeTracker(for: task)
     }
 
+    func urlSession(_ session: URLSession, didBecomeInvalidWithError _: Error?) {
+        sessionState.withLock { cache in
+            cache.retiring.removeAll { $0 === session }
+        }
+    }
+
     private func set(tracker: ProgressDownloadTracker, for task: URLSessionTask) {
-        lock.withLock { $0[task.taskIdentifier] = tracker }
+        lock.withLock { $0[ObjectIdentifier(task)] = tracker }
     }
 
     private func tracker(for task: URLSessionTask) -> ProgressDownloadTracker? {
-        lock.withLock { $0[task.taskIdentifier] }
+        lock.withLock { $0[ObjectIdentifier(task)] }
     }
 
     private func removeTracker(for task: URLSessionTask) {
-        lock.withLock { $0[task.taskIdentifier] = nil }
+        lock.withLock { $0[ObjectIdentifier(task)] = nil }
     }
 }
 

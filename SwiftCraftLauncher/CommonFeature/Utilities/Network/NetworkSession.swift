@@ -13,23 +13,23 @@ enum NetworkSession {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30
         configuration.timeoutIntervalForResource = 300
-        configuration.httpMaximumConnectionsPerHost = 16
         configuration.waitsForConnectivity = true
         configuration.requestCachePolicy = .useProtocolCachePolicy
         return configuration
     }()
 
-    /// Creates a new URLSession with optional delegate and configuration overrides.
+    /// Creates a new URLSession with an optional delegate.
+    /// The per-host connection limit follows the user's concurrent download setting,
+    /// so it never caps the configured concurrency below its intended value.
     /// - Parameters:
     ///   - delegate: The session delegate.
-    ///   - configure: A closure to modify the default configuration before the session is created.
     /// - Returns: A configured URLSession instance.
-    static func makeSession(
-        delegate: URLSessionDelegate? = nil,
-        configure: ((URLSessionConfiguration) -> Void)? = nil,
-    ) -> URLSession {
+    static func makeSession(delegate: URLSessionDelegate? = nil) -> URLSession {
         let configuration = newConfiguration()
-        configure?(configuration)
+        configuration.httpMaximumConnectionsPerHost = max(
+            1,
+            DIContainer.shared.ui.generalSettingsManager.concurrentDownloads,
+        )
         return URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
     }
 
