@@ -37,27 +37,15 @@ extension MinecraftFileManager {
             "\(manifest.id).jar",
         )
 
-        do {
-            _ = try await DownloadManager.downloadFile(
-                urlString: manifest.downloads.client.url.absoluteString,
-                destinationURL: destinationURL,
-                expectedSha1: manifest.downloads.client.sha1,
-            )
-            await incrementCompletedFilesCount(
-                fileName: "client.jar",
-                type: .core,
-            )
-        } catch {
-            if let globalError = error as? GlobalError {
-                throw globalError
-            } else {
-                throw GlobalError.download(
-                    i18nKey: "error.download.client_jar_failed",
-                    level: .notification,
-                    message: "Failed to download client.jar for manifestId=\(manifest.id), url=\(manifest.downloads.client.url.absoluteString): \(error.localizedDescription)",
-                )
-            }
-        }
+        try await downloadAndSaveFile(
+            from: manifest.downloads.client.url,
+            to: destinationURL,
+            sha1: manifest.downloads.client.sha1,
+            fileNameForNotification: "client.jar",
+            type: .core,
+            i18nKey: "error.download.client_jar_failed",
+            errorMessage: "Failed to download client.jar for manifestId=\(manifest.id), url=\(manifest.downloads.client.url.absoluteString)",
+        )
     }
 
     private func downloadLibraries(
@@ -121,29 +109,19 @@ extension MinecraftFileManager {
             )
         }
 
-        do {
-            let urlString = artifactURL.absoluteString
-            _ = try await DownloadManager.downloadFile(
-                urlString: urlString,
-                destinationURL: destinationURL,
-                expectedSha1: library.downloads.artifact.sha1,
-            )
-            await handleLibraryDownloadComplete(
-                library: library,
-                metaDirectory: metaDirectory,
-                minecraftVersion: minecraftVersion,
-            )
-        } catch {
-            if let globalError = error as? GlobalError {
-                throw globalError
-            } else {
-                throw GlobalError.download(
-                    i18nKey: "error.download.library_failed",
-                    level: .notification,
-                    message: "Failed to download library \(library.name) from \(artifactURL.absoluteString): \(error.localizedDescription)",
-                )
-            }
-        }
+        try await downloadAndSaveFile(
+            from: artifactURL,
+            to: destinationURL,
+            sha1: library.downloads.artifact.sha1,
+            type: .core,
+            i18nKey: "error.download.library_failed",
+            errorMessage: "Failed to download library \(library.name) from \(artifactURL.absoluteString)",
+        )
+        await handleLibraryDownloadComplete(
+            library: library,
+            metaDirectory: metaDirectory,
+            minecraftVersion: minecraftVersion,
+        )
     }
 
     func downloadNativeLibrary(
@@ -184,28 +162,15 @@ extension MinecraftFileManager {
             )
         }
 
-        do {
-            _ = try await DownloadManager.downloadFile(
-                urlString: nativeURL.absoluteString,
-                destinationURL: destinationURL,
-                expectedSha1: nativeArtifact.sha1,
-            )
-
-            await incrementCompletedFilesCount(
-                fileName: library.name,
-                type: .core,
-            )
-        } catch {
-            if let globalError = error as? GlobalError {
-                throw globalError
-            } else {
-                throw GlobalError.download(
-                    i18nKey: "error.download.native_library_failed",
-                    level: .notification,
-                    message: "Failed to download native library \(library.name) from \(nativeURL.absoluteString): \(error.localizedDescription)",
-                )
-            }
-        }
+        try await downloadAndSaveFile(
+            from: nativeURL,
+            to: destinationURL,
+            sha1: nativeArtifact.sha1,
+            fileNameForNotification: library.name,
+            type: .core,
+            i18nKey: "error.download.native_library_failed",
+            errorMessage: "Failed to download native library \(library.name) from \(nativeURL.absoluteString)",
+        )
     }
 
     private func downloadLoggingConfig(
@@ -219,27 +184,15 @@ extension MinecraftFileManager {
 
         let destinationURL = versionDir.appendingPathComponent(loggingFile.id)
 
-        do {
-            _ = try await DownloadManager.downloadFile(
-                urlString: loggingFile.url.absoluteString,
-                destinationURL: destinationURL,
-                expectedSha1: loggingFile.sha1,
-            )
-            await incrementCompletedFilesCount(
-                fileName: "logging.config",
-                type: .core,
-            )
-        } catch {
-            if let globalError = error as? GlobalError {
-                throw globalError
-            } else {
-                throw GlobalError.download(
-                    i18nKey: "error.download.logging_config_failed",
-                    level: .notification,
-                    message: "Failed to download logging config \(loggingFile.id) for manifestId=\(manifest.id): \(error.localizedDescription)",
-                )
-            }
-        }
+        try await downloadAndSaveFile(
+            from: loggingFile.url,
+            to: destinationURL,
+            sha1: loggingFile.sha1,
+            fileNameForNotification: "logging.config",
+            type: .core,
+            i18nKey: "error.download.logging_config_failed",
+            errorMessage: "Failed to download logging config \(loggingFile.id) for manifestId=\(manifest.id)",
+        )
     }
 
     func handleLibraryDownloadComplete(

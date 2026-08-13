@@ -45,7 +45,7 @@ class ModScanner: @unchecked Sendable {
     ) {
         Task {
             do {
-                let detail = try await getModrinthProjectDetailThrowing(
+                let detail = try await getModrinthProjectDetail(
                     for: fileURL,
                 )
                 completion(detail)
@@ -61,7 +61,7 @@ class ModScanner: @unchecked Sendable {
     }
 
     /// Retrieves a Modrinth project detail for the given file.
-    func getModrinthProjectDetailThrowing(
+    func getModrinthProjectDetail(
         for fileURL: URL,
     ) async throws -> ModrinthProjectDetail? {
         guard let hash = try Self.sha1HashThrowing(of: fileURL) else {

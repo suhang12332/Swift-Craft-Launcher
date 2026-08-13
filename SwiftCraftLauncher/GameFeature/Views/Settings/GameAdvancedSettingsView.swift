@@ -130,7 +130,7 @@ struct GameAdvancedSettingsView: View {
                         .onChange(of: viewModel.environmentVariables) { _, _ in viewModel.didChangeEnvironmentVariables() }
                 }
                 .labeledContentStyle(.custom)
-                CommonDescriptionText(text: "example: JAVA_OPTS=-Dfile.encoding=UTF-8".localized())
+                CommonDescriptionText(text: "settings.game.java.environment_variables.description".localized())
             }
         }
         .onAppear {

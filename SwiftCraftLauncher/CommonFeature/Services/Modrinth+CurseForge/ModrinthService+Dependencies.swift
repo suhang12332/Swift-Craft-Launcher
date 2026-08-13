@@ -84,7 +84,7 @@ extension ModrinthService {
                 let lowercasedType = type.lowercased()
 
                 if lowercasedType == ResourceType.mod.rawValue {
-                    if (try? await DIContainer.shared.core.modScanner.isModInstalledThrowing(hash: hash, in: modsDir)) == true {
+                    if (try? await DIContainer.shared.core.modScanner.isModInstalled(hash: hash, in: modsDir)) == true {
                         return true
                     }
                 } else {

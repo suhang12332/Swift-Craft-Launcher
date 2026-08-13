@@ -68,7 +68,7 @@ extension ModScanner {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
 
-                    return try? await self.getModrinthProjectDetailThrowing(
+                    return try? await self.getModrinthProjectDetail(
                         for: fileURL,
                     )
                 }

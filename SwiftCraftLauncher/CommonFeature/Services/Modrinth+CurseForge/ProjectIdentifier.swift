@@ -17,9 +17,6 @@ struct ProjectIdentifier: Equatable, Hashable {
     /// Whether this identifier refers to a CurseForge project.
     var isCurseForge: Bool { raw.hasPrefix("cf-") }
 
-    /// Whether this identifier refers to a Modrinth project.
-    var isModrinth: Bool { !isCurseForge }
-
     /// The normalized form: always `"cf-<numericId>"` for CurseForge, unchanged for Modrinth.
     var normalized: String {
         if isCurseForge {
@@ -29,13 +26,6 @@ struct ProjectIdentifier: Equatable, Hashable {
             return "cf-\(raw)"
         }
         return raw
-    }
-
-    /// The numeric CurseForge mod ID, or `nil` if this is a Modrinth identifier.
-    var curseForgeModId: Int? {
-        guard isCurseForge else { return nil }
-        let clean = raw.replacingOccurrences(of: "cf-", with: "")
-        return Int(clean)
     }
 
     /// Parses the identifier into its CurseForge numeric ID and normalized string.

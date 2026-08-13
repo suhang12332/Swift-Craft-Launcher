@@ -50,7 +50,7 @@ class CommonFileManager: @unchecked Sendable {
             return JarDownloadTask(
                 name: lib.name,
                 url: url,
-                destinationPath: CommonService.mavenCoordinateToDefaultPath(lib.name),
+                destinationPath: CommonService.mavenCoordinateToRelativePathForURL(lib.name),
                 expectedSha1: nil,
             )
         }
@@ -95,7 +95,7 @@ class CommonFileManager: @unchecked Sendable {
             return JarDownloadTask(
                 name: lib.name,
                 url: url,
-                destinationPath: CommonService.mavenCoordinateToDefaultPath(lib.name),
+                destinationPath: CommonService.mavenCoordinateToRelativePathForURL(lib.name),
                 expectedSha1: "",
             )
         }

@@ -59,13 +59,25 @@ extension ModScanner {
         try scanDirectoryForDetails(in: dir)
     }
 
-    /// Synchronously checks whether a mod is installed by consulting the cache.
-    func isModInstalledSync(hash: String, in modsDir: URL) async -> Bool {
+    /// Checks whether a mod is installed by consulting the cache, throwing on errors.
+    func isModInstalled(
+        hash: String,
+        in modsDir: URL,
+    ) async throws -> Bool {
+        guard let gameName = extractGameName(from: modsDir) else {
+            return false
+        }
+
+        return await checkModInstalledCore(hash: hash, gameName: gameName)
+    }
+
+    /// Checks whether a mod is installed, reporting failures to the global error handler.
+    func isModInstalledReportingErrors(
+        hash: String,
+        in modsDir: URL,
+    ) async -> Bool {
         do {
-            return try await isModInstalledSyncThrowing(
-                hash: hash,
-                in: modsDir,
-            )
+            return try await isModInstalled(hash: hash, in: modsDir)
         } catch {
             let globalError = GlobalError.from(error)
             AppLog.game.error("Failed to check mod installation status: \(globalError.localizedDescription)")
@@ -74,18 +86,7 @@ extension ModScanner {
         }
     }
 
-    /// Synchronously checks whether a mod is installed, throwing on errors.
-    func isModInstalledSyncThrowing(
-        hash: String,
-        in modsDir: URL,
-    ) async throws -> Bool {
-        guard let gameName = extractGameName(from: modsDir) else {
-            return false
-        }
-        return await checkModInstalledCore(hash: hash, gameName: gameName)
-    }
-
-    /// Asynchronously checks whether a mod is installed, returning the result via a completion handler.
+    /// Checks whether a mod is installed, returning the result via a completion handler.
     func isModInstalled(
         hash: String,
         in modsDir: URL,
@@ -93,7 +94,7 @@ extension ModScanner {
     ) {
         Task {
             do {
-                let result = try await isModInstalledThrowing(
+                let result = try await isModInstalled(
                     hash: hash,
                     in: modsDir,
                 )
@@ -107,17 +108,5 @@ extension ModScanner {
                 completion(false)
             }
         }
-    }
-
-    /// Asynchronously checks whether a mod is installed.
-    func isModInstalledThrowing(
-        hash: String,
-        in modsDir: URL,
-    ) async throws -> Bool {
-        guard let gameName = extractGameName(from: modsDir) else {
-            return false
-        }
-
-        return await checkModInstalledCore(hash: hash, gameName: gameName)
     }
 }
