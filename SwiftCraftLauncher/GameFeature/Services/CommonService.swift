@@ -244,7 +244,7 @@ enum CommonService {
 
     static func mavenCoordinateToRelativePathForURL(_ coordinate: String) -> String {
         if coordinate.contains("@") {
-            return convertMavenCoordinateWithAtSymbolForURL(coordinate)
+            return parseMavenCoordinateWithAtSymbol(coordinate)
         }
 
         if let relativePath = mavenCoordinateToRelativePath(coordinate) {
@@ -254,24 +254,14 @@ enum CommonService {
         return coordinate
     }
 
-    static func convertMavenCoordinateWithAtSymbolForURL(
-        _ coordinate: String,
-    ) -> String {
-        parseMavenCoordinateWithAtSymbol(coordinate)
-    }
-
     static func mavenCoordinateToURL(lib: ModrinthLoaderLibrary) -> URL? {
         let relativePath = mavenCoordinateToRelativePathForURL(lib.name)
         return lib.url?.appendingPathComponent(relativePath)
     }
 
-    static func mavenCoordinateToDefaultURL(_ coordinate: String, url: URL) -> URL {
+    static func mavenCoordinateToURL(_ coordinate: String, baseURL: URL) -> URL {
         let relativePath = mavenCoordinateToRelativePathForURL(coordinate)
-        return url.appendingPathComponent(relativePath)
-    }
-
-    static func mavenCoordinateToDefaultPath(_ coordinate: String) -> String {
-        mavenCoordinateToRelativePathForURL(coordinate)
+        return baseURL.appendingPathComponent(relativePath)
     }
 
     static func generateFabricClasspath(
