@@ -38,28 +38,6 @@ class ModScanner: @unchecked Sendable {
         }
     }
 
-    /// Retrieves a Modrinth project detail for the given file, returning the result via a completion handler.
-    func getModrinthProjectDetail(
-        for fileURL: URL,
-        completion: @escaping @Sendable (ModrinthProjectDetail?) -> Void,
-    ) {
-        Task {
-            do {
-                let detail = try await getModrinthProjectDetail(
-                    for: fileURL,
-                )
-                completion(detail)
-            } catch {
-                let globalError = GlobalError.from(error)
-                AppLog.game.error(
-                    "Failed to get Modrinth project details: \(globalError.localizedDescription)",
-                )
-                DIContainer.shared.core.errorHandler.handle(globalError)
-                completion(nil)
-            }
-        }
-    }
-
     /// Retrieves a Modrinth project detail for the given file.
     func getModrinthProjectDetail(
         for fileURL: URL,
@@ -141,20 +119,12 @@ class ModScanner: @unchecked Sendable {
     }
 
     /// Computes the SHA-1 hash of the file at the given URL, returning `nil` on failure.
-    static func sha1Hash(of url: URL) -> String? {
+    func sha1Hash(of url: URL) -> String? {
         SHA1Calculator.sha1Silent(ofFileAt: url)
     }
 
     /// Computes the SHA-1 hash of the file at the given URL, throwing on I/O errors.
     static func sha1HashThrowing(of url: URL) throws -> String? {
         try SHA1Calculator.sha1(ofFileAt: url)
-    }
-
-    func sha1Hash(of url: URL) -> String? {
-        Self.sha1Hash(of: url)
-    }
-
-    func sha1HashThrowing(of url: URL) throws -> String? {
-        try Self.sha1HashThrowing(of: url)
     }
 }
