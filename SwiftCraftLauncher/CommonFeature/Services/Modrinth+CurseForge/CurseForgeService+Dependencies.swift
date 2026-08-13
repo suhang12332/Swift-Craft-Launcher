@@ -31,9 +31,9 @@ extension CurseForgeService {
                     type: type,
                 )
             },
-            fetchVersionById: { versionID in
-                try await fetchVersionById(versionID)
-            },
+            // CurseForge dependencies carry no fileId (API limitation), so version-level
+            // lookup is not needed; resolution falls back to the first compatible version.
+            fetchVersionById: nil,
         )
         return await DependencyResolver.resolve(context)
     }
@@ -60,27 +60,6 @@ extension CurseForgeService {
                 selectedLoaders: selectedLoaders,
                 type: type,
             )
-        }
-    }
-
-    /// Fetches a version by ID, handling both CurseForge and Modrinth IDs.
-    private static func fetchVersionById(_ versionID: String) async throws -> ModrinthProjectDetailVersion {
-        let versionIdentifier = versionID.asProjectId
-        if versionIdentifier.isCurseForge {
-            let fileId = Int(versionID.replacingOccurrences(of: "cf-", with: "")) ?? 0
-            let normalizedProjectId = versionID.asProjectId.normalized
-            let (modId, _) = try normalizedProjectId.asProjectId.parseCurseForgeId()
-            let cfFile = try await fetchFileDetailThrowing(projectId: modId, fileId: fileId)
-            guard let convertedVersion = CFToModrinthAdapter.convertFile(cfFile, projectId: normalizedProjectId) else {
-                throw GlobalError.validation(
-                    i18nKey: "error.validation.version_convert_failed",
-                    level: .notification,
-                    message: "Failed to convert CurseForge file to Modrinth format for versionId=\(versionID)",
-                )
-            }
-            return convertedVersion
-        } else {
-            return try await ModrinthService.fetchProjectVersionThrowing(id: versionID)
         }
     }
 }

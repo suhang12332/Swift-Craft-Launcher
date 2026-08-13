@@ -21,7 +21,9 @@ enum DependencyResolver {
         let selectedVersions: [String]
         let selectedLoaders: [String]
         let fetchVersions: @Sendable (String) async throws -> [ModrinthProjectDetailVersion]
-        let fetchVersionById: @Sendable (String) async throws -> ModrinthProjectDetailVersion
+        /// Fetches an exact version by ID. Providers without version-level lookup
+        /// (e.g. CurseForge) leave this nil and fall back to the first compatible version.
+        let fetchVersionById: (@Sendable (String) async throws -> ModrinthProjectDetailVersion)?
     }
 
     /// Resolves missing dependencies for a project.
@@ -78,8 +80,8 @@ enum DependencyResolver {
                     guard let projectId = dep.projectId else { continue }
                     group.addTask {
                         do {
-                            if let versionId = dep.versionId {
-                                return try await context.fetchVersionById(versionId)
+                            if let versionId = dep.versionId, let fetchVersionById = context.fetchVersionById {
+                                return try await fetchVersionById(versionId)
                             } else {
                                 let depVersions = try await context.fetchVersions(projectId)
                                 guard let first = depVersions.first else {
