@@ -14,9 +14,14 @@ enum FabricLikeLoaderService {
     }
 
     static func fetchSpecificLoaderVersion(config: Config, for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
-        let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
+        let namespace = "\(config.gameLoader.displayName)-\(minecraftVersion)-\(loaderVersion)"
 
-        if let cached = DIContainer.shared.core.appCacheManager.get(namespace: config.gameLoader.displayName, key: cacheKey, as: ModrinthLoader.self) {
+        if let cached = DIContainer.shared.core.appCacheManager.get(
+            namespace: namespace,
+            key: "profile",
+            as: ModrinthLoader.self,
+            directory: AppPaths.loaderCache,
+        ) {
             return cached
         }
 
@@ -26,7 +31,12 @@ enum FabricLikeLoaderService {
         var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
         result.version = loaderVersion
-        DIContainer.shared.core.appCacheManager.setSilently(namespace: config.gameLoader.displayName, key: cacheKey, value: result)
+        DIContainer.shared.core.appCacheManager.setSilently(
+            namespace: namespace,
+            key: "profile",
+            value: result,
+            directory: AppPaths.loaderCache,
+        )
 
         return result
     }
