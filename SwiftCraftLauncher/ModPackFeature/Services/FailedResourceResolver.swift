@@ -15,26 +15,40 @@ enum FailedResourceResolver {
         from files: [ModrinthIndexFile],
         gameInfo: GameVersionInfo,
     ) async -> [FailedModPackResource] {
-        var failedResources: [FailedModPackResource] = []
-        for file in files {
-            if let resource = await makeFailedResource(from: file, gameInfo: gameInfo) {
-                failedResources.append(resource)
+        await withTaskGroup(of: (Int, FailedModPackResource?).self) { group in
+            for (index, file) in files.enumerated() {
+                group.addTask {
+                    let resource = await makeFailedResource(from: file, gameInfo: gameInfo)
+                    return (index, resource)
+                }
             }
+
+            var ordered: [(Int, FailedModPackResource?)] = []
+            for await result in group {
+                ordered.append(result)
+            }
+            return ordered.sorted { $0.0 < $1.0 }.compactMap(\.1)
         }
-        return failedResources
     }
 
     static func makeFailedResources(
         from dependencies: [ModrinthIndexProjectDependency],
         gameInfo: GameVersionInfo,
     ) async -> [FailedModPackResource] {
-        var failedResources: [FailedModPackResource] = []
-        for dependency in dependencies {
-            if let resource = await makeFailedResource(from: dependency, gameInfo: gameInfo) {
-                failedResources.append(resource)
+        await withTaskGroup(of: (Int, FailedModPackResource?).self) { group in
+            for (index, dependency) in dependencies.enumerated() {
+                group.addTask {
+                    let resource = await makeFailedResource(from: dependency, gameInfo: gameInfo)
+                    return (index, resource)
+                }
             }
+
+            var ordered: [(Int, FailedModPackResource?)] = []
+            for await result in group {
+                ordered.append(result)
+            }
+            return ordered.sorted { $0.0 < $1.0 }.compactMap(\.1)
         }
-        return failedResources
     }
 
     private static func makeFailedResource(
