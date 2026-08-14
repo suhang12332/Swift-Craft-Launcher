@@ -109,4 +109,29 @@ final class ModPackInstallStateTests: XCTestCase {
         XCTAssertEqual(state.dependenciesProgress, 0)
         XCTAssertEqual(state.overridesProgress, 0)
     }
+
+    func testMarkHandledResource_incrementsFilesProgress() {
+        let state = ModPackInstallState()
+        state.startInstallation(filesTotal: 10, dependenciesTotal: 5)
+
+        state.markHandledResource(name: "failed-mod.jar")
+        state.markHandledResource(name: "another.jar")
+
+        XCTAssertEqual(state.filesCompleted, 2)
+        XCTAssertEqual(state.currentFile, "another.jar")
+        XCTAssertEqual(state.filesProgress, 0.2, accuracy: 0.001)
+        XCTAssertEqual(state.dependenciesCompleted, 0)
+    }
+
+    func testMarkHandledResource_clampsAtTotal() {
+        let state = ModPackInstallState()
+        state.startInstallation(filesTotal: 2, dependenciesTotal: 2)
+
+        state.markHandledResource(name: "a")
+        state.markHandledResource(name: "b")
+        state.markHandledResource(name: "c")
+
+        XCTAssertEqual(state.filesCompleted, 2)
+        XCTAssertEqual(state.filesProgress, 1.0, accuracy: 0.001)
+    }
 }

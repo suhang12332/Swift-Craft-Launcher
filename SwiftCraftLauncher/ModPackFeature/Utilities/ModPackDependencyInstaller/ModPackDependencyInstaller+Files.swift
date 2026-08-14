@@ -9,12 +9,13 @@ import Foundation
 
 extension ModPackDependencyInstaller {
     /// Downloads and installs all modpack files that are not excluded by environment constraints.
+    /// - Returns: The files that failed to download (empty when all succeeded).
     static func installModPackFiles(
         files: [ModrinthIndexFile],
         resourceDir: URL,
         gameInfo _: GameVersionInfo,
         onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)?,
-    ) async -> Bool {
+    ) async -> [ModrinthIndexFile] {
         let filesToDownload = filterDownloadableFiles(files)
 
         onProgressUpdate?("modpack.progress.files_download_started".localized(), 0, filesToDownload.count, .files)
@@ -22,7 +23,7 @@ extension ModPackDependencyInstaller {
         let semaphore = AsyncSemaphore(value: downloadSemaphoreValue)
         let completedCount = AtomicCounter()
 
-        let results = await withTaskGroup(of: (Int, Bool).self) { group in
+        let results = await withTaskGroup(of: (Int, ModrinthIndexFile?).self) { group in
             for (index, file) in filesToDownload.enumerated() {
                 group.addTask {
                     await semaphore.wait()
@@ -33,30 +34,30 @@ extension ModPackDependencyInstaller {
                     if success {
                         let currentCount = await completedCount.increment()
                         onProgressUpdate?(file.path, currentCount, filesToDownload.count, .files)
+                        return (index, nil)
                     }
 
-                    return (index, success)
+                    return (index, file)
                 }
             }
 
-            var results: [(Int, Bool)] = []
+            var results: [(Int, ModrinthIndexFile?)] = []
             for await result in group {
                 results.append(result)
             }
             return results.sorted { $0.0 < $1.0 }
         }
 
-        let successCount = results.count { $0.1 }
-        let failedCount = results.count - successCount
+        let failedFiles = results.compactMap(\.1)
 
-        if failedCount > 0 {
-            AppLog.modPack.error("\(failedCount) files failed to download")
-            return false
+        if !failedFiles.isEmpty {
+            AppLog.modPack.error("\(failedFiles.count) files failed to download")
+            return failedFiles
         }
 
         onProgressUpdate?("modpack.progress.files_download_completed".localized(), filesToDownload.count, filesToDownload.count, .files)
 
-        return true
+        return []
     }
 
     private static func filterDownloadableFiles(_ files: [ModrinthIndexFile]) -> [ModrinthIndexFile] {

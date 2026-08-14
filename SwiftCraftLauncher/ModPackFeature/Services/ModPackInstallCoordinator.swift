@@ -30,6 +30,9 @@ final class ModPackInstallCoordinator {
         let setProcessing: (Bool) -> Void
         let setLastParsedIndexInfo: (ModrinthIndexInfo?) -> Void
         let prepared: PreparedModPack?
+        /// Invoked when resources fail to download, with the failed resources and a
+        /// continuation reporting whether all resources were handled.
+        var onShowFailedResources: (([FailedModPackResource], @escaping (Bool) -> Void) -> Void)?
     }
 
     private let downloadService: ModPackDownloadService
@@ -228,7 +231,7 @@ final class ModPackInstallCoordinator {
         gameInfo: GameVersionInfo,
         input: RunInput,
     ) async -> Bool {
-        await ModPackDependencyInstaller.installModPackFiles(
+        let failedFiles = await ModPackDependencyInstaller.installModPackFiles(
             files: indexInfo.files,
             resourceDir: resourceDir,
             gameInfo: gameInfo,
@@ -243,6 +246,12 @@ final class ModPackInstallCoordinator {
                 )
             }
         }
+
+        guard failedFiles.isEmpty else {
+            let failedResources = await FailedResourceResolver.makeFailedResources(from: failedFiles, gameInfo: gameInfo)
+            return await FailedResourceResolver.presentFailedResources(failedResources, input: input)
+        }
+        return true
     }
 
     private func installDependenciesStep(
@@ -251,7 +260,7 @@ final class ModPackInstallCoordinator {
         gameInfo: GameVersionInfo,
         input: RunInput,
     ) async -> Bool {
-        await ModPackDependencyInstaller.installModPackDependencies(
+        let failedDependencies = await ModPackDependencyInstaller.installModPackDependencies(
             dependencies: indexInfo.dependencies,
             gameInfo: gameInfo,
             resourceDir: resourceDir,
@@ -266,6 +275,12 @@ final class ModPackInstallCoordinator {
                 )
             }
         }
+
+        guard failedDependencies.isEmpty else {
+            let failedResources = await FailedResourceResolver.makeFailedResources(from: failedDependencies, gameInfo: gameInfo)
+            return await FailedResourceResolver.presentFailedResources(failedResources, input: input)
+        }
+        return true
     }
 
     private func installGameStep(

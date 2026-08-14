@@ -24,6 +24,8 @@ class ModPackDownloadSheetViewModel {
     var modPackTotalSize: Int64 = 0
 
     var isProcessing = false
+    var failedResources: [FailedModPackResource] = []
+    var failedResourcesContinuation: ((Bool) -> Void)?
 
     private var downloadTask: Task<Void, Never>?
     private let downloadService = ModPackDownloadService()
@@ -159,24 +161,26 @@ class ModPackDownloadSheetViewModel {
             return false
         }
 
-        let success = await installCoordinator.run(
-            .init(
-                archivePath: archivePath,
-                projectDetailForIcon: projectDetail,
-                gameName: gameName,
-                selectedGameVersion: selectedGameVersion,
-                gameSetupService: gameSetupService,
-                gameRepository: gameRepository,
-                modPackInstallState: modPackInstallState,
-                setProcessing: { [weak self] processing in
-                    self?.isProcessing = processing
-                },
-                setLastParsedIndexInfo: { [weak self] info in
-                    self?.lastParsedIndexInfo = info
-                },
-                prepared: nil,
-            ),
+        var input: ModPackInstallCoordinator.RunInput = .init(
+            archivePath: archivePath,
+            projectDetailForIcon: projectDetail,
+            gameName: gameName,
+            selectedGameVersion: selectedGameVersion,
+            gameSetupService: gameSetupService,
+            gameRepository: gameRepository,
+            modPackInstallState: modPackInstallState,
+            setProcessing: { [weak self] processing in
+                self?.isProcessing = processing
+            },
+            setLastParsedIndexInfo: { [weak self] info in
+                self?.lastParsedIndexInfo = info
+            },
+            prepared: nil,
         )
+        input.onShowFailedResources = { [weak self] resources, continuation in
+            self?.handleFailedResources(resources, continuation: continuation)
+        }
+        let success = await installCoordinator.run(input)
 
         if success {
             clearParsedIndexInfo()
@@ -263,3 +267,5 @@ class ModPackDownloadSheetViewModel {
         DIContainer.shared.core.errorHandler.handle(globalError)
     }
 }
+
+extension ModPackDownloadSheetViewModel: FailedResourcesPresenting { }

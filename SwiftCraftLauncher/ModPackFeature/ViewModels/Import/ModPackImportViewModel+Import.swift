@@ -22,26 +22,28 @@ extension ModPackImportViewModel {
         isProcessingModPack = false
 
         let coordinator = ModPackInstallCoordinator(downloadService: ModPackDownloadService())
-        let success = await coordinator.run(
-            .init(
-                archivePath: archiveURL,
+        var input: ModPackInstallCoordinator.RunInput = .init(
+            archivePath: archiveURL,
+            projectDetailForIcon: nil,
+            gameName: gameNameValidator.gameName,
+            selectedGameVersion: indexInfo.gameVersion,
+            gameSetupService: gameSetupService,
+            gameRepository: gameRepository,
+            modPackInstallState: modPackViewModel.modPackInstallState,
+            setProcessing: { _ in },
+            setLastParsedIndexInfo: { [weak self] info in
+                self?.modPackIndexInfo = info
+            },
+            prepared: .init(
+                extractedPath: extractedPath,
+                indexInfo: indexInfo,
                 projectDetailForIcon: nil,
-                gameName: gameNameValidator.gameName,
-                selectedGameVersion: indexInfo.gameVersion,
-                gameSetupService: gameSetupService,
-                gameRepository: gameRepository,
-                modPackInstallState: modPackViewModel.modPackInstallState,
-                setProcessing: { _ in },
-                setLastParsedIndexInfo: { [weak self] info in
-                    self?.modPackIndexInfo = info
-                },
-                prepared: .init(
-                    extractedPath: extractedPath,
-                    indexInfo: indexInfo,
-                    projectDetailForIcon: nil,
-                ),
             ),
         )
+        input.onShowFailedResources = { [weak self] resources, continuation in
+            self?.handleFailedResources(resources, continuation: continuation)
+        }
+        let success = await coordinator.run(input)
 
         handleModPackInstallationResult(success: success, gameName: gameNameValidator.gameName)
     }

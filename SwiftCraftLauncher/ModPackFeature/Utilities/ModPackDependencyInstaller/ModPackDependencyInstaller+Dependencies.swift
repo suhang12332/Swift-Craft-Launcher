@@ -9,12 +9,13 @@ import Foundation
 
 extension ModPackDependencyInstaller {
     /// Installs all required dependencies for the modpack.
+    /// - Returns: The dependencies that failed to install (empty when all succeeded).
     static func installModPackDependencies(
         dependencies: [ModrinthIndexProjectDependency],
         gameInfo: GameVersionInfo,
         resourceDir: URL,
         onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)?,
-    ) async -> Bool {
+    ) async -> [ModrinthIndexProjectDependency] {
         let requiredDependencies = dependencies.filter { $0.dependencyType == "required" }
 
         onProgressUpdate?(
@@ -27,7 +28,7 @@ extension ModPackDependencyInstaller {
         let semaphore = AsyncSemaphore(value: downloadSemaphoreValue)
         let completedCount = AtomicCounter()
 
-        let results = await withTaskGroup(of: (Int, Bool).self) { group in
+        let results = await withTaskGroup(of: (Int, ModrinthIndexProjectDependency?).self) { group in
             for (index, dep) in requiredDependencies.enumerated() {
                 group.addTask {
                     await semaphore.wait()
@@ -41,7 +42,7 @@ extension ModPackDependencyInstaller {
                             requiredDependencies.count,
                             .dependencies,
                         )
-                        return (index, true)
+                        return (index, nil)
                     }
 
                     let success = await installDependency(dep: dep, gameInfo: gameInfo, resourceDir: resourceDir)
@@ -50,24 +51,25 @@ extension ModPackDependencyInstaller {
                         let currentCount = await completedCount.increment()
                         let dependencyName = dep.projectId ?? "Unknown dependency"
                         onProgressUpdate?(dependencyName, currentCount, requiredDependencies.count, .dependencies)
+                        return (index, nil)
                     }
 
-                    return (index, success)
+                    return (index, dep)
                 }
             }
 
-            var results: [(Int, Bool)] = []
+            var results: [(Int, ModrinthIndexProjectDependency?)] = []
             for await result in group {
                 results.append(result)
             }
             return results.sorted { $0.0 < $1.0 }
         }
 
-        let failedCount = results.count - results.count { $0.1 }
+        let failedDependencies = results.compactMap(\.1)
 
-        if failedCount > 0 {
-            AppLog.modPack.error("\(failedCount) dependencies failed to install")
-            return false
+        if !failedDependencies.isEmpty {
+            AppLog.modPack.error("\(failedDependencies.count) dependencies failed to install")
+            return failedDependencies
         }
 
         onProgressUpdate?(
@@ -77,7 +79,7 @@ extension ModPackDependencyInstaller {
             .dependencies,
         )
 
-        return true
+        return []
     }
 
     private static func shouldSkipDependency(
