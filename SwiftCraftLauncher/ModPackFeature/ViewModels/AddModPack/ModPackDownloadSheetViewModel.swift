@@ -25,7 +25,7 @@ class ModPackDownloadSheetViewModel {
 
     var isProcessing = false
     var failedResources: [FailedModPackResource] = []
-    var failedResourcesContinuation: (([String: Bool]) -> Void)?
+    var failedResourcesContinuation: ((Bool) -> Void)?
 
     private var downloadTask: Task<Void, Never>?
     private let downloadService = ModPackDownloadService()

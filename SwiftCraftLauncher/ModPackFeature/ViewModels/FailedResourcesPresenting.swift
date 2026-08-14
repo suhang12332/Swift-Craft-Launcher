@@ -12,14 +12,14 @@ import Foundation
 @MainActor
 protocol FailedResourcesPresenting: AnyObject {
     var failedResources: [FailedModPackResource] { get set }
-    var failedResourcesContinuation: (([String: Bool]) -> Void)? { get set }
+    var failedResourcesContinuation: ((Bool) -> Void)? { get set }
     var modPackInstallState: ModPackInstallState { get }
 }
 
 extension FailedResourcesPresenting {
     func handleFailedResources(
         _ resources: [FailedModPackResource],
-        continuation: @escaping ([String: Bool]) -> Void,
+        continuation: @escaping (Bool) -> Void,
     ) {
         failedResources = resources
         failedResourcesContinuation = continuation
@@ -35,30 +35,19 @@ extension FailedResourcesPresenting {
                 )
             },
             onAllHandled: { [weak self] in
-                self?.onFailedResourcesHandled()
+                self?.finishFailedResources(allHandled: true)
             },
             onAbort: { [weak self] in
-                self?.onFailedResourcesAborted()
+                self?.finishFailedResources(allHandled: false)
             },
         )
         DIContainer.shared.ui.windowManager.preparePayload(payload, for: .failedResources)
         DIContainer.shared.ui.windowManager.openWindow(id: .failedResources)
     }
 
-    func onFailedResourcesHandled() {
-        finishFailedResources(allHandled: true)
-    }
-
-    func onFailedResourcesAborted() {
-        finishFailedResources(allHandled: false)
-    }
-
     private func finishFailedResources(allHandled: Bool) {
-        let results = failedResources.reduce(into: [String: Bool]()) {
-            $0[$1.projectDetail.id] = allHandled
-        }
         failedResources = []
-        failedResourcesContinuation?(results)
+        failedResourcesContinuation?(allHandled)
         failedResourcesContinuation = nil
     }
 }

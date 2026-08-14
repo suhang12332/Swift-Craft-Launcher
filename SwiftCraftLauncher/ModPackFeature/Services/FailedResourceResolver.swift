@@ -89,12 +89,10 @@ enum FailedResourceResolver {
             return failedResources.isEmpty
         }
 
-        let results = await withCheckedContinuation { continuation in
-            onShowFailedResources(failedResources) { results in
-                continuation.resume(returning: results)
+        return await withCheckedContinuation { continuation in
+            onShowFailedResources(failedResources) { handled in
+                continuation.resume(returning: handled)
             }
         }
-
-        return failedResources.allSatisfy { results[$0.projectDetail.id] == true }
     }
 }

@@ -31,8 +31,8 @@ final class ModPackInstallCoordinator {
         let setLastParsedIndexInfo: (ModrinthIndexInfo?) -> Void
         let prepared: PreparedModPack?
         /// Invoked when resources fail to download, with the failed resources and a
-        /// continuation reporting retry/skip results (`[projectId: handled]`).
-        var onShowFailedResources: (([FailedModPackResource], @escaping ([String: Bool]) -> Void) -> Void)?
+        /// continuation reporting whether all resources were handled.
+        var onShowFailedResources: (([FailedModPackResource], @escaping (Bool) -> Void) -> Void)?
     }
 
     private let downloadService: ModPackDownloadService

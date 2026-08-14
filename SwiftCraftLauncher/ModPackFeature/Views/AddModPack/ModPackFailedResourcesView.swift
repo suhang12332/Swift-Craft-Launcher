@@ -102,10 +102,10 @@ private struct FailedResourceInstallSection: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 18) {
             ModrinthProjectTitleView(
                 projectDetail: resource.projectDetail,
-            ).padding(.bottom, 18)
+            )
             VersionPickerForSheet(
                 project: viewModel.project,
                 resourceType: viewModel.resourceType,
@@ -116,7 +116,6 @@ private struct FailedResourceInstallSection: View {
             ) { version in
                 viewModel.onVersionChanged(version)
             }
-            .padding(.bottom, 18)
             FailedResourceInstallFooter(
                 projectDetail: resource.projectDetail,
                 viewModel: viewModel,

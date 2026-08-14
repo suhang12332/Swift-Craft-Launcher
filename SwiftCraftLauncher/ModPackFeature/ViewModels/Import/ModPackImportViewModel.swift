@@ -17,7 +17,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     var modPackIndexInfo: ModrinthIndexInfo?
     var isProcessingModPack = false
     var failedResources: [FailedModPackResource] = []
-    var failedResourcesContinuation: (([String: Bool]) -> Void)?
+    var failedResourcesContinuation: ((Bool) -> Void)?
 
     let onProcessingStateChanged: (Bool) -> Void
     var gameRepository: GameRepository?
