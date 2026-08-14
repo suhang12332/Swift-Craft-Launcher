@@ -13,18 +13,18 @@ class AppCacheManager {
 
     init() { }
 
-    private func fileURL(for namespace: String) throws -> URL {
+    private func fileURL(for namespace: String, in directory: URL = AppPaths.appCache) throws -> URL {
         do {
-            try FileManager.default.createDirectory(at: AppPaths.appCache, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         } catch {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.cache_directory_creation_failed",
                 level: .notification,
-                message: "Failed to create cache directory at \(AppPaths.appCache.path): \(error.localizedDescription)",
+                message: "Failed to create cache directory at \(directory.path): \(error.localizedDescription)",
             )
         }
 
-        return AppPaths.appCache.appendingPathComponent("\(namespace).json")
+        return directory.appendingPathComponent("\(namespace).json")
     }
 
     /// Stores a codable value in the specified namespace.
@@ -33,14 +33,14 @@ class AppCacheManager {
     ///   - key: The cache key.
     ///   - value: The value to store.
     /// - Throws: A `GlobalError` when encoding or persistence fails.
-    func set(namespace: String, key: String, value: some Codable) throws {
+    func set(namespace: String, key: String, value: some Codable, directory: URL = AppPaths.appCache) throws {
         try queue.sync {
-            var nsDict = try loadNamespace(namespace)
+            var nsDict = try loadNamespace(namespace, directory: directory)
 
             do {
                 let data = try JSONEncoder().encode(value)
                 nsDict[key] = data
-                try saveNamespace(namespace, dict: nsDict)
+                try saveNamespace(namespace, dict: nsDict, directory: directory)
             } catch {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.cache_data_encode_failed",
@@ -56,9 +56,9 @@ class AppCacheManager {
     ///   - namespace: The cache namespace.
     ///   - key: The cache key.
     ///   - value: The value to store.
-    func setSilently(namespace: String, key: String, value: some Codable) {
+    func setSilently(namespace: String, key: String, value: some Codable, directory: URL = AppPaths.appCache) {
         do {
-            try set(namespace: namespace, key: key, value: value)
+            try set(namespace: namespace, key: key, value: value, directory: directory)
         } catch {
             DIContainer.shared.core.errorHandler.handle(error)
         }
@@ -70,10 +70,10 @@ class AppCacheManager {
     ///   - key: The cache key.
     ///   - type: The expected value type.
     /// - Returns: The decoded value, or `nil` if not found or decoding fails.
-    func get<T: Codable>(namespace: String, key: String, as _: T.Type) -> T? {
+    func get<T: Codable>(namespace: String, key: String, as _: T.Type, directory: URL = AppPaths.appCache) -> T? {
         queue.sync {
             do {
-                let nsDict = try loadNamespace(namespace)
+                let nsDict = try loadNamespace(namespace, directory: directory)
                 guard let data = nsDict[key] else { return nil }
 
                 do {
@@ -93,8 +93,8 @@ class AppCacheManager {
         }
     }
 
-    private func loadNamespace(_ namespace: String) throws -> [String: Data] {
-        let url = try fileURL(for: namespace)
+    private func loadNamespace(_ namespace: String, directory: URL = AppPaths.appCache) throws -> [String: Data] {
+        let url = try fileURL(for: namespace, in: directory)
 
         guard FileManager.default.fileExists(atPath: url.path) else {
             return [:]
@@ -112,8 +112,8 @@ class AppCacheManager {
         }
     }
 
-    private func saveNamespace(_ namespace: String, dict: [String: Data]) throws {
-        let url = try fileURL(for: namespace)
+    private func saveNamespace(_ namespace: String, dict: [String: Data], directory: URL = AppPaths.appCache) throws {
+        let url = try fileURL(for: namespace, in: directory)
 
         do {
             let data = try JSONEncoder().encode(dict)

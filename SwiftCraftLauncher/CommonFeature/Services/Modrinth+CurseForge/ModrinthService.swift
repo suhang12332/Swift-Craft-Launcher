@@ -10,12 +10,11 @@ import Foundation
 /// Provides access to the Modrinth API for Minecraft mod information and versions.
 enum ModrinthService {
     static func fetchVersionInfo(from version: String) async throws -> MinecraftVersionManifest {
-        let cacheKey = "version_info_\(version)"
-
         if let cachedVersionInfo: MinecraftVersionManifest = DIContainer.shared.core.appCacheManager.get(
-            namespace: "version_info",
-            key: cacheKey,
+            namespace: version,
+            key: "manifest",
             as: MinecraftVersionManifest.self,
+            directory: AppPaths.versionCache,
         ) {
             return cachedVersionInfo
         }
@@ -23,9 +22,10 @@ enum ModrinthService {
         let versionInfo = try await fetchVersionInfoThrowing(from: version)
 
         DIContainer.shared.core.appCacheManager.setSilently(
-            namespace: "version_info",
-            key: cacheKey,
+            namespace: version,
+            key: "manifest",
             value: versionInfo,
+            directory: AppPaths.versionCache,
         )
 
         return versionInfo

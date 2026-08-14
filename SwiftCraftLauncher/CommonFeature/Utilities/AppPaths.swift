@@ -154,6 +154,11 @@ extension AppPaths {
         return launcherSupportDirectory.appendingPathComponent("Cache", isDirectory: true)
     }
 
+    /// The cache directory for Minecraft version manifests.
+    static var versionCache: URL {
+        appCache.appendingPathComponent("versions", isDirectory: true)
+    }
+
     /// The data directory for application-specific storage.
     static var dataDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.data, isDirectory: true)
