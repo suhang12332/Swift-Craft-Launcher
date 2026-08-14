@@ -7,7 +7,7 @@
       "location" : "https://github.com/suhang12332/CFModrinthAdapterKit.git",
       "state" : {
         "branch" : "release",
-        "revision" : "05560b233b26e3a38eb61c15cb9ddf365222c9ca"
+        "revision" : "c430233f1a106220717cc5f17bc1d4c6b2b96689"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/suhang12332/MinecraftFriendsKit.git",
       "state" : {
         "branch" : "release",
-        "revision" : "9c274d5d18d483cfbec81a5b2aef4f8350d0f521"
+        "revision" : "74a9417e6793fa74abe29ba61f5f53184a24d33a"
       }
     },
     {
@@ -25,7 +25,7 @@
       "location" : "https://github.com/suhang12332/NSSkinRender.git",
       "state" : {
         "branch" : "release",
-        "revision" : "4443a5413b3638ef5141c7f0d0a8aff18d8925a6"
+        "revision" : "6854c0028731208e82d2de31dc5793fa74080c7d"
       }
     },
     {
@@ -70,7 +70,7 @@
       "location" : "https://github.com/suhang12332/SwiftMarkDownUI.git",
       "state" : {
         "branch" : "release",
-        "revision" : "51cfd39f0a153774c7aadae5df867e71ada02cad"
+        "revision" : "a82895291acadc90568ba9377d724ee727c57063"
       }
     },
     {
