@@ -24,7 +24,7 @@ struct FailedResourceInstallFooter: View {
                         onSuccess: { fileName, hash in
                             onDownloadSuccess?(fileName, hash)
                         },
-                        dismiss: {},
+                        dismiss: { },
                     )
                 } label: {
                     if viewModel.isDownloadingAll {

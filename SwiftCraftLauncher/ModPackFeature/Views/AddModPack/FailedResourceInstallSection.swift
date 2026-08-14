@@ -60,7 +60,6 @@ struct FailedResourceInstallSection: View {
         }
         .padding()
         .padding(.horizontal)
-
         .onAppear {
             viewModel.setDependencies(gameRepository: gameRepository)
         }

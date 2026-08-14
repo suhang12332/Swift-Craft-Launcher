@@ -65,7 +65,7 @@ extension ModPackDependencyInstaller {
             return results.sorted { $0.0 < $1.0 }
         }
 
-        let failedDependencies = results.compactMap { $0.1 }
+        let failedDependencies = results.compactMap(\.1)
 
         if !failedDependencies.isEmpty {
             AppLog.modPack.error("\(failedDependencies.count) dependencies failed to install")

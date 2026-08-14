@@ -48,7 +48,7 @@ extension ModPackDependencyInstaller {
             return results.sorted { $0.0 < $1.0 }
         }
 
-        let failedFiles = results.compactMap { $0.1 }
+        let failedFiles = results.compactMap(\.1)
 
         if !failedFiles.isEmpty {
             AppLog.modPack.error("\(failedFiles.count) files failed to download")

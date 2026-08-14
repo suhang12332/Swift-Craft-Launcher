@@ -161,26 +161,26 @@ class ModPackDownloadSheetViewModel {
             return false
         }
 
-        let success = await installCoordinator.run(
-            .init(
-                archivePath: archivePath,
-                projectDetailForIcon: projectDetail,
-                gameName: gameName,
-                selectedGameVersion: selectedGameVersion,
-                gameSetupService: gameSetupService,
-                gameRepository: gameRepository,
-                modPackInstallState: modPackInstallState,
-                setProcessing: { [weak self] processing in
-                    self?.isProcessing = processing
-                },
-                setLastParsedIndexInfo: { [weak self] info in
-                    self?.lastParsedIndexInfo = info
-                },
-                prepared: nil,
-            ) { [weak self] resources, continuation in
-                self?.handleFailedResources(resources, continuation: continuation)
+        var input: ModPackInstallCoordinator.RunInput = .init(
+            archivePath: archivePath,
+            projectDetailForIcon: projectDetail,
+            gameName: gameName,
+            selectedGameVersion: selectedGameVersion,
+            gameSetupService: gameSetupService,
+            gameRepository: gameRepository,
+            modPackInstallState: modPackInstallState,
+            setProcessing: { [weak self] processing in
+                self?.isProcessing = processing
             },
+            setLastParsedIndexInfo: { [weak self] info in
+                self?.lastParsedIndexInfo = info
+            },
+            prepared: nil,
         )
+        input.onShowFailedResources = { [weak self] resources, continuation in
+            self?.handleFailedResources(resources, continuation: continuation)
+        }
+        let success = await installCoordinator.run(input)
 
         if success {
             clearParsedIndexInfo()
@@ -268,4 +268,4 @@ class ModPackDownloadSheetViewModel {
     }
 }
 
-extension ModPackDownloadSheetViewModel: FailedResourcesPresenting {}
+extension ModPackDownloadSheetViewModel: FailedResourcesPresenting { }
