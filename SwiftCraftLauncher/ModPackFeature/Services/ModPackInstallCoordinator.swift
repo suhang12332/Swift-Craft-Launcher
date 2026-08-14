@@ -333,7 +333,6 @@ final class ModPackInstallCoordinator {
         guard let projectDetail else { return nil }
         return FailedModPackResource(
             projectDetail: projectDetail,
-            source: source,
             resourceType: resourceType,
             gameInfo: gameInfo,
         )
@@ -349,7 +348,6 @@ final class ModPackInstallCoordinator {
         }
         return FailedModPackResource(
             projectDetail: projectDetail,
-            source: .modrinth,
             resourceType: ResourceType.mod.rawValue,
             gameInfo: gameInfo,
         )

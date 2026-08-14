@@ -11,7 +11,6 @@ import Foundation
 struct FailedModPackResource: Identifiable {
     let id = UUID()
     let projectDetail: ModrinthProjectDetail
-    let source: FileSource
     let resourceType: String
     let gameInfo: GameVersionInfo
 }
