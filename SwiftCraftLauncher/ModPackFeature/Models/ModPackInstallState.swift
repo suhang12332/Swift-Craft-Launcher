@@ -100,4 +100,15 @@ final class ModPackInstallState {
             total: total,
         )
     }
+
+    /// Advances progress when a failed resource is handled (downloaded or skipped)
+    /// so the resource download progress bars follow the retry results.
+    func markHandledResource(name: String) {
+        filesCompleted = min(filesCompleted + 1, filesTotal)
+        currentFile = name
+        filesProgress = ProgressUtil.calculateProgress(
+            completed: filesCompleted,
+            total: filesTotal,
+        )
+    }
 }

@@ -49,6 +49,9 @@ private struct AuxiliaryWindowScene: View {
                 JavaDownloadWindowContent()
             case .skinPreview:
                 SkinPreviewWindowContent()
+            case .failedResources:
+                ModPackFailedResourcesWindowContent()
+                    .environment(gameRepository)
             }
         }
         .navigationTitle(windowID.localizedTitle)

@@ -16,6 +16,8 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     var extractedModPackPath: URL?
     var modPackIndexInfo: ModrinthIndexInfo?
     var isProcessingModPack = false
+    var failedResources: [FailedModPackResource] = []
+    var failedResourcesContinuation: (([String: Bool]) -> Void)?
 
     let onProcessingStateChanged: (Bool) -> Void
     var gameRepository: GameRepository?
@@ -113,5 +115,11 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         let nameValid = gameNameValidator.isFormValid
         let gameVersionSupported = isGameVersionSupported
         return hasFile && hasInfo && nameValid && gameVersionSupported
+    }
+}
+
+extension ModPackImportViewModel: FailedResourcesPresenting {
+    var modPackInstallState: ModPackInstallState {
+        modPackViewModel.modPackInstallState
     }
 }

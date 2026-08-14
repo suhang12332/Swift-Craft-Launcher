@@ -24,6 +24,8 @@ class ModPackDownloadSheetViewModel {
     var modPackTotalSize: Int64 = 0
 
     var isProcessing = false
+    var failedResources: [FailedModPackResource] = []
+    var failedResourcesContinuation: (([String: Bool]) -> Void)?
 
     private var downloadTask: Task<Void, Never>?
     private let downloadService = ModPackDownloadService()
@@ -175,7 +177,9 @@ class ModPackDownloadSheetViewModel {
                     self?.lastParsedIndexInfo = info
                 },
                 prepared: nil,
-            ),
+            ) { [weak self] resources, continuation in
+                self?.handleFailedResources(resources, continuation: continuation)
+            },
         )
 
         if success {
@@ -263,3 +267,5 @@ class ModPackDownloadSheetViewModel {
         DIContainer.shared.core.errorHandler.handle(globalError)
     }
 }
+
+extension ModPackDownloadSheetViewModel: FailedResourcesPresenting {}

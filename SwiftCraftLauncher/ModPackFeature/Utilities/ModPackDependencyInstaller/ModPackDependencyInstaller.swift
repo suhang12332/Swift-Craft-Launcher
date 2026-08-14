@@ -42,14 +42,14 @@ enum ModPackDependencyInstaller {
             onProgressUpdate: onProgressUpdate,
         )
 
-        let (filesSuccess, dependenciesSuccess) = await (filesResult, dependenciesResult)
+        let (failedFiles, failedDependencies) = await (filesResult, dependenciesResult)
 
-        if !filesSuccess {
+        if !failedFiles.isEmpty {
             AppLog.modPack.error("Modpack file installation failed")
             return false
         }
 
-        if !dependenciesSuccess {
+        if !failedDependencies.isEmpty {
             AppLog.modPack.error("Modpack dependency installation failed")
             return false
         }

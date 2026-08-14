@@ -20,6 +20,7 @@ enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
     case aiChat
     case javaDownload
     case skinPreview
+    case failedResources
 
     var id: String { rawValue }
 
@@ -35,6 +36,8 @@ enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
             "global_resource.download".localized()
         case .skinPreview:
             "skin.preview".localized()
+        case .failedResources:
+            "modpack.failed_resources.title".localized()
         }
     }
 
@@ -48,6 +51,8 @@ enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
             CGSize(width: 400, height: 100)
         case .skinPreview:
             CGSize(width: 1200, height: 800)
+        case .failedResources:
+            CGSize(width: 460, height: 200)
         }
     }
 }

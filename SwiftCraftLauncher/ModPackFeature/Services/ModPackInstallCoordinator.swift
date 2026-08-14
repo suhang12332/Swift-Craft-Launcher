@@ -30,6 +30,9 @@ final class ModPackInstallCoordinator {
         let setProcessing: (Bool) -> Void
         let setLastParsedIndexInfo: (ModrinthIndexInfo?) -> Void
         let prepared: PreparedModPack?
+        /// Invoked when resources fail to download, with the failed resources and a
+        /// continuation reporting retry/skip results (`[projectId: handled]`).
+        var onShowFailedResources: (([FailedModPackResource], @escaping ([String: Bool]) -> Void) -> Void)?
     }
 
     private let downloadService: ModPackDownloadService
@@ -228,7 +231,7 @@ final class ModPackInstallCoordinator {
         gameInfo: GameVersionInfo,
         input: RunInput,
     ) async -> Bool {
-        await ModPackDependencyInstaller.installModPackFiles(
+        let failedFiles = await ModPackDependencyInstaller.installModPackFiles(
             files: indexInfo.files,
             resourceDir: resourceDir,
             gameInfo: gameInfo,
@@ -243,6 +246,12 @@ final class ModPackInstallCoordinator {
                 )
             }
         }
+
+        guard failedFiles.isEmpty else {
+            let failedResources = await makeFailedResources(from: failedFiles, gameInfo: gameInfo)
+            return await presentFailedResources(failedResources, input: input)
+        }
+        return true
     }
 
     private func installDependenciesStep(
@@ -251,7 +260,7 @@ final class ModPackInstallCoordinator {
         gameInfo: GameVersionInfo,
         input: RunInput,
     ) async -> Bool {
-        await ModPackDependencyInstaller.installModPackDependencies(
+        let failedDependencies = await ModPackDependencyInstaller.installModPackDependencies(
             dependencies: indexInfo.dependencies,
             gameInfo: gameInfo,
             resourceDir: resourceDir,
@@ -266,6 +275,101 @@ final class ModPackInstallCoordinator {
                 )
             }
         }
+
+        guard failedDependencies.isEmpty else {
+            let failedResources = await makeFailedResources(from: failedDependencies, gameInfo: gameInfo)
+            return await presentFailedResources(failedResources, input: input)
+        }
+        return true
+    }
+
+    private func makeFailedResources(
+        from files: [ModrinthIndexFile],
+        gameInfo: GameVersionInfo,
+    ) async -> [FailedModPackResource] {
+        var failedResources: [FailedModPackResource] = []
+        for file in files {
+            if let resource = await makeFailedResource(from: file, gameInfo: gameInfo) {
+                failedResources.append(resource)
+            }
+        }
+        return failedResources
+    }
+
+    private func makeFailedResources(
+        from dependencies: [ModrinthIndexProjectDependency],
+        gameInfo: GameVersionInfo,
+    ) async -> [FailedModPackResource] {
+        var failedResources: [FailedModPackResource] = []
+        for dependency in dependencies {
+            if let resource = await makeFailedResource(from: dependency, gameInfo: gameInfo) {
+                failedResources.append(resource)
+            }
+        }
+        return failedResources
+    }
+
+    private func makeFailedResource(
+        from file: ModrinthIndexFile,
+        gameInfo: GameVersionInfo,
+    ) async -> FailedModPackResource? {
+        let source = file.source ?? .modrinth
+        let resourceType = AppPaths.resourceType(for: URL(fileURLWithPath: file.path))
+            ?? ResourceType.mod.rawValue
+
+        let projectDetail: ModrinthProjectDetail?
+        switch source {
+        case .curseforge:
+            guard let projectId = file.curseForgeProjectId,
+                  let cfDetail = try? await CurseForgeService.fetchModDetailThrowing(modId: projectId) else {
+                return nil
+            }
+            projectDetail = CFToModrinthAdapter.convertProjectDetail(cfDetail)
+        case .modrinth:
+            guard let sha1 = file.hashes.sha1 else { return nil }
+            projectDetail = try? await ModrinthService.fetchModrinthDetailThrowing(by: sha1)
+        }
+
+        guard let projectDetail else { return nil }
+        return FailedModPackResource(
+            projectDetail: projectDetail,
+            source: source,
+            resourceType: resourceType,
+            gameInfo: gameInfo,
+        )
+    }
+
+    private func makeFailedResource(
+        from dependency: ModrinthIndexProjectDependency,
+        gameInfo: GameVersionInfo,
+    ) async -> FailedModPackResource? {
+        guard let projectId = dependency.projectId,
+              let projectDetail = try? await ModrinthService.fetchProjectDetailsThrowing(id: projectId) else {
+            return nil
+        }
+        return FailedModPackResource(
+            projectDetail: projectDetail,
+            source: .modrinth,
+            resourceType: ResourceType.mod.rawValue,
+            gameInfo: gameInfo,
+        )
+    }
+
+    private func presentFailedResources(
+        _ failedResources: [FailedModPackResource],
+        input: RunInput,
+    ) async -> Bool {
+        guard let onShowFailedResources = input.onShowFailedResources, !failedResources.isEmpty else {
+            return failedResources.isEmpty
+        }
+
+        let results = await withCheckedContinuation { continuation in
+            onShowFailedResources(failedResources) { results in
+                continuation.resume(returning: results)
+            }
+        }
+
+        return failedResources.allSatisfy { results[$0.projectDetail.id] == true }
     }
 
     private func installGameStep(

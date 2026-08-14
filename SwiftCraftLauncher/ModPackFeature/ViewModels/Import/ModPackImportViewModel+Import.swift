@@ -40,7 +40,9 @@ extension ModPackImportViewModel {
                     indexInfo: indexInfo,
                     projectDetailForIcon: nil,
                 ),
-            ),
+            ) { [weak self] resources, continuation in
+                self?.handleFailedResources(resources, continuation: continuation)
+            },
         )
 
         handleModPackInstallationResult(success: success, gameName: gameNameValidator.gameName)
