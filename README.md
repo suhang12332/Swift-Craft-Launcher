@@ -28,7 +28,7 @@
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?logo=gnu)](https://www.gnu.org/licenses/agpl-3.0)
 
   
-  [Website](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/) • [Download](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [Documentation](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/) • [Zread Documentation](https://zread.ai/suhang12332/Swift-Craft-Launcher)
+  [Website](https://web.scl.isiah.top) • [Download](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [Documentation](https://github.com/suhang12332/Swift-Craft-Launcher/wiki) • [Zread Documentation](https://zread.ai/suhang12332/Swift-Craft-Launcher)
   
   **English** | [简体中文](doc/README_zh-CN.md) | [繁體中文](doc/README_zh-TW.md)
 </div>
