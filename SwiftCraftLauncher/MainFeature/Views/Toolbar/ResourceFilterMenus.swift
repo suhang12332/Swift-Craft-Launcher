@@ -82,13 +82,13 @@ enum ResourceFilterMenus {
             Label(
                 filterState.showFavoritesOnly
                     ? "resource.local_filter.all".localized()
-                    : "favorites".localized(),
+                    : "favorites.filter".localized(),
                 systemImage: filterState.showFavoritesOnly ? "heart.fill" : "heart",
             )
             .applyReplaceTransition()
             .foregroundStyle(filterState.showFavoritesOnly ? .red : .secondary)
         }
-        .help("favorites".localized())
+        .help("favorites.filter".localized())
     }
 
     /// Provides a menu for filtering local resources by status, such as all or disabled.
