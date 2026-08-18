@@ -36516,7 +36516,7 @@
         }
       }
     },
-    "favorites" : {
+    "favorites.filter" : {
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {

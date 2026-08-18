@@ -28,7 +28,7 @@
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?logo=gnu)](https://www.gnu.org/licenses/agpl-3.0)
 
   
-  [官网](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/) • [下载](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文档](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/) • [Zread 文档](https://zread.ai/suhang12332/Swift-Craft-Launcher)
+  [官网](https://web.scl.isiah.top) • [下载](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文档](https://github.com/suhang12332/Swift-Craft-Launcher/wiki) • [Zread 文档](https://zread.ai/suhang12332/Swift-Craft-Launcher)
   
   [English](../README.md) | **简体中文** | [繁體中文](README_zh-TW.md)
 </div>

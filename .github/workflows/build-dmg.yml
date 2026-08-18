@@ -373,7 +373,7 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/}
           echo "版本: $VERSION"
           
-          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
+          NOTES_URL="https://swift-craft-launcher-releases-notes.pages.dev/$VERSION.md"
           echo "拉取 Release Notes: $NOTES_URL"
           
           curl -fsSL "$NOTES_URL" -o release-notes.md
@@ -394,7 +394,7 @@ jobs:
             echo "找到的 ${ARCH} DMG 文件: $DMG_FILE"
             ./bin/generate_appcast \
               --ed-key-file <(printf '%s' "$SPARKLE_PRIVATE_KEY") \
-              --full-release-notes-url "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/${VERSION}.html" \
+              --full-release-notes-url "https://swift-craft-launcher-releases.pages.dev/${VERSION}.html" \
               --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
               -o "appcast-${ARCH}.xml" \
               "$(dirname "$DMG_FILE")"
