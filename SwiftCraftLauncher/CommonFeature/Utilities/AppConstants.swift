@@ -79,25 +79,25 @@ enum AppConstants {
     /// The CurseForge API key, decrypted at launch.
     static let curseForgeAPIKey: String? = {
         let encrypted = "$(CURSEFORGE_API_KEY)"
-        return encrypted.hasPrefix("$(") ? nil : Obfuscator.decryptAPIKey(encrypted)
+        return Obfuscator.decryptAPIKey(encrypted)
     }()
 
     /// The LittleSkin OAuth client secret, decrypted at launch.
     static let littleSkinClientSecret: String? = {
         let encrypted = "$(LITTLESKIN_CLIENT_SECRET)"
-        return encrypted.hasPrefix("$(") ? nil : Obfuscator.decryptAPIKey(encrypted)
+        return Obfuscator.decryptAPIKey(encrypted)
     }()
 
     /// The MUA OAuth client secret, decrypted at launch.
     static let muaClientSecret: String? = {
         let encrypted = "$(MUA_CLIENT_SECRET)"
-        return encrypted.hasPrefix("$(") ? nil : Obfuscator.decryptAPIKey(encrypted)
+        return Obfuscator.decryptAPIKey(encrypted)
     }()
 
     /// The Ely.by OAuth client secret, decrypted at launch.
     static let elyClientSecret: String? = {
         let encrypted = "$(ELYBY_CLIENT_SECRET)"
-        return encrypted.hasPrefix("$(") ? nil : Obfuscator.decryptAPIKey(encrypted)
+        return Obfuscator.decryptAPIKey(encrypted)
     }()
 
     static let cacheResourceTypes = [
