@@ -108,12 +108,14 @@ struct ServerAddressEditView: View {
             }
 
             Text("saveinfo.server.name".localized())
+                .font(.headline)
             TextField("saveinfo.server.name".localized(), text: $serverName)
                 .textFieldStyle(.roundedBorder)
 
             HStack {
                 VStack(alignment: .leading) {
                     Text("saveinfo.server.address".localized())
+                        .font(.headline)
                     TextField("saveinfo.server.address".localized(), text: $serverAddress)
                         .textFieldStyle(.roundedBorder)
                         .onChange(of: serverAddress) { _, newValue in
@@ -133,6 +135,7 @@ struct ServerAddressEditView: View {
                 }
                 VStack(alignment: .leading) {
                     Text("saveinfo.server.port".localized())
+                        .font(.headline)
                     TextField("saveinfo.server.port.placeholder".localized(), text: $serverPort)
                         .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: 100)
