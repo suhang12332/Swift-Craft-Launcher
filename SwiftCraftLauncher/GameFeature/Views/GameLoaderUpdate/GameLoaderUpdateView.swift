@@ -10,10 +10,6 @@
 // game's current loader — cross-loader switching is not allowed.
 import SwiftUI
 
-private enum Constants {
-    static let formSpacing: CGFloat = 16
-}
-
 struct GameLoaderUpdateView: View {
     let gameInfo: GameVersionInfo
 
@@ -51,12 +47,11 @@ struct GameLoaderUpdateView: View {
     }
 
     private var bodyView: some View {
-        VStack(spacing: Constants.formSpacing) {
-            gameInfoSection
-            currentLoaderSection
+        VStack(spacing: 16) {
+            currentInfoSection
 
             if !viewModel.isUpdating {
-                loaderSelectionSection
+                versionSelectionSection
             }
 
             if viewModel.shouldShowProgress {
@@ -69,62 +64,42 @@ struct GameLoaderUpdateView: View {
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
-    private var gameInfoSection: some View {
+    private var currentInfoSection: some View {
         FormSection {
-            VStack(alignment: .leading, spacing: Constants.formSpacing) {
-                infoRow(
-                    title: "game.loader.update.game".localized(),
-                    value: gameInfo.gameName,
-                )
-                infoRow(
-                    title: "game.form.version".localized(),
-                    value: gameInfo.gameVersion,
-                )
+            VStack(alignment: .leading, spacing: 12) {
+                infoRow("game.loader.update.game".localized(), gameInfo.gameName)
+                infoRow("game.form.version".localized(), gameInfo.gameVersion)
+                Divider()
+                infoRow("game.loader.update.current".localized(), viewModel.currentLoaderDescription)
             }
         }
     }
 
-    private var currentLoaderSection: some View {
+    private var versionSelectionSection: some View {
         FormSection {
-            infoRow(
-                title: "game.loader.update.current".localized(),
-                value: viewModel.currentLoaderDescription,
-            )
-        }
-    }
-
-    private var loaderSelectionSection: some View {
-        FormSection {
-            VStack(alignment: .leading, spacing: Constants.formSpacing) {
-                if viewModel.selectedModLoader != GameLoader.vanilla.displayName {
-                    loaderVersionPicker
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("game.form.loader.version".localized())
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    if viewModel.isLoadingLoaderVersions {
+                        ProgressView()
+                            .controlSize(.small)
+                            .scaleEffect(0.85)
+                    }
                 }
+                CommonMenuPicker(selection: $viewModel.selectedLoaderVersion) {
+                    ForEach(viewModel.availableLoaderVersions, id: \.self) { version in
+                        Text(version).tag(version)
+                    }
+                }
+                .disabled(viewModel.isLoadingLoaderVersions || viewModel.availableLoaderVersions.isEmpty)
             }
         }
     }
 
-    private var loaderVersionPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("game.form.loader.version".localized())
-                    .font(.headline)
-                Spacer()
-                if viewModel.isLoadingLoaderVersions {
-                    ProgressView()
-                        .controlSize(.small)
-                        .scaleEffect(0.85)
-                }
-            }
-            CommonMenuPicker(selection: $viewModel.selectedLoaderVersion) {
-                ForEach(viewModel.availableLoaderVersions, id: \.self) { version in
-                    Text(version).tag(version)
-                }
-            }
-            .disabled(viewModel.isLoadingLoaderVersions || viewModel.availableLoaderVersions.isEmpty)
-        }
-    }
-
-    private func infoRow(title: String, value: String) -> some View {
+    private func infoRow(_ title: String, _ value: String) -> some View {
         HStack(alignment: .firstTextBaseline) {
             Text(title)
                 .font(.subheadline)
