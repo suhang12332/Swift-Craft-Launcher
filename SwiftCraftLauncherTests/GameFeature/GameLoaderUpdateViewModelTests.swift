@@ -125,8 +125,6 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         XCTAssertFalse(vm.isUpdating)
     }
 
-    // MARK: - Vanilla game: add loader
-
     func testCanChangeLoaderType_vanilla_returnsTrue() {
         let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: GameLoader.vanilla.displayName))
         XCTAssertTrue(vm.canChangeLoaderType)
