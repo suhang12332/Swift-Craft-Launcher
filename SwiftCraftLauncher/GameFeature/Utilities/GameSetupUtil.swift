@@ -28,6 +28,12 @@ class GameSetupUtil {
         let pendingIconData: Data?
     }
 
+    /// Inputs for updating the mod loader on an existing game instance.
+    struct GameLoaderUpdateInput {
+        let selectedModLoader: String
+        let specifiedLoaderVersion: String
+    }
+
     func saveGame(
         input: GameSaveInput,
         playerListViewModel: PlayerListViewModel?,
@@ -78,40 +84,12 @@ class GameSetupUtil {
         )
 
         do {
-            let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: input.selectedGameVersion)
-
-            let javaPath = await DIContainer.shared.system.javaManager.ensureJavaExists(
-                version: downloadedManifest.javaVersion.component,
-            )
-
-            let fileManager = try await setupFileManager(manifest: downloadedManifest, modLoader: gameInfo.modLoader)
-
-            try await startDownloadProcess(
-                fileManager: fileManager,
-                manifest: downloadedManifest,
-                gameName: input.gameName,
-            )
-
-            let modLoaderResult = try await setupModLoaderIfNeeded(
-                selectedModLoader: input.selectedModLoader,
+            gameInfo = try await performSetup(
+                baseGameInfo: gameInfo,
                 selectedGameVersion: input.selectedGameVersion,
-                gameName: input.gameName,
-                gameIcon: persistedGameIcon,
+                selectedModLoader: input.selectedModLoader,
                 specifiedLoaderVersion: input.specifiedLoaderVersion,
             )
-
-            gameInfo = await finalizeGameInfo(
-                gameInfo: gameInfo,
-                manifest: downloadedManifest,
-                selectedModLoader: input.selectedModLoader,
-                selectedGameVersion: input.selectedGameVersion,
-                specifiedLoaderVersion: input.specifiedLoaderVersion,
-                fabricResult: input.selectedModLoader.lowercased() == GameLoader.fabric.displayName ? modLoaderResult : nil,
-                forgeResult: input.selectedModLoader.lowercased() == GameLoader.forge.displayName ? modLoaderResult : nil,
-                neoForgeResult: input.selectedModLoader.lowercased() == GameLoader.neoforge.displayName ? modLoaderResult : nil,
-                quiltResult: input.selectedModLoader.lowercased() == GameLoader.quilt.rawValue ? modLoaderResult : nil,
-            )
-            gameInfo.javaPath = javaPath
             gameRepository.addGameSilently(gameInfo)
 
             if DIContainer.shared.ui.gameSettingsManager.syncLanguageForNewGames {
@@ -155,6 +133,143 @@ class GameSetupUtil {
             return true
         }
         return false
+    }
+
+    /// Core installation steps shared by game creation and loader update.
+    ///
+    /// Fetches the version manifest, ensures the Java runtime, downloads core and
+    /// asset files (idempotent — existing SHA1-verified files are skipped), sets up
+    /// the selected mod loader, and finalizes the launch configuration.
+    /// - Returns: The finalized `GameVersionInfo` with the launch command and Java path applied.
+    private func performSetup(
+        baseGameInfo: GameVersionInfo,
+        selectedGameVersion: String,
+        selectedModLoader: String,
+        specifiedLoaderVersion: String,
+    ) async throws -> GameVersionInfo {
+        let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
+
+        let javaPath = await DIContainer.shared.system.javaManager.ensureJavaExists(
+            version: downloadedManifest.javaVersion.component,
+        )
+
+        let fileManager = try await setupFileManager(manifest: downloadedManifest, modLoader: baseGameInfo.modLoader)
+
+        try await startDownloadProcess(
+            fileManager: fileManager,
+            manifest: downloadedManifest,
+            gameName: baseGameInfo.gameName,
+        )
+
+        let modLoaderResult = try await setupModLoaderIfNeeded(
+            selectedModLoader: selectedModLoader,
+            selectedGameVersion: selectedGameVersion,
+            gameName: baseGameInfo.gameName,
+            gameIcon: baseGameInfo.gameIcon,
+            specifiedLoaderVersion: specifiedLoaderVersion,
+        )
+
+        var finalizedInfo = await finalizeGameInfo(
+            gameInfo: baseGameInfo,
+            manifest: downloadedManifest,
+            selectedModLoader: selectedModLoader,
+            selectedGameVersion: selectedGameVersion,
+            specifiedLoaderVersion: specifiedLoaderVersion,
+            fabricResult: selectedModLoader.lowercased() == GameLoader.fabric.displayName ? modLoaderResult : nil,
+            forgeResult: selectedModLoader.lowercased() == GameLoader.forge.displayName ? modLoaderResult : nil,
+            neoForgeResult: selectedModLoader.lowercased() == GameLoader.neoforge.displayName ? modLoaderResult : nil,
+            quiltResult: selectedModLoader.lowercased() == GameLoader.quilt.rawValue ? modLoaderResult : nil,
+        )
+        finalizedInfo.javaPath = javaPath
+        return finalizedInfo
+    }
+
+    /// Updates the mod loader on an existing game instance, reusing the installation pipeline.
+    ///
+    /// The game's name, version, icon, memory, JVM arguments, Java path, and environment
+    /// variables are preserved; only the loader and launch configuration are replaced. On
+    /// failure the existing game record is left untouched and the profile directory is never
+    /// deleted, so saves and mods are always preserved.
+    /// - Parameters:
+    ///   - input: The new mod loader type and loader version to apply.
+    ///   - existingGame: The current game instance to update.
+    ///   - gameRepository: The repository used to persist the updated record.
+    ///   - onSuccess: Called once the updated record has been persisted.
+    func updateGameLoader(
+        input: GameLoaderUpdateInput,
+        existingGame: GameVersionInfo,
+        gameRepository: GameRepository,
+        onSuccess: @escaping () -> Void,
+    ) async {
+        await MainActor.run {
+            downloadState.reset()
+            downloadState.isDownloading = true
+        }
+
+        defer {
+            Task { @MainActor in
+                downloadState.isDownloading = false
+                downloadTask = nil
+            }
+        }
+
+        let baseGameInfo = GameVersionInfo(
+            id: UUID(uuidString: existingGame.id) ?? UUID(),
+            gameName: existingGame.gameName,
+            gameIcon: existingGame.gameIcon,
+            gameVersion: existingGame.gameVersion,
+            modVersion: "",
+            modJvm: [],
+            modClassPath: "",
+            assetIndex: existingGame.assetIndex,
+            modLoader: input.selectedModLoader,
+            lastPlayed: existingGame.lastPlayed,
+            javaPath: existingGame.javaPath,
+            jvmArguments: existingGame.jvmArguments,
+            launchCommand: existingGame.launchCommand,
+            xms: existingGame.xms,
+            xmx: existingGame.xmx,
+            javaVersion: existingGame.javaVersion,
+            mainClass: existingGame.mainClass,
+            gameArguments: existingGame.gameArguments,
+            environmentVariables: existingGame.environmentVariables,
+        )
+
+        do {
+            let finalizedInfo = try await performSetup(
+                baseGameInfo: baseGameInfo,
+                selectedGameVersion: existingGame.gameVersion,
+                selectedModLoader: input.selectedModLoader,
+                specifiedLoaderVersion: input.specifiedLoaderVersion,
+            )
+
+            try await gameRepository.updateGame(finalizedInfo)
+
+            Task.detached(priority: .utility) { [finalizedInfo] in
+                await DIContainer.shared.core.modScanner.scanGameModsDirectory(game: finalizedInfo)
+            }
+
+            let loaderLabel = GameLoader(rawValue: finalizedInfo.modLoader)?.labelName ?? finalizedInfo.modLoader
+            let loaderDescription = finalizedInfo.modVersion.isEmpty ? loaderLabel : "\(loaderLabel) \(finalizedInfo.modVersion)"
+            await NotificationManager.sendSilently(
+                title: "notification.loader.update.complete.title".localized(),
+                body: String(
+                    format: "notification.loader.update.complete.body".localized(),
+                    finalizedInfo.gameName,
+                    loaderDescription,
+                ),
+            )
+            onSuccess()
+        } catch {
+            if isSaveGameDownloadCancelled(error) {
+                AppLog.game.info("Game loader update task cancelled")
+                await MainActor.run {
+                    self.downloadState.reset()
+                }
+                return
+            }
+            DIContainer.shared.core.errorHandler.handle(error)
+        }
     }
 
     /// Removes partial game files after a failed or cancelled download.
@@ -374,6 +489,10 @@ class GameSetupUtil {
 
         default:
             updatedGameInfo.mainClass = manifest.mainClass
+            updatedGameInfo.modVersion = ""
+            updatedGameInfo.modClassPath = ""
+            updatedGameInfo.modJvm = []
+            updatedGameInfo.gameArguments = []
         }
 
         updatedGameInfo.launchCommand = MinecraftLaunchCommandBuilder.build(
