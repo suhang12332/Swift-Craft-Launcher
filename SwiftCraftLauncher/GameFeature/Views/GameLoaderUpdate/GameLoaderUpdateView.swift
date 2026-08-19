@@ -55,9 +55,7 @@ struct GameLoaderUpdateView: View {
                     loaderTypeSelectionSection
                 }
                 versionSelectionSection
-            }
-
-            if viewModel.isUpdating {
+            } else {
                 DownloadProgressSection(
                     gameSetupService: viewModel.gameSetupService,
                     selectedModLoader: viewModel.selectedModLoader,

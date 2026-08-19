@@ -50541,133 +50541,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "الموارد الفاشلة"
+            "value" : "تنزيل تعويضي للوارد المنتهية"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mislykkede ressourcer"
+            "value" : "Kompensationsdownload for udløbne ressourcer"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fehlgeschlagene Ressourcen"
+            "value" : "Ausgleichsdownload für abgelaufene Ressourcen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Failed Resources"
+            "value" : "Compensatory Download for Expired Resources"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recursos fallidos"
+            "value" : "Descarga compensatoria de recursos caducados"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Epäonnistuneet resurssit"
+            "value" : "Korvauslataus vanhentuneille resursseille"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ressources échouées"
+            "value" : "Téléchargement de compensation pour les ressources expirées"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "असफल संसाधन"
+            "value" : "समाप्त संसाधनों के लिए क्षतिपूर्ति डाउनलोड"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Risorse non riuscite"
+            "value" : "Download compensatorio per risorse scadute"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "失敗したリソース"
+            "value" : "期限切れリソースの補償ダウンロード"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "실패한 리소스"
+            "value" : "만료된 리소스 보상 다운로드"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mislykkede ressurser"
+            "value" : "Kompensasjonsnedlasting for utløpte ressurser"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mislukte bronnen"
+            "value" : "Vergoedingsdownload voor verlopen bronnen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nieudane zasoby"
+            "value" : "Pobieranie rekompensaty za wygasłe zasoby"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recursos com falha"
+            "value" : "Download compensatório para recursos expirados"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Неудачные ресурсы"
+            "value" : "Компенсационная загрузка устаревших ресурсов"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Misslyckade resurser"
+            "value" : "Kompensationsladdning för utgångna resurser"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ทรัพยากรที่ล้มเหลว"
+            "value" : "การดาวน์โหลดชดเชยสำหรับทรัพยากรที่หมดอายุ"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Başarısız kaynaklar"
+            "value" : "Süresi dolan kaynaklar için telafi indirmesi"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tài nguyên thất bại"
+            "value" : "Tải bù cho tài nguyên đã hết hạn"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下载失败资源"
+            "value" : "失效资源补偿下载"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載失敗資源"
+            "value" : "失效資源補償下載"
           }
         }
       }
