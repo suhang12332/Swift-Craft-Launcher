@@ -101,7 +101,7 @@ private struct LoadersSection: View {
 
     var body: some View {
         GenericSectionView(
-            title: "project.info.platforms",
+            title: "game.form.modloader",
             items: loaders.map { IdentifiableString(id: $0) },
             isLoading: isLoading,
         ) { item in

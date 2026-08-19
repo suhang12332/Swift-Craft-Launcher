@@ -6,8 +6,8 @@
 //
 
 // A sheet for changing the loader version on an existing game instance, reusing the
-// installation pipeline and download progress UI. The loader type is fixed to the
-// game's current loader — cross-loader switching is not allowed.
+// installation pipeline and download progress UI. When the game is vanilla, the user
+// can choose a mod loader type to add. The game version is never changed.
 import SwiftUI
 
 struct GameLoaderUpdateView: View {
@@ -51,6 +51,9 @@ struct GameLoaderUpdateView: View {
             currentInfoSection
                 .padding(.bottom, 10)
             if !viewModel.isUpdating {
+                if viewModel.canChangeLoaderType {
+                    loaderTypeSelectionSection
+                }
                 versionSelectionSection
             }
 
@@ -84,8 +87,32 @@ struct GameLoaderUpdateView: View {
         }
     }
 
+    private var loaderTypeSelectionSection: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text("game.form.modloader".localized())
+                    .font(.headline)
+                Spacer()
+                if viewModel.isLoadingLoaderTypes {
+                    ProgressView()
+                        .controlSize(.small)
+                        .scaleEffect(0.85)
+                }
+            }
+            CommonMenuPicker(selection: $viewModel.selectedModLoader) {
+                ForEach(viewModel.availableLoaderTypes) { loader in
+                    Text(loader.labelName).tag(loader.displayName)
+                }
+            }
+            .disabled(viewModel.isLoadingLoaderTypes || viewModel.availableLoaderTypes.isEmpty)
+            .onChange(of: viewModel.selectedModLoader) { _, _ in
+                viewModel.onLoaderTypeChanged()
+            }
+        }
+    }
+
     private var versionSelectionSection: some View {
-        VStack {
+        VStack(alignment: .leading) {
             HStack {
                 Text("game.form.loader.version".localized())
                     .font(.headline)
@@ -124,7 +151,7 @@ struct GameLoaderUpdateView: View {
                 viewModel.confirm()
             } label: {
                 HStack {
-                    if viewModel.isUpdating || viewModel.isLoadingLoaderVersions {
+                    if viewModel.isUpdating || viewModel.isLoadingLoaderVersions || viewModel.isLoadingLoaderTypes {
                         ProgressView()
                             .controlSize(.small)
                     } else {
@@ -133,7 +160,7 @@ struct GameLoaderUpdateView: View {
                 }
             }
             .keyboardShortcut(.defaultAction)
-            .disabled(!viewModel.isFormValid || viewModel.isUpdating || viewModel.isLoadingLoaderVersions)
+            .disabled(!viewModel.isFormValid || viewModel.isUpdating || viewModel.isLoadingLoaderVersions || viewModel.isLoadingLoaderTypes)
         }
     }
 }

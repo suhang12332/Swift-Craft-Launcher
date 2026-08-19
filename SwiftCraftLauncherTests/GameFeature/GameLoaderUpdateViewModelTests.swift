@@ -50,8 +50,8 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         let game = makeGame(modLoader: "forge", modVersion: "47.0.1")
         let vm = GameLoaderUpdateViewModel(existingGame: game)
 
-        // selectedModLoader is a `let` — it must equal the existing game's loader
-        // and cannot be reassigned to a different loader type.
+        // For non-vanilla games, selectedModLoader defaults to the existing loader
+        // and should not be changed by the user.
         XCTAssertEqual(vm.selectedModLoader, "forge")
         XCTAssertEqual(vm.selectedModLoader, vm.existingGame.modLoader)
     }
@@ -124,5 +124,44 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: "fabric", modVersion: "0.16.0"))
         vm.cancel() // should not crash when nothing is running
         XCTAssertFalse(vm.isUpdating)
+    }
+
+    // MARK: - Vanilla game: add loader
+
+    func testCanChangeLoaderType_vanilla_returnsTrue() {
+        let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: GameLoader.vanilla.displayName))
+        XCTAssertTrue(vm.canChangeLoaderType)
+    }
+
+    func testCanChangeLoaderType_nonVanilla_returnsFalse() {
+        let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: "fabric"))
+        XCTAssertFalse(vm.canChangeLoaderType)
+    }
+
+    func testAvailableLoaderTypes_excludesVanilla() {
+        let vm = GameLoaderUpdateViewModel(existingGame: makeGame())
+        XCTAssertFalse(vm.availableLoaderTypes.contains(.vanilla))
+        XCTAssertEqual(vm.availableLoaderTypes.count, GameLoader.allCases.count - 1)
+    }
+
+    func testIsFormValid_vanilla_withVersion_returnsTrue() {
+        let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: GameLoader.vanilla.displayName))
+        vm.selectedModLoader = "fabric"
+        vm.selectedLoaderVersion = "0.16.5"
+        XCTAssertTrue(vm.isFormValid)
+    }
+
+    func testIsFormValid_vanilla_emptyVersion_returnsFalse() {
+        let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: GameLoader.vanilla.displayName))
+        vm.selectedModLoader = "fabric"
+        vm.selectedLoaderVersion = ""
+        XCTAssertFalse(vm.isFormValid)
+    }
+
+    func testSelectedModLoader_vanilla_canBeChanged() {
+        let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: GameLoader.vanilla.displayName))
+        XCTAssertEqual(vm.selectedModLoader, "vanilla")
+        vm.selectedModLoader = "forge"
+        XCTAssertEqual(vm.selectedModLoader, "forge")
     }
 }

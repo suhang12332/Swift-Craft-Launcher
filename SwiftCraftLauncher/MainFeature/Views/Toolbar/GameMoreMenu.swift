@@ -29,12 +29,10 @@ struct GameMoreMenu: View {
                 }
             }
 
-            if game.modLoader != GameLoader.vanilla.displayName {
-                Button {
-                    container.ui.gameDialogsPresenter.presentLoaderUpdate(for: game)
-                } label: {
-                    Label("game.loader.update.title".localized(), systemImage: "arrow.triangle.2.circlepath")
-                }
+            Button {
+                container.ui.gameDialogsPresenter.presentLoaderUpdate(for: game)
+            } label: {
+                Label("game.loader.update.title".localized(), systemImage: "arrow.triangle.2.circlepath")
             }
 
             Button {

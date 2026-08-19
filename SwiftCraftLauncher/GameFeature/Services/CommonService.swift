@@ -104,6 +104,16 @@ enum CommonService {
         }
     }
 
+    static func fetchAllLoaderVersionsSilently(
+        type: String,
+        minecraftVersion: String,
+    ) async -> LoaderVersion? {
+        try? await fetchAllLoaderVersionsThrowing(
+            type: type,
+            minecraftVersion: minecraftVersion,
+        )
+    }
+
     static func fetchAllLoaderVersionsThrowing(
         type: String,
         minecraftVersion: String,

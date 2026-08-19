@@ -10,8 +10,11 @@ import SwiftUI
 
 /// View model for changing the loader version on an existing game instance.
 ///
-/// The Minecraft version and loader type are fixed to the existing game's values;
-/// only the loader version can be changed — cross-loader switching is not allowed.
+/// When the existing game already has a mod loader, only the loader version can be
+/// changed — cross-loader switching is not allowed.
+///
+/// When the existing game is vanilla, the user can choose a mod loader type and
+/// version to add. The game version is never changed.
 /// Downloads are tracked through the shared ``GameSetupUtil`` pipeline, whose file
 /// downloads are idempotent (SHA1-verified files are skipped), so re-running it on
 /// an installed game only fetches what changed.
@@ -24,15 +27,26 @@ final class GameLoaderUpdateViewModel {
     /// The installation pipeline reused for loader version changes.
     let gameSetupService = GameSetupUtil()
 
-    /// The mod loader type, fixed to the existing game's loader (cannot be changed).
-    let selectedModLoader: String
+    /// The selected mod loader type.
+    ///
+    /// Mutable only when the existing game is vanilla; fixed otherwise.
+    var selectedModLoader: String
 
     /// The newly selected loader version. Defaults to the game's current loader version.
     var selectedLoaderVersion: String
 
-    /// Loader versions compatible with the game's fixed Minecraft version and loader.
+    /// Loader versions compatible with the selected loader and the game's Minecraft version.
     var availableLoaderVersions: [String] = []
     var isLoadingLoaderVersions = false
+
+    /// Whether the user can change the loader type (only for vanilla games).
+    var canChangeLoaderType: Bool {
+        existingGame.modLoader == GameLoader.vanilla.displayName
+    }
+
+    /// The mod loader types available for selection (excludes vanilla), filtered by game version.
+    var availableLoaderTypes: [GameLoader] = []
+    var isLoadingLoaderTypes = false
 
     private var updateTask: Task<Void, Never>?
     private var didInit = false
@@ -52,15 +66,20 @@ final class GameLoaderUpdateViewModel {
         self.gameRepository = gameRepository
         if !didInit {
             didInit = true
-            Task { await refreshLoaderVersions() }
+            Task {
+                await refreshAvailableLoaderTypes()
+                await refreshLoaderVersions()
+            }
         }
     }
 
     /// Whether the form is ready to submit.
     var isFormValid: Bool {
-        let isLoaderVersionValid = selectedModLoader == GameLoader.vanilla.displayName || !selectedLoaderVersion.isEmpty
-        let hasChanged = selectedLoaderVersion != existingGame.modVersion
-        return isLoaderVersionValid && !isLoadingLoaderVersions && !isUpdating && hasChanged
+        guard !isLoadingLoaderVersions, !isUpdating else { return false }
+        if canChangeLoaderType {
+            return !selectedLoaderVersion.isEmpty
+        }
+        return !selectedLoaderVersion.isEmpty && selectedLoaderVersion != existingGame.modVersion
     }
 
     /// Whether a loader update is currently in progress.
@@ -82,7 +101,40 @@ final class GameLoaderUpdateViewModel {
         return "\(loader.labelName) \(existingGame.modVersion)"
     }
 
-    /// Fetches the loader versions available for the fixed loader at the game's fixed version.
+    /// Updates the list of available loader types to only those supported by the game's Minecraft version.
+    func refreshAvailableLoaderTypes() async {
+        await MainActor.run { isLoadingLoaderTypes = true }
+
+        let gameVersion = existingGame.gameVersion
+        var supported: [GameLoader] = []
+
+        await withTaskGroup(of: GameLoader?.self) { group in
+            for loader in GameLoader.allCases where loader != .vanilla {
+                group.addTask {
+                    let result = await CommonService.fetchAllLoaderVersionsSilently(
+                        type: loader.modrinthLoaderId,
+                        minecraftVersion: gameVersion,
+                    )
+                    return result != nil ? loader : nil
+                }
+            }
+            for await loader in group {
+                if let loader {
+                    supported.append(loader)
+                }
+            }
+        }
+
+        availableLoaderTypes = GameLoader.allCases.filter { $0 != .vanilla && supported.contains($0) }
+
+        if canChangeLoaderType, !supported.contains(where: { $0.displayName == selectedModLoader }) {
+            selectedModLoader = availableLoaderTypes.first?.displayName ?? GameLoader.vanilla.displayName
+        }
+
+        await MainActor.run { isLoadingLoaderTypes = false }
+    }
+
+    /// Fetches the loader versions available for the selected loader at the game's Minecraft version.
     func refreshLoaderVersions() async {
         guard selectedModLoader != GameLoader.vanilla.displayName else {
             await MainActor.run {
@@ -112,6 +164,12 @@ final class GameLoaderUpdateViewModel {
         }
     }
 
+    /// Called when the user selects a different loader type. Refreshes the version list.
+    func onLoaderTypeChanged() {
+        selectedLoaderVersion = ""
+        Task { await refreshLoaderVersions() }
+    }
+
     /// Starts the loader update through the installation pipeline.
     func confirm() {
         updateTask?.cancel()
@@ -139,14 +197,10 @@ final class GameLoaderUpdateViewModel {
             return
         }
 
-        let loaderVersion = selectedModLoader == GameLoader.vanilla.displayName
-            ? selectedModLoader
-            : selectedLoaderVersion
-
         await gameSetupService.updateGameLoader(
             input: .init(
                 selectedModLoader: selectedModLoader,
-                specifiedLoaderVersion: loaderVersion,
+                specifiedLoaderVersion: selectedLoaderVersion,
             ),
             existingGame: existingGame,
             gameRepository: gameRepository,
