@@ -28,9 +28,7 @@ final class GameLoaderUpdateViewModel {
     let selectedModLoader: String
 
     /// The newly selected loader version. Defaults to the game's current loader version.
-    var selectedLoaderVersion: String {
-        didSet { updateStateIfNeeded() }
-    }
+    var selectedLoaderVersion: String
 
     /// Loader versions compatible with the game's fixed Minecraft version and loader.
     var availableLoaderVersions: [String] = []
@@ -154,10 +152,5 @@ final class GameLoaderUpdateViewModel {
         ) { [weak self] in
             self?.onSuccess?()
         }
-    }
-
-    private func updateStateIfNeeded() {
-        // Observation is driven by @Observable property access in the view; this is a hook
-        // for any future derived-state recomputation.
     }
 }
