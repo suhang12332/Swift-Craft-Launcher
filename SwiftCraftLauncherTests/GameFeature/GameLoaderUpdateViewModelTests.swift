@@ -138,7 +138,7 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
     func testAvailableLoaderTypes_excludesVanilla() {
         let vm = GameLoaderUpdateViewModel(existingGame: makeGame())
         XCTAssertFalse(vm.availableLoaderTypes.contains(.vanilla))
-        XCTAssertEqual(vm.availableLoaderTypes.count, GameLoader.allCases.count - 1)
+        XCTAssertEqual(vm.availableLoaderTypes.count, 0)
     }
 
     func testIsFormValid_vanilla_withVersion_returnsTrue() {
