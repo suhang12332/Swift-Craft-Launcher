@@ -59,7 +59,8 @@ final class GameLoaderUpdateViewModel {
     /// Whether the form is ready to submit.
     var isFormValid: Bool {
         let isLoaderVersionValid = selectedModLoader == GameLoader.vanilla.displayName || !selectedLoaderVersion.isEmpty
-        return isLoaderVersionValid && !isLoadingLoaderVersions && !isUpdating
+        let hasChanged = selectedLoaderVersion != existingGame.modVersion
+        return isLoaderVersionValid && !isLoadingLoaderVersions && !isUpdating && hasChanged
     }
 
     /// Whether a loader update is currently in progress.

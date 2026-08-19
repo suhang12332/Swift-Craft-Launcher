@@ -36241,143 +36241,6 @@
         }
       }
     },
-    "settings.game.java.environment_variables.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "على سبيل المثال: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "For eksempel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zum Beispiel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "For example: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Por ejemplo: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esimerkiksi: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Par exemple : \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "उदाहरण के लिए: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ad esempio: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "例： \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "예시： \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "For eksempel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bijvoorbeeld: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Na przykład: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Por exemplo: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Например: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Till exempel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ตัวอย่าง: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Örneğin: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ví dụ: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "例如：\nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "例如：\nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
-          }
-        }
-      }
-    },
     "fabric.loader.title" : {
       "comment" : "Loader Titles",
       "extractionState" : "manual",
@@ -40496,554 +40359,554 @@
         }
       }
     },
-    "game.loader.update.confirm" : {
-      "comment" : "Confirm button in the loader update sheet",
+    "game.loader.update.rules.header" : {
+      "comment" : "Header text above the loader adjustment rules",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تحديث"
+            "value" : "وصف ضبط المُحمِّل"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opdater"
+            "value" : "Justering af loaderforklaring"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktualisieren"
+            "value" : "Anpassung des Lader-Erklärung"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Update"
+            "value" : "Loader Adjustment Instructions"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Actualizar"
+            "value" : "Instrucciones de ajuste del cargador"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Päivitä"
+            "value" : "Lataajan säädön ohjeet"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mettre à jour"
+            "value" : "Instructions d'ajustement du chargeur"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "अपडेट"
+            "value" : "लोडर समायोजन निर्देश"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aggiorna"
+            "value" : "Istruzioni per la regolazione del caricatore"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新"
+            "value" : "ローダー調整の説明"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "업데이트"
+            "value" : "로더 조정 설명"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oppdater"
+            "value" : "Justering av lasteforklaring"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bijwerken"
+            "value" : "Loaderaanpassingsinstructies"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktualizuj"
+            "value" : "Instrukcje dostosowywania ładowacza"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Atualizar"
+            "value" : "Instruções de ajuste do carregador"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Обновить"
+            "value" : "Инструкции по настройке загрузчика"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uppdatera"
+            "value" : "Instruktioner för justering av laddare"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "อัปเดต"
+            "value" : "คำแนะนำในการปรับโหลดเดอร์"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Güncelle"
+            "value" : "Yükleyici ayarlama talimatları"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cập nhật"
+            "value" : "Hướng dẫn điều chỉnh trình tải"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新"
+            "value" : "调整加载器说明"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新"
+            "value" : "調整載入器說明"
           }
         }
       }
     },
-    "game.loader.update.current" : {
-      "comment" : "Label for the game's currently installed loader",
+    "game.loader.update.rules.rule.1" : {
+      "comment" : "Rule: vanilla games can switch to any loader type",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "الحالي محمل التعديلات"
+            "value" : "• يمكن تبديل الألعاب الأصلية إلى مُحمِّل Fabric أو Forge أو NeoForge أو Quilt"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nuværende Mod Loader"
+            "value" : "• Vanilla-spil kan skiftes til Fabric, Forge, NeoForge eller Quilt"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktuelle Mod Loader"
+            "value" : "• Vanilla-Spiele können zu Fabric, Forge, NeoForge oder Quilt gewechselt werden"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Current Loader"
+            "value" : "• Vanilla games can be switched to Fabric, Forge, NeoForge, or Quilt"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Actual Cargador de mods"
+            "value" : "• Los juegos vanilla pueden cambiarse a Fabric, Forge, NeoForge o Quilt"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nykyinen Mod Loader"
+            "value" : "• Vanilla-pelejä voi vaihtaa Fabric-, Forge-, NeoForge- tai Quilt-lataajaksi"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Actuel Chargeur de mods"
+            "value" : "• Les jeux vanilla peuvent être basculés vers Fabric, Forge, NeoForge ou Quilt"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "वर्तमान मॉड लोडर"
+            "value" : "• वनिला गेम को Fabric, Forge, NeoForge, या Quilt में बदला जा सकता है"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Attuale Caricatore di mod"
+            "value" : "• I giochi vanilla possono essere passati a Fabric, Forge, NeoForge o Quilt"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "現在の Modローダー"
+            "value" : "• Vanilla ゲームは Fabric、Forge、NeoForge、Quilt に切り替え可能です"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "현재 모드 로더"
+            "value" : "• 베이닐 게임은 Fabric, Forge, NeoForge, Quilt로 전환할 수 있습니다"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gjeldende Mod Loader"
+            "value" : "• Vanillaspill kan byttes til Fabric, Forge, NeoForge eller Quilt"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Huidige Mod Loader"
+            "value" : "• Vanilla-spellen kunnen worden overgeschakeld naar Fabric, Forge, NeoForge of Quilt"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Obecny Mod Loader"
+            "value" : "• Gry vanilla można przełączyć na Fabric, Forge, NeoForge lub Quilt"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Atual Carregador de mods"
+            "value" : "• Jogos vanilla podem ser alterados para Fabric, Forge, NeoForge ou Quilt"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Текущий Мод загрузчик"
+            "value" : "• Игры без модов можно переключить на Fabric, Forge, NeoForge или Quilt"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktuell Mod Loader"
+            "value" : "• Vanilla-spel kan bytas till Fabric, Forge, NeoForge eller Quilt"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ปัจจุบัน Mod Loader"
+            "value" : "• เกม vanilla สามารถเปลี่ยนเป็น Fabric, Forge, NeoForge หรือ Quilt ได้"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mevcut Mod Yükleyici"
+            "value" : "• Vanilla oyunları Fabric, Forge, NeoForge veya Quilt'e geçirilebilir"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hiện tại Trình tải mod"
+            "value" : "• Trò chơi vanilla có thể chuyển sang Fabric, Forge, NeoForge hoặc Quilt"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前加载器"
+            "value" : "• 原版游戏可切换为 Fabric、Forge、NeoForge 或 Quilt"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "當前載入器"
+            "value" : "• 原版遊戲可切換為 Fabric、Forge、NeoForge 或 Quilt"
           }
         }
       }
     },
-    "game.loader.update.description" : {
-      "comment" : "Loader update sheet description",
+    "game.loader.update.rules.rule.2" : {
+      "comment" : "Rule: games with a loader can only change loader version, not type",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اختر محمل تعديلات وإصدارًا للتبديل إليه. يبقى إصدار Minecraft كما هو."
+            "value" : "• الألعاب التي تحتوي على مُحمِّل تعديلات يمكنها فقط تغيير إصدار المُحمِّل، وليس نوعه"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vælg en mod loader og version at skifte til. Minecraft-versionen forbliver den samme."
+            "value" : "• Spil med en modloader kan kun skifte loaderens version, ikke typen"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wähle einen Mod Loader und eine Version zum Wechseln. Die Minecraft-Version bleibt gleich."
+            "value" : "• Spiele mit einem Mod-Lader können nur die Lader-Version ändern, nicht den Typ"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose a mod loader and version to switch to. The Minecraft version stays the same."
+            "value" : "• Games with a mod loader can only change the loader version, not the type"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige un cargador de mods y una versión para cambiar. La versión de Minecraft permanece igual."
+            "value" : "• Los juegos con cargador de mods solo pueden cambiar la versión del cargador, no el tipo"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Valitse mod-latausohjelma ja versio johon vaihdat. Minecraft-versio pysyy samana."
+            "value" : "• Modilataajalla varustetut pelit voivat vain muuttaa lataajan versiota, ei tyyppiä"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisissez un chargeur de mods et une version à utiliser. La version Minecraft reste la même."
+            "value" : "• Les jeux avec un chargeur de mods ne peuvent modifier que la version du chargeur, pas le type"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "स्विच करने के लिए एक मॉड लोडर और संस्करण चुनें। Minecraft संस्करण वही रहता है।"
+            "value" : "• मॉड लोडर वाले गेम केवल लोडर संस्करण बदल सकते हैं, प्रकार नहीं"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scegli un caricatore di mod e una versione a cui passare. La versione di Minecraft rimane la stessa."
+            "value" : "• I giochi con caricatore di mod possono cambiare solo la versione del caricatore, non il tipo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "切り替えるモッドローダーとバージョンを選択してください。Minecraftのバージョンは同じままです。"
+            "value" : "• mod ローダーが設定されたゲームはローダーのバージョンのみ変更でき、種類の変更はできません"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "전환할 모드 로더와 버전을 선택하세요. Minecraft 버전은 그대로 유지됩니다."
+            "value" : "• 모드 로더가 설치된 게임은 로더 버전만 변경할 수 있으며 유형은 변경할 수 없습니다"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Velg en mod laster og versjon å bytte til. Minecraft-versjonen forblir den samme."
+            "value" : "• Spill med en modlast kan bare endre lastens versjon, ikke typen"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kies een mod loader en versie om naar over te schakelen. De Minecraft-versie blijft hetzelfde."
+            "value" : "• Spellen met een modloader kunnen alleen de versie van de loader wijzigen, niet het type"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybierz ładowarkę modów i wersję do przełączenia. Wersja Minecraft pozostaje taka sama."
+            "value" : "• Gry z ładowaczem modów mogą zmieniać tylko wersję ładowacza, nie typ"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Escolha um carregador de mods e uma versão para mudar. A versão do Minecraft permanece a mesma."
+            "value" : "• Jogos com carregador de mods só podem alterar a versão do carregador, não o tipo"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Выберите мод-загрузчик и версию для переключения. Версия Minecraft остаётся прежней."
+            "value" : "• Игры с загрузчиком модов могут изменять только версию загрузчика, но не его тип"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Välj en mod loader och version att byta till. Minecraft-versionen förblir densamma."
+            "value" : "• Spel med en modladdare kan bara ändra laddarens version, inte typen"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เลือกโหลดเดอร์ม็อดและเวอร์ชันที่จะสลับไป เวอร์ชัน Minecraft ยังคงเดิม"
+            "value" : "• เกมที่มีโหลดเดอร์ม็อดสามารถเปลี่ยนเฉพาะเวอร์ชันของโหลดเดอร์ได้ ไม่ใช่ประเภท"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geçiş yapmak için bir mod yükleyici ve sürüm seçin. Minecraft sürümü aynı kalır."
+            "value" : "• Mod yükleyicili oyunlar yalnızca yükleyici sürümünü değiştirebilir, türünü değil"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chọn trình tải mod và phiên bản để chuyển sang. Phiên bản Minecraft giữ nguyên."
+            "value" : "• Trò chơi có trình tải mod chỉ có thể thay đổi phiên bản trình tải, không thay đổi loại"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择要更换的加载器及版本，游戏版本保持不变。"
+            "value" : "• 已安装 Mod 加载器的游戏只能更改加载器版本，不能更改类型"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇要更換的載入器及版本，遊戲版本保持不變。"
+            "value" : "• 已安裝 Mod 載入器的遊戲只能更改載入器版本，不能更改類型"
           }
         }
       }
     },
-    "game.loader.update.game" : {
-      "comment" : "Label for the game name in the loader update sheet",
+    "game.loader.update.rules.rule.3" : {
+      "comment" : "Warning: changing loader version may crash the game",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اللعبة"
+            "value" : "• تحذير: قد يتوقف اللعب عن العمل بسبب تغيير إصدار المُحمِّل"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spil"
+            "value" : "• Advarsel: Skift af loader-version kan få spillet til at gå ned"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spiel"
+            "value" : "• Warnung: Das Ändern der Lader-Version kann zum Absturz des Spiels führen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Game"
+            "value" : "• Warning: Changing the loader version may cause the game to crash"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Juego"
+            "value" : "• Advertencia: Cambiar la versión del cargador puede hacer que el juego se cierre inesperadamente"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Peli"
+            "value" : "• Varoitus: Lataajan version vaihtaminen voi kaataa pelin"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jeu"
+            "value" : "• Attention : modifier la version du chargeur peut provoquer le plantage du jeu"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "गेम"
+            "value" : "• चेतावनी: लोडर संस्करण बदलने से गेम क्रैश हो सकता है"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gioco"
+            "value" : "• Attenzione: modificare la versione del caricatore può causare il crash del gioco"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ゲーム"
+            "value" : "• 注意: ローダーのバージョンを変更するとゲームがクラッシュする場合があります"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임"
+            "value" : "• 주의: 로더 버전을 변경하면 게임이 충돌할 수 있습니다"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spill"
+            "value" : "• Advarsel: Å endre lastens versjon kan få spillet til å krasje"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spel"
+            "value" : "• Waarschuwing: het wijzigen van de loaderversie kan het spel laten crashen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gra"
+            "value" : "• Uwaga: Zmiana wersji ładowacza może spowodować awarię gry"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jogo"
+            "value" : "• Aviso: Alterar a versão do carregador pode fazer o jogo travar"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Игра"
+            "value" : "• Внимание: изменение версии загрузчика может привести к аварии игры"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spel"
+            "value" : "• Varning: Att ändra laddarens version kan få spelet att krascha"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เกม"
+            "value" : "• คำเตือน: การเปลี่ยนเวอร์ชันโหลดเดอร์อาจทำให้เกมล่ม"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oyun"
+            "value" : "• Uyarı: Yükleyici sürümünü değiştirmek oyunun çökmesine neden olabilir"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trò chơi"
+            "value" : "• Cảnh báo: Thay đổi phiên bản trình tải có thể gây crash trò chơi"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "游戏"
+            "value" : "• 注意：更改加载器版本可能导致游戏崩溃"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "遊戲"
+            "value" : "• 注意：更改載入器版本可能導致遊戲崩潰"
           }
         }
       }
@@ -41055,133 +40918,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تغيير إصدار المحمل"
+            "value" : "تغيير المحمل"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skift Loader Version"
+            "value" : "Skift Loader"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ändern Loader-Version"
+            "value" : "Ändern Loader"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Change Loader Version"
+            "value" : "Change Loader"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cambiar Versión del Cargador"
+            "value" : "Cambiar Cargador"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vaihda Latausversio"
+            "value" : "Vaihda Lataaja"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Changer Version du Chargeur"
+            "value" : "Changer Chargeur"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "बदलें लोडर संस्करण"
+            "value" : "बदलें लोडर"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cambia Versione del Caricatore"
+            "value" : "Cambia Caricatore"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "変更 ローダーバージョン"
+            "value" : "ローダーを変更"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "변경 로더 버전"
+            "value" : "로더 변경"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Endre Laster-versjon"
+            "value" : "Endre Laster"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wijzig Loader Versie"
+            "value" : "Wijzig Loader"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zmień Wersja Loadera"
+            "value" : "Zmień Loader"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alterar Versão do Carregador"
+            "value" : "Alterar Carregador"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Изменить Версия загрузчика"
+            "value" : "Изменить загрузчик"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ändra Laddare Version"
+            "value" : "Ändra Laddare"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เปลี่ยน เวอร์ชันโหลดเดอร์"
+            "value" : "เปลี่ยนโหลดเดอร์"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Değiştir Yükleyici Sürümü"
+            "value" : "Yükleyiciyi Değiştir"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Thay đổi Phiên bản Trình tải"
+            "value" : "Thay đổi Trình tải"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更改加载器版本"
+            "value" : "调整加载器"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更改載入器版本"
+            "value" : "更改載入器"
           }
         }
       }
@@ -50672,143 +50535,6 @@
         }
       }
     },
-    "modpack.files.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ملفات حزمة التعديل"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack filer"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack-Dateien"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack Files"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Archivos del modpack"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack-tiedostot"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fichiers du modpack"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "मॉडपैक फ़ाइलें"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "File del modpack"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "モッドパックファイル"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "모드팩 파일"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack filer"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack bestanden"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pliki modpacka"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arquivos do modpack"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Файлы модпака"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack-filer"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ไฟล์มอดแพ็ค"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack dosyaları"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tệp modpack"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "整合包文件"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "整合包檔案"
-          }
-        }
-      }
-    },
     "modpack.failed_resources.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -50942,6 +50668,143 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載失敗資源"
+          }
+        }
+      }
+    },
+    "modpack.files.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ملفات حزمة التعديل"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack filer"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-Dateien"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack Files"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivos del modpack"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-tiedostot"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fichiers du modpack"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मॉडपैक फ़ाइलें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File del modpack"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モッドパックファイル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모드팩 파일"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack filer"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack bestanden"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pliki modpacka"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arquivos do modpack"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файлы модпака"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-filer"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ไฟล์มอดแพ็ค"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack dosyaları"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tệp modpack"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "整合包文件"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "整合包檔案"
           }
         }
       }
@@ -54111,6 +53974,144 @@
         }
       }
     },
+    "notification.download.complete.title" : {
+      "comment" : "Notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اكتمل التنزيل"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download Fuldført"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download Abgeschlossen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download Complete"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Descarga Completa"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lataus Valmis"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Téléchargement Terminé"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "डाउनलोड पूर्ण"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download Completato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダウンロード完了"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다운로드 완료"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nedlasting Fullført"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download Voltooid"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pobieranie Zakończone"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download Concluído"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Загрузка Завершена"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nedladdning Klar"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ดาวน์โหลดเสร็จสิ้น"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İndirme Tamamlandı"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tải Xuống Hoàn Thành"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下载完成"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下載完成"
+          }
+        }
+      }
+    },
     "notification.loader.update.complete.body" : {
       "comment" : "Notification body when a game's loader is updated. Args: game name, loader description",
       "extractionState" : "manual",
@@ -54383,144 +54384,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "載入器已更新"
-          }
-        }
-      }
-    },
-    "notification.download.complete.title" : {
-      "comment" : "Notification",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "اكتمل التنزيل"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download Fuldført"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download Abgeschlossen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download Complete"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Descarga Completa"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lataus Valmis"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Téléchargement Terminé"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "डाउनलोड पूर्ण"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download Completato"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ダウンロード完了"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "다운로드 완료"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nedlasting Fullført"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download Voltooid"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pobieranie Zakończone"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download Concluído"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Загрузка Завершена"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nedladdning Klar"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ดาวน์โหลดเสร็จสิ้น"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "İndirme Tamamlandı"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tải Xuống Hoàn Thành"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下载完成"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載完成"
           }
         }
       }
@@ -72082,6 +71945,143 @@
         }
       }
     },
+    "settings.game.java.environment_variables.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "على سبيل المثال: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For eksempel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Beispiel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For example: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por ejemplo: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esimerkiksi: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par exemple : \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "उदाहरण के लिए: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ad esempio: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例： \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예시： \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For eksempel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bijvoorbeeld: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na przykład: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Por exemplo: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Например: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Till exempel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ตัวอย่าง: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Örneğin: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ví dụ: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：\nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：\nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+          }
+        }
+      }
+    },
     "settings.game.java.garbage_collector" : {
       "comment" : "JVM Advanced Settings",
       "extractionState" : "manual",
@@ -86908,144 +86908,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇用於帳號驗證和資料獲取的Yggdrasil伺服器。現階段對第三方伺服器的支援較少，我們計劃在未来對接更多伺服器。"
-          }
-        }
-      }
-    },
-    "game.loader.update.menu" : {
-      "comment" : "Context menu / more menu button to change a game's loader version",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تغيير إصدار المحمل"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skift Loader Version"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ändern Loader-Version"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Change Loader Version"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambiar Versión del Cargador"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vaihda Latausversio"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Changer Version du Chargeur"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "बदलें लोडर संस्करण"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambia Versione del Caricatore"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "変更 ローダーバージョン"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "변경 로더 버전"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Endre Laster-versjon"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wijzig Loader Versie"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zmień Wersja Loadera"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alterar Versão do Carregador"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Изменить Версия загрузчика"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ändra Laddare Version"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "เปลี่ยน เวอร์ชันโหลดเดอร์"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Değiştir Yükleyici Sürümü"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Thay đổi Phiên bản Trình tải"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改加载器版本"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改載入器版本"
           }
         }
       }

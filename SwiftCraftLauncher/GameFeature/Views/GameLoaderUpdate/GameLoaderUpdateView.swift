@@ -47,9 +47,9 @@ struct GameLoaderUpdateView: View {
     }
 
     private var bodyView: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 16) {
             currentInfoSection
-
+                .padding(.bottom, 10)
             if !viewModel.isUpdating {
                 versionSelectionSection
             }
@@ -65,50 +65,43 @@ struct GameLoaderUpdateView: View {
     }
 
     private var currentInfoSection: some View {
-        FormSection {
-            VStack(alignment: .leading, spacing: 12) {
-                infoRow("game.loader.update.game".localized(), gameInfo.gameName)
-                infoRow("game.form.version".localized(), gameInfo.gameVersion)
-                Divider()
-                infoRow("game.loader.update.current".localized(), viewModel.currentLoaderDescription)
-            }
+        VStack(alignment: .leading, spacing: 4) {
+            Text("game.loader.update.rules.header".localized())
+                .font(.headline)
+                .padding(.bottom, 4)
+
+            Text("game.loader.update.rules.rule.1".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            Text("game.loader.update.rules.rule.2".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            Text("game.loader.update.rules.rule.3".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
         }
     }
 
     private var versionSelectionSection: some View {
-        FormSection {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("game.form.loader.version".localized())
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    if viewModel.isLoadingLoaderVersions {
-                        ProgressView()
-                            .controlSize(.small)
-                            .scaleEffect(0.85)
-                    }
+        VStack {
+            HStack {
+                Text("game.form.loader.version".localized())
+                    .font(.headline)
+                Spacer()
+                if viewModel.isLoadingLoaderVersions {
+                    ProgressView()
+                        .controlSize(.small)
+                        .scaleEffect(0.85)
                 }
-                CommonMenuPicker(selection: $viewModel.selectedLoaderVersion) {
-                    ForEach(viewModel.availableLoaderVersions, id: \.self) { version in
-                        Text(version).tag(version)
-                    }
-                }
-                .disabled(viewModel.isLoadingLoaderVersions || viewModel.availableLoaderVersions.isEmpty)
             }
-        }
-    }
-
-    private func infoRow(_ title: String, _ value: String) -> some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(title)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            Spacer(minLength: 0)
-            Text(value)
-                .font(.subheadline)
-                .frame(maxWidth: 220, alignment: .trailing)
-                .multilineTextAlignment(.trailing)
+            CommonMenuPicker(selection: $viewModel.selectedLoaderVersion) {
+                ForEach(viewModel.availableLoaderVersions, id: \.self) { version in
+                    Text(version).tag(version)
+                }
+            }
+            .disabled(viewModel.isLoadingLoaderVersions || viewModel.availableLoaderVersions.isEmpty)
         }
     }
 
@@ -135,7 +128,7 @@ struct GameLoaderUpdateView: View {
                         ProgressView()
                             .controlSize(.small)
                     } else {
-                        Text("game.loader.update.confirm".localized())
+                        Text("common.confirm".localized())
                     }
                 }
             }
