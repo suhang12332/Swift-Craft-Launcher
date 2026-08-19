@@ -28,8 +28,6 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         )
     }
 
-    // MARK: - Init
-
     func testInit_fabricGame_defaultsToExistingLoaderAndVersion() {
         let game = makeGame(modLoader: "fabric", modVersion: "0.16.0")
         let vm = GameLoaderUpdateViewModel(existingGame: game)
@@ -48,8 +46,6 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         XCTAssertEqual(vm.selectedLoaderVersion, "")
     }
 
-    // MARK: - Loader type is immutable (no cross-loader switching)
-
     func testSelectedModLoader_isFixedToExistingGameLoader() {
         let game = makeGame(modLoader: "forge", modVersion: "47.0.1")
         let vm = GameLoaderUpdateViewModel(existingGame: game)
@@ -59,8 +55,6 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         XCTAssertEqual(vm.selectedModLoader, "forge")
         XCTAssertEqual(vm.selectedModLoader, vm.existingGame.modLoader)
     }
-
-    // MARK: - Form validity
 
     func testIsFormValid_fabric_emptyVersion_returnsFalse() {
         let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: "fabric", modVersion: ""))
@@ -94,8 +88,6 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         XCTAssertFalse(vm.isFormValid)
     }
 
-    // MARK: - Current loader description
-
     func testCurrentLoaderDescription_vanilla() {
         let vm = GameLoaderUpdateViewModel(
             existingGame: makeGame(modLoader: GameLoader.vanilla.displayName, modVersion: ""),
@@ -119,8 +111,6 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         )
         XCTAssertEqual(vm.currentLoaderDescription, "NeoForge 21.0.1")
     }
-
-    // MARK: - Update state
 
     func testIsUpdating_reflectsDownloadState() {
         let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: "fabric", modVersion: "0.16.0"))
