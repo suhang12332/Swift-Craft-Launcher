@@ -55,6 +55,18 @@ class GameSetupUtil {
             }
         }
 
+        await MainActor.run {
+            downloadState.reset()
+            downloadState.isDownloading = true
+        }
+
+        defer {
+            Task { @MainActor in
+                downloadState.isDownloading = false
+                downloadTask = nil
+            }
+        }
+
         let standardIconPresent = await saveGameIcon(
             gameName: input.gameName,
             modLoader: input.selectedModLoader,
@@ -62,7 +74,7 @@ class GameSetupUtil {
         )
         let persistedGameIcon = standardIconPresent ? AppConstants.defaultGameIcon : ""
 
-        let gameInfo = GameVersionInfo(
+        var gameInfo = GameVersionInfo(
             id: UUID(),
             gameName: input.gameName,
             gameIcon: persistedGameIcon,
@@ -71,37 +83,40 @@ class GameSetupUtil {
             modLoader: input.selectedModLoader,
         )
 
-        let config = DownloadFlowConfig(
-            gameInfo: gameInfo,
-            selectedGameVersion: input.selectedGameVersion,
-            selectedModLoader: input.selectedModLoader,
-            specifiedLoaderVersion: input.specifiedLoaderVersion,
-            onPersist: { [weak self] finalizedInfo in
-                gameRepository.addGameSilently(finalizedInfo)
-                if DIContainer.shared.ui.gameSettingsManager.syncLanguageForNewGames {
-                    self?.configureGameLanguage(for: finalizedInfo.gameName)
-                }
-            },
-            notificationTitle: "notification.download.complete.title".localized(),
-            notificationBody: { finalizedInfo in
-                String(
-                    format: "notification.download.complete.body".localized(),
-                    finalizedInfo.gameName,
-                    finalizedInfo.gameVersion,
-                    finalizedInfo.modLoader,
-                )
-            },
-            onCancelled: { [weak self] in
-                guard let self else { return }
-                await cleanupGameDirectories(gameName: input.gameName)
-            },
-            onError: { [weak self] _ in
-                guard let self else { return }
-                await cleanupGameDirectories(gameName: input.gameName)
-            },
-        )
+        do {
+            gameInfo = try await performSetup(
+                baseGameInfo: gameInfo,
+                selectedGameVersion: input.selectedGameVersion,
+                selectedModLoader: input.selectedModLoader,
+                specifiedLoaderVersion: input.specifiedLoaderVersion,
+            )
+            gameRepository.addGameSilently(gameInfo)
 
-        await runDownloadFlow(config: config, onSuccess: onSuccess)
+            if DIContainer.shared.ui.gameSettingsManager.syncLanguageForNewGames {
+                configureGameLanguage(for: gameInfo.gameName)
+            }
+
+            Task.detached(priority: .utility) { [gameInfo] in
+                await DIContainer.shared.core.modScanner.scanGameModsDirectory(game: gameInfo)
+            }
+
+            await NotificationManager.sendSilently(
+                title: "notification.download.complete.title".localized(),
+                body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader),
+            )
+            onSuccess()
+        } catch {
+            if isSaveGameDownloadCancelled(error) {
+                AppLog.game.info("Game download task cancelled")
+                await cleanupGameDirectories(gameName: input.gameName)
+                await MainActor.run {
+                    self.downloadState.reset()
+                }
+                return
+            }
+            await cleanupGameDirectories(gameName: input.gameName)
+            DIContainer.shared.core.errorHandler.handle(error)
+        }
     }
 
     private func isSaveGameDownloadCancelled(_ error: Error) -> Bool {
@@ -186,6 +201,18 @@ class GameSetupUtil {
         gameRepository: GameRepository,
         onSuccess: @escaping () -> Void,
     ) async {
+        await MainActor.run {
+            downloadState.reset()
+            downloadState.isDownloading = true
+        }
+
+        defer {
+            Task { @MainActor in
+                downloadState.isDownloading = false
+                downloadTask = nil
+            }
+        }
+
         let baseGameInfo = GameVersionInfo(
             id: UUID(uuidString: existingGame.id) ?? UUID(),
             gameName: existingGame.gameName,
@@ -208,94 +235,39 @@ class GameSetupUtil {
             environmentVariables: existingGame.environmentVariables,
         )
 
-        let config = DownloadFlowConfig(
-            gameInfo: baseGameInfo,
-            selectedGameVersion: existingGame.gameVersion,
-            selectedModLoader: input.selectedModLoader,
-            specifiedLoaderVersion: input.specifiedLoaderVersion,
-            onPersist: { finalizedInfo in
-                try await gameRepository.updateGame(finalizedInfo)
-            },
-            notificationTitle: "notification.loader.update.complete.title".localized(),
-            notificationBody: { finalizedInfo in
-                let loaderLabel = GameLoader(rawValue: finalizedInfo.modLoader)?.labelName ?? finalizedInfo.modLoader
-                let loaderDescription = finalizedInfo.modVersion.isEmpty ? loaderLabel : "\(loaderLabel) \(finalizedInfo.modVersion)"
-                return String(
-                    format: "notification.loader.update.complete.body".localized(),
-                    finalizedInfo.gameName,
-                    loaderDescription,
-                )
-            },
-            onCancelled: nil,
-            onError: nil,
-        )
-
-        await runDownloadFlow(config: config, onSuccess: onSuccess)
-    }
-
-    /// Configuration for the shared download flow.
-    struct DownloadFlowConfig {
-        let gameInfo: GameVersionInfo
-        let selectedGameVersion: String
-        let selectedModLoader: String
-        let specifiedLoaderVersion: String
-        let onPersist: (GameVersionInfo) async throws -> Void
-        let notificationTitle: String
-        let notificationBody: (GameVersionInfo) -> String
-        let onCancelled: (() async -> Void)?
-        let onError: ((Error) async -> Void)?
-    }
-
-    /// Shared download flow used by both game creation and loader version change.
-    ///
-    /// Resets and manages the download state, runs ``performSetup``, persists the
-    /// finalized game info via `config.onPersist`, scans mods, sends a notification, and
-    /// handles cancellation and errors uniformly.
-    private func runDownloadFlow(
-        config: DownloadFlowConfig,
-        onSuccess: @escaping () -> Void,
-    ) async {
-        await MainActor.run {
-            downloadState.reset()
-            downloadState.isDownloading = true
-        }
-
-        defer {
-            Task { @MainActor in
-                downloadState.isDownloading = false
-                downloadTask = nil
-            }
-        }
-
         do {
             let finalizedInfo = try await performSetup(
-                baseGameInfo: config.gameInfo,
-                selectedGameVersion: config.selectedGameVersion,
-                selectedModLoader: config.selectedModLoader,
-                specifiedLoaderVersion: config.specifiedLoaderVersion,
+                baseGameInfo: baseGameInfo,
+                selectedGameVersion: existingGame.gameVersion,
+                selectedModLoader: input.selectedModLoader,
+                specifiedLoaderVersion: input.specifiedLoaderVersion,
             )
 
-            try await config.onPersist(finalizedInfo)
+            try await gameRepository.updateGame(finalizedInfo)
 
             Task.detached(priority: .utility) { [finalizedInfo] in
                 await DIContainer.shared.core.modScanner.scanGameModsDirectory(game: finalizedInfo)
             }
 
+            let loaderLabel = GameLoader(rawValue: finalizedInfo.modLoader)?.labelName ?? finalizedInfo.modLoader
+            let loaderDescription = finalizedInfo.modVersion.isEmpty ? loaderLabel : "\(loaderLabel) \(finalizedInfo.modVersion)"
             await NotificationManager.sendSilently(
-                title: config.notificationTitle,
-                body: config.notificationBody(finalizedInfo),
+                title: "notification.loader.update.complete.title".localized(),
+                body: String(
+                    format: "notification.loader.update.complete.body".localized(),
+                    finalizedInfo.gameName,
+                    loaderDescription,
+                ),
             )
             onSuccess()
         } catch {
             if isSaveGameDownloadCancelled(error) {
-                AppLog.game.info("Game download task cancelled")
-                await config.onCancelled?()
+                AppLog.game.info("Game loader update task cancelled")
                 await MainActor.run {
                     self.downloadState.reset()
                 }
                 return
             }
-            await config.onError?(error)
             DIContainer.shared.core.errorHandler.handle(error)
         }
     }
