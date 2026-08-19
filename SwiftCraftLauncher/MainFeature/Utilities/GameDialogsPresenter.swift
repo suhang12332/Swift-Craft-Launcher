@@ -14,6 +14,7 @@ import SwiftUI
 final class GameDialogsPresenter {
     var gameForExport: GameVersionInfo?
     var gamePendingDeletion: GameVersionInfo?
+    var gamePendingLoaderUpdate: GameVersionInfo?
 
     init() { }
 
@@ -23,5 +24,9 @@ final class GameDialogsPresenter {
 
     func requestGameDeletion(of game: GameVersionInfo) {
         gamePendingDeletion = game
+    }
+
+    func presentLoaderUpdate(for game: GameVersionInfo) {
+        gamePendingLoaderUpdate = game
     }
 }

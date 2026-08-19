@@ -40496,6 +40496,126 @@
         }
       }
     },
+    "game.loader.update.confirm" : {
+      "comment" : "Confirm button in the loader update sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新"
+          }
+        }
+      }
+    },
+    "game.loader.update.current" : {
+      "comment" : "Label for the game's currently installed loader",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current Loader"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前加载器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "當前載入器"
+          }
+        }
+      }
+    },
+    "game.loader.update.description" : {
+      "comment" : "Loader update sheet description",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a mod loader and version to switch to. The Minecraft version stays the same."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择要更换的加载器及版本，游戏版本保持不变。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇要更換的載入器及版本，遊戲版本保持不變。"
+          }
+        }
+      }
+    },
+    "game.loader.update.game" : {
+      "comment" : "Label for the game name in the loader update sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Game"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "游戏"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "遊戲"
+          }
+        }
+      }
+    },
+    "game.loader.update.title" : {
+      "comment" : "Loader version change sheet title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change Loader Version"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改加载器版本"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改載入器版本"
+          }
+        }
+      }
+    },
     "game.path" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -53417,6 +53537,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ (版本： %@, 加載器： %@） 已成功下載。"
+          }
+        }
+      }
+    },
+    "notification.loader.update.complete.body" : {
+      "comment" : "Notification body when a game's loader is updated. Args: game name, loader description",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@'s loader has been updated to %2$@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 的加载器已更新为 %2$@。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ 的載入器已更新為 %2$@。"
+          }
+        }
+      }
+    },
+    "notification.loader.update.complete.title" : {
+      "comment" : "Notification title when a game's loader is updated",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loader Updated"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加载器已更新"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "載入器已更新"
           }
         }
       }
@@ -85942,6 +86110,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇用於帳號驗證和資料獲取的Yggdrasil伺服器。現階段對第三方伺服器的支援較少，我們計劃在未来對接更多伺服器。"
+          }
+        }
+      }
+    },
+    "game.loader.update.menu" : {
+      "comment" : "Context menu / more menu button to change a game's loader version",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change Loader Version"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改加载器版本"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改載入器版本"
           }
         }
       }

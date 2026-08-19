@@ -79,6 +79,17 @@ struct GameContextMenu: View {
             Label("settings.game.advanced".localized(), systemImage: "gearshape")
         })
 
+        if game.modLoader != GameLoader.vanilla.displayName {
+            Button(action: {
+                if showsShowInLauncher {
+                    container.ui.windowManager.showAndActivateMainWindow()
+                }
+                container.ui.gameDialogsPresenter.presentLoaderUpdate(for: game)
+            }, label: {
+                Label("game.loader.update.menu".localized(), systemImage: "arrow.triangle.2.circlepath")
+            })
+        }
+
         Divider()
 
         if game.modLoader != GameLoader.vanilla.displayName {
