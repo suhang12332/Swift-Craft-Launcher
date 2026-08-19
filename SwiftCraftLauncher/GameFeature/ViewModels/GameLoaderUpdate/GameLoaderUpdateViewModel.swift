@@ -97,7 +97,10 @@ final class GameLoaderUpdateViewModel {
             isLoadingLoaderVersions = true
         }
 
-        let versions = await fetchLoaderVersions(for: selectedModLoader)
+        let versions = await CommonService.fetchLoaderVersionStrings(
+            for: selectedModLoader,
+            gameVersion: existingGame.gameVersion,
+        )
 
         await MainActor.run {
             availableLoaderVersions = versions
@@ -156,32 +159,5 @@ final class GameLoaderUpdateViewModel {
     private func updateStateIfNeeded() {
         // Observation is driven by @Observable property access in the view; this is a hook
         // for any future derived-state recomputation.
-    }
-
-    /// Fetches loader version identifiers for the given loader type at the game's fixed version.
-    private func fetchLoaderVersions(for loader: String) async -> [String] {
-        let gameVersion = existingGame.gameVersion
-        switch loader.lowercased() {
-        case GameLoader.fabric.displayName:
-            return await FabricLoaderService.fetchAllLoaderVersions(for: gameVersion).map(\.loader.version)
-        case GameLoader.forge.displayName:
-            do {
-                return try await ForgeLoaderService.fetchAllForgeVersions(for: gameVersion).loaders.map(\.id)
-            } catch {
-                AppLog.game.error("Failed to get Forge versions: \(error.localizedDescription)")
-                return []
-            }
-        case GameLoader.neoforge.displayName:
-            do {
-                return try await NeoForgeLoaderService.fetchAllNeoForgeVersions(for: gameVersion).loaders.map(\.id)
-            } catch {
-                AppLog.game.error("Failed to get NeoForge versions: \(error.localizedDescription)")
-                return []
-            }
-        case GameLoader.quilt.rawValue:
-            return await QuiltLoaderService.fetchAllQuiltLoaders(for: gameVersion).map(\.loader.version)
-        default:
-            return []
-        }
     }
 }

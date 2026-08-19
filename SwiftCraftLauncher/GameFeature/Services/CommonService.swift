@@ -294,4 +294,37 @@ enum CommonService {
         }
         return processedLoader
     }
+
+    /// Fetches loader version identifiers for the given loader type at the given Minecraft version.
+    ///
+    /// This is the shared implementation used by both game creation and loader version change
+    /// flows. Returns an empty array for vanilla or unknown loaders.
+    /// - Parameters:
+    ///   - loader: The mod loader display name (e.g. "fabric", "forge").
+    ///   - gameVersion: The Minecraft version string.
+    /// - Returns: An array of loader version identifier strings.
+    static func fetchLoaderVersionStrings(for loader: String, gameVersion: String) async -> [String] {
+        switch loader.lowercased() {
+        case GameLoader.fabric.displayName:
+            return await FabricLoaderService.fetchAllLoaderVersions(for: gameVersion).map(\.loader.version)
+        case GameLoader.forge.displayName:
+            do {
+                return try await ForgeLoaderService.fetchAllForgeVersions(for: gameVersion).loaders.map(\.id)
+            } catch {
+                AppLog.game.error("Failed to get Forge versions: \(error.localizedDescription)")
+                return []
+            }
+        case GameLoader.neoforge.displayName:
+            do {
+                return try await NeoForgeLoaderService.fetchAllNeoForgeVersions(for: gameVersion).loaders.map(\.id)
+            } catch {
+                AppLog.game.error("Failed to get NeoForge versions: \(error.localizedDescription)")
+                return []
+            }
+        case GameLoader.quilt.rawValue:
+            return await QuiltLoaderService.fetchAllQuiltLoaders(for: gameVersion).map(\.loader.version)
+        default:
+            return []
+        }
+    }
 }
