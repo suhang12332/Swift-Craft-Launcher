@@ -93,34 +93,7 @@ extension GameCreationViewModel {
             return
         }
 
-        var versions: [String] = []
-
-        switch loader.lowercased() {
-        case GameLoader.fabric.displayName:
-            let fabricVersions = await FabricLoaderService.fetchAllLoaderVersions(for: gameVersion)
-            versions = fabricVersions.map(\.loader.version)
-        case GameLoader.forge.displayName:
-            do {
-                let forgeVersions = try await ForgeLoaderService.fetchAllForgeVersions(for: gameVersion)
-                versions = forgeVersions.loaders.map(\.id)
-            } catch {
-                AppLog.game.error("Failed to get Forge versions: \(error.localizedDescription)")
-                versions = []
-            }
-        case GameLoader.neoforge.displayName:
-            do {
-                let neoforgeVersions = try await NeoForgeLoaderService.fetchAllNeoForgeVersions(for: gameVersion)
-                versions = neoforgeVersions.loaders.map(\.id)
-            } catch {
-                AppLog.game.error("Failed to get NeoForge versions: \(error.localizedDescription)")
-                versions = []
-            }
-        case GameLoader.quilt.rawValue:
-            let quiltVersions = await QuiltLoaderService.fetchAllQuiltLoaders(for: gameVersion)
-            versions = quiltVersions.map(\.loader.version)
-        default:
-            versions = []
-        }
+        let versions = await CommonService.fetchLoaderVersionStrings(for: loader, gameVersion: gameVersion)
 
         availableLoaderVersions = versions
         if !versions.contains(selectedLoaderVersion), !versions.isEmpty {

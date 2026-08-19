@@ -30,6 +30,12 @@ struct GameMoreMenu: View {
             }
 
             Button {
+                container.ui.gameDialogsPresenter.presentLoaderUpdate(for: game)
+            } label: {
+                Label("game.loader.update.title".localized(), systemImage: "arrow.triangle.2.circlepath")
+            }
+
+            Button {
                 container.core.selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
                 openSettings()
             } label: {

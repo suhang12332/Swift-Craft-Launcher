@@ -104,6 +104,12 @@ struct GameInfoDetailView: View {
         .onChange(of: game.gameName) { _, _ in
             performRefresh()
         }
+        .onChange(of: game.modLoader) { _, _ in
+            updateHeaders()
+        }
+        .onChange(of: game.modVersion) { _, _ in
+            updateHeaders()
+        }
         .onChange(of: gameType) { _, _ in
             performRefresh()
         }

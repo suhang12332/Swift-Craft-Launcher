@@ -33,6 +33,10 @@ struct MainViewPresentationModifier: ViewModifier {
             .sheet(item: $gameDialogsPresenter.gameForExport) { game in
                 ModPackExportSheet(gameInfo: game)
             }
+            .sheet(item: $gameDialogsPresenter.gamePendingLoaderUpdate) { game in
+                GameLoaderUpdateView(gameInfo: game)
+                    .presentationBackgroundInteraction(.automatic)
+            }
             .task {
                 await startupAnnouncementViewModel.checkAnnouncementIfNeeded()
             }
