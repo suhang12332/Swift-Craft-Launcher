@@ -98,7 +98,7 @@ final class GameLoaderUpdateViewModel {
 
     /// Updates the list of available loader types to only those supported by the game's Minecraft version.
     func refreshAvailableLoaderTypes() async {
-        await MainActor.run { isLoadingLoaderTypes = true }
+        isLoadingLoaderTypes = true
 
         let gameVersion = existingGame.gameVersion
         var supported: [GameLoader] = []
@@ -126,37 +126,31 @@ final class GameLoaderUpdateViewModel {
             selectedModLoader = availableLoaderTypes.first?.displayName ?? GameLoader.vanilla.displayName
         }
 
-        await MainActor.run { isLoadingLoaderTypes = false }
+        isLoadingLoaderTypes = false
     }
 
     /// Fetches the loader versions available for the selected loader at the game's Minecraft version.
     func refreshLoaderVersions() async {
         guard selectedModLoader != GameLoader.vanilla.displayName else {
-            await MainActor.run {
-                availableLoaderVersions = []
-                selectedLoaderVersion = ""
-            }
+            availableLoaderVersions = []
+            selectedLoaderVersion = ""
             return
         }
 
-        await MainActor.run {
-            isLoadingLoaderVersions = true
-        }
+        isLoadingLoaderVersions = true
 
         let versions = await CommonService.fetchLoaderVersionStrings(
             for: selectedModLoader,
             gameVersion: existingGame.gameVersion,
         )
 
-        await MainActor.run {
-            availableLoaderVersions = versions
-            if !versions.contains(selectedLoaderVersion) {
-                selectedLoaderVersion = versions.first ?? ""
-            } else if versions.isEmpty {
-                selectedLoaderVersion = ""
-            }
-            isLoadingLoaderVersions = false
+        availableLoaderVersions = versions
+        if !versions.contains(selectedLoaderVersion) {
+            selectedLoaderVersion = versions.first ?? ""
+        } else if versions.isEmpty {
+            selectedLoaderVersion = ""
         }
+        isLoadingLoaderVersions = false
     }
 
     /// Called when the user selects a different loader type. Refreshes the version list.
