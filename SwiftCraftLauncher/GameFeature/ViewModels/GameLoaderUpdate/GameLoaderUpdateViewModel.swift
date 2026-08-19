@@ -87,11 +87,6 @@ final class GameLoaderUpdateViewModel {
         gameSetupService.downloadState.isDownloading
     }
 
-    /// Whether the download progress section should be visible.
-    var shouldShowProgress: Bool {
-        isUpdating
-    }
-
     /// A human-readable description of the loader currently installed on the game.
     var currentLoaderDescription: String {
         let loader = GameLoader(rawValue: existingGame.modLoader) ?? .vanilla
@@ -166,7 +161,6 @@ final class GameLoaderUpdateViewModel {
 
     /// Called when the user selects a different loader type. Refreshes the version list.
     func onLoaderTypeChanged() {
-        selectedLoaderVersion = ""
         Task { await refreshLoaderVersions() }
     }
 

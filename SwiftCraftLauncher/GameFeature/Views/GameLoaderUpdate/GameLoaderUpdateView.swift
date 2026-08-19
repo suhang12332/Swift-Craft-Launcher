@@ -57,7 +57,7 @@ struct GameLoaderUpdateView: View {
                 versionSelectionSection
             }
 
-            if viewModel.shouldShowProgress {
+            if viewModel.isUpdating {
                 DownloadProgressSection(
                     gameSetupService: viewModel.gameSetupService,
                     selectedModLoader: viewModel.selectedModLoader,
@@ -160,7 +160,7 @@ struct GameLoaderUpdateView: View {
                 }
             }
             .keyboardShortcut(.defaultAction)
-            .disabled(!viewModel.isFormValid || viewModel.isUpdating || viewModel.isLoadingLoaderVersions || viewModel.isLoadingLoaderTypes)
+            .disabled(!viewModel.isFormValid || viewModel.isLoadingLoaderTypes)
         }
     }
 }

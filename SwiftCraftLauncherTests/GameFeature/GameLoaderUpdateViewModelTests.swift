@@ -117,7 +117,6 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         XCTAssertFalse(vm.isUpdating)
         vm.gameSetupService.downloadState.isDownloading = true
         XCTAssertTrue(vm.isUpdating)
-        XCTAssertTrue(vm.shouldShowProgress)
     }
 
     func testCancel_whenNotUpdating_isNoOp() {
