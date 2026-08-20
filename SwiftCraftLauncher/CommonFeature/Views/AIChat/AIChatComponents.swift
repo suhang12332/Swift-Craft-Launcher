@@ -95,7 +95,7 @@ struct MessageBubble: View, Equatable {
 
     private func messageTextBubble(alignment: HorizontalAlignment) -> some View {
         let textAlignment: Alignment = alignment == .trailing ? .trailing : .leading
-        return Text(message.content)
+        return MixedMarkdownView(message.content)
             .font(.body)
             .textSelection(.enabled)
             .foregroundStyle(.primary)
