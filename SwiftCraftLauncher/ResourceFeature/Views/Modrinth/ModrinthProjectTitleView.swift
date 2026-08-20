@@ -52,14 +52,14 @@ struct ModrinthProjectTitleView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text(title)
+                    TranslatedText(text: title)
                         .font(.headline)
                     Spacer()
                     infoRowView
                 }
 
                 if !description.isEmpty {
-                    Text(description)
+                    TranslatedText(text: description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .lineLimit(3)

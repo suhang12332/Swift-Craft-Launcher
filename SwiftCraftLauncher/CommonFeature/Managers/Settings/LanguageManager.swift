@@ -48,3 +48,9 @@ public extension String {
         bundle.localizedString(forKey: self, value: self, table: nil)
     }
 }
+
+extension Locale {
+    var isSystemLanguage: Bool {
+        return self.identifier == (UserDefaults.standard.persistentDomain(forName: .init("NSGlobalDomain"))?["AppleLanguages"] as? [String])?.first ?? "en-US"
+    }
+}

@@ -25,6 +25,8 @@ struct ResourceToolbarItems: View {
     private var gameRepository
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
+    @Environment(\.locale)
+    var locale
 
     /// Opens the project page for the currently loaded resource in the default browser.
     private func openCurrentResourceInBrowser() {
@@ -182,6 +184,10 @@ struct ResourceToolbarItems: View {
                 ResourceFilterMenus.favoritesFilterButton(filterState: filterState)
                     .id(controlActiveState)
             }
+            Spacer()
+        }
+        if #available(macOS 15, *), !locale.isSystemLanguage {
+            TranslationToolbarButton()
         }
     }
 }

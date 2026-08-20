@@ -124,7 +124,7 @@ struct ModrinthDetailCardView: View {
 
     private var titleView: some View {
         HStack(spacing: 4) {
-            Text(project.title)
+            TranslatedText(text: project.title)
                 .font(.headline)
                 .lineLimit(1)
             if type == true {
@@ -144,7 +144,7 @@ struct ModrinthDetailCardView: View {
     }
 
     private var descriptionView: some View {
-        Text(project.description)
+        TranslatedText(text: project.description)
             .font(.subheadline)
             .lineLimit(ModrinthConstants.UIConstants.descriptionLineLimit)
             .foregroundColor(.secondary)

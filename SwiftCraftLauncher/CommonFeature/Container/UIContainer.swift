@@ -20,6 +20,7 @@ final class UIContainer: @unchecked Sendable {
 
     // Settings
 
+    @MainActorLazy var translationManager: TranslationManager = .init()
     @MainActorLazy var announcementStateManager: AnnouncementStateManager = .init()
     @Lazy var generalSettingsManager: GeneralSettingsManager = .init()
     @Lazy var gameSettingsManager: GameSettingsManager = .init()

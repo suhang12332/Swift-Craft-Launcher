@@ -23,7 +23,8 @@ private enum Constants {
 /// Displays the full project detail view with icon, title, stats, and description.
 struct ModrinthProjectDetailView: View {
     let projectDetail: ModrinthProjectDetail?
-
+    @Environment(TranslationManager.self)
+    private var translationManager
     var body: some View {
         if let project = projectDetail {
             projectDetailView(project)
@@ -79,10 +80,10 @@ struct ModrinthProjectDetailView: View {
 
     private func projectInfo(_ project: ModrinthProjectDetail) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(project.title)
+            TranslatedText(text: project.title)
                 .font(.largeTitle.bold())
 
-            Text(project.description)
+            TranslatedText(text: project.description)
                 .font(.body)
                 .foregroundColor(.secondary)
                 .lineLimit(2)
@@ -114,7 +115,9 @@ struct ModrinthProjectDetailView: View {
     }
 
     private func descriptionView(_ project: ModrinthProjectDetail) -> some View {
-        MixedMarkdownView(project.body)
+        TranslationView(text: project.body, translationManager: translationManager) { displayed in
+            MixedMarkdownView(displayed)
+        }
     }
 
     private var loadingView: some View {

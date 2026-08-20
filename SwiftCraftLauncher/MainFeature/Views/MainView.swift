@@ -31,6 +31,7 @@ struct MainView: View {
             detailView
         }
         .environment(filterState)
+        .environment(container.ui.translationManager)
         .environment(detailState)
         .modPackImportSheet()
         .onChange(of: detailState.selectedItem) { oldValue, newValue in
