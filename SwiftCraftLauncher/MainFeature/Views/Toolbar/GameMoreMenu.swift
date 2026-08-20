@@ -29,10 +29,12 @@ struct GameMoreMenu: View {
                 }
             }
 
-            Button {
-                container.ui.gameDialogsPresenter.presentLoaderUpdate(for: game)
-            } label: {
-                Label("game.loader.update.title".localized(), systemImage: "arrow.triangle.2.circlepath")
+            if !CommonUtil.isMinecraftSnapshotVersion(game.gameVersion) {
+                Button {
+                    container.ui.gameDialogsPresenter.presentLoaderUpdate(for: game)
+                } label: {
+                    Label("game.loader.update.title".localized(), systemImage: "arrow.triangle.2.circlepath")
+                }
             }
 
             Button {
