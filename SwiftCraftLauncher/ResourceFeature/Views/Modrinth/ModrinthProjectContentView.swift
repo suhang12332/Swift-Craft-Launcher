@@ -76,6 +76,14 @@ struct ModrinthProjectContentView: View {
                 message: "projectId is empty",
             )
         }
+        #if DEBUG
+        if projectId == HTMLTestMod.projectId {
+            await MainActor.run {
+                projectDetail = HTMLTestMod.detail
+            }
+            return
+        }
+        #endif
         let result = await ModrinthService.fetchProjectDetails(id: projectId, type: resourceType == ProjectType.minecraftJavaServer ? resourceType : "")
         await MainActor.run {
             projectDetail = result

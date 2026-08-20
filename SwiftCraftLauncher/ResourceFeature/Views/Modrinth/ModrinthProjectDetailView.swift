@@ -114,7 +114,7 @@ struct ModrinthProjectDetailView: View {
     }
 
     private func descriptionView(_ project: ModrinthProjectDetail) -> some View {
-        MixedMarkdownView(project.body)
+        RichContentView(content: project.body)
     }
 
     private var loadingView: some View {
@@ -123,6 +123,123 @@ struct ModrinthProjectDetailView: View {
                 .controlSize(.small)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct RichContentView: View {
+    let content: String
+
+    var body: some View {
+        let segments = MarkdownImageExtractor.extract(
+            from: HTMLToMarkdownConverter.convertIfNeeded(content),
+        )
+
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(segments) { segment in
+                switch segment.content {
+                case let .markdown(markdown):
+                    if !markdown.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        MixedMarkdownView(markdown)
+                    }
+                case let .image(source):
+                    BoundedMarkdownImageView(source: source)
+                case let .linkedImage(source, destination):
+                    BoundedMarkdownImageView(source: source, destination: destination)
+                }
+            }
+        }
+    }
+}
+
+private struct MarkdownContentSegment: Identifiable {
+    enum Content {
+        case markdown(String)
+        case image(String)
+        case linkedImage(source: String, destination: String)
+    }
+
+    let id = UUID()
+    let content: Content
+}
+
+private enum MarkdownImageExtractor {
+    static func extract(from markdown: String) -> [MarkdownContentSegment] {
+        let pattern = #"(?m)^[ \t]*(?:\[!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)|!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\))[ \t]*(?:\n|$)"#
+        guard let regex = try? NSRegularExpression(pattern: pattern) else {
+            return [MarkdownContentSegment(content: .markdown(markdown))]
+        }
+
+        let range = NSRange(markdown.startIndex..., in: markdown)
+        let matches = regex.matches(in: markdown, range: range)
+        var segments: [MarkdownContentSegment] = []
+        var cursor = markdown.startIndex
+
+        for match in matches {
+            let sourceMatchRange = match.range(at: 2).location == NSNotFound
+                ? match.range(at: 5)
+                : match.range(at: 2)
+            guard let fullRange = Range(match.range, in: markdown),
+                  let sourceRange = Range(sourceMatchRange, in: markdown) else {
+                continue
+            }
+            let prefix = markdown[cursor..<fullRange.lowerBound]
+            if !prefix.isEmpty {
+                segments.append(MarkdownContentSegment(content: .markdown(String(prefix))))
+            }
+            let content: MarkdownContentSegment.Content
+            if let destinationRange = Range(match.range(at: 3), in: markdown) {
+                content = .linkedImage(
+                    source: String(markdown[sourceRange]),
+                    destination: String(markdown[destinationRange]),
+                )
+            } else {
+                content = .image(String(markdown[sourceRange]))
+            }
+            segments.append(MarkdownContentSegment(content: content))
+            cursor = fullRange.upperBound
+        }
+
+        let suffix = markdown[cursor...]
+        if !suffix.isEmpty {
+            segments.append(MarkdownContentSegment(content: .markdown(String(suffix))))
+        }
+        return segments.isEmpty ? [MarkdownContentSegment(content: .markdown(markdown))] : segments
+    }
+}
+
+private struct BoundedMarkdownImageView: View {
+    let source: String
+    let destination: String?
+
+    init(source: String, destination: String? = nil) {
+        self.source = source
+        self.destination = destination
+    }
+
+    var body: some View {
+        if let url = URL(string: source) {
+            let image = AsyncImage(url: url) { phase in
+                switch phase {
+                case let .success(image):
+                    image
+                        .interpolation(.high)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                case .failure:
+                    EmptyView()
+                default:
+                    ProgressView()
+                        .controlSize(.small)
+                }
+            }
+
+            if let destination, let destinationURL = URL(string: destination) {
+                Link(destination: destinationURL) {
+                    image
+                }
+            } else {
+                image
+            }
+        }
     }
 }
 
