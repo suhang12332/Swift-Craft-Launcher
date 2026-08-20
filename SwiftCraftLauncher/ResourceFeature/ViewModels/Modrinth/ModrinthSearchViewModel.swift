@@ -99,11 +99,11 @@ final class ModrinthSearchViewModel {
 
                 if !Task.isCancelled {
                     #if DEBUG
-                    let hits = projectType == ResourceType.mod.rawValue && query.isEmpty
-                        ? [HTMLTestMod.project] + result.hits
-                        : result.hits
+                        let hits = projectType == ResourceType.mod.rawValue && query.isEmpty
+                            ? [HTMLTestMod.project] + result.hits
+                            : result.hits
                     #else
-                    let hits = result.hits
+                        let hits = result.hits
                     #endif
                     if append {
                         results.append(contentsOf: hits)

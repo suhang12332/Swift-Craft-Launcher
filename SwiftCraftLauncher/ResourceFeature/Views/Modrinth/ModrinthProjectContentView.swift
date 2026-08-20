@@ -77,12 +77,12 @@ struct ModrinthProjectContentView: View {
             )
         }
         #if DEBUG
-        if projectId == HTMLTestMod.projectId {
-            await MainActor.run {
-                projectDetail = HTMLTestMod.detail
+            if projectId == HTMLTestMod.projectId {
+                await MainActor.run {
+                    projectDetail = HTMLTestMod.detail
+                }
+                return
             }
-            return
-        }
         #endif
         let result = await ModrinthService.fetchProjectDetails(id: projectId, type: resourceType == ProjectType.minecraftJavaServer ? resourceType : "")
         await MainActor.run {

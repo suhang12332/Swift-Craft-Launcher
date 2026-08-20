@@ -163,31 +163,40 @@ private struct MarkdownContentSegment: Identifiable {
 }
 
 private enum MarkdownImageExtractor {
+    private struct ImageMatch {
+        let result: NSTextCheckingResult
+        let isLinked: Bool
+    }
+
+    // Only block-level images are extracted so inline images keep their original Markdown paragraph.
+    private static let linkedImagePattern = #"(?m)^[ \t]*\[!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)[ \t]*(?:\n|$)"#
+    private static let imagePattern = #"(?m)^[ \t]*!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)[ \t]*(?:\n|$)"#
+
     static func extract(from markdown: String) -> [MarkdownContentSegment] {
-        let pattern = #"(?m)^[ \t]*(?:\[!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)|!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\))[ \t]*(?:\n|$)"#
-        guard let regex = try? NSRegularExpression(pattern: pattern) else {
+        guard let linkedRegex = try? NSRegularExpression(pattern: linkedImagePattern),
+              let imageRegex = try? NSRegularExpression(pattern: imagePattern) else {
             return [MarkdownContentSegment(content: .markdown(markdown))]
         }
 
         let range = NSRange(markdown.startIndex..., in: markdown)
-        let matches = regex.matches(in: markdown, range: range)
+        let matches = (
+            linkedRegex.matches(in: markdown, range: range).map { ImageMatch(result: $0, isLinked: true) }
+                + imageRegex.matches(in: markdown, range: range).map { ImageMatch(result: $0, isLinked: false) },
+        ).sorted { $0.result.range.location < $1.result.range.location }
         var segments: [MarkdownContentSegment] = []
         var cursor = markdown.startIndex
 
         for match in matches {
-            let sourceMatchRange = match.range(at: 2).location == NSNotFound
-                ? match.range(at: 5)
-                : match.range(at: 2)
-            guard let fullRange = Range(match.range, in: markdown),
-                  let sourceRange = Range(sourceMatchRange, in: markdown) else {
+            guard let fullRange = Range(match.result.range, in: markdown),
+                  let sourceRange = Range(match.result.range(at: 2), in: markdown) else {
                 continue
             }
-            let prefix = markdown[cursor..<fullRange.lowerBound]
+            let prefix = markdown[cursor ..< fullRange.lowerBound]
             if !prefix.isEmpty {
                 segments.append(MarkdownContentSegment(content: .markdown(String(prefix))))
             }
             let content: MarkdownContentSegment.Content
-            if let destinationRange = Range(match.range(at: 3), in: markdown) {
+            if match.isLinked, let destinationRange = Range(match.result.range(at: 3), in: markdown) {
                 content = .linkedImage(
                     source: String(markdown[sourceRange]),
                     destination: String(markdown[destinationRange]),

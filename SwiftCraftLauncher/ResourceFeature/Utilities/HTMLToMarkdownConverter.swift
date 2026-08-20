@@ -13,13 +13,25 @@ import Foundation
 /// browser. Unsupported elements keep their textual content and executable
 /// elements are discarded.
 enum HTMLToMarkdownConverter {
+    private static let maxInputLength = 1_000_000
+    fileprivate static let maxParserDepth = 128
+
     fileprivate static let voidTags: Set<String> = [
         "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr",
     ]
 
     private static let ignoredTags: Set<String> = ["head", "script", "style", "template"]
+    private static let supportedTags: Set<String> = [
+        "a", "article", "audio", "b", "blockquote", "body", "br", "button", "center", "code", "del", "details", "div", "em", "figcaption", "figure", "footer",
+        "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hr", "html", "i", "img", "li", "main", "ol", "p", "pre", "s", "script", "section",
+        "source", "span", "strong", "style", "svg", "table", "tbody", "td", "tfoot", "th", "thead", "template", "tr", "ul", "video",
+    ]
 
     static func convert(_ html: String) -> String {
+        guard html.utf8.count <= maxInputLength else {
+            return html
+        }
+
         let root = HTMLNode(tag: "root")
         HTMLParser.parse(html, into: root)
 
@@ -28,15 +40,22 @@ enum HTMLToMarkdownConverter {
     }
 
     static func convertIfNeeded(_ content: String) -> String {
+        guard content.utf8.count <= maxInputLength else {
+            return content
+        }
         guard let regex = try? NSRegularExpression(
-            pattern: #"<\s*/?\s*(?:a|article|audio|b|blockquote|br|button|code|del|details|div|em|figure|h[1-6]|hr|i|img|li|ol|p|pre|s|section|strong|svg|table|td|th|tr|ul|video)(?:\s|/?>)"#,
+            pattern: #"<\s*/?\s*([A-Za-z][A-Za-z0-9]*)\b"#,
             options: [.caseInsensitive],
         ) else {
             return content
         }
 
         let range = NSRange(content.startIndex..., in: content)
-        return regex.firstMatch(in: content, range: range) == nil ? content : convert(content)
+        guard let match = regex.firstMatch(in: content, range: range),
+              let tagRange = Range(match.range(at: 1), in: content) else {
+            return content
+        }
+        return supportedTags.contains(content[tagRange].lowercased()) ? convert(content) : content
     }
 
     private static func renderChildren(of node: HTMLNode) -> String {
@@ -53,7 +72,7 @@ enum HTMLToMarkdownConverter {
             return renderChildren(of: node)
         case "p", "div", "section", "article", "main", "header", "footer", "center", "figure":
             return block(renderChildren(of: node))
-        case let tag where tag.count == 2 && tag.first == "h" && (1...6).contains(Int(tag.dropFirst()) ?? 0):
+        case let tag where tag.count == 2 && tag.first == "h" && (1 ... 6).contains(Int(tag.dropFirst()) ?? 0):
             let level = Int(tag.dropFirst()) ?? 1
             return block("\(String(repeating: "#", count: level)) \(renderChildren(of: node))")
         case "br":
@@ -304,7 +323,7 @@ private enum HTMLParser {
             }
 
             if tagStart > cursor {
-                appendText(String(html[cursor..<tagStart]), to: stack.last)
+                appendText(String(html[cursor ..< tagStart]), to: stack.last)
             }
 
             if html[tagStart...].hasPrefix("<!--"), let commentEnd = html[tagStart...].range(of: "-->")?.upperBound {
@@ -317,7 +336,7 @@ private enum HTMLParser {
                 break
             }
 
-            let rawTag = String(html[html.index(after: tagStart)..<tagEnd])
+            let rawTag = String(html[html.index(after: tagStart) ..< tagEnd])
             cursor = html.index(after: tagEnd)
 
             if rawTag.trimmingCharacters(in: .whitespacesAndNewlines).hasPrefix("!") {
@@ -328,7 +347,7 @@ private enum HTMLParser {
                 let closingTagName = rawTag.trimmingCharacters(in: .whitespacesAndNewlines).dropFirst()
                 let closingTag = closingTagName.split { $0.isWhitespace }.first.map(String.init)?.lowercased()
                 if let closingTag, let index = stack.lastIndex(where: { $0.tag == closingTag }), index > 0 {
-                    stack.removeSubrange(index..<stack.count)
+                    stack.removeSubrange(index ..< stack.count)
                 }
                 continue
             }
@@ -340,7 +359,9 @@ private enum HTMLParser {
             node.attributes = parsed.attributes
             stack[stack.count - 1].children.append(node)
 
-            if !parsed.isSelfClosing, !HTMLToMarkdownConverter.voidTags.contains(tag) {
+            if !parsed.isSelfClosing,
+               !HTMLToMarkdownConverter.voidTags.contains(tag),
+               stack.count < HTMLToMarkdownConverter.maxParserDepth {
                 stack.append(node)
             }
         }
@@ -360,7 +381,7 @@ private enum HTMLParser {
             let character = html[cursor]
             if character == "'" || character == "\"" {
                 quote = quote == character ? nil : (quote == nil ? character : quote)
-            } else if character == ">" && quote == nil {
+            } else if character == ">", quote == nil {
                 return cursor
             }
             cursor = html.index(after: cursor)
@@ -390,7 +411,7 @@ private enum HTMLParser {
             while cursor < value.endIndex, !value[cursor].isWhitespace, value[cursor] != "=" {
                 cursor = value.index(after: cursor)
             }
-            let key = String(value[keyStart..<cursor]).lowercased()
+            let key = String(value[keyStart ..< cursor]).lowercased()
             while cursor < value.endIndex, value[cursor].isWhitespace { cursor = value.index(after: cursor) }
 
             var attributeValue = ""
@@ -402,16 +423,20 @@ private enum HTMLParser {
                     cursor = value.index(after: cursor)
                     let valueStart = cursor
                     while cursor < value.endIndex, value[cursor] != quote { cursor = value.index(after: cursor) }
-                    attributeValue = String(value[valueStart..<cursor])
-                    if cursor < value.endIndex { cursor = value.index(after: cursor) }
+                    attributeValue = String(value[valueStart ..< cursor])
+                    if cursor < value.endIndex {
+                        cursor = value.index(after: cursor)
+                    }
                 } else {
                     let valueStart = cursor
                     while cursor < value.endIndex, !value[cursor].isWhitespace { cursor = value.index(after: cursor) }
-                    attributeValue = String(value[valueStart..<cursor])
+                    attributeValue = String(value[valueStart ..< cursor])
                 }
             }
 
-            if !key.isEmpty { attributes[key] = attributeValue }
+            if !key.isEmpty {
+                attributes[key] = attributeValue
+            }
         }
 
         return (String(name).lowercased(), attributes, isSelfClosing)
