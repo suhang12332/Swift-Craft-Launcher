@@ -65,6 +65,14 @@ private struct ConditionalLabelsHidden: ViewModifier {
 
 private struct FlexibleButtonSizingModifier: ViewModifier {
     func body(content: Content) -> some View {
-        content
+        #if compiler(>=6.2)
+            if #available(macOS 26, *) {
+                content.buttonSizing(.flexible)
+            } else {
+                content
+            }
+        #else
+            content
+        #endif
     }
 }
