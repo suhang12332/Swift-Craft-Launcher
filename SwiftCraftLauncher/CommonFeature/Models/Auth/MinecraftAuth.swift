@@ -118,6 +118,10 @@ struct MinecraftEntitlementsResponse: Codable {
     let keyId: String
 }
 
+struct MinecraftLicenseResponse: Codable {
+    let items: [EntitlementItem]
+}
+
 struct EntitlementItem: Codable {
     let name: String
     let signature: String
@@ -133,6 +137,29 @@ enum MinecraftEntitlement: String, CaseIterable {
             return "Minecraft Product License"
         case .gameMinecraft:
             return "Minecraft Game License"
+        }
+    }
+}
+
+enum MinecraftAuthenticationIssue: Equatable {
+    case profileMissing
+    case notPurchased
+
+    var actionTitleKey: String {
+        switch self {
+        case .profileMissing:
+            "minecraft.auth.create_profile"
+        case .notPurchased:
+            "addplayer.purchase.minecraft"
+        }
+    }
+
+    var actionURL: URL {
+        switch self {
+        case .profileMissing:
+            URL(string: "https://www.minecraft.net/msaprofile/mygames/editprofile") ?? URL(fileURLWithPath: "/")
+        case .notPurchased:
+            URLConfig.Store.minecraftPurchase
         }
     }
 }

@@ -31,6 +31,7 @@ enum URLConfig {
             static let minecraftLogin = URLConfig.url("https://api.minecraftservices.com/authentication/login_with_xbox")
             static let minecraftProfile = URLConfig.url("https://api.minecraftservices.com/minecraft/profile")
             static let minecraftEntitlements = URLConfig.url("https://api.minecraftservices.com/entitlements/mcstore")
+            static let minecraftLicense = URLConfig.url("https://api.minecraftservices.com/entitlements/license")
             static let minecraftRelyingParty = "rp://api.minecraftservices.com/"
             static let minecraftProfileSkins = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins")
             static let minecraftProfileActiveSkin = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins/active")

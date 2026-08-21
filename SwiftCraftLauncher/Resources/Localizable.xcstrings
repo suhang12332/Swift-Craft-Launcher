@@ -10051,6 +10051,60 @@
         }
       }
     },
+    "error.authentication.minecraft_profile_missing" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition is owned, but no game profile has been created."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已拥有 Minecraft Java 版，但尚未创建游戏档案"
+          }
+        }
+      }
+    },
+    "minecraft.auth.create_profile" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create profile"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往创建"
+          }
+        }
+      }
+    },
+    "minecraft.auth.create_profile_message" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please click \"Create profile\" to create your Minecraft game profile."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请点击“前往创建”按钮来创建游戏档案"
+          }
+        }
+      }
+    },
     "error.authentication.missing_token" : {
       "extractionState" : "manual",
       "localizations" : {

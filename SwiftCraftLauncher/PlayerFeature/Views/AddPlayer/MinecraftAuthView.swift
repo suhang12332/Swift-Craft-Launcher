@@ -155,10 +155,16 @@ struct MinecraftAuthView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
 
-            Text("minecraft.auth.retry_message".localized())
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
+            let issue = container.system.minecraftAuthService.authenticationIssue
+
+            Text(
+                issue == .profileMissing
+                    ? "minecraft.auth.create_profile_message".localized()
+                    : "minecraft.auth.retry_message".localized(),
+            )
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.center)
         }
     }
 }
