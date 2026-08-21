@@ -152,15 +152,16 @@ enum MinecraftAuthenticationIssue: Equatable {
 
     var errorInfo: String {
         switch self {
-        case.profileMissing:
+        case .profileMissing:
             "minecraft.auth.create_profile_message"
         case .notPurchased:
             "minecraft.auth.purchase_minecraft_message"
         }
     }
+
     var buttonInfo: String {
         switch self {
-        case.profileMissing:
+        case .profileMissing:
             "minecraft.auth.create_profile"
         case .notPurchased:
             "addplayer.purchase.minecraft"

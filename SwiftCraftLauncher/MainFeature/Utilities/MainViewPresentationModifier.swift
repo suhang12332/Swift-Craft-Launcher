@@ -78,7 +78,7 @@ struct MainViewPresentationModifier: ViewModifier {
                 isPresented: memoryPressureAlertPresenter.asBinding(),
                 title: "game_launch.memory_pressure.title".localized(),
                 message: memoryPressureAlertPresenter.pressureLevel.localizedMessage,
-                primaryTitle: "common.continue".localized()
+                primaryTitle: "common.continue".localized(),
             ) {
                 memoryPressureAlertPresenter.resolve(.continueAnyway)
             }
@@ -86,7 +86,7 @@ struct MainViewPresentationModifier: ViewModifier {
                 isPresented: authlibInjectorMissingPresenter.asBinding(),
                 title: "game_launch.authlib_injector_missing.title".localized(),
                 message: "game_launch.authlib_injector_missing.message".localized(),
-                primaryTitle: "common.continue".localized()
+                primaryTitle: "common.continue".localized(),
             ) {
                 authlibInjectorMissingPresenter.resolve(.continueWithoutInjector)
             }
