@@ -146,16 +146,11 @@ struct MinecraftAuthView: View {
 
         return VStack(spacing: 16) {
             if isProfileMissing {
-                ZStack(alignment: .bottomLeading) {
-                    Image(systemName: "person.crop.circle.fill")
-                        .font(.system(size: 60))
-                        .foregroundStyle(.gray)
-
-                    Image(systemName: "exclamationmark.circle.fill")
-                        .font(.system(size: 30))
-                        .foregroundStyle(.yellow, .white)
-                }
-                .frame(width: 60, height: 60)
+                Image(systemName: "person.crop.circle.badge.exclamationmark")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                    .symbolRenderingMode(.multicolor)
+                    .symbolVariant(.none)
             } else {
                 Image(systemName: "exclamationmark.triangle")
                     .font(.system(size: 60))
@@ -179,7 +174,7 @@ struct MinecraftAuthView: View {
                     : "minecraft.auth.retry_message".localized(),
             )
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundColor(isProfileMissing ? .red : .secondary)
             .multilineTextAlignment(.center)
         }
     }
