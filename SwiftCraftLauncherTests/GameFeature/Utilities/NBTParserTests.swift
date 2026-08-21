@@ -26,7 +26,7 @@ final class NBTParserTests: XCTestCase {
 
     func testEncodeDecode_roundTrip_uncompressed() throws {
         let document = NBTDocument(root: [
-            "Data": .compound(["RandomSeed": .long(12_345)]),
+            "Data": .compound(["RandomSeed": .long(12345)]),
             "DataVersion": .int(3465),
         ])
 
@@ -34,12 +34,12 @@ final class NBTParserTests: XCTestCase {
         let parsed = try NBTDecoder().decode(encoded, compression: .none)
 
         XCTAssertEqual(parsed.root["DataVersion"]?.int64Value, 3465)
-        XCTAssertEqual(parsed.root["Data"]?.compoundValue?["RandomSeed"]?.int64Value, 12_345)
+        XCTAssertEqual(parsed.root["Data"]?.compoundValue?["RandomSeed"]?.int64Value, 12345)
     }
 
     func testEncodeDecode_roundTrip_compressed() throws {
         let document = NBTDocument(root: [
-            "Data": .compound(["RandomSeed": .long(99_999)]),
+            "Data": .compound(["RandomSeed": .long(99999)]),
             "DataVersion": .int(2970),
         ])
 
@@ -47,7 +47,7 @@ final class NBTParserTests: XCTestCase {
         XCTAssertEqual(encoded.prefix(2), Data([0x1F, 0x8B]))
 
         let parsed = try NBTDecoder().decode(encoded)
-        XCTAssertEqual(parsed.root["Data"]?.compoundValue?["RandomSeed"]?.int64Value, 99_999)
+        XCTAssertEqual(parsed.root["Data"]?.compoundValue?["RandomSeed"]?.int64Value, 99999)
     }
 
     func testRoundTrip_serversDatStructure() throws {

@@ -5,9 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import SwiftNBT
+
 // A recursive tree view for displaying NBT data structures.
 import SwiftUI
-import SwiftNBT
 
 struct NBTStructureView: View {
     let data: NBTCompound

@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftNBT
 @testable import SwiftCraftLauncher
+import SwiftNBT
 import XCTest
 
 final class WorldNBTMapperExtendedTests: XCTestCase {
@@ -56,22 +56,22 @@ final class WorldNBTMapperExtendedTests: XCTestCase {
 
     func testReadSeed_allSupportedLocations() {
         XCTAssertEqual(
-            WorldNBTMapper.readSeed(from: ["RandomSeed": .long(12_345)], worldPath: nil),
-            12_345,
+            WorldNBTMapper.readSeed(from: ["RandomSeed": .long(12345)], worldPath: nil),
+            12345,
         )
         XCTAssertEqual(
             WorldNBTMapper.readSeed(
-                from: ["WorldGenSettings": .compound(["seed": .long(67_890)])],
+                from: ["WorldGenSettings": .compound(["seed": .long(67890)])],
                 worldPath: nil,
             ),
-            67_890,
+            67890,
         )
         XCTAssertEqual(
             WorldNBTMapper.readSeed(
-                from: ["worldGenSettings": .compound(["seed": .long(11_111)])],
+                from: ["worldGenSettings": .compound(["seed": .long(11111)])],
                 worldPath: nil,
             ),
-            11_111,
+            11111,
         )
         XCTAssertNil(WorldNBTMapper.readSeed(from: ["other": .string("value")], worldPath: nil))
     }

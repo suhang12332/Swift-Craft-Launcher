@@ -65,8 +65,10 @@ private struct ConditionalLabelsHidden: ViewModifier {
 
 private struct FlexibleButtonSizingModifier: ViewModifier {
     func body(content: Content) -> some View {
-        // Local-only compatibility workaround: buttonSizing is unavailable in the current SDK.
-        // Do not commit this change; restore the remote implementation when building with macOS 26 SDK.
-        content
+        if #available(macOS 26, *) {
+            content.buttonSizing(.flexible)
+        } else {
+            content
+        }
     }
 }

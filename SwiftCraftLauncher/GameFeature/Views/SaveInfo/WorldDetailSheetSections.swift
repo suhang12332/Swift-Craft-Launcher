@@ -7,8 +7,8 @@
 
 // Section views for displaying world detail metadata including game settings, seed, and path.
 import AppKit
-import SwiftUI
 import SwiftNBT
+import SwiftUI
 
 struct SeedCopyRow: View {
     let seed: Int64
