@@ -145,9 +145,22 @@ struct MinecraftAuthView: View {
         let statusColor: Color = isProfileMissing ? .yellow : .red
 
         return VStack(spacing: 16) {
-            Image(systemName: isProfileMissing ? "person.crop.circle.badge.exclamationmark" : "exclamationmark.triangle")
-                .font(.system(size: 60))
-                .foregroundColor(statusColor)
+            if isProfileMissing {
+                ZStack(alignment: .bottomLeading) {
+                    Image(systemName: "person.crop.circle.fill")
+                        .font(.system(size: 60))
+                        .foregroundStyle(.gray)
+
+                    Image(systemName: "exclamationmark.circle.fill")
+                        .font(.system(size: 30))
+                        .foregroundStyle(.yellow, .white)
+                }
+                .frame(width: 60, height: 60)
+            } else {
+                Image(systemName: "exclamationmark.triangle")
+                    .font(.system(size: 60))
+                    .foregroundColor(statusColor)
+            }
 
             Text("minecraft.auth.failed".localized())
                 .font(.headline)
