@@ -85,17 +85,15 @@ struct GameAdvancedSettingsView: View {
 
             LabeledContent("settings.game.java.memory".localized()) {
                 HStack {
+                    let memoryBounds = Double(AppConstants.MemoryDefaults.xms) ... Double(container.ui.gameSettingsManager.maximumMemoryAllocation)
                     MiniRangeSlider(
                         range: $viewModel.memoryRange,
-                        bounds: Double(AppConstants.MemoryDefaults.xms) ... Double(container.ui.gameSettingsManager.maximumMemoryAllocation),
+                        bounds: memoryBounds,
                     )
                     .frame(width: 200)
                     .controlSize(.mini)
                     .onChange(of: viewModel.memoryRange) { _, _ in viewModel.didChangeMemoryRange() }
-                    Text("\(Int(viewModel.memoryRange.lowerBound)) MB-\(Int(viewModel.memoryRange.upperBound)) MB")
-                        .font(.subheadline)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
+                    MemoryRangeLabel(range: viewModel.memoryRange, bounds: memoryBounds)
                     Button("common.reset".localized()) {
                         viewModel.resetGameXms()
                     }

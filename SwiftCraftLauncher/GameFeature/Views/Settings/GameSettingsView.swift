@@ -106,10 +106,10 @@ public struct GameSettingsView: View {
                 Group {
                     LabeledContent("settings.default_memory_allocation.label".localized()) {
                         HStack {
+                            let memoryBounds = Double(AppConstants.MemoryDefaults.xms) ... Double(gameSettingsManager.maximumMemoryAllocation)
                             MiniRangeSlider(
                                 range: $globalMemoryRange,
-                                bounds:
-                                Double(AppConstants.MemoryDefaults.xms) ... Double(gameSettingsManager.maximumMemoryAllocation),
+                                bounds: memoryBounds,
                             )
                             .frame(width: 200)
                             .controlSize(.mini)
@@ -123,13 +123,7 @@ public struct GameSettingsView: View {
                                         gameSettingsManager.globalXms,
                                     ) ... Double(gameSettingsManager.globalXmx)
                             }
-                            Text(
-                                "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB",
-                            )
-                            .font(.subheadline)
-                            .foregroundColor(.primary)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
+                            MemoryRangeLabel(range: globalMemoryRange, bounds: memoryBounds)
                             Button("common.reset".localized()) {
                                 gameSettingsManager.globalXms = AppConstants.MemoryDefaults.xms
                                 gameSettingsManager.globalXmx = AppConstants.MemoryDefaults.xmx
