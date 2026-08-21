@@ -141,14 +141,17 @@ struct MinecraftAuthView: View {
     }
 
     private func errorView(message: String) -> some View {
-        VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle")
+        let isProfileMissing = container.system.minecraftAuthService.authenticationIssue == .profileMissing
+        let statusColor: Color = isProfileMissing ? .yellow : .red
+
+        return VStack(spacing: 16) {
+            Image(systemName: isProfileMissing ? "person.crop.circle.badge.exclamationmark" : "exclamationmark.triangle")
                 .font(.system(size: 60))
-                .foregroundColor(.red)
+                .foregroundColor(statusColor)
 
             Text("minecraft.auth.failed".localized())
                 .font(.headline)
-                .foregroundColor(.red)
+                .foregroundColor(statusColor)
 
             Text(message)
                 .font(.subheadline)
