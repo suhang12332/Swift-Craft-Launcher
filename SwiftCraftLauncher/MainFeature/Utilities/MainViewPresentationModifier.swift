@@ -36,8 +36,6 @@ struct MainViewPresentationModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         @Bindable var gameDialogsPresenter = gameDialogsPresenter
-        @Bindable var memoryPressureAlertPresenter = memoryPressureAlertPresenter
-        @Bindable var authlibInjectorMissingPresenter = authlibInjectorMissingPresenter
         content
             .sheet(item: $gameDialogsPresenter.gameForExport) { game in
                 ModPackExportSheet(gameInfo: game)
@@ -77,20 +75,14 @@ struct MainViewPresentationModifier: ViewModifier {
                 },
             )
             .presenterAlert(
-                isPresented: Binding(
-                    get: { memoryPressureAlertPresenter.isPresented },
-                    set: { if !$0 { memoryPressureAlertPresenter.resolve(.cancel) } },
-                ),
+                isPresented: memoryPressureAlertPresenter.asBinding(),
                 title: "game_launch.memory_pressure.title".localized(),
                 message: memoryPressureAlertPresenter.pressureLevel.localizedMessage,
                 primaryTitle: "common.continue".localized(),
                 primaryAction: { memoryPressureAlertPresenter.resolve(.continueAnyway) },
             )
             .presenterAlert(
-                isPresented: Binding(
-                    get: { authlibInjectorMissingPresenter.isPresented },
-                    set: { if !$0 { authlibInjectorMissingPresenter.dismissIfNeeded(as: .cancel) } },
-                ),
+                isPresented: authlibInjectorMissingPresenter.asBinding(),
                 title: "game_launch.authlib_injector_missing.title".localized(),
                 message: "game_launch.authlib_injector_missing.message".localized(),
                 primaryTitle: "common.continue".localized(),

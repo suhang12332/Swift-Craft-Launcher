@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// A choice the user makes when an alert is shown.
 protocol AlertChoice: Sendable {
@@ -44,5 +45,17 @@ class AlertPresenter<Choice: AlertChoice> {
     func dismissIfNeeded(as choice: Choice = .cancel) {
         guard continuation != nil else { return }
         resolve(choice)
+    }
+
+    /// Returns a `Binding<Bool>` suitable for `.alert(isPresented:)` or `.presenterAlert(isPresented:)`.
+    func asBinding() -> Binding<Bool> {
+        Binding(
+            get: { self.isPresented },
+            set: {
+                if !$0 {
+                    self.resolve(Choice.cancel)
+                }
+            },
+        )
     }
 }

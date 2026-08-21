@@ -38,7 +38,7 @@ struct AddGameToolbarButton: View {
             GameFormView()
                 .presentationBackgroundInteraction(.automatic)
         }
-        .alertItem(item: $activeAlert) { $0.alert }
+        .alert(item: $activeAlert) { $0.alert }
     }
 }
 
