@@ -130,7 +130,7 @@ final class WorldDetailSheetViewModel {
         }
 
         var difficulty = "common.unknown".localized()
-        if let diff = WorldNBTMapper.readInt64(dataTag["Difficulty"]) {
+        if let diff = dataTag["Difficulty"]?.int64Value {
             difficulty = WorldNBTMapper.mapDifficulty(Int(diff))
         } else if let ds = dataTag["difficulty_settings"]?.compoundValue,
                   let diffStr = ds["difficulty"]?.stringValue {
