@@ -143,7 +143,7 @@ struct MinecraftAuthView: View {
     private func errorView(message: String) -> some View {
         VStack(spacing: 16) {
             Image(systemName: "person.crop.circle.badge.exclamationmark")
-                .font(.headline)
+                .font(.system(size: 46))
                 .foregroundStyle(.secondary)
                 .symbolRenderingMode(.multicolor)
                 .symbolVariant(.none)
