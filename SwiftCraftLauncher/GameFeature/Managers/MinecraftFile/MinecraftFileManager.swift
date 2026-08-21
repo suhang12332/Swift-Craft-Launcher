@@ -16,15 +16,10 @@ class MinecraftFileManager: @unchecked Sendable {
     var coreTotalFiles = 0
     var resourceTotalFiles = 0
     var onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)?
-    private let diagnosticsID: UUID?
 
     enum DownloadType {
         case core
         case resources
-    }
-
-    init(diagnosticsID: UUID? = nil) {
-        self.diagnosticsID = diagnosticsID
     }
 
     /// Cleans up game directories, logging errors instead of throwing.
@@ -225,21 +220,6 @@ class MinecraftFileManager: @unchecked Sendable {
         i18nKey: String = "error.download.file_download_failed",
         errorMessage: String? = nil,
     ) async throws {
-        let diagnostics = InstallationDiagnosticsLogger.shared
-        let fileType: String
-        switch type {
-        case .core:
-            fileType = "core"
-        case .resources:
-            fileType = "resource"
-        }
-        diagnosticsID.map {
-            diagnostics.record(
-                $0,
-                stage: "download.start",
-                message: "type=\(fileType) url=\(url.absoluteString) destination=\(destinationURL.path) expectedSHA1=\(sha1 ?? "none")",
-            )
-        }
         do {
             _ = try await DownloadManager.downloadFile(
                 urlString: url.absoluteString,
@@ -253,21 +233,7 @@ class MinecraftFileManager: @unchecked Sendable {
                     type: type,
                 )
             }
-            diagnosticsID.map {
-                diagnostics.record(
-                    $0,
-                    stage: "download.success",
-                    message: "type=\(fileType) url=\(url.absoluteString) destination=\(destinationURL.path)",
-                )
-            }
         } catch {
-            diagnosticsID.map {
-                diagnostics.record(
-                    $0,
-                    stage: "download.failure",
-                    message: "type=\(fileType) url=\(url.absoluteString) destination=\(destinationURL.path) error=\(error.localizedDescription)",
-                )
-            }
             if let globalError = error as? GlobalError {
                 throw globalError
             } else {

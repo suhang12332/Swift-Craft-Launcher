@@ -12,10 +12,16 @@ extension MainView {
         if container.ui.generalSettingsManager.interfaceLayoutStyle == .classic {
             DetailView()
                 .environment(container.core.favoriteStore)
-                .toolbar { DetailToolbarView() }
+                .toolbar {
+                    DetailToolbarView()
+                    InstallationProgressToolbarItem()
+                }
         } else {
             ContentView()
-                .toolbar { ContentToolbarView() }
+                .toolbar {
+                    ContentToolbarView()
+                    InstallationProgressToolbarItem()
+                }
                 .navigationSplitViewColumnWidth(min: 235, ideal: 235, max: 280)
         }
     }
@@ -23,12 +29,18 @@ extension MainView {
     @ViewBuilder var contentView: some View {
         if container.ui.generalSettingsManager.interfaceLayoutStyle == .classic {
             ContentView()
-                .toolbar { ContentToolbarView() }
+                .toolbar {
+                    ContentToolbarView()
+                    InstallationProgressToolbarItem()
+                }
                 .navigationSplitViewColumnWidth(min: 235, ideal: 235, max: 280)
         } else {
             DetailView()
                 .environment(container.core.favoriteStore)
-                .toolbar { DetailToolbarView() }
+                .toolbar {
+                    DetailToolbarView()
+                    InstallationProgressToolbarItem()
+                }
         }
     }
 }

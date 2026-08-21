@@ -67,9 +67,11 @@ class BaseGameFormViewModel {
     func handleConfirm() {
         isInstallationHidden = false
         InstallationTaskManager.shared.cancel(downloadTaskID)
-        downloadTaskID = InstallationTaskManager.shared.start { [self] in
+        let taskID = InstallationTaskManager.shared.start { [self] in
             await performConfirmAction()
         }
+        downloadTaskID = taskID
+        gameSetupService.attachInstallationTask(taskID)
     }
 
     func updateParentState() {
@@ -106,7 +108,9 @@ class BaseGameFormViewModel {
 
     func startDownloadTask(_ task: @escaping @MainActor @Sendable () async -> Void) {
         InstallationTaskManager.shared.cancel(downloadTaskID)
-        downloadTaskID = InstallationTaskManager.shared.start(operation: task)
+        let taskID = InstallationTaskManager.shared.start(operation: task)
+        downloadTaskID = taskID
+        gameSetupService.attachInstallationTask(taskID)
     }
 
     func cancelDownloadIfNeeded() {

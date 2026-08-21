@@ -62,6 +62,11 @@ final class ModPackURLDownloadViewModel {
                         if total > 0 {
                             downloadTotalSize = total
                         }
+                        InstallationTaskManager.shared.updateProgress(
+                            self.downloadTaskID,
+                            completed: downloaded,
+                            total: total,
+                        )
                     }
                 }
 

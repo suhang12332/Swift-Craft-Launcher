@@ -42,4 +42,25 @@ final class InstallationTaskManagerTests: XCTestCase {
 
         XCTAssertTrue(didCancel)
     }
+
+    func testProgressIsPublishedForActiveTask() {
+        let taskID = InstallationTaskManager.shared.start {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+        }
+
+        InstallationTaskManager.shared.updateProgress(
+            taskID,
+            completed: 3,
+            total: 10,
+            currentFile: "libraries/example.jar",
+        )
+
+        let progress = InstallationTaskManager.shared.progress[taskID]
+        XCTAssertEqual(progress?.completed, 3)
+        XCTAssertEqual(progress?.total, 10)
+        XCTAssertEqual(progress?.currentFile, "libraries/example.jar")
+        XCTAssertEqual(progress?.fraction, 0.3)
+
+        InstallationTaskManager.shared.cancel(taskID)
+    }
 }

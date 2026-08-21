@@ -76,6 +76,11 @@ class ModPackDownloadSheetViewModel {
                 if total > 0 {
                     self.modPackTotalSize = total
                 }
+                InstallationTaskManager.shared.updateProgress(
+                    self.downloadTaskID,
+                    completed: downloaded,
+                    total: total,
+                )
             }
         }
         downloadService.onError = { [weak self] message, i18nKey in

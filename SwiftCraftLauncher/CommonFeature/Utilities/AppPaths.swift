@@ -112,11 +112,6 @@ enum AppPaths {
         }
         return launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
     }
-
-    /// Persistent diagnostics for installation and download failures.
-    static var diagnosticsDirectory: URL {
-        launcherSupportDirectory.appendingPathComponent("diagnostics", isDirectory: true)
-    }
 }
 
 extension AppPaths {
