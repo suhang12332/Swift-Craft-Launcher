@@ -120,12 +120,22 @@ struct AddPlayerSheetView: View {
                             .keyboardShortcut(.defaultAction)
 
                         case .error:
-                            Button("addplayer.auth.retry".localized()) {
-                                Task {
-                                    await viewModel.startPremiumAuthentication(authService: container.system.minecraftAuthService)
+                            if let issue = container.system.minecraftAuthService.authenticationIssue,
+                               issue == .profileMissing {
+                                Button("minecraft.auth.create_profile".localized()) {
+                                    openURL(issue.actionURL)
                                 }
+                                .keyboardShortcut(.defaultAction)
+                            } else {
+                                Button("addplayer.auth.retry".localized()) {
+                                    Task {
+                                        await viewModel.startPremiumAuthentication(
+                                            authService: container.system.minecraftAuthService,
+                                        )
+                                    }
+                                }
+                                .keyboardShortcut(.defaultAction)
                             }
-                            .keyboardShortcut(.defaultAction)
 
                         default:
                             ProgressView().controlSize(.small)

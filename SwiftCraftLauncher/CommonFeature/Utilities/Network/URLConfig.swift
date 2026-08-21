@@ -31,6 +31,7 @@ enum URLConfig {
             static let minecraftLogin = URLConfig.url("https://api.minecraftservices.com/authentication/login_with_xbox")
             static let minecraftProfile = URLConfig.url("https://api.minecraftservices.com/minecraft/profile")
             static let minecraftEntitlements = URLConfig.url("https://api.minecraftservices.com/entitlements/mcstore")
+            static let minecraftLicense = URLConfig.url("https://api.minecraftservices.com/entitlements/license")
             static let minecraftRelyingParty = "rp://api.minecraftservices.com/"
             static let minecraftProfileSkins = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins")
             static let minecraftProfileActiveSkin = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins/active")
@@ -401,5 +402,8 @@ enum URLConfig {
     enum Store {
         /// The Minecraft purchase page URL on the Xbox store.
         static let minecraftPurchase = URLConfig.url("https://www.xbox.com/zh-CN/games/store/productId/9NXP44L49SHJ")
+
+        /// The Minecraft page for creating a Java Edition game profile.
+        static let minecraftProfileCreation = URLConfig.url("https://www.minecraft.net/msaprofile/mygames/editprofile")
     }
 }
