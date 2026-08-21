@@ -19,25 +19,16 @@ struct AddOrDeleteResourceButtonOverlays: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .confirmationDialog(
-                "common.delete".localized(),
-                isPresented: $viewModel.showDeleteAlert,
-                titleVisibility: .visible,
-            ) {
-                Button("common.delete".localized(), role: .destructive) {
+            .deleteConfirmationDialog(
+                pendingDeletion: $viewModel.projectPendingDeletion,
+                title: "common.delete".localized(),
+                message: { project in
+                    String(format: "resource.delete.confirm".localized(), project.title)
+                },
+                delete: { _ in
                     viewModel.confirmDelete()
-                }
-                .keyboardShortcut(.defaultAction)
-
-                Button("common.cancel".localized(), role: .cancel) { }
-            } message: {
-                Text(
-                    String(
-                        format: "resource.delete.confirm".localized(),
-                        project.title,
-                    ),
-                )
-            }
+                },
+            )
             .sheet(
                 isPresented: $viewModel.showGlobalResourceSheet,
                 onDismiss: viewModel.onGlobalResourceSheetDismiss,

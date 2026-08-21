@@ -124,30 +124,17 @@ struct SkinUploadSectionView: View {
                 reloadSkinLibraryItems()
             }
         }
-        .confirmationDialog(
-            "skin.library.delete.history.title".localized(),
-            isPresented: Binding(
-                get: { pendingDeletion != nil },
-                set: { isPresented in
-                    if !isPresented {
-                        pendingDeletion = nil
-                    }
-                },
-            ),
-            titleVisibility: .visible,
-            presenting: pendingDeletion,
-        ) { item in
-            Button("common.delete".localized(), role: .destructive) {
+        .deleteConfirmationDialog(
+            pendingDeletion: $pendingDeletion,
+            title: "skin.library.delete.history.title".localized(),
+            message: { item in
+                String(format: "skin.library.delete.history.message".localized(), item.displayName)
+            },
+            delete: { item in
                 try? skinLibraryStore.deleteItem(item)
-                pendingDeletion = nil
                 reloadSkinLibraryItems()
-            }
-            Button("common.cancel".localized(), role: .cancel) {
-                pendingDeletion = nil
-            }
-        } message: { item in
-            Text(String(format: "skin.library.delete.history.message".localized(), item.displayName))
-        }
+            },
+        )
     }
 
     private var skinRenderArea: some View {

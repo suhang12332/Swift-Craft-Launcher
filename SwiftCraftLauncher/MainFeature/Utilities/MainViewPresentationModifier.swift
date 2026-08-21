@@ -13,6 +13,9 @@ struct MainViewPresentationModifier: ViewModifier {
     @State private var container: DIContainer
     var detailState: ResourceDetailState
 
+    @Environment(GameRepository.self)
+    private var gameRepository
+
     @State private var startupAnnouncementViewModel = StartupAnnouncementViewModel()
     @State private var showStartupInfo = false
     @State private var hasPresentedStartupInfo = false
@@ -52,9 +55,20 @@ struct MainViewPresentationModifier: ViewModifier {
             .sheet(isPresented: $showStartupInfo) {
                 StartupInfoSheetView(announcementData: startupAnnouncementViewModel.announcementData)
             }
-            .deleteGameConfirmationDialog(
-                gamePendingDeletion: $gameDialogsPresenter.gamePendingDeletion,
-                detailState: detailState,
+            .deleteConfirmationDialog(
+                pendingDeletion: $gameDialogsPresenter.gamePendingDeletion,
+                title: "delete.title".localized(),
+                message: { game in
+                    String(format: "delete.game.confirm".localized(), game.gameName)
+                },
+                delete: { game in
+                    container.core.gameActionManager.deleteGame(
+                        game: game,
+                        gameRepository: gameRepository,
+                        selectedItem: detailState.selectedItemBinding,
+                        gameType: detailState.gameTypeBinding,
+                    )
+                },
             )
             .authlibInjectorMissingAlert(container)
             .memoryPressureAlert(container)

@@ -24,7 +24,7 @@ struct ServerAddressEditView: View {
     @State private var isHidden: Bool
     @State private var acceptTextures: Bool
     @State private var actionViewModel = ServerAddressEditActionViewModel()
-    @State private var showDeleteConfirmation: Bool = false
+    @State private var serverPendingDeletion: ServerAddress?
 
     var isNewServer: Bool {
         server == nil
@@ -56,14 +56,21 @@ struct ServerAddressEditView: View {
             body: { bodyView },
             footer: { footerView },
         )
-        .confirmationDialog("saveinfo.server.delete_title".localized(), isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
-            Button("common.delete".localized(), role: .destructive) {
-                confirmDeleteServer()
-            }
-            Button("common.cancel".localized(), role: .cancel) { }
-        } message: {
-            Text(String(format: "saveinfo.server.delete_confirmation".localized(), serverName))
-        }
+        .deleteConfirmationDialog(
+            pendingDeletion: $serverPendingDeletion,
+            title: "saveinfo.server.delete_title".localized(),
+            message: { server in
+                String(format: "saveinfo.server.delete_confirmation".localized(), server.name)
+            },
+            delete: { server in
+                actionViewModel.deleteServer(
+                    serverToDelete: server,
+                    gameName: gameName,
+                    dismiss: { dismiss() },
+                    onRefresh: onRefresh,
+                )
+            },
+        )
     }
 
     private var headerView: some View {
@@ -231,15 +238,6 @@ struct ServerAddressEditView: View {
             return
         }
 
-        showDeleteConfirmation = true
-    }
-
-    private func confirmDeleteServer() {
-        actionViewModel.deleteServer(
-            serverToDelete: server,
-            gameName: gameName,
-            dismiss: { dismiss() },
-            onRefresh: onRefresh,
-        )
+        serverPendingDeletion = server
     }
 }

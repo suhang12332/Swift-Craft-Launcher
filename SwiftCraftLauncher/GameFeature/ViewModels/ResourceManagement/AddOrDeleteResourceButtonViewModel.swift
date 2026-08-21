@@ -16,7 +16,7 @@ import SwiftUI
 final class AddOrDeleteResourceButtonViewModel {
     var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
     var isUpdateButtonLoading = false
-    var showDeleteAlert = false
+    var projectPendingDeletion: ModrinthProject?
 
     var activeAlert: ResourceButtonAlertType?
     var showGlobalResourceSheet = false

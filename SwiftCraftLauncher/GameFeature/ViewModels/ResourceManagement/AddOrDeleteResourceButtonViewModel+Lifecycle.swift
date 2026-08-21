@@ -51,7 +51,7 @@ extension AddOrDeleteResourceButtonViewModel {
             Task { await loadGameResourceInstallDetailBeforeOpeningSheet() }
         case .installed, .update:
             if type == false {
-                showDeleteAlert = true
+                projectPendingDeletion = project
             }
         default:
             break
@@ -88,7 +88,7 @@ extension AddOrDeleteResourceButtonViewModel {
             Task { await loadProjectDetailBeforeOpeningSheet() }
         case .installed, .update:
             if type == false {
-                showDeleteAlert = true
+                projectPendingDeletion = project
             }
         default:
             break
