@@ -145,15 +145,6 @@ enum MinecraftAuthenticationIssue: Equatable {
     case profileMissing
     case notPurchased
 
-    var actionTitleKey: String {
-        switch self {
-        case .profileMissing:
-            "minecraft.auth.create_profile"
-        case .notPurchased:
-            "addplayer.purchase.minecraft"
-        }
-    }
-
     var actionURL: URL {
         switch self {
         case .profileMissing:

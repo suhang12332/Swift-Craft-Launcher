@@ -122,7 +122,7 @@ struct AddPlayerSheetView: View {
                         case .error:
                             if let issue = container.system.minecraftAuthService.authenticationIssue,
                                issue == .profileMissing {
-                                Button(issue.actionTitleKey.localized()) {
+                                Button("minecraft.auth.create_profile".localized()) {
                                     openURL(issue.actionURL)
                                 }
                                 .keyboardShortcut(.defaultAction)
