@@ -141,24 +141,41 @@ struct MinecraftAuthView: View {
     }
 
     private func errorView(message: String) -> some View {
-        VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 60))
-                .foregroundColor(.red)
+        let isProfileMissing = container.system.minecraftAuthService.authenticationIssue == .profileMissing
+        let statusColor: Color = isProfileMissing ? .yellow : .red
+
+        return VStack(spacing: 16) {
+            if isProfileMissing {
+                Image(systemName: "person.crop.circle.badge.exclamationmark")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                    .symbolRenderingMode(.multicolor)
+                    .symbolVariant(.none)
+            } else {
+                Image(systemName: "exclamationmark.triangle")
+                    .font(.system(size: 60))
+                    .foregroundColor(statusColor)
+            }
 
             Text("minecraft.auth.failed".localized())
                 .font(.headline)
-                .foregroundColor(.red)
+                .foregroundColor(statusColor)
 
             Text(message)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
 
-            Text("minecraft.auth.retry_message".localized())
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
+            let issue = container.system.minecraftAuthService.authenticationIssue
+
+            Text(
+                issue == .profileMissing
+                    ? "minecraft.auth.create_profile_message".localized()
+                    : "minecraft.auth.retry_message".localized(),
+            )
+            .font(.caption)
+            .foregroundColor(isProfileMissing ? .red : .secondary)
+            .multilineTextAlignment(.center)
         }
     }
 }

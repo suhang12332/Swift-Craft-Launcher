@@ -10051,6 +10051,420 @@
         }
       }
     },
+    "error.authentication.minecraft_profile_missing" : {
+      "shouldTranslate" : true,
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم شراء إصدار Java من Minecraft، ولكن لم يتم إنشاء ملف تعريف للعبة بعد."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition er købt, men der er endnu ikke oprettet en spilprofil."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition wurde gekauft, aber es wurde noch kein Spielprofil erstellt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition is owned, but no game profile has been created."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition es de tu propiedad, pero aún no se ha creado un perfil de juego."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition on ostettu, mutta peliprofiilia ei ole vielä luotu."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition est acheté, mais aucun profil de jeu n’a encore été créé."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition खरीदा गया है, लेकिन अभी तक कोई गेम प्रोफ़ाइल नहीं बनाई गई है।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition è stata acquistata, ma non è ancora stato creato alcun profilo di gioco."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition は購入済みですが、ゲームプロフィールがまだ作成されていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition을 보유하고 있지만 게임 프로필이 아직 생성되지 않았습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition er kjøpt, men ingen spillprofil er opprettet ennå."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition is gekocht, maar er is nog geen spelprofiel aangemaakt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition jest kupiona, ale nie utworzono jeszcze profilu gry."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition foi comprada, mas ainda não foi criado um perfil de jogo."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition приобретена, но игровой профиль ещё не создан."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition är köpt, men ingen spelprofil har skapats än."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "มี Minecraft Java Edition แล้ว แต่ยังไม่ได้สร้างโปรไฟล์เกม"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Java Edition satın alındı, ancak henüz bir oyun profili oluşturulmadı."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bạn đã sở hữu Minecraft Java Edition nhưng chưa tạo hồ sơ trò chơi."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已拥有 Minecraft Java 版，但尚未创建游戏档案"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已擁有 Minecraft Java 版，但尚未建立遊戲檔案"
+          }
+        }
+      }
+    },
+    "minecraft.auth.create_profile" : {
+      "shouldTranslate" : true,
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إنشاء ملف تعريف"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opret profil"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profil erstellen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create profile"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear perfil"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luo profiili"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un profil"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "प्रोफ़ाइल बनाएँ"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crea profilo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィールを作成"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프로필 만들기"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opprett profil"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profiel aanmaken"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utwórz profil"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criar perfil"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создать профиль"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skapa profil"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "สร้างโปรไฟล์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profil oluştur"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tạo hồ sơ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往创建"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往建立"
+          }
+        }
+      }
+    },
+    "minecraft.auth.create_profile_message" : {
+      "shouldTranslate" : true,
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى النقر على زر «إنشاء ملف تعريف» لإنشاء ملف تعريف لعبة Minecraft."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klik på knappen \"Opret profil\" for at oprette din Minecraft-spilprofil."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klicke auf „Profil erstellen“, um dein Minecraft-Spielprofil zu erstellen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please click \"Create profile\" to create your Minecraft game profile."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haz clic en «Crear perfil» para crear tu perfil de juego de Minecraft."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luo Minecraft-peliprofiilisi napsauttamalla Luo profiili -painiketta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cliquez sur le bouton « Créer un profil » pour créer votre profil de jeu Minecraft."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अपनी Minecraft गेम प्रोफ़ाइल बनाने के लिए “प्रोफ़ाइल बनाएँ” बटन पर क्लिक करें।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fai clic sul pulsante “Crea profilo” per creare il tuo profilo di gioco Minecraft."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「プロフィールを作成」ボタンをクリックして、Minecraft のゲームプロフィールを作成してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 게임 프로필을 만들려면 “프로필 만들기” 버튼을 클릭하세요."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klikk på knappen «Opprett profil» for å opprette Minecraft-spillprofilen din."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klik op de knop ‘Profiel aanmaken’ om je Minecraft-spelprofiel aan te maken."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kliknij przycisk „Utwórz profil”, aby utworzyć swój profil gry Minecraft."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clique no botão “Criar perfil” para criar o seu perfil de jogo do Minecraft."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите кнопку «Создать профиль», чтобы создать игровой профиль Minecraft."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klicka på knappen ”Skapa profil” för att skapa din Minecraft-spelprofil."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "คลิกปุ่ม “สร้างโปรไฟล์” เพื่อสร้างโปรไฟล์เกม Minecraft ของคุณ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft oyun profilinizi oluşturmak için “Profil oluştur” düğmesine tıklayın."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhấp vào nút “Tạo hồ sơ” để tạo hồ sơ trò chơi Minecraft của bạn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请点击“前往创建”按钮来创建游戏档案"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請點擊「前往建立」按鈕以建立 Minecraft 遊戲檔案。"
+          }
+        }
+      }
+    },
     "error.authentication.missing_token" : {
       "extractionState" : "manual",
       "localizations" : {
