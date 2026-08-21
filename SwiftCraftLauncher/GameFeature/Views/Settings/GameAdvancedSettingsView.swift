@@ -83,27 +83,29 @@ struct GameAdvancedSettingsView: View {
                 CommonDescriptionText(text: viewModel.optimizationPreset.description)
             }
 
-            LabeledContent("settings.game.java.memory".localized()) {
-                HStack {
-                    MiniRangeSlider(
-                        range: $viewModel.memoryRange,
-                        bounds: Double(AppConstants.MemoryDefaults.xms) ... Double(container.ui.gameSettingsManager.maximumMemoryAllocation),
-                    )
-                    .frame(width: 200)
-                    .controlSize(.mini)
-                    .onChange(of: viewModel.memoryRange) { _, _ in viewModel.didChangeMemoryRange() }
-                    Text("\(Int(viewModel.memoryRange.lowerBound)) MB-\(Int(viewModel.memoryRange.upperBound)) MB")
-                        .font(.subheadline)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                    Button("common.reset".localized()) {
-                        viewModel.resetGameXms()
+            Group {
+                LabeledContent("settings.game.java.memory".localized()) {
+                    HStack {
+                        MiniRangeSlider(
+                            range: $viewModel.memoryRange,
+                            bounds: Double(AppConstants.MemoryDefaults.xms) ... Double(container.ui.gameSettingsManager.maximumMemoryAllocation),
+                        )
+                        .frame(width: 200)
+                        .controlSize(.mini)
+                        .onChange(of: viewModel.memoryRange) { _, _ in viewModel.didChangeMemoryRange() }
+                        Button("common.reset".localized()) {
+                            viewModel.resetGameXms()
+                        }
+                        .padding(.leading, 8)
                     }
-                    .padding(.leading, 8)
                 }
+                .labeledContentStyle(.custom)
+                Text("\(Int(viewModel.memoryRange.lowerBound)) MB-\(Int(viewModel.memoryRange.upperBound)) MB")
+                    .font(.subheadline.monospacedDigit())
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .padding(.bottom, 6)
             }
-            .labeledContentStyle(.custom)
-            .padding(.vertical, 10)
 
             Group {
                 LabeledContent("settings.game.java.custom_parameters".localized()) {

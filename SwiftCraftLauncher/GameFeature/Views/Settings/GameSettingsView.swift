@@ -123,13 +123,6 @@ public struct GameSettingsView: View {
                                         gameSettingsManager.globalXms,
                                     ) ... Double(gameSettingsManager.globalXmx)
                             }
-                            Text(
-                                "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB",
-                            )
-                            .font(.subheadline)
-                            .foregroundColor(.primary)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
                             Button("common.reset".localized()) {
                                 gameSettingsManager.globalXms = AppConstants.MemoryDefaults.xms
                                 gameSettingsManager.globalXmx = AppConstants.MemoryDefaults.xmx
@@ -139,6 +132,15 @@ public struct GameSettingsView: View {
                         }
                     }
                     .labeledContentStyle(.custom)
+
+                    Text(
+                        "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB",
+                    )
+                    .font(.subheadline.monospacedDigit())
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .padding(.bottom, 6)
+
                     CommonDescriptionText(
                         text: "settings.default_memory_allocation.description".localized(),
                     )
