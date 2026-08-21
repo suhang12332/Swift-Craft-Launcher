@@ -402,5 +402,8 @@ enum URLConfig {
     enum Store {
         /// The Minecraft purchase page URL on the Xbox store.
         static let minecraftPurchase = URLConfig.url("https://www.xbox.com/zh-CN/games/store/productId/9NXP44L49SHJ")
+
+        /// The Minecraft page for creating a Java Edition game profile.
+        static let minecraftProfileCreation = URLConfig.url("https://www.minecraft.net/msaprofile/mygames/editprofile")
     }
 }

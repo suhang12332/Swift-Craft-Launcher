@@ -148,7 +148,7 @@ enum MinecraftAuthenticationIssue: Equatable {
     var actionURL: URL {
         switch self {
         case .profileMissing:
-            URL(string: "https://www.minecraft.net/msaprofile/mygames/editprofile") ?? URL(fileURLWithPath: "/")
+            URLConfig.Store.minecraftProfileCreation
         case .notPurchased:
             URLConfig.Store.minecraftPurchase
         }
