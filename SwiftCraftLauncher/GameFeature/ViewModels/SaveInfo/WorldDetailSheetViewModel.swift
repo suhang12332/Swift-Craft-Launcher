@@ -170,7 +170,7 @@ final class WorldDetailSheetViewModel {
                   let x = WorldNBTMapper.readInt64(pos[0]),
                   let y = WorldNBTMapper.readInt64(pos[1]),
                   let z = WorldNBTMapper.readInt64(pos[2]) {
-            if let dim = spawnTag["dimension"]?.stringValue, !dim.isEmpty {
+            if let dim = spawnTag["dimension"] as? String, !dim.isEmpty {
                 spawn = "\(x), \(y), \(z) (\(dim))"
             } else {
                 spawn = "\(x), \(y), \(z)"
@@ -232,10 +232,29 @@ final class WorldDetailSheetViewModel {
             if let sub = v.compoundValue {
                 let nested = flattenNBTDictionary(sub, prefix: key)
                 for (nk, nv) in nested { result[nk] = nv }
+            } else if case let .list(arr) = v {
+                result[key] = arr.map(stringifyNBTValue).joined(separator: ", ")
             } else {
-                result[key] = String(describing: v)
+                result[key] = stringifyNBTValue(v)
             }
         }
         return result
+    }
+
+    private func stringifyNBTValue(_ value: NBTValue) -> String {
+        switch value {
+        case let .byte(v): "\(v)"
+        case let .short(v): "\(v)"
+        case let .int(v): "\(v)"
+        case let .long(v): "\(v)"
+        case let .float(v): "\(v)"
+        case let .double(v): "\(v)"
+        case let .byteArray(v): "ByteArray(\(v.count))"
+        case let .string(v): v
+        case let .list(v): "[\(v.map(stringifyNBTValue).joined(separator: ", "))]"
+        case let .compound(v): "{\(v.count)}"
+        case let .intArray(v): "IntArray(\(v.count))"
+        case let .longArray(v): "LongArray(\(v.count))"
+        }
     }
 }
