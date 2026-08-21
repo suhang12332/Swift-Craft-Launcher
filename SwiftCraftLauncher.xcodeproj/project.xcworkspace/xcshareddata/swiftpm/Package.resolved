@@ -1,5 +1,5 @@
 {
-  "originHash" : "5f9c059f5a9d6c83e6ec04905dfea45831e12208b8e2fce365938bbe12fc8c89",
+  "originHash" : "4c8ada645b8eb5d4a9f1a7c1ee33bf55089880d05c82c6b6ff39f81957d6a311",
   "pins" : [
     {
       "identity" : "cfmodrinthadapterkit",
@@ -71,6 +71,15 @@
       "state" : {
         "branch" : "release",
         "revision" : "c5b2e6fc5a961832c3f39bc94e672d37833f0e2a"
+      }
+    },
+    {
+      "identity" : "swiftnbt",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hjy-233/SwiftNBT.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "62f48a555471b3f66361a92ee39bf5a9b61a0213"
       }
     },
     {

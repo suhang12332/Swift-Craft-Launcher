@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftNBT
 
 /// View model for the world detail sheet, parsing NBT data from level.dat to display world metadata.
 @MainActor
@@ -20,7 +21,7 @@ final class WorldDetailSheetViewModel {
     let gameName: String
 
     var metadata: WorldDetailMetadata?
-    var rawDataTag: [String: Any]?
+    var rawDataTag: NBTCompound?
     var isLoading: Bool = false
     var showRawData: Bool = false
 
@@ -33,7 +34,7 @@ final class WorldDetailSheetViewModel {
         metadata?.seed
     }
 
-    var filteredRawData: [String: Any]? {
+    var filteredRawData: NBTCompound? {
         guard let raw = rawDataTag else { return nil }
 
         let displayedKeys: Set = [
@@ -58,23 +59,21 @@ final class WorldDetailSheetViewModel {
                 .appendingPathComponent("world_gen_settings.dat")
             let pathForBackground = levelDatPath
 
-            let (dataTag, seedOverride): ([String: Any], Int64?) = try {
+            let (dataTag, seedOverride): (NBTCompound, Int64?) = try {
                 guard FileManager.default.fileExists(atPath: pathForBackground.path) else {
                     throw LoadError.levelDatNotFound
                 }
                 let data = try Data(contentsOf: pathForBackground)
-                let parser = NBTParser(data: data)
-                let nbtData = try parser.parse()
-                guard let tag = nbtData["Data"] as? [String: Any] else {
+                let nbtData = try NBTDecoder().decode(data).root
+                guard let tag = nbtData["Data"]?.compoundValue else {
                     throw LoadError.invalidStructure
                 }
 
                 var seed: Int64?
                 if FileManager.default.fileExists(atPath: worldGenSettingsPath.path) {
                     let wgsData = try Data(contentsOf: worldGenSettingsPath)
-                    let wgsParser = NBTParser(data: wgsData)
-                    let wgsNBT = try wgsParser.parse()
-                    if let dataTag = wgsNBT["data"] as? [String: Any],
+                    let wgsNBT = try NBTDecoder().decode(wgsData).root
+                    if let dataTag = wgsNBT["data"]?.compoundValue,
                        let s = WorldNBTMapper.readInt64(dataTag["seed"]) {
                         seed = s
                     }
@@ -113,12 +112,12 @@ final class WorldDetailSheetViewModel {
     }
 
     private func parseWorldDetail(
-        from dataTag: [String: Any],
+        from dataTag: NBTCompound,
         folderName: String,
         path: URL,
         seedOverride: Int64?,
     ) -> WorldDetailMetadata {
-        let levelName = (dataTag["LevelName"] as? String) ?? folderName
+        let levelName = dataTag["LevelName"]?.stringValue ?? folderName
 
         var lastPlayedDate: Date?
         if let ts = WorldNBTMapper.readInt64(dataTag["LastPlayed"]) {
@@ -133,13 +132,13 @@ final class WorldDetailSheetViewModel {
         var difficulty = "common.unknown".localized()
         if let diff = WorldNBTMapper.readInt64(dataTag["Difficulty"]) {
             difficulty = WorldNBTMapper.mapDifficulty(Int(diff))
-        } else if let ds = dataTag["difficulty_settings"] as? [String: Any],
-                  let diffStr = ds["difficulty"] as? String {
+        } else if let ds = dataTag["difficulty_settings"]?.compoundValue,
+                  let diffStr = ds["difficulty"]?.stringValue {
             difficulty = WorldNBTMapper.mapDifficultyString(diffStr)
         }
 
         let hardcore: Bool = {
-            if let ds = dataTag["difficulty_settings"] as? [String: Any] {
+            if let ds = dataTag["difficulty_settings"]?.compoundValue {
                 return WorldNBTMapper.readBoolFlag(ds["hardcore"])
             }
             return WorldNBTMapper.readBoolFlag(dataTag["hardcore"])
@@ -148,21 +147,12 @@ final class WorldDetailSheetViewModel {
 
         var versionName: String?
         var versionId: Int?
-        if let versionTag = dataTag["Version"] as? [String: Any] {
-            versionName = versionTag["Name"] as? String
-            if let id = versionTag["Id"] as? Int {
-                versionId = id
-            } else if let id32 = versionTag["Id"] as? Int32 {
-                versionId = Int(id32)
-            }
+        if let versionTag = dataTag["Version"]?.compoundValue {
+            versionName = versionTag["Name"]?.stringValue
+            versionId = versionTag["Id"]?.int64Value.map(Int.init)
         }
 
-        var dataVersion: Int?
-        if let dv = dataTag["DataVersion"] as? Int {
-            dataVersion = dv
-        } else if let dv32 = dataTag["DataVersion"] as? Int32 {
-            dataVersion = Int(dv32)
-        }
+        let dataVersion = dataTag["DataVersion"]?.int64Value.map(Int.init)
 
         var seed: Int64? = seedOverride
         if seed == nil {
@@ -174,8 +164,8 @@ final class WorldDetailSheetViewModel {
            let y = WorldNBTMapper.readInt64(dataTag["SpawnY"]),
            let z = WorldNBTMapper.readInt64(dataTag["SpawnZ"]) {
             spawn = "\(x), \(y), \(z)"
-        } else if let spawnTag = dataTag["spawn"] as? [String: Any],
-                  let pos = spawnTag["pos"] as? [Any],
+        } else if let spawnTag = dataTag["spawn"]?.compoundValue,
+                  case let .list(pos)? = spawnTag["pos"],
                   pos.count >= 3,
                   let x = WorldNBTMapper.readInt64(pos[0]),
                   let y = WorldNBTMapper.readInt64(pos[1]),
@@ -204,12 +194,12 @@ final class WorldDetailSheetViewModel {
         }
 
         var worldBorder: String?
-        if let wb = dataTag["WorldBorder"] as? [String: Any] {
+        if let wb = dataTag["WorldBorder"]?.compoundValue {
             worldBorder = flattenNBTDictionary(wb, prefix: "").map { "\($0.key)=\($0.value)" }.sorted().joined(separator: ", ")
         }
 
         var gameRules: [String]?
-        if let gr = dataTag["GameRules"] as? [String: Any] {
+        if let gr = dataTag["GameRules"]?.compoundValue {
             gameRules = flattenNBTDictionary(gr, prefix: "").map { "\($0.key)=\($0.value)" }.sorted()
         }
 
@@ -235,15 +225,15 @@ final class WorldDetailSheetViewModel {
         )
     }
 
-    private func flattenNBTDictionary(_ dict: [String: Any], prefix: String = "") -> [String: String] {
+    private func flattenNBTDictionary(_ dict: NBTCompound, prefix: String = "") -> [String: String] {
         var result: [String: String] = [:]
         for (k, v) in dict {
             let key = prefix.isEmpty ? k : "\(prefix).\(k)"
-            if let sub = v as? [String: Any] {
+            if let sub = v.compoundValue {
                 let nested = flattenNBTDictionary(sub, prefix: key)
                 for (nk, nv) in nested { result[nk] = nv }
-            } else if let arr = v as? [Any] {
-                result[key] = arr.map { stringifyNBTValue($0) }.joined(separator: ", ")
+            } else if case let .list(arr) = v {
+                result[key] = arr.map(stringifyNBTValue).joined(separator: ", ")
             } else {
                 result[key] = stringifyNBTValue(v)
             }
@@ -251,40 +241,20 @@ final class WorldDetailSheetViewModel {
         return result
     }
 
-    private func stringifyNBTValue(_ value: Any) -> String {
-        if let v = value as? String {
-            return v
+    private func stringifyNBTValue(_ value: NBTValue) -> String {
+        switch value {
+        case let .byte(v): "\(v)"
+        case let .short(v): "\(v)"
+        case let .int(v): "\(v)"
+        case let .long(v): "\(v)"
+        case let .float(v): "\(v)"
+        case let .double(v): "\(v)"
+        case let .byteArray(v): "ByteArray(\(v.count))"
+        case let .string(v): v
+        case let .list(v): "[\(v.map(stringifyNBTValue).joined(separator: ", "))]"
+        case let .compound(v): "{\(v.count)}"
+        case let .intArray(v): "IntArray(\(v.count))"
+        case let .longArray(v): "LongArray(\(v.count))"
         }
-        if let v = value as? Bool {
-            return v ? "true" : "false"
-        }
-        if let v = value as? Int8 {
-            return "\(v)"
-        }
-        if let v = value as? Int16 {
-            return "\(v)"
-        }
-        if let v = value as? Int32 {
-            return "\(v)"
-        }
-        if let v = value as? Int64 {
-            return "\(v)"
-        }
-        if let v = value as? Int {
-            return "\(v)"
-        }
-        if let v = value as? Double {
-            return "\(v)"
-        }
-        if let v = value as? Float {
-            return "\(v)"
-        }
-        if let v = value as? Data {
-            return "Data(\(v.count) bytes)"
-        }
-        if let v = value as? URL {
-            return v.path
-        }
-        return String(describing: value)
     }
 }

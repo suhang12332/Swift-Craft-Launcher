@@ -5,139 +5,135 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-@testable import SwiftCraftLauncher
+import Foundation
+import SwiftNBT
 import XCTest
 
 final class NBTParserTests: XCTestCase {
-    func testParse_emptyData_throws() {
-        XCTAssertThrowsError(try NBTParser(data: Data()).parse()) { error in
-            let globalError = error as? GlobalError
-            XCTAssertEqual(globalError?.i18nKey, "error.filesystem.nbt_empty_data")
+    func testDecode_emptyData_throws() {
+        XCTAssertThrowsError(try NBTDecoder().decode(Data())) { error in
+            XCTAssertEqual(error as? NBTError, .emptyData)
         }
     }
 
-    func testParse_invalidRoot_throws() {
-        // Root tag must be Compound (0x0A); 0x01 is Byte.
-        var invalid = Data([0x01, 0x00, 0x00])
-        invalid.append(contentsOf: [UInt8(0)])
+    func testDecode_invalidRoot_throws() {
+        let invalid = Data([0x01, 0x00, 0x00, 0x00])
 
-        XCTAssertThrowsError(try NBTParser(data: invalid).parse()) { error in
-            let globalError = error as? GlobalError
-            XCTAssertEqual(globalError?.i18nKey, "error.filesystem.nbt_invalid_root")
+        XCTAssertThrowsError(try NBTDecoder().decode(invalid)) { error in
+            XCTAssertEqual(error as? NBTError, .invalidRootType(1))
         }
     }
 
     func testEncodeDecode_roundTrip_uncompressed() throws {
-        let original: [String: Any] = [
-            "Data": ["RandomSeed": Int64(12345)],
-            "DataVersion": Int32(3465),
-        ]
+        let document = NBTDocument(root: [
+            "Data": .compound(["RandomSeed": .long(12_345)]),
+            "DataVersion": .int(3465),
+        ])
 
-        let encoded = try NBTParser.encode(original, compress: false)
-        let parsed = try NBTParser(data: encoded).parse()
+        let encoded = try NBTEncoder().encode(document, compression: .none)
+        let parsed = try NBTDecoder().decode(encoded, compression: .none)
 
-        XCTAssertEqual(parsed["DataVersion"] as? Int32, 3465)
-        let dataTag = parsed["Data"] as? [String: Any]
-        XCTAssertEqual(dataTag?["RandomSeed"] as? Int64, 12345)
+        XCTAssertEqual(parsed.root["DataVersion"]?.int64Value, 3465)
+        XCTAssertEqual(parsed.root["Data"]?.compoundValue?["RandomSeed"]?.int64Value, 12_345)
     }
 
     func testEncodeDecode_roundTrip_compressed() throws {
-        let original: [String: Any] = [
-            "Data": ["RandomSeed": Int64(99999)],
-            "DataVersion": Int32(2970),
-        ]
+        let document = NBTDocument(root: [
+            "Data": .compound(["RandomSeed": .long(99_999)]),
+            "DataVersion": .int(2970),
+        ])
 
-        let encoded = try NBTParser.encode(original, compress: true)
+        let encoded = try NBTEncoder().encode(document)
         XCTAssertEqual(encoded.prefix(2), Data([0x1F, 0x8B]))
 
-        let parsed = try NBTParser(data: encoded).parse()
-        let dataTag = parsed["Data"] as? [String: Any]
-        XCTAssertEqual(dataTag?["RandomSeed"] as? Int64, 99999)
+        let parsed = try NBTDecoder().decode(encoded)
+        XCTAssertEqual(parsed.root["Data"]?.compoundValue?["RandomSeed"]?.int64Value, 99_999)
     }
 
     func testRoundTrip_serversDatStructure() throws {
-        let original: [String: Any] = [
-            "servers": [
-                [
-                    "name": "Test Server",
-                    "ip": "localhost",
-                    "hidden": Int8(0),
-                    "acceptTextures": Int8(1),
-                ] as [String: Any],
-            ],
-        ]
+        let document = NBTDocument(root: [
+            "servers": .list([
+                .compound([
+                    "name": .string("Test Server"),
+                    "ip": .string("localhost"),
+                    "hidden": .byte(0),
+                    "acceptTextures": .byte(1),
+                ]),
+            ]),
+        ])
 
-        let encoded = try NBTParser.encode(original, compress: true)
-        let parsed = try NBTParser(data: encoded).parse()
-        let servers = parsed["servers"] as? [[String: Any]]
+        let encoded = try NBTEncoder().encode(document)
+        let parsed = try NBTDecoder().decode(encoded)
+        guard case let .list(servers)? = parsed.root["servers"],
+              case let .compound(server)? = servers.first else {
+            return XCTFail("servers list was not decoded")
+        }
 
-        XCTAssertEqual(servers?.count, 1)
-        XCTAssertEqual(servers?.first?["name"] as? String, "Test Server")
-        XCTAssertEqual(servers?.first?["ip"] as? String, "localhost")
+        XCTAssertEqual(server["name"]?.stringValue, "Test Server")
+        XCTAssertEqual(server["ip"]?.stringValue, "localhost")
     }
 
     func testRoundTrip_levelDatMinimalFields() throws {
-        let original: [String: Any] = [
-            "Data": [
-                "RandomSeed": Int64(-123_456_789),
-                "LevelName": "Test World",
-            ],
-            "DataVersion": Int32(3456),
-        ]
+        let document = NBTDocument(root: [
+            "Data": .compound([
+                "RandomSeed": .long(-123_456_789),
+                "LevelName": .string("Test World"),
+            ]),
+            "DataVersion": .int(3456),
+        ])
 
-        let encoded = try NBTParser.encode(original, compress: false)
-        let parsed = try NBTParser(data: encoded).parse()
+        let encoded = try NBTEncoder().encode(document, compression: .none)
+        let parsed = try NBTDecoder().decode(encoded, compression: .none)
+        let data = parsed.root["Data"]?.compoundValue
 
-        XCTAssertEqual(parsed["DataVersion"] as? Int32, 3456)
-        let dataTag = parsed["Data"] as? [String: Any]
-        XCTAssertEqual(dataTag?["LevelName"] as? String, "Test World")
-        XCTAssertEqual(dataTag?["RandomSeed"] as? Int64, -123_456_789)
+        XCTAssertEqual(parsed.root["DataVersion"]?.int64Value, 3456)
+        XCTAssertEqual(data?["LevelName"]?.stringValue, "Test World")
+        XCTAssertEqual(data?["RandomSeed"]?.int64Value, -123_456_789)
     }
 
-    func testParse_gzipPrefixedData() throws {
-        let original: [String: Any] = ["hello": "world"]
-        let compressed = try NBTParser.encode(original, compress: true)
-        let parsed = try NBTParser(data: compressed).parse()
+    func testEncodeDecode_gzipPrefixedData() throws {
+        let document = NBTDocument(root: ["hello": .string("world")])
+        let compressed = try NBTEncoder().encode(document)
+        let parsed = try NBTDecoder().decode(compressed)
 
-        XCTAssertEqual(parsed["hello"] as? String, "world")
+        XCTAssertEqual(parsed.root["hello"]?.stringValue, "world")
     }
 
-    func testEncode_emptyCompound() throws {
-        let encoded = try NBTParser.encode([:], compress: false)
-        let parsed = try NBTParser(data: encoded).parse()
+    func testEncodeDecode_emptyCompound() throws {
+        let document = NBTDocument(root: [:])
+        let encoded = try NBTEncoder().encode(document, compression: .none)
+        let parsed = try NBTDecoder().decode(encoded, compression: .none)
 
-        XCTAssertTrue(parsed.isEmpty)
+        XCTAssertTrue(parsed.root.isEmpty)
     }
 
     func testRoundTrip_nestedListAndScalars() throws {
-        let original: [String: Any] = [
-            "count": Int32(3),
-            "tags": ["alpha", "beta"],
-            "enabled": true,
-        ]
+        let document = NBTDocument(root: [
+            "count": .int(3),
+            "tags": .list([.string("alpha"), .string("beta")]),
+            "enabled": .byte(1),
+        ])
 
-        let encoded = try NBTParser.encode(original, compress: false)
-        let parsed = try NBTParser(data: encoded).parse()
+        let encoded = try NBTEncoder().encode(document, compression: .none)
+        let parsed = try NBTDecoder().decode(encoded, compression: .none)
 
-        XCTAssertEqual(parsed["count"] as? Int32, 3)
-        let tags = parsed["tags"] as? [Any]
-        XCTAssertEqual(tags?.count, 2)
-        XCTAssertEqual(tags?[0] as? String, "alpha")
-        XCTAssertEqual(tags?[1] as? String, "beta")
-        XCTAssertEqual(parsed["enabled"] as? Int8, 1)
+        XCTAssertEqual(parsed.root["count"]?.int64Value, 3)
+        if case let .list(tags)? = parsed.root["tags"] {
+            XCTAssertEqual(tags.count, 2)
+        } else {
+            XCTFail("tags list was not decoded")
+        }
+        XCTAssertEqual(parsed.root["enabled"]?.boolValue, true)
     }
 
     func testRoundTrip_nestedCompound() throws {
-        let original: [String: Any] = [
-            "outer": [
-                "inner": "value",
-            ] as [String: Any],
-        ]
+        let document = NBTDocument(root: [
+            "outer": .compound(["inner": .string("value")]),
+        ])
 
-        let encoded = try NBTParser.encode(original, compress: false)
-        let parsed = try NBTParser(data: encoded).parse()
-        let outer = parsed["outer"] as? [String: Any]
+        let encoded = try NBTEncoder().encode(document, compression: .none)
+        let parsed = try NBTDecoder().decode(encoded, compression: .none)
 
-        XCTAssertEqual(outer?["inner"] as? String, "value")
+        XCTAssertEqual(parsed.root["outer"]?.compoundValue?["inner"]?.stringValue, "value")
     }
 }

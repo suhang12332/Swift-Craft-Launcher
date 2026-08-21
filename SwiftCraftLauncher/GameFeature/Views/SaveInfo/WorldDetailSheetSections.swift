@@ -8,6 +8,7 @@
 // Section views for displaying world detail metadata including game settings, seed, and path.
 import AppKit
 import SwiftUI
+import SwiftNBT
 
 struct SeedCopyRow: View {
     let seed: Int64
@@ -178,7 +179,7 @@ struct WorldDetailPathRowView: View {
 }
 
 struct WorldDetailRawDataToggleView: View {
-    let filteredRawData: [String: Any]
+    let filteredRawData: NBTCompound
     @Binding var showRawData: Bool
 
     var body: some View {

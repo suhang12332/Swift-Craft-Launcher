@@ -7,9 +7,10 @@
 
 // A recursive tree view for displaying NBT data structures.
 import SwiftUI
+import SwiftNBT
 
 struct NBTStructureView: View {
-    let data: [String: Any]
+    let data: NBTCompound
     @State private var expandedKeys: Set<String> = []
 
     var body: some View {
@@ -33,13 +34,13 @@ struct NBTStructureView: View {
 /// A single NBT entry that renders as a disclosure group for compounds and arrays, or a value row for primitives.
 private struct NBTEntryView: View {
     let key: String
-    let value: Any
+    let value: NBTValue
     @Binding var expandedKeys: Set<String>
     let indentLevel: Int
     let fullKey: String
     @State private var isHovered = false
 
-    init(key: String, value: Any, expandedKeys: Binding<Set<String>>, indentLevel: Int, fullKey: String? = nil) {
+    init(key: String, value: NBTValue, expandedKeys: Binding<Set<String>>, indentLevel: Int, fullKey: String? = nil) {
         self.key = key
         self.value = value
         _expandedKeys = expandedKeys
@@ -49,7 +50,7 @@ private struct NBTEntryView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if let dict = value as? [String: Any] {
+            if let dict = value.compoundValue {
                 NBTDisclosureButton(
                     isExpanded: expandedKeys.contains(fullKey),
                     label: key,
@@ -79,7 +80,7 @@ private struct NBTEntryView: View {
                         }
                     }
                 }
-            } else if let array = value as? [Any] {
+            } else if case let .list(array) = value {
                 NBTDisclosureButton(
                     isExpanded: expandedKeys.contains(fullKey),
                     label: key,
@@ -99,10 +100,10 @@ private struct NBTEntryView: View {
                 if expandedKeys.contains(fullKey) {
                     ForEach(Array(array.enumerated()), id: \.offset) { index, item in
                         let arrayItemKey = "\(fullKey)[\(index)]"
-                        if let itemDict = item as? [String: Any] {
+                        if item.compoundValue != nil {
                             Self(
                                 key: "[\(index)]",
-                                value: itemDict,
+                                value: item,
                                 expandedKeys: $expandedKeys,
                                 indentLevel: indentLevel + 1,
                                 fullKey: arrayItemKey,
@@ -126,41 +127,21 @@ private struct NBTEntryView: View {
         }
     }
 
-    private func formatNBTValue(_ value: Any) -> String {
-        if let v = value as? String {
-            return "\"\(v)\""
+    private func formatNBTValue(_ value: NBTValue) -> String {
+        switch value {
+        case let .byte(v): "\(v)b"
+        case let .short(v): "\(v)s"
+        case let .int(v): "\(v)"
+        case let .long(v): "\(v)L"
+        case let .float(v): "\(v)f"
+        case let .double(v): "\(v)d"
+        case let .byteArray(v): "ByteArray(\(v.count) bytes)"
+        case let .string(v): "\"\(v)\""
+        case let .list(v): "List(\(v.count))"
+        case let .compound(v): "Compound(\(v.count))"
+        case let .intArray(v): "IntArray(\(v.count))"
+        case let .longArray(v): "LongArray(\(v.count))"
         }
-        if let v = value as? Bool {
-            return v ? "true" : "false"
-        }
-        if let v = value as? Int8 {
-            return "\(v)b"
-        }
-        if let v = value as? Int16 {
-            return "\(v)s"
-        }
-        if let v = value as? Int32 {
-            return "\(v)"
-        }
-        if let v = value as? Int64 {
-            return "\(v)L"
-        }
-        if let v = value as? Int {
-            return "\(v)"
-        }
-        if let v = value as? Double {
-            return "\(v)d"
-        }
-        if let v = value as? Float {
-            return "\(v)f"
-        }
-        if let v = value as? Data {
-            return "Data(\(v.count) bytes)"
-        }
-        if let v = value as? URL {
-            return v.path
-        }
-        return String(describing: value)
     }
 }
 

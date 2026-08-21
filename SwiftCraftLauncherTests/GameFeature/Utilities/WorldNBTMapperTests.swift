@@ -5,31 +5,26 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import SwiftNBT
 @testable import SwiftCraftLauncher
 import XCTest
 
 final class WorldNBTMapperTests: XCTestCase {
     func testReadInt64_fromInt() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(42), 42)
+        XCTAssertEqual(WorldNBTMapper.readInt64(.int(42)), 42)
     }
 
-    func testReadInt64_fromUInt8() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(UInt8(255)), 255)
+    func testReadInt64_fromLong() {
+        XCTAssertEqual(WorldNBTMapper.readInt64(.long(42)), 42)
     }
 
     func testReadInt64_nil() {
         XCTAssertNil(WorldNBTMapper.readInt64(nil))
-        XCTAssertNil(WorldNBTMapper.readInt64("not-a-number"))
     }
 
-    func testReadBoolFlag_fromBool() {
-        XCTAssertTrue(WorldNBTMapper.readBoolFlag(true))
-        XCTAssertFalse(WorldNBTMapper.readBoolFlag(false))
-    }
-
-    func testReadBoolFlag_fromInt() {
-        XCTAssertTrue(WorldNBTMapper.readBoolFlag(1))
-        XCTAssertFalse(WorldNBTMapper.readBoolFlag(0))
+    func testReadBoolFlag_fromByte() {
+        XCTAssertTrue(WorldNBTMapper.readBoolFlag(.byte(1)))
+        XCTAssertFalse(WorldNBTMapper.readBoolFlag(.byte(0)))
     }
 
     func testReadBoolFlag_nil_returnsFalse() {
@@ -43,20 +38,20 @@ final class WorldNBTMapperTests: XCTestCase {
     }
 
     func testReadSeed_fromRandomSeed() {
-        let dataTag: [String: Any] = ["RandomSeed": Int64(999)]
+        let dataTag: NBTCompound = ["RandomSeed": .long(999)]
         XCTAssertEqual(WorldNBTMapper.readSeed(from: dataTag, worldPath: nil), 999)
     }
 
     func testReadSeed_fromWorldGenSettings() {
-        let dataTag: [String: Any] = [
-            "WorldGenSettings": ["seed": Int64(42_424_242)],
+        let dataTag: NBTCompound = [
+            "WorldGenSettings": .compound(["seed": .long(42_424_242)]),
         ]
         XCTAssertEqual(WorldNBTMapper.readSeed(from: dataTag, worldPath: nil), 42_424_242)
     }
 
     func testReadSeed_fromLowercaseWorldGenSettings() {
-        let dataTag: [String: Any] = [
-            "worldGenSettings": ["seed": Int64(7)],
+        let dataTag: NBTCompound = [
+            "worldGenSettings": .compound(["seed": .long(7)]),
         ]
         XCTAssertEqual(WorldNBTMapper.readSeed(from: dataTag, worldPath: nil), 7)
     }

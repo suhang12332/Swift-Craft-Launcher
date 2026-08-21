@@ -7,6 +7,7 @@
 
 import CryptoKit
 import Foundation
+import SwiftNBT
 
 /// Reads and manages Minecraft server addresses from `servers.dat` files.
 class ServerAddressService {
@@ -82,47 +83,34 @@ class ServerAddressService {
     }
 
     private func parseServersDat(data: Data) throws -> [ServerAddress] {
-        let parser = NBTParser(data: data)
-        let nbtData = try parser.parse()
+        let document = try NBTDecoder().decode(data)
+        let nbtData = document.root
 
         AppLog.game.debug("NBT parsing complete, root tag keys: \(nbtData.keys.joined(separator: ", "))")
 
-        guard let serversList = nbtData["servers"] as? [[String: Any]] else {
+        guard case let .list(serverValues)? = nbtData["servers"] else {
             AppLog.game.debug("servers list not found, or type mismatch")
             return []
         }
 
-        AppLog.game.debug("Found \(serversList.count) server entries")
+        AppLog.game.debug("Found \(serverValues.count) server entries")
 
         var servers: [ServerAddress] = []
 
-        for serverData in serversList {
-            guard let name = serverData["name"] as? String,
-                  let ip = serverData["ip"] as? String else {
+        for serverValue in serverValues {
+            guard case let .compound(serverData) = serverValue,
+                  let name = serverData["name"]?.stringValue,
+                  let ip = serverData["ip"]?.stringValue else {
                 continue
             }
 
             let (address, port) = parseIPAndPort(ip)
 
-            let hidden: Bool
-            if let hiddenValue = serverData["hidden"] as? Int8 {
-                hidden = hiddenValue != 0
-            } else if let hiddenValue = serverData["hidden"] as? Int {
-                hidden = hiddenValue != 0
-            } else {
-                hidden = false
-            }
+            let hidden = serverData["hidden"]?.boolValue ?? false
 
-            let icon = serverData["icon"] as? String
+            let icon = serverData["icon"]?.stringValue
 
-            let acceptTextures: Bool
-            if let preventsValue = serverData["preventsChatReports"] as? Int8 {
-                acceptTextures = preventsValue != 0
-            } else if let preventsValue = serverData["preventsChatReports"] as? Int {
-                acceptTextures = preventsValue != 0
-            } else {
-                acceptTextures = false
-            }
+            let acceptTextures = serverData["preventsChatReports"]?.boolValue ?? false
 
             let stableId = generateStableServerId(name: name, address: address, port: port)
 
@@ -206,31 +194,31 @@ class ServerAddressService {
 
         AppLog.game.debug("Starting to save server address list to: \(serversDatURL.path)")
 
-        var serversList: [[String: Any]] = []
+        var serverValues: [NBTValue] = []
 
         for server in servers {
-            var serverData: [String: Any] = [:]
-            serverData["name"] = server.name
-            serverData["hidden"] = server.hidden ? Int8(1) : Int8(0)
-            serverData["preventsChatReports"] = server.acceptTextures ? Int8(1) : Int8(0)
+            var serverData: NBTCompound = [
+                "name": .string(server.name),
+                "hidden": .byte(server.hidden ? 1 : 0),
+                "preventsChatReports": .byte(server.acceptTextures ? 1 : 0),
+            ]
             if server.port > 0 {
-                serverData["ip"] = "\(server.address):\(server.port)"
+                serverData["ip"] = .string("\(server.address):\(server.port)")
             } else {
-                serverData["ip"] = server.address
+                serverData["ip"] = .string(server.address)
             }
 
             if let icon = server.icon, !icon.isEmpty {
-                serverData["icon"] = icon
+                serverData["icon"] = .string(icon)
             }
 
-            serversList.append(serverData)
+            serverValues.append(.compound(serverData))
         }
 
-        let nbtData: [String: Any] = [
-            "servers": serversList,
-        ]
-
-        let encodedData = try NBTParser.encode(nbtData, compress: false)
+        let document = NBTDocument(root: [
+            "servers": .list(serverValues),
+        ])
+        let encodedData = try NBTEncoder().encode(document, compression: .none)
 
         let directory = serversDatURL.deletingLastPathComponent()
         try FileManager.default.createDirectory(

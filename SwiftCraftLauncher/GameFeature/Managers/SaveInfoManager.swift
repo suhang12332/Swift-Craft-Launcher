@@ -7,6 +7,7 @@
 
 import Foundation
 import Observation
+import SwiftNBT
 
 /// Loads and manages save information including worlds, screenshots, servers,
 /// litematica files, and logs for a specific game instance.
@@ -24,8 +25,8 @@ final class SaveInfoManager: @unchecked Sendable {
 
     private static func parseLevelDat(at levelDatPath: URL) -> WorldParseResult? {
         guard let data = try? Data(contentsOf: levelDatPath),
-              let nbtData = try? NBTParser(data: data).parse(),
-              let dataTag = nbtData["Data"] as? [String: Any] else {
+              let nbtData = try? NBTDecoder().decode(data).root,
+              let dataTag = nbtData["Data"]?.compoundValue else {
             return nil
         }
 
@@ -45,16 +46,16 @@ final class SaveInfoManager: @unchecked Sendable {
             if let v = WorldNBTMapper.readInt64(dataTag["Difficulty"]) {
                 return WorldNBTMapper.mapDifficulty(Int(v))
             }
-            if let ds = dataTag["difficulty_settings"] as? [String: Any],
-               let diffStr = ds["difficulty"] as? String {
+            if let ds = dataTag["difficulty_settings"]?.compoundValue,
+               let diffStr = ds["difficulty"]?.stringValue {
                 return WorldNBTMapper.mapDifficultyString(diffStr)
             }
             return nil
         }()
 
-        let version: String? = (dataTag["Version"] as? [String: Any])?["Name"] as? String
+        let version: String? = dataTag["Version"]?.compoundValue?["Name"]?.stringValue
         let hardcore: Bool = {
-            if let ds = dataTag["difficulty_settings"] as? [String: Any] {
+            if let ds = dataTag["difficulty_settings"]?.compoundValue {
                 return WorldNBTMapper.readBoolFlag(ds["hardcore"])
             }
             return WorldNBTMapper.readBoolFlag(dataTag["hardcore"])

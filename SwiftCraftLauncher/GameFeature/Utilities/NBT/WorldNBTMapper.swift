@@ -6,51 +6,18 @@
 //
 
 import Foundation
+import SwiftNBT
 
 /// NBT parsing utilities for Minecraft world save files (level.dat, world_gen_settings.dat, and others).
 enum WorldNBTMapper {
-    /// Attempts to convert any NBT numeric type to an `Int64`, supporting Int, Int8, Int16, Int32, UInt, and other variants.
-    static func readInt64(_ any: Any?) -> Int64? {
-        if let v = any as? Int64 {
-            return v
-        }
-        if let v = any as? Int {
-            return Int64(v)
-        }
-        if let v = any as? Int32 {
-            return Int64(v)
-        }
-        if let v = any as? Int16 {
-            return Int64(v)
-        }
-        if let v = any as? Int8 {
-            return Int64(v)
-        }
-        if let v = any as? UInt64 {
-            return Int64(v)
-        }
-        if let v = any as? UInt32 {
-            return Int64(v)
-        }
-        if let v = any as? UInt16 {
-            return Int64(v)
-        }
-        if let v = any as? UInt8 {
-            return Int64(v)
-        }
-        return nil
+    /// Reads any numeric NBT tag as an `Int64`.
+    static func readInt64(_ value: NBTValue?) -> Int64? {
+        value?.int64Value
     }
 
-    /// Converts an NBT numeric or boolean value to a `Bool` (non-zero is `true`), returning `false` if parsing fails.
-    static func readBoolFlag(_ any: Any?) -> Bool {
-        guard let any else { return false }
-        if let b = any as? Bool {
-            return b
-        }
-        if let v = readInt64(any) {
-            return v != 0
-        }
-        return false
+    /// Converts an NBT numeric value to a `Bool` (non-zero is `true`).
+    static func readBoolFlag(_ value: NBTValue?) -> Bool {
+        value?.boolValue ?? false
     }
 
     /// Returns a localized game mode string for the given integer value.
@@ -89,16 +56,16 @@ enum WorldNBTMapper {
     /// Reads the seed from a level.dat Data tag and an optional world path.
     /// - Priority: RandomSeed, then WorldGenSettings/worldGenSettings.seed,
     ///   then (if `worldPath` is provided) data/minecraft/world_gen_settings.dat -> data.seed.
-    static func readSeed(from dataTag: [String: Any], worldPath: URL?) -> Int64? {
+    static func readSeed(from dataTag: NBTCompound, worldPath: URL?) -> Int64? {
         if let seed = readInt64(dataTag["RandomSeed"]) {
             return seed
         }
 
-        if let worldGenSettings = dataTag["WorldGenSettings"] as? [String: Any],
+        if let worldGenSettings = dataTag["WorldGenSettings"]?.compoundValue,
            let seed = readInt64(worldGenSettings["seed"]) {
             return seed
         }
-        if let worldGenSettings = dataTag["worldGenSettings"] as? [String: Any],
+        if let worldGenSettings = dataTag["worldGenSettings"]?.compoundValue,
            let seed = readInt64(worldGenSettings["seed"]) {
             return seed
         }
@@ -117,9 +84,8 @@ enum WorldNBTMapper {
         guard fm.fileExists(atPath: wgsPath.path) else { return nil }
         do {
             let raw = try Data(contentsOf: wgsPath)
-            let parser = NBTParser(data: raw)
-            let nbt = try parser.parse()
-            if let dataTag = nbt["data"] as? [String: Any],
+            let nbt = try NBTDecoder().decode(raw).root
+            if let dataTag = nbt["data"]?.compoundValue,
                let seed = readInt64(dataTag["seed"]) {
                 return seed
             }

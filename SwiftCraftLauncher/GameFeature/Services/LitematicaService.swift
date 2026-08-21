@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftNBT
 
 /// Reads and parses Litematica schematic files from game directories.
 class LitematicaService {
@@ -49,27 +50,13 @@ private struct ListMetadata {
 
 private func parseListMetadata(filePath: URL) -> ListMetadata? {
     guard let data = try? Data(contentsOf: filePath),
-          let nbtData = try? NBTParser(data: data).parse(),
-          let meta = nbtData["Metadata"] as? [String: Any] else { return nil }
-    let author = meta["Author"] as? String
-    let description = meta["Description"] as? String
-    let version = meta["Version"] as? String
-    var regionCount: Int?
-    var totalBlocks: Int?
-    if let rc = meta["RegionCount"] {
-        if let rcInt = rc as? Int32 {
-            regionCount = Int(rcInt)
-        } else if let rcInt = rc as? Int {
-            regionCount = rcInt
-        }
-    }
-    if let tb = meta["TotalBlocks"] {
-        if let tbInt = tb as? Int32 {
-            totalBlocks = Int(tbInt)
-        } else if let tbInt = tb as? Int {
-            totalBlocks = tbInt
-        }
-    }
+          let nbtData = try? NBTDecoder().decode(data).root,
+          let meta = nbtData["Metadata"]?.compoundValue else { return nil }
+    let author = meta["Author"]?.stringValue
+    let description = meta["Description"]?.stringValue
+    let version = meta["Version"]?.stringValue
+    let regionCount = meta["RegionCount"]?.int64Value.map(Int.init)
+    let totalBlocks = meta["TotalBlocks"]?.int64Value.map(Int.init)
     return ListMetadata(author: author, description: description, version: version, regionCount: regionCount, totalBlocks: totalBlocks)
 }
 
@@ -106,61 +93,23 @@ private func loadLitematicaFilesSync(schematicsDir: URL) throws -> [LitematicaIn
 
 private func loadFullMetadataSync(filePath: URL) throws -> LitematicMetadata? {
     let data = try Data(contentsOf: filePath)
-    let parser = NBTParser(data: data)
-    let nbtData = try parser.parse()
-    guard let metadata = nbtData["Metadata"] as? [String: Any] else { return nil }
-    let name = (metadata["Name"] as? String) ?? filePath.deletingPathExtension().lastPathComponent
-    let author = (metadata["Author"] as? String) ?? ""
-    let description = (metadata["Description"] as? String) ?? ""
-    var timeCreated: Int64 = 0, timeModified: Int64 = 0
-    if let tc = metadata["TimeCreated"] {
-        if let tcLong = tc as? Int64 {
-            timeCreated = tcLong
-        } else if let tcInt = tc as? Int32 {
-            timeCreated = Int64(tcInt)
-        } else if let tcInt = tc as? Int {
-            timeCreated = Int64(tcInt)
-        }
-    }
-    if let tm = metadata["TimeModified"] {
-        if let tmLong = tm as? Int64 {
-            timeModified = tmLong
-        } else if let tmInt = tm as? Int32 {
-            timeModified = Int64(tmInt)
-        } else if let tmInt = tm as? Int {
-            timeModified = Int64(tmInt)
-        }
-    }
+    let metadata = try NBTDecoder().decode(data).root["Metadata"]?.compoundValue
+    let name = metadata?["Name"]?.stringValue ?? filePath.deletingPathExtension().lastPathComponent
+    let author = metadata?["Author"]?.stringValue ?? ""
+    let description = metadata?["Description"]?.stringValue ?? ""
+    let timeCreated = metadata?["TimeCreated"]?.int64Value ?? 0
+    let timeModified = metadata?["TimeModified"]?.int64Value ?? 0
     var enclosingSize = Size(x: 0, y: 0, z: 0)
-    if let sizeData = metadata["EnclosingSize"] as? [String: Any] {
+    if let sizeData = metadata?["EnclosingSize"]?.compoundValue {
         enclosingSize = Size(
-            x: (sizeData["x"] as? Int32) ?? 0,
-            y: (sizeData["y"] as? Int32) ?? 0,
-            z: (sizeData["z"] as? Int32) ?? 0,
+            x: Int32(sizeData["x"]?.int64Value ?? 0),
+            y: Int32(sizeData["y"]?.int64Value ?? 0),
+            z: Int32(sizeData["z"]?.int64Value ?? 0),
         )
     }
-    var totalVolume: Int32 = 0, totalBlocks: Int32 = 0, regionCount: Int32 = 0
-    if let tv = metadata["TotalVolume"] {
-        if let v = tv as? Int32 {
-            totalVolume = v
-        } else if let v = tv as? Int {
-            totalVolume = Int32(v)
-        }
-    }
-    if let tb = metadata["TotalBlocks"] {
-        if let v = tb as? Int32 {
-            totalBlocks = v
-        } else if let v = tb as? Int {
-            totalBlocks = Int32(v)
-        }
-    }
-    if let rc = metadata["RegionCount"] {
-        if let v = rc as? Int32 {
-            regionCount = v
-        } else if let v = rc as? Int {
-            regionCount = Int32(v)
-        }
-    }
+    let totalVolume = Int32(metadata?["TotalVolume"]?.int64Value ?? 0)
+    let totalBlocks = Int32(metadata?["TotalBlocks"]?.int64Value ?? 0)
+    let regionCount = Int32(metadata?["RegionCount"]?.int64Value ?? 0)
     return LitematicMetadata(
         name: name,
         author: author,
