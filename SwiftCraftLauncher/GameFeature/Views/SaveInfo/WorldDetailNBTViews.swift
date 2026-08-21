@@ -6,10 +6,11 @@
 //
 
 // A recursive tree view for displaying NBT data structures.
+import SwiftNBT
 import SwiftUI
 
 struct NBTStructureView: View {
-    let data: [String: Any]
+    let data: NBTCompound
     @State private var expandedKeys: Set<String> = []
 
     var body: some View {
@@ -30,16 +31,16 @@ struct NBTStructureView: View {
     }
 }
 
-/// A single NBT entry that renders as a disclosure group for compounds and arrays, or a value row for primitives.
+/// A single NBT entry that renders as a disclosure group for compounds and lists, or a value row for scalars and arrays.
 private struct NBTEntryView: View {
     let key: String
-    let value: Any
+    let value: NBTValue
     @Binding var expandedKeys: Set<String>
     let indentLevel: Int
     let fullKey: String
     @State private var isHovered = false
 
-    init(key: String, value: Any, expandedKeys: Binding<Set<String>>, indentLevel: Int, fullKey: String? = nil) {
+    init(key: String, value: NBTValue, expandedKeys: Binding<Set<String>>, indentLevel: Int, fullKey: String? = nil) {
         self.key = key
         self.value = value
         _expandedKeys = expandedKeys
@@ -49,22 +50,16 @@ private struct NBTEntryView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if let dict = value as? [String: Any] {
+            switch value {
+            case let .compound(dict):
                 NBTDisclosureButton(
                     isExpanded: expandedKeys.contains(fullKey),
                     label: key,
                     suffix: "{\(dict.count)}",
                     indentLevel: indentLevel,
                     isHovered: $isHovered,
-                ) {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        if expandedKeys.contains(fullKey) {
-                            expandedKeys.remove(fullKey)
-                        } else {
-                            expandedKeys.insert(fullKey)
-                        }
-                    }
-                }
+                    action: toggleExpansion,
+                )
 
                 if expandedKeys.contains(fullKey) {
                     ForEach(Array(dict.keys.sorted()), id: \.self) { subKey in
@@ -79,92 +74,50 @@ private struct NBTEntryView: View {
                         }
                     }
                 }
-            } else if let array = value as? [Any] {
+            case let .list(items):
                 NBTDisclosureButton(
                     isExpanded: expandedKeys.contains(fullKey),
                     label: key,
-                    suffix: "[\(array.count)]",
+                    suffix: "[\(items.count)]",
                     indentLevel: indentLevel,
                     isHovered: $isHovered,
-                ) {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        if expandedKeys.contains(fullKey) {
-                            expandedKeys.remove(fullKey)
-                        } else {
-                            expandedKeys.insert(fullKey)
-                        }
-                    }
-                }
+                    action: toggleExpansion,
+                )
 
                 if expandedKeys.contains(fullKey) {
-                    ForEach(Array(array.enumerated()), id: \.offset) { index, item in
-                        let arrayItemKey = "\(fullKey)[\(index)]"
-                        if let itemDict = item as? [String: Any] {
-                            Self(
-                                key: "[\(index)]",
-                                value: itemDict,
-                                expandedKeys: $expandedKeys,
-                                indentLevel: indentLevel + 1,
-                                fullKey: arrayItemKey,
-                            )
-                        } else {
-                            NBTValueRow(
-                                label: "[\(index)]",
-                                value: formatNBTValue(item),
-                                indentLevel: indentLevel + 1,
-                            )
-                        }
+                    ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+                        Self(
+                            key: "[\(index)]",
+                            value: item,
+                            expandedKeys: $expandedKeys,
+                            indentLevel: indentLevel + 1,
+                            fullKey: "\(fullKey)[\(index)]",
+                        )
                     }
                 }
-            } else {
+            case .byte, .short, .int, .long, .float, .double, .string,
+                 .byteArray, .intArray, .longArray:
                 NBTValueRow(
                     label: key,
-                    value: formatNBTValue(value),
+                    value: value.description,
                     indentLevel: indentLevel,
                 )
             }
         }
     }
 
-    private func formatNBTValue(_ value: Any) -> String {
-        if let v = value as? String {
-            return "\"\(v)\""
+    private func toggleExpansion() {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            if expandedKeys.contains(fullKey) {
+                expandedKeys.remove(fullKey)
+            } else {
+                expandedKeys.insert(fullKey)
+            }
         }
-        if let v = value as? Bool {
-            return v ? "true" : "false"
-        }
-        if let v = value as? Int8 {
-            return "\(v)b"
-        }
-        if let v = value as? Int16 {
-            return "\(v)s"
-        }
-        if let v = value as? Int32 {
-            return "\(v)"
-        }
-        if let v = value as? Int64 {
-            return "\(v)L"
-        }
-        if let v = value as? Int {
-            return "\(v)"
-        }
-        if let v = value as? Double {
-            return "\(v)d"
-        }
-        if let v = value as? Float {
-            return "\(v)f"
-        }
-        if let v = value as? Data {
-            return "Data(\(v.count) bytes)"
-        }
-        if let v = value as? URL {
-            return v.path
-        }
-        return String(describing: value)
     }
 }
 
-/// A disclosure button styled for macOS, used to expand or collapse NBT compound and array entries.
+/// A disclosure button styled for macOS, used to expand or collapse NBT compound and list entries.
 private struct NBTDisclosureButton: View {
     let isExpanded: Bool
     let label: String

@@ -6,67 +6,28 @@
 //
 
 @testable import SwiftCraftLauncher
+import SwiftNBT
 import XCTest
 
 final class WorldNBTMapperExtendedTests: XCTestCase {
-    func testReadInt64_int64() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(Int64(42)), 42)
+    func testReadBoolFlag_byteTrue() {
+        XCTAssertTrue(WorldNBTMapper.readBoolFlag(.byte(1)))
     }
 
-    func testReadInt64_int() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(Int(42)), 42)
-    }
-
-    func testReadInt64_int32() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(Int32(42)), 42)
-    }
-
-    func testReadInt64_int16() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(Int16(42)), 42)
-    }
-
-    func testReadInt64_int8() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(Int8(42)), 42)
-    }
-
-    func testReadInt64_uint64() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(UInt64(42)), 42)
-    }
-
-    func testReadInt64_uint32() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(UInt32(42)), 42)
-    }
-
-    func testReadInt64_uint16() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(UInt16(42)), 42)
-    }
-
-    func testReadInt64_uint8() {
-        XCTAssertEqual(WorldNBTMapper.readInt64(UInt8(42)), 42)
-    }
-
-    func testReadInt64_nil() {
-        XCTAssertNil(WorldNBTMapper.readInt64(nil))
-    }
-
-    func testReadInt64_string() {
-        XCTAssertNil(WorldNBTMapper.readInt64("not a number"))
-    }
-
-    func testReadBoolFlag_boolTrue() {
-        XCTAssertTrue(WorldNBTMapper.readBoolFlag(true))
-    }
-
-    func testReadBoolFlag_boolFalse() {
-        XCTAssertFalse(WorldNBTMapper.readBoolFlag(false))
+    func testReadBoolFlag_byteFalse() {
+        XCTAssertFalse(WorldNBTMapper.readBoolFlag(.byte(0)))
     }
 
     func testReadBoolFlag_intNonZero() {
-        XCTAssertTrue(WorldNBTMapper.readBoolFlag(1))
+        XCTAssertTrue(WorldNBTMapper.readBoolFlag(.int(1)))
     }
 
     func testReadBoolFlag_intZero() {
-        XCTAssertFalse(WorldNBTMapper.readBoolFlag(0))
+        XCTAssertFalse(WorldNBTMapper.readBoolFlag(.int(0)))
+    }
+
+    func testReadBoolFlag_longNegative() {
+        XCTAssertTrue(WorldNBTMapper.readBoolFlag(.long(-1)))
     }
 
     func testReadBoolFlag_nil() {
@@ -74,7 +35,7 @@ final class WorldNBTMapperExtendedTests: XCTestCase {
     }
 
     func testReadBoolFlag_string() {
-        XCTAssertFalse(WorldNBTMapper.readBoolFlag("not a bool"))
+        XCTAssertFalse(WorldNBTMapper.readBoolFlag(.string("not a bool")))
     }
 
     func testMapGameMode_survival() {
@@ -158,29 +119,35 @@ final class WorldNBTMapperExtendedTests: XCTestCase {
     }
 
     func testReadSeed_randomSeed() {
-        let dataTag: [String: Any] = ["RandomSeed": Int64(12345)]
+        let dataTag: NBTCompound = ["RandomSeed": .long(12345)]
         let seed = WorldNBTMapper.readSeed(from: dataTag, worldPath: nil)
         XCTAssertEqual(seed, 12345)
     }
 
     func testReadSeed_worldGenSettings() {
-        let dataTag: [String: Any] = [
-            "WorldGenSettings": ["seed": Int64(67890)],
+        let dataTag: NBTCompound = [
+            "WorldGenSettings": .compound(["seed": .long(67890)]),
         ]
         let seed = WorldNBTMapper.readSeed(from: dataTag, worldPath: nil)
         XCTAssertEqual(seed, 67890)
     }
 
     func testReadSeed_worldGenSettings_lowercase() {
-        let dataTag: [String: Any] = [
-            "worldGenSettings": ["seed": Int64(11111)],
+        let dataTag: NBTCompound = [
+            "worldGenSettings": .compound(["seed": .long(11111)]),
         ]
         let seed = WorldNBTMapper.readSeed(from: dataTag, worldPath: nil)
         XCTAssertEqual(seed, 11111)
     }
 
+    func testReadSeed_intValue() {
+        let dataTag: NBTCompound = ["RandomSeed": .int(42)]
+        let seed = WorldNBTMapper.readSeed(from: dataTag, worldPath: nil)
+        XCTAssertEqual(seed, 42)
+    }
+
     func testReadSeed_noSeed() {
-        let dataTag: [String: Any] = ["other": "value"]
+        let dataTag: NBTCompound = ["other": .string("value")]
         let seed = WorldNBTMapper.readSeed(from: dataTag, worldPath: nil)
         XCTAssertNil(seed)
     }

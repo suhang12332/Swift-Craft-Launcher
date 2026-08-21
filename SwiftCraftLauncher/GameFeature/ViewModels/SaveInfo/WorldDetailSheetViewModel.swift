@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftNBT
 
 /// View model for the world detail sheet, parsing NBT data from level.dat to display world metadata.
 @MainActor
@@ -20,7 +21,7 @@ final class WorldDetailSheetViewModel {
     let gameName: String
 
     var metadata: WorldDetailMetadata?
-    var rawDataTag: [String: Any]?
+    var rawDataTag: NBTCompound?
     var isLoading: Bool = false
     var showRawData: Bool = false
 
@@ -33,7 +34,7 @@ final class WorldDetailSheetViewModel {
         metadata?.seed
     }
 
-    var filteredRawData: [String: Any]? {
+    var filteredRawData: NBTCompound? {
         guard let raw = rawDataTag else { return nil }
 
         let displayedKeys: Set = [
@@ -58,24 +59,22 @@ final class WorldDetailSheetViewModel {
                 .appendingPathComponent("world_gen_settings.dat")
             let pathForBackground = levelDatPath
 
-            let (dataTag, seedOverride): ([String: Any], Int64?) = try {
+            let (dataTag, seedOverride): (NBTCompound, Int64?) = try {
                 guard FileManager.default.fileExists(atPath: pathForBackground.path) else {
                     throw LoadError.levelDatNotFound
                 }
                 let data = try Data(contentsOf: pathForBackground)
-                let parser = NBTParser(data: data)
-                let nbtData = try parser.parse()
-                guard let tag = nbtData["Data"] as? [String: Any] else {
+                let document = try NBTDecoder().decode(data)
+                guard let tag = document.root["Data"]?.compoundValue else {
                     throw LoadError.invalidStructure
                 }
 
                 var seed: Int64?
                 if FileManager.default.fileExists(atPath: worldGenSettingsPath.path) {
                     let wgsData = try Data(contentsOf: worldGenSettingsPath)
-                    let wgsParser = NBTParser(data: wgsData)
-                    let wgsNBT = try wgsParser.parse()
-                    if let dataTag = wgsNBT["data"] as? [String: Any],
-                       let s = WorldNBTMapper.readInt64(dataTag["seed"]) {
+                    let wgsDocument = try NBTDecoder().decode(wgsData)
+                    if let dataTag = wgsDocument.root["data"]?.compoundValue,
+                       let s = dataTag["seed"]?.int64Value {
                         seed = s
                     }
                 }
@@ -113,33 +112,33 @@ final class WorldDetailSheetViewModel {
     }
 
     private func parseWorldDetail(
-        from dataTag: [String: Any],
+        from dataTag: NBTCompound,
         folderName: String,
         path: URL,
         seedOverride: Int64?,
     ) -> WorldDetailMetadata {
-        let levelName = (dataTag["LevelName"] as? String) ?? folderName
+        let levelName = dataTag["LevelName"]?.stringValue ?? folderName
 
         var lastPlayedDate: Date?
-        if let ts = WorldNBTMapper.readInt64(dataTag["LastPlayed"]) {
+        if let ts = dataTag["LastPlayed"]?.int64Value {
             lastPlayedDate = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
         }
 
         var gameMode = "common.unknown".localized()
-        if let gt = WorldNBTMapper.readInt64(dataTag["GameType"]) {
+        if let gt = dataTag["GameType"]?.int64Value {
             gameMode = WorldNBTMapper.mapGameMode(Int(gt))
         }
 
         var difficulty = "common.unknown".localized()
-        if let diff = WorldNBTMapper.readInt64(dataTag["Difficulty"]) {
+        if let diff = dataTag["Difficulty"]?.int64Value {
             difficulty = WorldNBTMapper.mapDifficulty(Int(diff))
-        } else if let ds = dataTag["difficulty_settings"] as? [String: Any],
-                  let diffStr = ds["difficulty"] as? String {
+        } else if let ds = dataTag["difficulty_settings"]?.compoundValue,
+                  let diffStr = ds["difficulty"]?.stringValue {
             difficulty = WorldNBTMapper.mapDifficultyString(diffStr)
         }
 
         let hardcore: Bool = {
-            if let ds = dataTag["difficulty_settings"] as? [String: Any] {
+            if let ds = dataTag["difficulty_settings"]?.compoundValue {
                 return WorldNBTMapper.readBoolFlag(ds["hardcore"])
             }
             return WorldNBTMapper.readBoolFlag(dataTag["hardcore"])
@@ -148,20 +147,16 @@ final class WorldDetailSheetViewModel {
 
         var versionName: String?
         var versionId: Int?
-        if let versionTag = dataTag["Version"] as? [String: Any] {
-            versionName = versionTag["Name"] as? String
-            if let id = versionTag["Id"] as? Int {
-                versionId = id
-            } else if let id32 = versionTag["Id"] as? Int32 {
-                versionId = Int(id32)
+        if let versionTag = dataTag["Version"]?.compoundValue {
+            versionName = versionTag["Name"]?.stringValue
+            if let id = versionTag["Id"]?.int64Value {
+                versionId = Int(id)
             }
         }
 
         var dataVersion: Int?
-        if let dv = dataTag["DataVersion"] as? Int {
-            dataVersion = dv
-        } else if let dv32 = dataTag["DataVersion"] as? Int32 {
-            dataVersion = Int(dv32)
+        if let dv = dataTag["DataVersion"]?.int64Value {
+            dataVersion = Int(dv)
         }
 
         var seed: Int64? = seedOverride
@@ -170,25 +165,25 @@ final class WorldDetailSheetViewModel {
         }
 
         var spawn: String?
-        if let x = WorldNBTMapper.readInt64(dataTag["SpawnX"]),
-           let y = WorldNBTMapper.readInt64(dataTag["SpawnY"]),
-           let z = WorldNBTMapper.readInt64(dataTag["SpawnZ"]) {
+        if let x = dataTag["SpawnX"]?.int64Value,
+           let y = dataTag["SpawnY"]?.int64Value,
+           let z = dataTag["SpawnZ"]?.int64Value {
             spawn = "\(x), \(y), \(z)"
-        } else if let spawnTag = dataTag["spawn"] as? [String: Any],
-                  let pos = spawnTag["pos"] as? [Any],
+        } else if let spawnTag = dataTag["spawn"]?.compoundValue,
+                  let pos = spawnTag["pos"]?.listValue,
                   pos.count >= 3,
-                  let x = WorldNBTMapper.readInt64(pos[0]),
-                  let y = WorldNBTMapper.readInt64(pos[1]),
-                  let z = WorldNBTMapper.readInt64(pos[2]) {
-            if let dim = spawnTag["dimension"] as? String, !dim.isEmpty {
+                  let x = pos[0].int64Value,
+                  let y = pos[1].int64Value,
+                  let z = pos[2].int64Value {
+            if let dim = spawnTag["dimension"]?.stringValue, !dim.isEmpty {
                 spawn = "\(x), \(y), \(z) (\(dim))"
             } else {
                 spawn = "\(x), \(y), \(z)"
             }
         }
 
-        let time = WorldNBTMapper.readInt64(dataTag["Time"])
-        let dayTime = WorldNBTMapper.readInt64(dataTag["DayTime"])
+        let time = dataTag["Time"]?.int64Value
+        let dayTime = dataTag["DayTime"]?.int64Value
 
         var weather: String?
         if let rainingFlag = dataTag["raining"] {
@@ -204,13 +199,13 @@ final class WorldDetailSheetViewModel {
         }
 
         var worldBorder: String?
-        if let wb = dataTag["WorldBorder"] as? [String: Any] {
-            worldBorder = flattenNBTDictionary(wb, prefix: "").map { "\($0.key)=\($0.value)" }.sorted().joined(separator: ", ")
+        if let wb = dataTag["WorldBorder"]?.compoundValue {
+            worldBorder = WorldNBTMapper.flattenCompound(wb).map { "\($0.key)=\($0.value)" }.sorted().joined(separator: ", ")
         }
 
         var gameRules: [String]?
-        if let gr = dataTag["GameRules"] as? [String: Any] {
-            gameRules = flattenNBTDictionary(gr, prefix: "").map { "\($0.key)=\($0.value)" }.sorted()
+        if let gr = dataTag["GameRules"]?.compoundValue {
+            gameRules = WorldNBTMapper.flattenCompound(gr).map { "\($0.key)=\($0.value)" }.sorted()
         }
 
         return WorldDetailMetadata(
@@ -233,58 +228,5 @@ final class WorldDetailSheetViewModel {
             worldBorder: worldBorder,
             gameRules: gameRules,
         )
-    }
-
-    private func flattenNBTDictionary(_ dict: [String: Any], prefix: String = "") -> [String: String] {
-        var result: [String: String] = [:]
-        for (k, v) in dict {
-            let key = prefix.isEmpty ? k : "\(prefix).\(k)"
-            if let sub = v as? [String: Any] {
-                let nested = flattenNBTDictionary(sub, prefix: key)
-                for (nk, nv) in nested { result[nk] = nv }
-            } else if let arr = v as? [Any] {
-                result[key] = arr.map { stringifyNBTValue($0) }.joined(separator: ", ")
-            } else {
-                result[key] = stringifyNBTValue(v)
-            }
-        }
-        return result
-    }
-
-    private func stringifyNBTValue(_ value: Any) -> String {
-        if let v = value as? String {
-            return v
-        }
-        if let v = value as? Bool {
-            return v ? "true" : "false"
-        }
-        if let v = value as? Int8 {
-            return "\(v)"
-        }
-        if let v = value as? Int16 {
-            return "\(v)"
-        }
-        if let v = value as? Int32 {
-            return "\(v)"
-        }
-        if let v = value as? Int64 {
-            return "\(v)"
-        }
-        if let v = value as? Int {
-            return "\(v)"
-        }
-        if let v = value as? Double {
-            return "\(v)"
-        }
-        if let v = value as? Float {
-            return "\(v)"
-        }
-        if let v = value as? Data {
-            return "Data(\(v.count) bytes)"
-        }
-        if let v = value as? URL {
-            return v.path
-        }
-        return String(describing: value)
     }
 }

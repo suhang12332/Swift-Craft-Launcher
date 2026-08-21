@@ -6,51 +6,13 @@
 //
 
 import Foundation
+import SwiftNBT
 
 /// NBT parsing utilities for Minecraft world save files (level.dat, world_gen_settings.dat, and others).
 enum WorldNBTMapper {
-    /// Attempts to convert any NBT numeric type to an `Int64`, supporting Int, Int8, Int16, Int32, UInt, and other variants.
-    static func readInt64(_ any: Any?) -> Int64? {
-        if let v = any as? Int64 {
-            return v
-        }
-        if let v = any as? Int {
-            return Int64(v)
-        }
-        if let v = any as? Int32 {
-            return Int64(v)
-        }
-        if let v = any as? Int16 {
-            return Int64(v)
-        }
-        if let v = any as? Int8 {
-            return Int64(v)
-        }
-        if let v = any as? UInt64 {
-            return Int64(v)
-        }
-        if let v = any as? UInt32 {
-            return Int64(v)
-        }
-        if let v = any as? UInt16 {
-            return Int64(v)
-        }
-        if let v = any as? UInt8 {
-            return Int64(v)
-        }
-        return nil
-    }
-
-    /// Converts an NBT numeric or boolean value to a `Bool` (non-zero is `true`), returning `false` if parsing fails.
-    static func readBoolFlag(_ any: Any?) -> Bool {
-        guard let any else { return false }
-        if let b = any as? Bool {
-            return b
-        }
-        if let v = readInt64(any) {
-            return v != 0
-        }
-        return false
+    /// Reads an NBT integer value as a `Bool`, where any non-zero value is `true`.
+    static func readBoolFlag(_ value: NBTValue?) -> Bool {
+        value?.boolValue ?? false
     }
 
     /// Returns a localized game mode string for the given integer value.
@@ -86,20 +48,18 @@ enum WorldNBTMapper {
         }
     }
 
-    /// Reads the seed from a level.dat Data tag and an optional world path.
+    /// Reads the seed from a level.dat Data compound and an optional world path.
     /// - Priority: RandomSeed, then WorldGenSettings/worldGenSettings.seed,
     ///   then (if `worldPath` is provided) data/minecraft/world_gen_settings.dat -> data.seed.
-    static func readSeed(from dataTag: [String: Any], worldPath: URL?) -> Int64? {
-        if let seed = readInt64(dataTag["RandomSeed"]) {
+    static func readSeed(from dataTag: NBTCompound, worldPath: URL?) -> Int64? {
+        if let seed = dataTag["RandomSeed"]?.int64Value {
             return seed
         }
 
-        if let worldGenSettings = dataTag["WorldGenSettings"] as? [String: Any],
-           let seed = readInt64(worldGenSettings["seed"]) {
+        if let seed = dataTag["WorldGenSettings"]?.compoundValue?["seed"]?.int64Value {
             return seed
         }
-        if let worldGenSettings = dataTag["worldGenSettings"] as? [String: Any],
-           let seed = readInt64(worldGenSettings["seed"]) {
+        if let seed = dataTag["worldGenSettings"]?.compoundValue?["seed"]?.int64Value {
             return seed
         }
 
@@ -117,10 +77,9 @@ enum WorldNBTMapper {
         guard fm.fileExists(atPath: wgsPath.path) else { return nil }
         do {
             let raw = try Data(contentsOf: wgsPath)
-            let parser = NBTParser(data: raw)
-            let nbt = try parser.parse()
-            if let dataTag = nbt["data"] as? [String: Any],
-               let seed = readInt64(dataTag["seed"]) {
+            let document = try NBTDecoder().decode(raw)
+            if let dataTag = document.root["data"]?.compoundValue,
+               let seed = dataTag["seed"]?.int64Value {
                 return seed
             }
             return nil
@@ -128,5 +87,30 @@ enum WorldNBTMapper {
             AppLog.game.error("Failed to read world_gen_settings.dat: \(error.localizedDescription)")
             return nil
         }
+    }
+
+    /// Recursively flattens a compound into a `key=value` dictionary for display purposes.
+    static func flattenCompound(_ dict: NBTCompound, prefix: String = "") -> [String: String] {
+        var result: [String: String] = [:]
+        for (key, value) in dict {
+            let fullKey = prefix.isEmpty ? key : "\(prefix).\(key)"
+            if let sub = value.compoundValue {
+                let nested = flattenCompound(sub, prefix: fullKey)
+                for (nestedKey, nestedValue) in nested {
+                    result[nestedKey] = nestedValue
+                }
+            } else if let list = value.listValue {
+                result[fullKey] = list.map(\.description).joined(separator: ", ")
+            } else if let bytes = value.byteArrayValue {
+                result[fullKey] = bytes.map(String.init).joined(separator: ", ")
+            } else if let ints = value.intArrayValue {
+                result[fullKey] = ints.map(String.init).joined(separator: ", ")
+            } else if let longs = value.longArrayValue {
+                result[fullKey] = longs.map(String.init).joined(separator: ", ")
+            } else {
+                result[fullKey] = value.description
+            }
+        }
+        return result
     }
 }
