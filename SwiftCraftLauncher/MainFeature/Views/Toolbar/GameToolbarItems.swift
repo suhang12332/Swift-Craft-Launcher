@@ -29,8 +29,10 @@ struct GameToolbarItems: View {
             ResourceFilterMenus.favoritesFilterButton(filterState: filterState)
                 .id(controlActiveState)
         } else {
-            ResourceFilterMenus.localResourceFilterMenu(filterState: filterState)
-                .id(controlActiveState)
+            if game.modLoader != GameLoader.vanilla.displayName {
+                ResourceFilterMenus.localResourceFilterMenu(filterState: filterState)
+                    .id(controlActiveState)
+            }
         }
 
         Spacer()
