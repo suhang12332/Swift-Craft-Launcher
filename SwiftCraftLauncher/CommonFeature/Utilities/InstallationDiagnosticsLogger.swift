@@ -15,22 +15,26 @@ final class InstallationDiagnosticsLogger: @unchecked Sendable {
     private let lock = NSLock()
     private var logURLs: [UUID: URL] = [:]
     private let dateFormatter: ISO8601DateFormatter
+    private let filenameFormatter: DateFormatter
 
     init(directory: URL) {
         self.directory = directory
         dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        filenameFormatter = DateFormatter()
+        filenameFormatter.locale = Locale(identifier: "en_US_POSIX")
+        filenameFormatter.dateFormat = "yyyyMMdd-HHmmss"
     }
 
     @discardableResult
     func begin(gameName: String, version: String, modLoader: String) -> UUID {
         let id = UUID()
-        let timestamp = filenameTimestamp()
-        let name = sanitize(timestamp + "-" + gameName + "-" + version + "-" + modLoader)
-        let url = directory.appendingPathComponent("installation-" + name + "-" + id.uuidString + ".log")
 
         lock.lock()
         defer { lock.unlock() }
+        let timestamp = filenameTimestamp()
+        let name = sanitize(timestamp + "-" + gameName + "-" + version + "-" + modLoader)
+        let url = directory.appendingPathComponent("installation-" + name + "-" + id.uuidString + ".log")
         do {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             try Data().write(to: url, options: .atomic)
@@ -70,10 +74,7 @@ final class InstallationDiagnosticsLogger: @unchecked Sendable {
     }
 
     private func filenameTimestamp() -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyyMMdd-HHmmss"
-        return formatter.string(from: Date())
+        filenameFormatter.string(from: Date())
     }
 
     private func sanitize(_ value: String) -> String {

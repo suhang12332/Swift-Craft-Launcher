@@ -58,24 +58,24 @@ final class ModPackURLDownloadViewModel {
                 ) { [weak self] downloaded, total in
                     guard let self else { return }
                     Task { @MainActor in
-                        self.downloadProgress = downloaded
+                        downloadProgress = downloaded
                         if total > 0 {
-                            self.downloadTotalSize = total
+                            downloadTotalSize = total
                         }
                     }
                 }
 
                 guard !Task.isCancelled else { return }
-                self.isDownloading = false
+                isDownloading = false
                 onComplete(savePath)
             } catch {
                 guard !Task.isCancelled else { return }
-                self.isDownloading = false
+                isDownloading = false
                 if let urlError = error as? URLError, urlError.code == .cancelled {
                     return
                 }
                 let globalError = GlobalError.from(error)
-                self.errorMessage = globalError.localizedDescription
+                errorMessage = globalError.localizedDescription
                 DIContainer.shared.core.errorHandler.handle(globalError)
                 onFailure()
             }
