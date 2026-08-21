@@ -129,20 +129,7 @@ private struct NBTEntryView: View {
     }
 
     private func formatNBTValue(_ value: NBTValue) -> String {
-        switch value {
-        case let .byte(v): "\(v)b"
-        case let .short(v): "\(v)s"
-        case let .int(v): "\(v)"
-        case let .long(v): "\(v)L"
-        case let .float(v): "\(v)f"
-        case let .double(v): "\(v)d"
-        case let .byteArray(v): "ByteArray(\(v.count) bytes)"
-        case let .string(v): "\"\(v)\""
-        case let .list(v): "List(\(v.count))"
-        case let .compound(v): "Compound(\(v.count))"
-        case let .intArray(v): "IntArray(\(v.count))"
-        case let .longArray(v): "LongArray(\(v.count))"
-        }
+        String(describing: value)
     }
 }
 
