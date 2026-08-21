@@ -24,10 +24,6 @@ enum MemoryPressureChoice: AlertChoice {
 final class MemoryPressureAlertPresenter: AlertPresenter<MemoryPressureChoice> {
     private(set) var pressureLevel: MemoryPressureLevel = .normal
 
-    override func requestUserChoice() async -> MemoryPressureChoice {
-        await super.requestUserChoice()
-    }
-
     func requestUserChoice(for level: MemoryPressureLevel) async -> MemoryPressureChoice {
         pressureLevel = level
         return await requestUserChoice()
