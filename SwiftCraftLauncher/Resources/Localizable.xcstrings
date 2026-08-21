@@ -10454,7 +10454,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请点击“前往创建”按钮来创建游戏档案"
+            "value" : "请点击「前往创建」按钮来创建游戏档案"
           }
         },
         "zh-Hant" : {
@@ -48065,6 +48065,143 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在驗證賬戶信息"
+          }
+        }
+      }
+    },
+    "minecraft.auth.purchase_minecraft_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى النقر على زر \"اذهب للشراء\" لشراء Minecraft"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klik på knappen \"Gå til køb\" for at købe Minecraft"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bitte klicken Sie auf die Schaltfläche \"Zum Kauf\" um Minecraft zu kaufen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please click the \"Go to Purchase\" button to purchase Minecraft"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haga clic en el botón \"Ir a comprar\" para comprar Minecraft"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klikkaa \"Siirry ostoon\"-painiketta ostaaaksesi Minecraftin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Veuillez cliquer sur le bouton \"Aller à l'achat\" pour acheter Minecraft"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft खरीदने के लिए कृपया \"खरीदारी पर जाएं\" बटन पर क्लिक करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fare clic sul pulsante \"Vai all'acquisto\" per acquistare Minecraft"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraftを購入するには「購入へ進む」ボタンをクリックしてください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft를 구매하려면 \"구매로 이동\" 버튼을 클릭하세요"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klikk på \"Gå til kjøp\"-knappen for å kjøpe Minecraft"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klik op de knop \"Ga naar aankoop\" om Minecraft te kopen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kliknij przycisk \"Przejdź do zakupu\", aby kupić Minecraft"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clique no botão \"Ir para a compra\" para comprar o Minecraft"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пожалуйста, нажмите кнопку \"Перейти к покупке\", чтобы купить Minecraft"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klicka på \"Gå till köp\"-knappen för att köpa Minecraft"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กรุณาคลิกปุ่ม \"ไปที่หน้าซื้อ\" เพื่อซื้อ Minecraft"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft satın almak için lütfen \"Satın Almaya Git\" düğmesine tıklayın"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vui lòng nhấp vào nút \"Đi đến mua hàng\" để mua Minecraft"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请点击「前往购买」按钮来购买Minecraft"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請點擊「前往購買」按鈕來購買Minecraft"
           }
         }
       }

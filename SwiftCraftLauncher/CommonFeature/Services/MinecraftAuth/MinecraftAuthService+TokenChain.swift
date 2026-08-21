@@ -180,6 +180,7 @@ extension MinecraftAuthService {
                     message: "Minecraft access token rejected (HTTP 401) when checking entitlements at \(url)",
                 )
             case 403:
+                authenticationIssue = .notPurchased
                 throw GlobalError.authentication(
                     i18nKey: "error.authentication.minecraft_not_purchased",
                     level: .popup,
@@ -234,22 +235,18 @@ extension MinecraftAuthService {
         let data: Data
         do {
             data = try await APIClient.get(url: url, headers: headers)
-        } catch let error as GlobalError where error.statusCode == 404 {
-            let licenseData = try await APIClient.get(
-                url: URLConfig.API.Authentication.minecraftLicense,
-                headers: headers,
-            )
-            let license = try JSONDecoder().decode(MinecraftLicenseResponse.self, from: licenseData)
-            let hasMinecraftLicense = license.items.contains {
-                $0.name == MinecraftEntitlement.gameMinecraft.rawValue
+        } catch {
+            switch error {
+            case let error as GlobalError where error.statusCode == 404:
+                authenticationIssue = .profileMissing
+                throw GlobalError.authentication(
+                    i18nKey: "error.authentication.minecraft_profile_missing",
+                    level: .popup,
+                    message: "Minecraft profile lookup returned 404",
+                )
+            default:
+                throw error
             }
-            throw GlobalError.authentication(
-                i18nKey: hasMinecraftLicense
-                    ? "error.authentication.minecraft_profile_missing"
-                    : "error.authentication.minecraft_not_purchased",
-                level: .popup,
-                message: "Minecraft profile lookup returned 404; licensePresent=\(hasMinecraftLicense)",
-            )
         }
 
         do {

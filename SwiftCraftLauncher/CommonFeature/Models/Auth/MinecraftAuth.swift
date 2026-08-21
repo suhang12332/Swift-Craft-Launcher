@@ -118,10 +118,6 @@ struct MinecraftEntitlementsResponse: Codable {
     let keyId: String
 }
 
-struct MinecraftLicenseResponse: Codable {
-    let items: [EntitlementItem]
-}
-
 struct EntitlementItem: Codable {
     let name: String
     let signature: String
@@ -151,6 +147,23 @@ enum MinecraftAuthenticationIssue: Equatable {
             URLConfig.Store.minecraftProfileCreation
         case .notPurchased:
             URLConfig.Store.minecraftPurchase
+        }
+    }
+
+    var errorInfo: String {
+        switch self {
+        case.profileMissing:
+            "minecraft.auth.create_profile_message"
+        case .notPurchased:
+            "minecraft.auth.purchase_minecraft_message"
+        }
+    }
+    var buttonInfo: String {
+        switch self {
+        case.profileMissing:
+            "minecraft.auth.create_profile"
+        case .notPurchased:
+            "addplayer.purchase.minecraft"
         }
     }
 }

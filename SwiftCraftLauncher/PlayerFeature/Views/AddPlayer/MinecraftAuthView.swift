@@ -141,41 +141,30 @@ struct MinecraftAuthView: View {
     }
 
     private func errorView(message: String) -> some View {
-        let isProfileMissing = container.system.minecraftAuthService.authenticationIssue == .profileMissing
-        let statusColor: Color = isProfileMissing ? .yellow : .red
-
-        return VStack(spacing: 16) {
-            if isProfileMissing {
-                Image(systemName: "person.crop.circle.badge.exclamationmark")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                    .symbolRenderingMode(.multicolor)
-                    .symbolVariant(.none)
-            } else {
-                Image(systemName: "exclamationmark.triangle")
-                    .font(.system(size: 60))
-                    .foregroundColor(statusColor)
-            }
+        VStack(spacing: 16) {
+            Image(systemName: "person.crop.circle.badge.exclamationmark")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+                .symbolRenderingMode(.multicolor)
+                .symbolVariant(.none)
 
             Text("minecraft.auth.failed".localized())
                 .font(.headline)
-                .foregroundColor(statusColor)
+                .foregroundColor(.red)
 
             Text(message)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
 
-            let issue = container.system.minecraftAuthService.authenticationIssue
+            let message = container.system.minecraftAuthService.authenticationIssue?
+                .errorInfo
+                .localized() ?? "minecraft.auth.retry_message".localized()
 
-            Text(
-                issue == .profileMissing
-                    ? "minecraft.auth.create_profile_message".localized()
-                    : "minecraft.auth.retry_message".localized(),
-            )
-            .font(.caption)
-            .foregroundColor(isProfileMissing ? .red : .secondary)
-            .multilineTextAlignment(.center)
+            Text(message)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
         }
     }
 }

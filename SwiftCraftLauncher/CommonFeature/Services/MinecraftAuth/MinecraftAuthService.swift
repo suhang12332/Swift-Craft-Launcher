@@ -142,11 +142,6 @@ final class MinecraftAuthService: @unchecked Sendable {
         } catch {
             let globalError = GlobalError.from(error)
             AppLog.common.error("Minecraft authentication failed: \(globalError.localizedDescription)")
-            authenticationIssue = switch globalError.i18nKey {
-            case "error.authentication.minecraft_profile_missing": .profileMissing
-            case "error.authentication.minecraft_not_purchased": .notPurchased
-            default: nil
-            }
             isLoading = false
             authState = .error(globalError.localizedDescription)
         }

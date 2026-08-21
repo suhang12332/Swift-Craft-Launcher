@@ -149,21 +149,6 @@ final class MinecraftAuthExtendedTests: XCTestCase {
         XCTAssertNil(decoded.capes)
     }
 
-    func testMinecraftLicenseResponse_codable_detectsGameLicense() throws {
-        let json = Data("""
-        {
-            "items": [
-                {"name": "product_minecraft", "signature": "signature-1"},
-                {"name": "game_minecraft", "signature": "signature-2"}
-            ]
-        }
-        """.utf8)
-
-        let decoded = try JSONDecoder().decode(MinecraftLicenseResponse.self, from: json)
-
-        XCTAssertTrue(decoded.items.contains { $0.name == MinecraftEntitlement.gameMinecraft.rawValue })
-    }
-
     func testMinecraftProfileResponse_init_directValues() {
         let skins = [Skin(state: "ACTIVE", url: "url", variant: "classic")]
         let capes = [Cape(id: "c1", state: "ACTIVE", url: "cape-url", alias: nil)]
