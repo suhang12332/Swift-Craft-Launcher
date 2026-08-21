@@ -15,6 +15,7 @@ import SwiftUI
 final class MinecraftAuthService: @unchecked Sendable {
     var authState: AuthenticationState = .idle
     var isLoading: Bool = false
+    var authenticationIssue: MinecraftAuthenticationIssue?
 
     let clientId = AppConstants.minecraftClientId
     let scope = AppConstants.minecraftScope
@@ -29,6 +30,7 @@ final class MinecraftAuthService: @unchecked Sendable {
         webAuthenticator.cancel()
 
         isLoading = true
+        authenticationIssue = nil
         authState = .waitingForBrowser
 
         guard let authURL = buildAuthorizationURL() else {
@@ -148,6 +150,7 @@ final class MinecraftAuthService: @unchecked Sendable {
     @MainActor
     func logout() {
         authState = .idle
+        authenticationIssue = nil
         webAuthenticator.cancel()
         isLoading = false
     }

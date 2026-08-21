@@ -21,12 +21,12 @@ private func delayedDismiss(_ binding: Binding<Bool>, execute work: @escaping @M
 struct AddGameToolbarButton: View {
     let currentPlayer: Player?
     @State private var showForm = false
-    @State private var showNoPlayerAlert = false
+    @State private var activeAlert: ResourceButtonAlertType?
 
     var body: some View {
         Button {
             if currentPlayer == nil {
-                showNoPlayerAlert = true
+                activeAlert = .noPlayer
             } else {
                 showForm.toggle()
             }
@@ -38,13 +38,7 @@ struct AddGameToolbarButton: View {
             GameFormView()
                 .presentationBackgroundInteraction(.automatic)
         }
-        .alert(isPresented: $showNoPlayerAlert) {
-            Alert(
-                title: Text("sidebar.alert.no_player.title".localized()),
-                message: Text("sidebar.alert.no_player.message".localized()),
-                dismissButton: .default(Text("common.confirm".localized())),
-            )
-        }
+        .alert(item: $activeAlert) { $0.alert }
     }
 }
 

@@ -13,6 +13,8 @@
 		9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9098463E2F688B0400D7876B /* CFModrinthAdapterKit */; };
 		90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */; };
 		90A1FC1D2FB6406900DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */; };
+		90DB5E133037E75B008C2DD6 /* SwiftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1D2FB6406900DAD001 /* SwiftNBT */; };
+		90DB5E143037E75B008C2DD6 /* SwiftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1D2FB6406900DAD001 /* SwiftNBT */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90DB5E133037E75B008C2DD6 /* SwiftNBT in Frameworks */,
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
 				90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */,
 				9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */,
@@ -76,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90DB5E143037E75B008C2DD6 /* SwiftNBT in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,6 +124,7 @@
 				90645F062F6BF80C006AD2D8 /* SwiftMarkDownUI */,
 				90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */,
 				90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */,
+				90A1FC1D2FB6406900DAD001 /* SwiftNBT */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90D620D12FD7083C00108105 /* Swift Craft Launcher.app */;
@@ -142,6 +147,9 @@
 				90TEST0012E3139B5005A53F1 /* SwiftCraftLauncherTests */,
 			);
 			name = SwiftCraftLauncherTests;
+			packageProductDependencies = (
+				90A1FC1D2FB6406900DAD001 /* SwiftNBT */,
+			);
 			productName = SwiftCraftLauncherTests;
 			productReference = 90TEST0062E3139B5005A53F1 /* SwiftCraftLauncherTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -203,6 +211,7 @@
 				9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */,
 				90645F052F6BF80C006AD2D8 /* XCRemoteSwiftPackageReference "SwiftMarkDownUI" */,
 				90A1FC1B2FB6406900DAD886 /* XCRemoteSwiftPackageReference "MinecraftFriendsKit" */,
+				90A1FC1D2FB6406900DAD000 /* XCRemoteSwiftPackageReference "SwiftNBT" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -589,6 +598,14 @@
 				kind = branch;
 			};
 		};
+		90A1FC1D2FB6406900DAD000 /* XCRemoteSwiftPackageReference "SwiftNBT" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hjy-233/SwiftNBT.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
@@ -633,6 +650,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 90A1FC1B2FB6406900DAD886 /* XCRemoteSwiftPackageReference "MinecraftFriendsKit" */;
 			productName = MinecraftFriendsKit;
+		};
+		90A1FC1D2FB6406900DAD001 /* SwiftNBT */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 90A1FC1D2FB6406900DAD000 /* XCRemoteSwiftPackageReference "SwiftNBT" */;
+			productName = SwiftNBT;
 		};
 		90E123456789ABCD0002 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -14,7 +14,6 @@ struct PlayerListView: View {
     @Environment(\.dismiss)
     var dismiss
     @State private var playerToDelete: Player?
-    @State private var showDeleteAlert = false
     @State private var showingPlayerListPopover = false
 
     var body: some View {
@@ -27,27 +26,20 @@ struct PlayerListView: View {
         .buttonStyle(.borderless)
         .popover(isPresented: $showingPlayerListPopover, arrowEdge: .top) {
             ForEach(playerListViewModel.players) { player in
-                PlayerListItemView(player: player, playerListViewModel: playerListViewModel, playerToDelete: $playerToDelete, showDeleteAlert: $showDeleteAlert, showingPlayerListPopover: $showingPlayerListPopover)
+                PlayerListItemView(player: player, playerListViewModel: playerListViewModel, playerToDelete: $playerToDelete, showingPlayerListPopover: $showingPlayerListPopover)
             }
             .padding()
         }
-        .confirmationDialog(
-            "player.remove".localized(),
-            isPresented: $showDeleteAlert,
-            titleVisibility: .visible,
-        ) {
-            Button("player.remove".localized(), role: .destructive) {
-                if let player = playerToDelete {
-                    _ = playerListViewModel.deletePlayer(byID: player.id)
-                }
-                playerToDelete = nil
-            }.keyboardShortcut(.defaultAction)
-            Button("common.cancel".localized(), role: .cancel) {
-                playerToDelete = nil
-            }
-        } message: {
-            Text(String(format: "player.remove.confirm".localized(), playerToDelete?.name ?? ""))
-        }
+        .deleteConfirmationDialog(
+            pendingDeletion: $playerToDelete,
+            title: "player.remove".localized(),
+            message: { player in
+                String(format: "player.remove.confirm".localized(), player.name)
+            },
+            delete: { player in
+                _ = playerListViewModel.deletePlayer(byID: player.id)
+            },
+        )
     }
 }
 
@@ -71,7 +63,6 @@ private struct PlayerListItemView: View {
     let player: Player
     let playerListViewModel: PlayerListViewModel
     @Binding var playerToDelete: Player?
-    @Binding var showDeleteAlert: Bool
     @Binding var showingPlayerListPopover: Bool
 
     var body: some View {
@@ -87,7 +78,6 @@ private struct PlayerListItemView: View {
             Spacer(minLength: 64)
             Button {
                 playerToDelete = player
-                showDeleteAlert = true
             } label: {
                 Image(systemName: "trash.fill")
                     .help("player.remove".localized())

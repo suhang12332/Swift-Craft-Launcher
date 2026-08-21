@@ -142,9 +142,11 @@ struct MinecraftAuthView: View {
 
     private func errorView(message: String) -> some View {
         VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 60))
-                .foregroundColor(.red)
+            Image(systemName: "person.crop.circle.badge.exclamationmark")
+                .font(.system(size: 46))
+                .foregroundStyle(.secondary)
+                .symbolRenderingMode(.multicolor)
+                .symbolVariant(.none)
 
             Text("minecraft.auth.failed".localized())
                 .font(.headline)
@@ -155,7 +157,11 @@ struct MinecraftAuthView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
 
-            Text("minecraft.auth.retry_message".localized())
+            let message = container.system.minecraftAuthService.authenticationIssue?
+                .errorInfo
+                .localized() ?? "minecraft.auth.retry_message".localized()
+
+            Text(message)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

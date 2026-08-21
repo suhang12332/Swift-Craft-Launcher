@@ -13,6 +13,11 @@ struct MainViewPresentationModifier: ViewModifier {
     @State private var container: DIContainer
     var detailState: ResourceDetailState
 
+    @Environment(GameRepository.self)
+    private var gameRepository
+
+    @State private var memoryPressureAlertPresenter: MemoryPressureAlertPresenter
+    @State private var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter
     @State private var startupAnnouncementViewModel = StartupAnnouncementViewModel()
     @State private var showStartupInfo = false
     @State private var hasPresentedStartupInfo = false
@@ -25,6 +30,8 @@ struct MainViewPresentationModifier: ViewModifier {
         self.detailState = detailState
         self.gameDialogsPresenter = gameDialogsPresenter
         self.container = container
+        _memoryPressureAlertPresenter = State(wrappedValue: container.ui.memoryPressureAlertPresenter)
+        _authlibInjectorMissingPresenter = State(wrappedValue: container.ui.authlibInjectorMissingPresenter)
     }
 
     func body(content: Content) -> some View {
@@ -52,12 +59,37 @@ struct MainViewPresentationModifier: ViewModifier {
             .sheet(isPresented: $showStartupInfo) {
                 StartupInfoSheetView(announcementData: startupAnnouncementViewModel.announcementData)
             }
-            .deleteGameConfirmationDialog(
-                gamePendingDeletion: $gameDialogsPresenter.gamePendingDeletion,
-                detailState: detailState,
+            .deleteConfirmationDialog(
+                pendingDeletion: $gameDialogsPresenter.gamePendingDeletion,
+                title: "delete.title".localized(),
+                message: { game in
+                    String(format: "delete.game.confirm".localized(), game.gameName)
+                },
+                delete: { game in
+                    container.core.gameActionManager.deleteGame(
+                        game: game,
+                        gameRepository: gameRepository,
+                        selectedItem: detailState.selectedItemBinding,
+                        gameType: detailState.gameTypeBinding,
+                    )
+                },
             )
-            .authlibInjectorMissingAlert(container)
-            .memoryPressureAlert(container)
+            .presenterAlert(
+                isPresented: memoryPressureAlertPresenter.asBinding(),
+                title: "game_launch.memory_pressure.title".localized(),
+                message: memoryPressureAlertPresenter.pressureLevel.localizedMessage,
+                primaryTitle: "common.continue".localized(),
+            ) {
+                memoryPressureAlertPresenter.resolve(.continueAnyway)
+            }
+            .presenterAlert(
+                isPresented: authlibInjectorMissingPresenter.asBinding(),
+                title: "game_launch.authlib_injector_missing.title".localized(),
+                message: "game_launch.authlib_injector_missing.message".localized(),
+                primaryTitle: "common.continue".localized(),
+            ) {
+                authlibInjectorMissingPresenter.resolve(.continueWithoutInjector)
+            }
     }
 }
 

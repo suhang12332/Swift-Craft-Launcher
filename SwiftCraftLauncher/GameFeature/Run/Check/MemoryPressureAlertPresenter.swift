@@ -8,7 +8,7 @@
 import Foundation
 
 /// A choice the user makes when a memory pressure warning is shown.
-enum MemoryPressureChoice {
+enum MemoryPressureChoice: AlertChoice {
     /// Proceed with the launch despite elevated memory pressure.
     case continueAnyway
     /// Cancel the launch.
@@ -21,31 +21,11 @@ enum MemoryPressureChoice {
 /// flow suspends until the user makes a choice or the prompt is dismissed.
 @MainActor
 @Observable
-final class MemoryPressureAlertPresenter {
-    private(set) var isPresented = false
+final class MemoryPressureAlertPresenter: AlertPresenter<MemoryPressureChoice> {
     private(set) var pressureLevel: MemoryPressureLevel = .normal
 
-    private var continuation: CheckedContinuation<MemoryPressureChoice, Never>?
-
-    init() { }
-
     func requestUserChoice(for level: MemoryPressureLevel) async -> MemoryPressureChoice {
-        if let continuation {
-            continuation.resume(returning: .cancel)
-            self.continuation = nil
-        }
-
-        return await withCheckedContinuation { continuation in
-            self.continuation = continuation
-            self.pressureLevel = level
-            isPresented = true
-        }
-    }
-
-    func resolve(_ choice: MemoryPressureChoice) {
-        guard let continuation else { return }
-        self.continuation = nil
-        isPresented = false
-        continuation.resume(returning: choice)
+        pressureLevel = level
+        return await requestUserChoice()
     }
 }

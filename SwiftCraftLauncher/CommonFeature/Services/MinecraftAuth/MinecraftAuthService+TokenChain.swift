@@ -180,6 +180,7 @@ extension MinecraftAuthService {
                     message: "Minecraft access token rejected (HTTP 401) when checking entitlements at \(url)",
                 )
             case 403:
+                authenticationIssue = .notPurchased
                 throw GlobalError.authentication(
                     i18nKey: "error.authentication.minecraft_not_purchased",
                     level: .popup,
@@ -231,7 +232,22 @@ extension MinecraftAuthService {
     ) async throws -> MinecraftProfileResponse {
         let url = URLConfig.API.Authentication.minecraftProfile
         let headers = [APIClient.Header.authorization: APIClient.bearer(accessToken)]
-        let data = try await APIClient.get(url: url, headers: headers)
+        let data: Data
+        do {
+            data = try await APIClient.get(url: url, headers: headers)
+        } catch {
+            switch error {
+            case let error as GlobalError where error.statusCode == 404:
+                authenticationIssue = .profileMissing
+                throw GlobalError.authentication(
+                    i18nKey: "error.authentication.minecraft_profile_missing",
+                    level: .popup,
+                    message: "Minecraft profile lookup returned 404",
+                )
+            default:
+                throw error
+            }
+        }
 
         do {
             let profile = try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
