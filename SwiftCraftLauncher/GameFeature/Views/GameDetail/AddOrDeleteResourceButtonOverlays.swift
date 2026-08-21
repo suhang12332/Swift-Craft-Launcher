@@ -71,6 +71,6 @@ struct AddOrDeleteResourceButtonOverlays: ViewModifier {
                     }
                 }
             }
-            .alert(item: $viewModel.activeAlert) { $0.alert }
+            .alertItem(item: $viewModel.activeAlert) { $0.alert }
     }
 }

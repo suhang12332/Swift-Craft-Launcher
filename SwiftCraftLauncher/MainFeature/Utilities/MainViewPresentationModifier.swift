@@ -16,6 +16,8 @@ struct MainViewPresentationModifier: ViewModifier {
     @Environment(GameRepository.self)
     private var gameRepository
 
+    @State private var memoryPressureAlertPresenter: MemoryPressureAlertPresenter
+    @State private var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter
     @State private var startupAnnouncementViewModel = StartupAnnouncementViewModel()
     @State private var showStartupInfo = false
     @State private var hasPresentedStartupInfo = false
@@ -28,10 +30,14 @@ struct MainViewPresentationModifier: ViewModifier {
         self.detailState = detailState
         self.gameDialogsPresenter = gameDialogsPresenter
         self.container = container
+        _memoryPressureAlertPresenter = State(wrappedValue: container.ui.memoryPressureAlertPresenter)
+        _authlibInjectorMissingPresenter = State(wrappedValue: container.ui.authlibInjectorMissingPresenter)
     }
 
     func body(content: Content) -> some View {
         @Bindable var gameDialogsPresenter = gameDialogsPresenter
+        @Bindable var memoryPressureAlertPresenter = memoryPressureAlertPresenter
+        @Bindable var authlibInjectorMissingPresenter = authlibInjectorMissingPresenter
         content
             .sheet(item: $gameDialogsPresenter.gameForExport) { game in
                 ModPackExportSheet(gameInfo: game)
@@ -70,8 +76,26 @@ struct MainViewPresentationModifier: ViewModifier {
                     )
                 },
             )
-            .authlibInjectorMissingAlert(container)
-            .memoryPressureAlert(container)
+            .presenterAlert(
+                isPresented: Binding(
+                    get: { memoryPressureAlertPresenter.isPresented },
+                    set: { if !$0 { memoryPressureAlertPresenter.resolve(.cancel) } },
+                ),
+                title: "game_launch.memory_pressure.title".localized(),
+                message: memoryPressureAlertPresenter.pressureLevel.localizedMessage,
+                primaryTitle: "common.continue".localized(),
+                primaryAction: { memoryPressureAlertPresenter.resolve(.continueAnyway) },
+            )
+            .presenterAlert(
+                isPresented: Binding(
+                    get: { authlibInjectorMissingPresenter.isPresented },
+                    set: { if !$0 { authlibInjectorMissingPresenter.dismissIfNeeded(as: .cancel) } },
+                ),
+                title: "game_launch.authlib_injector_missing.title".localized(),
+                message: "game_launch.authlib_injector_missing.message".localized(),
+                primaryTitle: "common.continue".localized(),
+                primaryAction: { authlibInjectorMissingPresenter.resolve(.continueWithoutInjector) },
+            )
     }
 }
 

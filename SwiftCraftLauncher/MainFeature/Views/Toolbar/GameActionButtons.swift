@@ -107,7 +107,7 @@ struct GameActionButtons: View {
             .help("game.path".localized())
 
             GameMoreMenu(game: game)
-                .alert(item: $activeAlert) { alertType in
+                .alertItem(item: $activeAlert) { alertType in
                     alertType.alert
                 }
         }
