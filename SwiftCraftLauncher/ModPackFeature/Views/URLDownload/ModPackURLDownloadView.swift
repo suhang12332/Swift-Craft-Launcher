@@ -14,6 +14,7 @@ struct ModPackURLDownloadView: View {
     let isFormValid: Binding<Bool>
     let triggerConfirm: Binding<Bool>
     let triggerCancel: Binding<Bool>
+    let triggerHide: Binding<Bool>
     @Binding var isDownloading: Bool
 
     @State private var viewModel = ModPackURLDownloadViewModel()
@@ -43,6 +44,15 @@ struct ModPackURLDownloadView: View {
                 triggerConfirm.wrappedValue = false
                 if viewModel.isURLValid, !viewModel.isDownloading {
                     startDownload()
+                }
+            }
+        }
+        .onChange(of: triggerHide.wrappedValue) { _, newValue in
+            if newValue {
+                triggerHide.wrappedValue = false
+                if viewModel.isDownloading {
+                    viewModel.hide()
+                    onCancel()
                 }
             }
         }

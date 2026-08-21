@@ -57,15 +57,13 @@ class GameCreationViewModel: BaseGameFormViewModel {
     }
 
     override func performConfirmAction() async {
-        startDownloadTask {
-            await self.saveGame()
-        }
+        await saveGame()
     }
 
     override func handleCancel() {
         if isDownloading {
-            downloadTask?.cancel()
-            downloadTask = nil
+            InstallationTaskManager.shared.cancel(downloadTaskID)
+            downloadTaskID = nil
             gameSetupService.downloadState.cancel()
             Task {
                 await performCancelCleanup()

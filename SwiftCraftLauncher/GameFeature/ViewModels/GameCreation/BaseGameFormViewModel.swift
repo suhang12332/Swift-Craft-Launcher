@@ -20,7 +20,8 @@ class BaseGameFormViewModel {
     let gameSetupService = GameSetupUtil()
     let gameNameValidator: GameNameValidator
 
-    var downloadTask: Task<Void, Error>?
+    var downloadTaskID: UUID?
+    private(set) var isInstallationHidden = false
 
     let configuration: GameFormConfiguration
 
@@ -52,8 +53,8 @@ class BaseGameFormViewModel {
 
     func handleCancel() {
         if isDownloading {
-            downloadTask?.cancel()
-            downloadTask = nil
+            InstallationTaskManager.shared.cancel(downloadTaskID)
+            downloadTaskID = nil
             gameSetupService.downloadState.cancel()
             Task {
                 await performCancelCleanup()
@@ -64,8 +65,9 @@ class BaseGameFormViewModel {
     }
 
     func handleConfirm() {
-        downloadTask?.cancel()
-        downloadTask = Task {
+        isInstallationHidden = false
+        InstallationTaskManager.shared.cancel(downloadTaskID)
+        downloadTaskID = InstallationTaskManager.shared.start { [self] in
             await performConfirmAction()
         }
     }
@@ -102,20 +104,27 @@ class BaseGameFormViewModel {
         false
     }
 
-    func startDownloadTask(_ task: @escaping () async -> Void) {
-        downloadTask?.cancel()
-        downloadTask = Task {
-            await task()
-        }
+    func startDownloadTask(_ task: @escaping @MainActor @Sendable () async -> Void) {
+        InstallationTaskManager.shared.cancel(downloadTaskID)
+        downloadTaskID = InstallationTaskManager.shared.start(operation: task)
     }
 
     func cancelDownloadIfNeeded() {
         if isDownloading {
-            downloadTask?.cancel()
-            downloadTask = nil
+            InstallationTaskManager.shared.cancel(downloadTaskID)
+            downloadTaskID = nil
         } else {
             configuration.actions.onCancel()
         }
+    }
+
+    func hideInstallation() {
+        guard isDownloading else {
+            configuration.actions.onCancel()
+            return
+        }
+        isInstallationHidden = true
+        configuration.actions.onCancel()
     }
 
     func handleNonCriticalError(_ error: GlobalError, message: String) {

@@ -26,8 +26,9 @@ class ModPackDownloadSheetViewModel {
     var isProcessing = false
     var failedResources: [FailedModPackResource] = []
     var failedResourcesContinuation: ((Bool) -> Void)?
+    private(set) var isBackgroundInstallation = false
 
-    private var downloadTask: Task<Void, Never>?
+    private var downloadTaskID: UUID?
     private let downloadService = ModPackDownloadService()
     private var _installCoordinator: ModPackInstallCoordinator?
     private var installCoordinator: ModPackInstallCoordinator {
@@ -93,23 +94,28 @@ class ModPackDownloadSheetViewModel {
         gameSetupService: GameSetupUtil,
         onFinished: @escaping @MainActor (_ success: Bool) -> Void,
     ) {
-        downloadTask?.cancel()
-        downloadTask = Task { [weak self] in
-            guard let self else { return }
-            let success = await performModPackDownloadAndInstall(
+        isBackgroundInstallation = false
+        InstallationTaskManager.shared.cancel(downloadTaskID)
+        downloadTaskID = InstallationTaskManager.shared.start {
+            let success = await self.performModPackDownloadAndInstall(
                 selectedVersion: selectedVersion,
                 projectDetail: projectDetail,
                 gameName: gameName,
                 selectedGameVersion: selectedGameVersion,
                 gameSetupService: gameSetupService,
             )
+            self.isBackgroundInstallation = false
             onFinished(success)
         }
     }
 
+    func hideInstallation() {
+        isBackgroundInstallation = true
+    }
+
     func cancelDownloadAndResetStates(gameSetupService: GameSetupUtil? = nil) {
-        downloadTask?.cancel()
-        downloadTask = nil
+        InstallationTaskManager.shared.cancel(downloadTaskID)
+        downloadTaskID = nil
         isProcessing = false
         modPackInstallState.reset()
         if let gameSetupService {

@@ -112,7 +112,15 @@ private struct GameResourceInstallFooter: View {
     var body: some View {
         if projectDetail != nil {
             HStack {
-                Button("common.close".localized()) { isPresented = false }
+                if viewModel.isDownloadingAll {
+                    Button("common.stop".localized()) { viewModel.cancel() }
+                    Button("common.hide".localized()) {
+                        viewModel.hideInstallation()
+                        isPresented = false
+                    }
+                } else {
+                    Button("common.close".localized()) { isPresented = false }
+                }
                 Spacer()
                 if viewModel.resourceType == ResourceType.mod.rawValue,
                    !viewModel.isUpdateMode {

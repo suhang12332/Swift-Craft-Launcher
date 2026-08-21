@@ -23,7 +23,8 @@ final class ModPackURLDownloadViewModel {
         return url.scheme == "http" || url.scheme == "https"
     }
 
-    private var downloadTask: Task<Void, Never>?
+    private var downloadTaskID: UUID?
+    private(set) var isHidden = false
 
     func startDownload(onComplete: @escaping (URL) -> Void, onFailure: @escaping () -> Void = { }) {
         guard let url = URL(string: urlString) else {
@@ -33,13 +34,12 @@ final class ModPackURLDownloadViewModel {
         }
 
         isDownloading = true
+        isHidden = false
         errorMessage = nil
         downloadProgress = 0
         downloadTotalSize = 0
 
-        downloadTask?.cancel()
-        downloadTask = Task { [weak self] in
-            guard let self else { return }
+        downloadTaskID = InstallationTaskManager.shared.start { [self] in
             do {
                 let tempDir = FileManager.default.temporaryDirectory
                     .appendingPathComponent("modpack_url_download")
@@ -66,16 +66,16 @@ final class ModPackURLDownloadViewModel {
                 }
 
                 guard !Task.isCancelled else { return }
-                isDownloading = false
+                self.isDownloading = false
                 onComplete(savePath)
             } catch {
                 guard !Task.isCancelled else { return }
-                isDownloading = false
+                self.isDownloading = false
                 if let urlError = error as? URLError, urlError.code == .cancelled {
                     return
                 }
                 let globalError = GlobalError.from(error)
-                errorMessage = globalError.localizedDescription
+                self.errorMessage = globalError.localizedDescription
                 DIContainer.shared.core.errorHandler.handle(globalError)
                 onFailure()
             }
@@ -83,8 +83,12 @@ final class ModPackURLDownloadViewModel {
     }
 
     func cancel() {
-        downloadTask?.cancel()
-        downloadTask = nil
+        InstallationTaskManager.shared.cancel(downloadTaskID)
+        downloadTaskID = nil
         isDownloading = false
+    }
+
+    func hide() {
+        isHidden = true
     }
 }

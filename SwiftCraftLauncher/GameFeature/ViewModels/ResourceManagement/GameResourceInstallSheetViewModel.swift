@@ -18,6 +18,8 @@ final class GameResourceInstallSheetViewModel {
     var dependencyState = DependencyState()
     var isDownloadingAll = false
     var mainVersionId = ""
+    private(set) var isBackgroundInstallation = false
+    private var taskID: UUID?
 
     let project: ModrinthProject
     let resourceType: String
@@ -53,7 +55,7 @@ final class GameResourceInstallSheetViewModel {
 
     func loadDependencies(for _: ModrinthProjectDetailVersion) {
         dependencyState.isLoading = true
-        Task {
+        taskID = InstallationTaskManager.shared.start { [self] in
             do {
                 try await loadDependenciesThrowing()
             } catch {
@@ -103,8 +105,9 @@ final class GameResourceInstallSheetViewModel {
         dismiss: @escaping () -> Void,
     ) {
         guard selectedVersion != nil else { return }
+        isBackgroundInstallation = false
         isDownloadingAll = true
-        Task {
+        taskID = InstallationTaskManager.shared.start { [self] in
             do {
                 try await downloadAllManualThrowing(onSuccess: onSuccess, dismiss: dismiss)
             } catch {
@@ -170,8 +173,9 @@ final class GameResourceInstallSheetViewModel {
         dismiss: @escaping () -> Void,
     ) {
         guard selectedVersion != nil else { return }
+        isBackgroundInstallation = false
         isDownloadingAll = true
-        Task {
+        taskID = InstallationTaskManager.shared.start { [self] in
             do {
                 try await downloadResourceThrowing(onSuccess: onSuccess, dismiss: dismiss)
             } catch {
@@ -181,6 +185,16 @@ final class GameResourceInstallSheetViewModel {
                 isDownloadingAll = false
             }
         }
+    }
+
+    func cancel() {
+        InstallationTaskManager.shared.cancel(taskID)
+        taskID = nil
+        isDownloadingAll = false
+    }
+
+    func hideInstallation() {
+        isBackgroundInstallation = true
     }
 
     private func downloadResourceThrowing(
@@ -226,6 +240,7 @@ final class GameResourceInstallSheetViewModel {
     }
 
     func cleanup() {
+        guard !isBackgroundInstallation else { return }
         selectedVersion = nil
         availableVersions = []
         dependencyState = DependencyState()

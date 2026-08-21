@@ -32,6 +32,7 @@ struct GameFormView: View {
     @State private var isFormValid = false
     @State private var triggerConfirm = false
     @State private var triggerCancel = false
+    @State private var triggerHide = false
     @State private var isLoadingLoaderVersions = false
     @State private var showFilePicker = false
     @State private var filePickerType: FilePickerType = .modPack
@@ -62,6 +63,7 @@ struct GameFormView: View {
                             isFormValid: $isFormValid,
                             triggerConfirm: $triggerConfirm,
                             triggerCancel: $triggerCancel,
+                            triggerHide: $triggerHide,
                             isLoadingLoaderVersions: $isLoadingLoaderVersions,
                             onCancel: { dismiss() },
                             onConfirm: { dismiss() },
@@ -80,6 +82,7 @@ struct GameFormView: View {
                                 isFormValid: $isFormValid,
                                 triggerConfirm: $triggerConfirm,
                                 triggerCancel: $triggerCancel,
+                                triggerHide: $triggerHide,
                                 onCancel: { dismiss() },
                                 onConfirm: { dismiss() },
                             ),
@@ -104,6 +107,7 @@ struct GameFormView: View {
                             isFormValid: $isFormValid,
                             triggerConfirm: $triggerConfirm,
                             triggerCancel: $triggerCancel,
+                            triggerHide: $triggerHide,
                             isDownloading: $isDownloading,
                         )
                     }
@@ -195,7 +199,14 @@ struct GameFormView: View {
 
     private var footerView: some View {
         HStack {
-            cancelButton
+            HStack(spacing: 8) {
+                cancelButton
+                if isDownloading {
+                    Button("common.hide".localized()) {
+                        triggerHide = true
+                    }
+                }
+            }
             Spacer()
             confirmButton
         }

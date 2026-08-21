@@ -41,8 +41,19 @@ class GameSetupUtil {
         onSuccess: @escaping () -> Void,
         onError: @escaping (GlobalError, String) -> Void,
     ) async {
+        let diagnosticsID = InstallationDiagnosticsLogger.shared.begin(
+            gameName: input.gameName,
+            version: input.selectedGameVersion,
+            modLoader: input.selectedModLoader,
+        )
+        var installationSucceeded = false
+        defer {
+            InstallationDiagnosticsLogger.shared.finish(diagnosticsID, success: installationSucceeded)
+        }
+
         if let playerListViewModel {
             guard playerListViewModel.currentPlayer != nil else {
+                InstallationDiagnosticsLogger.shared.record(diagnosticsID, stage: "validation.failure", message: "No current player selected")
                 AppLog.game.error("Unable to save game, no current player selected.")
                 onError(
                     GlobalError.configuration(
@@ -72,6 +83,7 @@ class GameSetupUtil {
             modLoader: input.selectedModLoader,
             pendingIconData: input.pendingIconData,
         )
+        InstallationDiagnosticsLogger.shared.record(diagnosticsID, stage: "icon.complete", message: "present=\(standardIconPresent)")
         let persistedGameIcon = standardIconPresent ? AppConstants.defaultGameIcon : ""
 
         var gameInfo = GameVersionInfo(
@@ -89,6 +101,7 @@ class GameSetupUtil {
                 selectedGameVersion: input.selectedGameVersion,
                 selectedModLoader: input.selectedModLoader,
                 specifiedLoaderVersion: input.specifiedLoaderVersion,
+                diagnosticsID: diagnosticsID,
             )
             gameRepository.addGameSilently(gameInfo)
 
@@ -105,7 +118,13 @@ class GameSetupUtil {
                 body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader),
             )
             onSuccess()
+            installationSucceeded = true
         } catch {
+            InstallationDiagnosticsLogger.shared.record(
+                diagnosticsID,
+                stage: isSaveGameDownloadCancelled(error) ? "installation.cancelled" : "installation.failure",
+                message: "error=\(error.localizedDescription)",
+            )
             if isSaveGameDownloadCancelled(error) {
                 AppLog.game.info("Game download task cancelled")
                 await cleanupGameDirectories(gameName: input.gameName)
@@ -146,19 +165,38 @@ class GameSetupUtil {
         selectedGameVersion: String,
         selectedModLoader: String,
         specifiedLoaderVersion: String,
+        diagnosticsID: UUID? = nil,
     ) async throws -> GameVersionInfo {
-        let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
+        let diagnostics = InstallationDiagnosticsLogger.shared
+        diagnosticsID.map { diagnostics.record($0, stage: "manifest.start", message: "version=\(selectedGameVersion)") }
+        let downloadedManifest: MinecraftVersionManifest
+        do {
+            downloadedManifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
+            diagnosticsID.map {
+                diagnostics.record($0, stage: "manifest.success", message: "assetIndex=\(downloadedManifest.assetIndex.id) url=\(downloadedManifest.assetIndex.url.absoluteString)")
+            }
+        } catch {
+            diagnosticsID.map { diagnostics.record($0, stage: "manifest.failure", message: "error=\(error.localizedDescription)") }
+            throw error
+        }
 
+        diagnosticsID.map { diagnostics.record($0, stage: "java.start", message: "version=\(downloadedManifest.javaVersion.component)") }
         let javaPath = await DIContainer.shared.system.javaManager.ensureJavaExists(
             version: downloadedManifest.javaVersion.component,
         )
+        diagnosticsID.map { diagnostics.record($0, stage: "java.complete", message: "path=\(javaPath)") }
 
-        let fileManager = try await setupFileManager(manifest: downloadedManifest, modLoader: baseGameInfo.modLoader)
+        let fileManager = try await setupFileManager(
+            manifest: downloadedManifest,
+            modLoader: baseGameInfo.modLoader,
+            diagnosticsID: diagnosticsID,
+        )
 
         try await startDownloadProcess(
             fileManager: fileManager,
             manifest: downloadedManifest,
             gameName: baseGameInfo.gameName,
+            diagnosticsID: diagnosticsID,
         )
 
         let modLoaderResult = try await setupModLoaderIfNeeded(
@@ -167,6 +205,7 @@ class GameSetupUtil {
             gameName: baseGameInfo.gameName,
             gameIcon: baseGameInfo.gameIcon,
             specifiedLoaderVersion: specifiedLoaderVersion,
+            diagnosticsID: diagnosticsID,
         )
 
         var finalizedInfo = await finalizeGameInfo(
@@ -327,18 +366,26 @@ class GameSetupUtil {
         return true
     }
 
-    private func setupFileManager(manifest _: MinecraftVersionManifest, modLoader _: String) async throws -> MinecraftFileManager {
+    private func setupFileManager(
+        manifest _: MinecraftVersionManifest,
+        modLoader _: String,
+        diagnosticsID: UUID? = nil,
+    ) async throws -> MinecraftFileManager {
         let nativesDir = AppPaths.nativesDirectory
         try FileManager.default.createDirectory(at: nativesDir, withIntermediateDirectories: true)
-        return MinecraftFileManager()
+        return MinecraftFileManager(diagnosticsID: diagnosticsID)
     }
 
     private func startDownloadProcess(
         fileManager: MinecraftFileManager,
         manifest: MinecraftVersionManifest,
         gameName: String,
+        diagnosticsID: UUID? = nil,
     ) async throws {
-        let assetIndex = try await downloadAssetIndex(manifest: manifest)
+        diagnosticsID.map {
+            InstallationDiagnosticsLogger.shared.record($0, stage: "downloads.start", message: "version=\(manifest.id)")
+        }
+        let assetIndex = try await downloadAssetIndex(manifest: manifest, diagnosticsID: diagnosticsID)
         let resourceTotalFiles = assetIndex.objects.count
 
         downloadState.startDownload(
@@ -353,10 +400,24 @@ class GameSetupUtil {
         }
 
         try await fileManager.downloadVersionFilesThrowing(manifest: manifest, gameName: gameName)
+        diagnosticsID.map {
+            InstallationDiagnosticsLogger.shared.record($0, stage: "downloads.success", message: "version=\(manifest.id)")
+        }
     }
 
-    private func downloadAssetIndex(manifest: MinecraftVersionManifest) async throws -> DownloadedAssetIndex {
+    private func downloadAssetIndex(
+        manifest: MinecraftVersionManifest,
+        diagnosticsID: UUID? = nil,
+    ) async throws -> DownloadedAssetIndex {
         let destinationURL = AppPaths.indexesDirectory.appendingPathComponent("\(manifest.assetIndex.id).json")
+        let diagnostics = InstallationDiagnosticsLogger.shared
+        diagnosticsID.map {
+            diagnostics.record(
+                $0,
+                stage: "asset-index.start",
+                message: "url=\(manifest.assetIndex.url.absoluteString) destination=\(destinationURL.path) expectedSHA1=\(manifest.assetIndex.sha1)",
+            )
+        }
 
         do {
             _ = try await DownloadManager.downloadFile(urlString: manifest.assetIndex.url.absoluteString, destinationURL: destinationURL, expectedSha1: manifest.assetIndex.sha1)
@@ -368,15 +429,22 @@ class GameSetupUtil {
             for object in assetIndexData.objects.values {
                 totalSize += object.size
             }
-            return DownloadedAssetIndex(
+            let result = DownloadedAssetIndex(
                 id: manifest.assetIndex.id,
                 url: manifest.assetIndex.url,
                 sha1: manifest.assetIndex.sha1,
                 totalSize: totalSize,
                 objects: assetIndexData.objects,
             )
+            diagnosticsID.map {
+                diagnostics.record($0, stage: "asset-index.success", message: "objects=\(result.objects.count)")
+            }
+            return result
         } catch {
             let globalError = GlobalError.from(error)
+            diagnosticsID.map {
+                diagnostics.record($0, stage: "asset-index.failure", message: "error=\(globalError.localizedDescription)")
+            }
             throw GlobalError.download(
                 i18nKey: "error.download.asset_index_failed",
                 level: .notification,
@@ -391,6 +459,7 @@ class GameSetupUtil {
         gameName: String,
         gameIcon: String,
         specifiedLoaderVersion: String,
+        diagnosticsID: UUID? = nil,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String)? {
         let loaderType = selectedModLoader.lowercased()
         let handler: (any ModLoaderHandler.Type)?
@@ -436,12 +505,27 @@ class GameSetupUtil {
             }
         }
 
-        return await handler.setupWithSpecificVersion(
+        diagnosticsID.map {
+            InstallationDiagnosticsLogger.shared.record(
+                $0,
+                stage: "loader.start",
+                message: "type=\(selectedModLoader) version=\(specifiedLoaderVersion)",
+            )
+        }
+        let result = await handler.setupWithSpecificVersion(
             for: selectedGameVersion,
             loaderVersion: specifiedLoaderVersion,
             gameInfo: gameInfo,
             onProgressUpdate: progressCallback,
         )
+        diagnosticsID.map {
+            InstallationDiagnosticsLogger.shared.record(
+                $0,
+                stage: result == nil ? "loader.failure" : "loader.success",
+                message: "type=\(selectedModLoader) version=\(specifiedLoaderVersion)",
+            )
+        }
+        return result
     }
 
     private func finalizeGameInfo(

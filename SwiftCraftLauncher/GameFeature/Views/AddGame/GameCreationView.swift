@@ -33,6 +33,7 @@ struct GameCreationView: View {
 
     private let triggerConfirm: Binding<Bool>
     private let triggerCancel: Binding<Bool>
+    private let triggerHide: Binding<Bool>
     private let onRequestImagePicker: () -> Void
     private let onSetImagePickerHandler: (@escaping (Result<[URL], Error>) -> Void) -> Void
 
@@ -41,6 +42,7 @@ struct GameCreationView: View {
         isFormValid: Binding<Bool>,
         triggerConfirm: Binding<Bool>,
         triggerCancel: Binding<Bool>,
+        triggerHide: Binding<Bool> = .constant(false),
         isLoadingLoaderVersions: Binding<Bool> = .constant(false),
         onCancel: @escaping () -> Void,
         onConfirm: @escaping () -> Void,
@@ -49,6 +51,7 @@ struct GameCreationView: View {
     ) {
         self.triggerConfirm = triggerConfirm
         self.triggerCancel = triggerCancel
+        self.triggerHide = triggerHide
         self.onRequestImagePicker = onRequestImagePicker
         self.onSetImagePickerHandler = onSetImagePickerHandler
         let configuration = GameFormConfiguration(
@@ -56,6 +59,7 @@ struct GameCreationView: View {
             isFormValid: isFormValid,
             triggerConfirm: triggerConfirm,
             triggerCancel: triggerCancel,
+            triggerHide: triggerHide,
             isLoadingLoaderVersions: isLoadingLoaderVersions,
             onCancel: onCancel,
             onConfirm: onConfirm,
@@ -69,7 +73,7 @@ struct GameCreationView: View {
                 viewModel.setup(gameRepository: gameRepository, playerListViewModel: playerListViewModel)
                 onSetImagePickerHandler(viewModel.handleImagePickerResult)
             }
-            .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
+            .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel, triggerHide: triggerHide)
             .onChange(of: viewModel.selectedLoaderVersion) { oldValue, newValue in
                 if oldValue != newValue {
                     viewModel.updateParentState()
@@ -91,6 +95,7 @@ struct GameCreationView: View {
     }
 
     private func clearAllData() {
+        guard !viewModel.isInstallationHidden else { return }
         if viewModel.isDownloading {
             viewModel.handleCancel()
         }

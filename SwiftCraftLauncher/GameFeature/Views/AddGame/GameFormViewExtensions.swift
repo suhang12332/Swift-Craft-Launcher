@@ -14,6 +14,7 @@ extension View {
         viewModel: some BaseGameFormViewModel,
         triggerConfirm: Binding<Bool>,
         triggerCancel: Binding<Bool>,
+        triggerHide: Binding<Bool>,
     ) -> some View {
         onChange(of: viewModel.gameNameValidator.gameName) { oldValue, newValue in
             if oldValue != newValue {
@@ -40,6 +41,12 @@ extension View {
             if newValue {
                 viewModel.handleCancel()
                 triggerCancel.wrappedValue = false
+            }
+        }
+        .onChange(of: triggerHide.wrappedValue) { _, newValue in
+            if newValue {
+                viewModel.hideInstallation()
+                triggerHide.wrappedValue = false
             }
         }
     }

@@ -16,6 +16,7 @@ struct ModPackImportView: View {
 
     private let triggerConfirm: Binding<Bool>
     private let triggerCancel: Binding<Bool>
+    private let triggerHide: Binding<Bool>
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
     @Environment(\.dismiss)
@@ -29,6 +30,7 @@ struct ModPackImportView: View {
     ) {
         triggerConfirm = configuration.triggerConfirm
         triggerCancel = configuration.triggerCancel
+        triggerHide = configuration.triggerHide
 
         _viewModel = State(wrappedValue: ModPackImportViewModel(
             configuration: configuration,
@@ -43,7 +45,7 @@ struct ModPackImportView: View {
             .onAppear {
                 viewModel.setup(gameRepository: gameRepository)
             }
-            .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
+            .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel, triggerHide: triggerHide)
             .onChange(of: viewModel.selectedModPackFile) { oldValue, newValue in
                 if oldValue != newValue {
                     viewModel.updateParentState()
@@ -70,7 +72,7 @@ struct ModPackImportView: View {
     }
 
     private func clearAllData() {
-        if viewModel.isDownloading {
+        if viewModel.isDownloading, !viewModel.isInstallationHidden {
             viewModel.cancelDownloadIfNeeded()
         }
     }

@@ -19,6 +19,7 @@ final class GlobalResourceFooterViewModel {
     private let isPresented: Binding<Bool>
     private let isDownloadingAll: Binding<Bool>
     private let isDownloadingMainOnly: Binding<Bool>
+    private var taskID: UUID?
 
     init(
         project: ModrinthProject,
@@ -42,7 +43,7 @@ final class GlobalResourceFooterViewModel {
         guard let game = selectedGame else { return }
 
         isDownloadingMainOnly.wrappedValue = true
-        Task {
+        taskID = InstallationTaskManager.shared.start { [self] in
             do {
                 try await downloadMainOnlyThrowing(game: game)
             } catch {
@@ -69,7 +70,7 @@ final class GlobalResourceFooterViewModel {
         guard let game = selectedGame else { return }
 
         isDownloadingAll.wrappedValue = true
-        Task {
+        taskID = InstallationTaskManager.shared.start { [self] in
             do {
                 try await downloadAllManualThrowing(
                     game: game,
@@ -98,7 +99,7 @@ final class GlobalResourceFooterViewModel {
         guard let game = selectedGame, let detail = projectDetail else { return }
 
         isDownloadingAll.wrappedValue = true
-        Task {
+        taskID = InstallationTaskManager.shared.start { [self] in
             do {
                 try await MinecraftJavaServerResourceUtils.addServerToGameIfNeeded(
                     game: game,
@@ -121,7 +122,7 @@ final class GlobalResourceFooterViewModel {
         guard let game = selectedGame else { return }
 
         isDownloadingAll.wrappedValue = true
-        Task {
+        taskID = InstallationTaskManager.shared.start { [self] in
             do {
                 try await downloadResourceThrowing(game: game)
             } catch {
@@ -133,6 +134,14 @@ final class GlobalResourceFooterViewModel {
             isDownloadingAll.wrappedValue = false
             isPresented.wrappedValue = false
         }
+    }
+
+    func cancel() {
+        InstallationTaskManager.shared.cancel(taskID)
+        taskID = nil
+        isDownloadingAll.wrappedValue = false
+        isDownloadingMainOnly.wrappedValue = false
+        isPresented.wrappedValue = false
     }
 
     private func downloadMainOnlyThrowing(game: GameVersionInfo) async throws {

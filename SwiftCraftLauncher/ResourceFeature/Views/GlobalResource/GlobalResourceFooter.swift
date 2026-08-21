@@ -76,7 +76,14 @@ struct GlobalResourceFooter: View {
                 }
             } else {
                 HStack {
-                    Button("common.close".localized()) { isPresented = false }
+                    if isDownloadingAll || isDownloadingMainOnly {
+                        Button("common.stop".localized()) { viewModel.cancel() }
+                        Button("common.hide".localized()) {
+                            isPresented = false
+                        }
+                    } else {
+                        Button("common.close".localized()) { isPresented = false }
+                    }
                     Spacer()
                     if resourceType == ResourceType.mod.rawValue {
                         if !dependencyState.isLoading {

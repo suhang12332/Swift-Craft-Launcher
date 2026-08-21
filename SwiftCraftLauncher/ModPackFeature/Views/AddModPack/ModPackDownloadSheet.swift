@@ -53,7 +53,9 @@ struct ModPackDownloadSheet: View {
             )
         }
         .onDisappear {
-            clearAllData()
+            if !viewModel.isBackgroundInstallation {
+                clearAllData()
+            }
         }
     }
 
@@ -117,7 +119,15 @@ struct ModPackDownloadSheet: View {
 
     private var footerView: some View {
         HStack {
-            cancelButton
+            HStack(spacing: 8) {
+                cancelButton
+                if isDownloading {
+                    Button("common.hide".localized()) {
+                        viewModel.hideInstallation()
+                        dismiss()
+                    }
+                }
+            }
             Spacer()
             confirmButton
         }
