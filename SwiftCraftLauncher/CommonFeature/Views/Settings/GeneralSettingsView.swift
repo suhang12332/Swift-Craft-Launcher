@@ -23,26 +23,18 @@ public struct GeneralSettingsView: View {
     public var body: some View {
         Form {
             GeneralSettingsLanguageRow(languageManager: container.ui.languageManager)
-
             GeneralSettingsThemeRow()
                 .environment(container.ui.themeManager)
-
             GeneralSettingsInterfaceLayoutRow()
                 .environment(container.ui.generalSettingsManager)
-
+            spacerView()
             GeneralSettingsWorkingDirectoryRow(
                 viewModel: viewModel,
                 gameRepository: gameRepository,
             )
             .environment(container.ui.generalSettingsManager)
-
-            GeneralSettingsConcurrentDownloadsRow(
-                viewModel: viewModel,
-            )
-            .environment(container.ui.generalSettingsManager)
-
+            spacerView()
             GeneralSettingsSystemProxyRow()
-
             GeneralSettingsCommonSheetHeightLimitRow()
                 .environment(container.ui.generalSettingsManager)
         }

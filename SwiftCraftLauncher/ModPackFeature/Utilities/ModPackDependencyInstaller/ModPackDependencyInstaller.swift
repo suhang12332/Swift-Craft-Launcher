@@ -10,7 +10,7 @@ import Foundation
 /// Installs all required dependencies defined by a modpack.
 enum ModPackDependencyInstaller {
     static var downloadSemaphoreValue: Int {
-        max(1, DIContainer.shared.ui.generalSettingsManager.concurrentDownloads / 4)
+        max(1, DIContainer.shared.ui.gameSettingsManager.concurrentDownloads / 4)
     }
 
     enum DownloadType {
