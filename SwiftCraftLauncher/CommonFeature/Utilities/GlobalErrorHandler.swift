@@ -94,7 +94,7 @@ struct GlobalError: Error, LocalizedError, Identifiable {
     let message: String?
     let source: ErrorSource
 
-    init(
+    private init(
         kind: GlobalErrorKind,
         i18nKey: String,
         level: ErrorLevel? = nil,
