@@ -1,5 +1,5 @@
 {
-  "originHash" : "31b9d7ee8a3668bebbdf4d4a11467dfb0572e5af29749c2adb1b129d021b676a",
+  "originHash" : "6a8aca8171aaa1a316ca7d310d04b1e03b10323d20196daa511b304d598599b3",
   "pins" : [
     {
       "identity" : "cfmodrinthadapterkit",
@@ -85,10 +85,10 @@
     {
       "identity" : "touchbarsupport",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/functy23/TouchBarSupport",
+      "location" : "https://github.com/suhang12332/TouchBarSupport.git",
       "state" : {
-        "revision" : "c3500681d8039fe52218447acdfe2ad5902350ce",
-        "version" : "0.1.6"
+        "branch" : "main",
+        "revision" : "b9befdc8216d2d1808a95c4b882239e4c14e89cc"
       }
     },
     {
