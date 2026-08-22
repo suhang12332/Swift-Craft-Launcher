@@ -58,6 +58,7 @@ struct MainView: View {
         }
         .mainViewPresentations(container: container, detailState: detailState)
         .frame(minWidth: 900, minHeight: 500)
+        .touchBarSupport()
     }
 
     @MainActor
