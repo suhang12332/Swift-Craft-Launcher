@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TouchBarSupport
 
 /// Root navigation view that orchestrates the sidebar, content, and detail columns.
 struct MainView: View {
@@ -17,9 +18,12 @@ struct MainView: View {
     @State private var navigationHandler: SidebarNavigationHandler?
     @Environment(GameRepository.self)
     private var gameRepository
-
+    @Environment(GameLaunchUseCase.self)
+    private var gameLaunchUseCase
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
+    @Environment(\.openSettings)
+    private var openSettings
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -58,6 +62,14 @@ struct MainView: View {
         }
         .mainViewPresentations(container: container, detailState: detailState)
         .frame(minWidth: 900, minHeight: 500)
+        .touchBarSupport(
+            TouchBarSupportConfiguration.make(
+                container: container,
+                gameRepository: gameRepository,
+                gameLaunchUseCase: gameLaunchUseCase,
+                playerListViewModel: playerListViewModel,
+            ) { openSettings() },
+        )
     }
 
     @MainActor
