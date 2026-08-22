@@ -26,6 +26,10 @@ struct MinecraftLaunchCommand {
     }
 
     func launchGameThrowing() async throws {
+        if let integrityError = GameIntegrityChecker.check(game: game) {
+            throw integrityError
+        }
+
         let validatedPlayer = try await validatePlayerTokenBeforeLaunch()
 
         if DIContainer.shared.ui.gameSettingsManager.enableMemoryPressureWarning {

@@ -43,3 +43,16 @@ enum MemoryPressureChecker {
         }
     }
 }
+
+/// Performs the minimum pre-launch integrity check and repair.
+enum GameIntegrityChecker {
+    static func check(game: GameVersionInfo) -> GlobalError? {
+        let javaManager = DIContainer.shared.system.javaManager
+
+        guard javaManager.canJavaRun(at: game.javaPath) else {
+            return .gameLaunch(i18nKey: "game_launch.integrity.java_unusable")
+        }
+
+        return nil
+    }
+}
