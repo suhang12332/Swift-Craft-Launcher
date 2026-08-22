@@ -63,6 +63,9 @@ private struct ConditionalLabelsHidden: ViewModifier {
     }
 }
 
+// `buttonSizing` is a macOS 26 API. Xcode 16.x (Swift < 6.2, SDK < macOS 26)
+// cannot resolve the symbol even inside #available, so gate it at compile time.
+#if swift(>=6.2)
 private struct FlexibleButtonSizingModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(macOS 26, *) {
@@ -72,3 +75,10 @@ private struct FlexibleButtonSizingModifier: ViewModifier {
         }
     }
 }
+#else
+private struct FlexibleButtonSizingModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+    }
+}
+#endif
