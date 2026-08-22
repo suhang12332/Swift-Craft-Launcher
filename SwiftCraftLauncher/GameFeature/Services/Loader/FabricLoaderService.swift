@@ -90,7 +90,7 @@ enum FabricLoaderService {
         let classpathString = CommonService.generateFabricClasspath(from: fabricProfile, librariesDir: librariesDirectory)
         let mainClass = fabricProfile.mainClass
         guard let version = fabricProfile.version else {
-            throw GlobalError.validation(
+            throw GlobalError.installation(
                 i18nKey: "error.validation.fabric_loader_version_missing",
                 level: .notification,
                 message: "Fabric profile missing version for game \(gameVersion), loaderVersion \(loaderVersion)",

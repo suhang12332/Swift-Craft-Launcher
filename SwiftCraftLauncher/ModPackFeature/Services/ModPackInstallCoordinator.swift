@@ -418,7 +418,7 @@ final class ModPackInstallCoordinator {
             AppLog.modPack.error("Modpack dependency installation failed: \(gameName)")
             await cleanupGameDirectories(gameName: gameName)
             DIContainer.shared.core.errorHandler.handle(
-                GlobalError.resource(
+                GlobalError.installation(
                     i18nKey: "error.resource.modpack_dependencies_failed",
                     level: .notification,
                 ),

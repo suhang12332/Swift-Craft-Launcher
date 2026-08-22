@@ -178,7 +178,7 @@ class JavaRuntimeDownloader: @unchecked Sendable {
         } catch {
             AppLog.game.error("Failed to extract Java runtime: \(error.localizedDescription)")
 
-            throw GlobalError.validation(
+            throw GlobalError.installation(
                 i18nKey: "error.validation.extract_failed",
                 level: .notification,
                 message: "failed to extract Java runtime from \(zipPath.path), error: \(error.localizedDescription)",
@@ -195,7 +195,7 @@ class JavaRuntimeDownloader: @unchecked Sendable {
         do {
             archive = try Archive(url: zipPath, accessMode: .read)
         } catch {
-            throw GlobalError.validation(
+            throw GlobalError.installation(
                 i18nKey: "error.validation.cannot_open_zip",
                 level: .notification,
                 message: "cannot open zip file: \(zipPath.path), error: \(error.localizedDescription)",
@@ -230,7 +230,7 @@ class JavaRuntimeDownloader: @unchecked Sendable {
         }
 
         guard !targetFolderEntries.isEmpty, let prefix = targetFolderPrefix else {
-            throw GlobalError.validation(
+            throw GlobalError.installation(
                 i18nKey: "error.validation.zulu_folder_not_found_in_zip",
                 level: .notification,
                 message: "no zulu JRE folder found in zip: \(zipPath.path)",
