@@ -22,6 +22,7 @@ enum ModPackIndexParser {
     }
 
     private static let adapters: [any ModPackIndexAdapter] = [
+        MMCIndexAdapter(),
         ModrinthIndexAdapter(),
         CurseForgeZipIndexAdapter(),
     ]

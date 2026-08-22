@@ -70,6 +70,9 @@ enum FailedResourceResolver {
         case .modrinth:
             guard let sha1 = file.hashes.sha1 else { return nil }
             projectDetail = try? await ModrinthService.fetchModrinthDetailThrowing(by: sha1)
+        case .mmc:
+            // MMC packs don't have a centralized project API for resolution.
+            return nil
         }
 
         guard let projectDetail else { return nil }
