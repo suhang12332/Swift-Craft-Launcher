@@ -214,7 +214,7 @@
 				90645F052F6BF80C006AD2D8 /* XCRemoteSwiftPackageReference "SwiftMarkDownUI" */,
 				90A1FC1B2FB6406900DAD886 /* XCRemoteSwiftPackageReference "MinecraftFriendsKit" */,
 				90A1FC1D2FB6406900DAD000 /* XCRemoteSwiftPackageReference "SwiftNBT" */,
-				90A1FC2F2FB6406900DAD888 /* XCLocalSwiftPackageReference "TouchBarSupport" */,
+				90A1FC2F2FB6406900DAD888 /* XCRemoteSwiftPackageReference "TouchBarSupport" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -617,13 +617,15 @@
 				version = 2.7.1;
 			};
 		};
-/* End XCRemoteSwiftPackageReference section */
-/* Begin XCLocalSwiftPackageReference section */
-		90A1FC2F2FB6406900DAD888 /* XCLocalSwiftPackageReference "TouchBarSupport" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = TouchBarSupport;
+		90A1FC2F2FB6406900DAD888 /* XCRemoteSwiftPackageReference "TouchBarSupport" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/functy23/TouchBarSupport";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+/* End XCRemoteSwiftPackageReference section */
 
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -673,7 +675,7 @@
 		};
 		90A1FC2E2FB6406900DAD888 /* TouchBarSupport */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 90A1FC2F2FB6406900DAD888 /* XCLocalSwiftPackageReference "TouchBarSupport" */;
+			package = 90A1FC2F2FB6406900DAD888 /* XCRemoteSwiftPackageReference "TouchBarSupport" */;
 			productName = TouchBarSupport;
 		};
 /* End XCSwiftPackageProductDependency section */
