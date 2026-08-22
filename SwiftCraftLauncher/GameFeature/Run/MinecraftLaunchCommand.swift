@@ -13,9 +13,9 @@ struct MinecraftLaunchCommand {
     let player: Player
     let game: GameVersionInfo
 
-    func launchGame() async {
+    func launchGame(gameRepository: GameRepository) async {
         do {
-            try await launchGameThrowing()
+            try await launchGameThrowing(gameRepository: gameRepository)
         } catch {
             await handleLaunchError(error)
         }
@@ -25,7 +25,24 @@ struct MinecraftLaunchCommand {
         _ = DIContainer.shared.core.gameProcessManager.stopProcess(for: game.id, userId: player.id)
     }
 
-    func launchGameThrowing() async throws {
+    func launchGameThrowing(gameRepository: GameRepository) async throws {
+        let integrityReport = await GameIntegrityChecker.check(game: game)
+        if !integrityReport.isValid {
+            let choice = await DIContainer.shared.ui.gameIntegrityAlertPresenter.requestUserChoice(
+                for: integrityReport.errors,
+            )
+            switch choice {
+            case .ignore:
+                break
+            case .repair:
+                let repairedGame = try await GameIntegrityChecker.repair(game: game)
+                try await gameRepository.updateGame(repairedGame)
+                return
+            case .cancel:
+                return
+            }
+        }
+
         let validatedPlayer = try await validatePlayerTokenBeforeLaunch()
 
         if DIContainer.shared.ui.gameSettingsManager.enableMemoryPressureWarning {

@@ -25,6 +25,7 @@ final class GameContextMenuActionViewModel {
         player: Player?,
         game: GameVersionInfo,
         gameLaunchUseCase: GameLaunchUseCase,
+        gameRepository: GameRepository,
     ) {
         Task {
             if isRunning {
@@ -35,7 +36,11 @@ final class GameContextMenuActionViewModel {
                 let userId = player.id
                 DIContainer.shared.core.gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
                 defer { DIContainer.shared.core.gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false) }
-                await gameLaunchUseCase.launchGame(player: player, game: game)
+                await gameLaunchUseCase.launchGame(
+                    player: player,
+                    game: game,
+                    gameRepository: gameRepository,
+                )
             }
         }
     }

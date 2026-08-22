@@ -38853,6 +38853,168 @@
         }
       }
     },
+    "game_launch.integrity.title" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Game Integrity Check"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "游戏完整性检查"
+          }
+        }
+      }
+    },
+    "game_launch.integrity.ignore" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ignore"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忽略"
+          }
+        }
+      }
+    },
+    "game_launch.integrity.repair" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repair"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修复"
+          }
+        }
+      }
+    },
+    "game_launch.integrity.java_missing" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java is missing or not executable."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java 不存在或不可执行"
+          }
+        }
+      }
+    },
+    "game_launch.integrity.java_unusable" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java failed to start."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java 无法启动"
+          }
+        }
+      }
+    },
+    "game_launch.integrity.core_invalid" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Minecraft client core is missing or corrupted."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 核心文件缺失或损坏"
+          }
+        }
+      }
+    },
+    "game_launch.integrity.library_invalid" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A library is missing or corrupted: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "libraries 文件缺失或损坏：%@"
+          }
+        }
+      }
+    },
+    "game_launch.integrity.native_invalid" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A native library is missing or corrupted: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "natives 文件缺失或损坏：%@"
+          }
+        }
+      }
+    },
+    "game_launch.integrity.check_failed" : {
+      "shouldTranslate" : false,
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The integrity check could not be completed."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法完成完整性检查"
+          }
+        }
+      }
+    },
     "game_launch.authlib_injector_missing.title" : {
       "extractionState" : "manual",
       "localizations" : {

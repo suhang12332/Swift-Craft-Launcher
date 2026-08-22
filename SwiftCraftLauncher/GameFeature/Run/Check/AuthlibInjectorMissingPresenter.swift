@@ -25,3 +25,26 @@ final class AuthlibInjectorMissingPresenter: AlertPresenter<AuthlibInjectorMissi
 
 /// An error indicating the user cancelled the launch due to a missing authlib-injector.
 struct AuthlibInjectorLaunchCancelled: Error { }
+
+/// The action selected for a failed pre-launch integrity check.
+enum GameIntegrityChoice: AlertChoice {
+    case ignore
+    case repair
+    case cancel
+}
+
+/// Presents integrity problems found before launching a game.
+@MainActor
+@Observable
+final class GameIntegrityAlertPresenter: AlertPresenter<GameIntegrityChoice> {
+    private(set) var errors: [GlobalError] = []
+
+    var message: String {
+        errors.map { $0.message ?? $0.localizedDescription }.joined(separator: "\n")
+    }
+
+    func requestUserChoice(for errors: [GlobalError]) async -> GameIntegrityChoice {
+        self.errors = errors
+        return await requestUserChoice()
+    }
+}

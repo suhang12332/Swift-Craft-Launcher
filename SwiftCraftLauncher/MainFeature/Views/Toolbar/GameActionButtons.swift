@@ -63,6 +63,7 @@ struct GameActionButtons: View {
                         await gameLaunchUseCase.launchGame(
                             player: player,
                             game: game,
+                            gameRepository: gameRepository,
                         )
                     }
                 }
