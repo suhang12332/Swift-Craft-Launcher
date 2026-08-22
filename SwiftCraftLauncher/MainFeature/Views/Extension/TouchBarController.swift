@@ -13,17 +13,12 @@ import Observation
 final class TouchBarController: NSObject, NSTouchBarDelegate {
     enum Identifier {
         static let prefix = "com.swiftcraftlauncher.touchbar"
-        static let playerPicker = NSTouchBarItem.Identifier("\(prefix).player-picker")
+        static let playerLabel = NSTouchBarItem.Identifier("\(prefix).player-label")
         static let playStop = NSTouchBarItem.Identifier("\(prefix).play-stop")
         static let gamePicker = NSTouchBarItem.Identifier("\(prefix).game-picker")
         static let openSettings = NSTouchBarItem.Identifier("\(prefix).open-settings")
 
-        static let playerPrefix = "\(prefix).player."
         static let gamePrefix = "\(prefix).game."
-
-        static func player(_ id: String) -> NSTouchBarItem.Identifier {
-            NSTouchBarItem.Identifier("\(playerPrefix)\(id)")
-        }
 
         static func game(_ id: String) -> NSTouchBarItem.Identifier {
             NSTouchBarItem.Identifier("\(gamePrefix)\(id)")
@@ -38,13 +33,10 @@ final class TouchBarController: NSObject, NSTouchBarDelegate {
     weak var window: NSWindow?
     let touchBar = NSTouchBar()
     var cachedItems: [String: NSTouchBarItem] = [:]
-    var playerPickerTouchBar: NSTouchBar?
-    var playerPickerItems: [String: NSTouchBarItem] = [:]
     var gamePickerTouchBar: NSTouchBar?
     var gamePickerItems: [String: NSTouchBarItem] = [:]
     var gamePickerIDs: [String] = []
     var gamePickerGames: [GameVersionInfo] = []
-    var playerPickerIDs: [String] = []
 
     var container: DIContainer?
     var gameRepository: GameRepository?
@@ -83,9 +75,6 @@ final class TouchBarController: NSObject, NSTouchBarDelegate {
             }
             return makeMainItem(for: identifier)
         }
-        if touchBar === playerPickerTouchBar {
-            return makePlayerPickerItem(for: identifier)
-        }
         if touchBar === gamePickerTouchBar {
             return makeGamePickerItem(for: identifier)
         }
@@ -94,35 +83,31 @@ final class TouchBarController: NSObject, NSTouchBarDelegate {
 
     func refresh() {
         let games = gameRepository?.games ?? []
-        let players = playerListViewModel?.players ?? []
+        let currentPlayer = playerListViewModel?.currentPlayer
         let selectedGame = resolveSelectedGame(in: games)
 
         let gameIDsSummary = games.map(\.id).joined(separator: ",")
         AppLog.touchbar.debug(
-            "Touch Bar refresh: \(games.count) games [\(gameIDsSummary)], \(players.count) players, selected=\(selectedGame?.gameName ?? "none")",
+            "Touch Bar refresh: \(games.count) games [\(gameIDsSummary)], player=\(currentPlayer?.name ?? "none"), selected=\(selectedGame?.gameName ?? "none")",
         )
 
-        configureTouchBarLayout(playerCount: players.count, gameCount: games.count)
-        if players.count > 1 {
-            updatePlayerPicker(currentPlayer: playerListViewModel?.currentPlayer)
-        } else {
-            playerPickerIDs = []
-        }
+        configureTouchBarLayout(hasPlayer: currentPlayer != nil, hasGame: !games.isEmpty)
+        updatePlayerLabelItem(currentPlayer: currentPlayer)
         if !games.isEmpty {
             updateGamePicker(games: games, selectedGame: selectedGame)
         } else {
             gamePickerIDs = []
         }
-        updatePlayStopItem(selectedGame: selectedGame, currentPlayer: playerListViewModel?.currentPlayer)
+        updatePlayStopItem(selectedGame: selectedGame, currentPlayer: currentPlayer)
     }
 
-    private func configureTouchBarLayout(playerCount: Int, gameCount: Int) {
+    private func configureTouchBarLayout(hasPlayer: Bool, hasGame: Bool) {
         var identifiers: [NSTouchBarItem.Identifier] = []
-        if playerCount > 1 {
-            identifiers.append(Identifier.playerPicker)
+        if hasPlayer {
+            identifiers.append(Identifier.playerLabel)
         }
         identifiers.append(Identifier.playStop)
-        if gameCount > 0 {
+        if hasGame {
             identifiers.append(Identifier.gamePicker)
         }
         identifiers.append(Identifier.openSettings)

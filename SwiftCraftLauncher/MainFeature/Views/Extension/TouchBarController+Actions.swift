@@ -12,6 +12,13 @@ extension TouchBarController {
         NSImage(systemSymbolName: name, accessibilityDescription: accessibilityDescription) ?? NSImage()
     }
 
+    /// Keeps the read-only current-player label in sync with the active player.
+    func updatePlayerLabelItem(currentPlayer: Player?) {
+        guard let item = cachedItems[Identifier.playerLabel.rawValue] as? NSCustomTouchBarItem,
+              let label = item.view as? NSTextField else { return }
+        label.stringValue = currentPlayer?.name ?? ""
+    }
+
     func updatePlayStopItem(selectedGame: GameVersionInfo?, currentPlayer: Player?) {
         let item = mainItem(Identifier.playStop) {
             NSButtonTouchBarItem(
@@ -39,12 +46,16 @@ extension TouchBarController {
 
     func makeMainItem(for identifier: NSTouchBarItem.Identifier) -> NSTouchBarItem? {
         switch identifier {
-        case Identifier.playerPicker:
-            let picker = NSPopoverTouchBarItem(identifier: identifier)
-            picker.showsCloseButton = true
-            picker.collapsedRepresentationLabel = "menu.player.list".localized()
-            cachedItems[identifier.rawValue] = picker
-            return picker
+        case Identifier.playerLabel:
+            let label = NSTextField(labelWithString: playerListViewModel?.currentPlayer?.name ?? "")
+            label.font = NSFont.systemFont(ofSize: 15, weight: .medium)
+            label.textColor = .secondaryLabelColor
+            label.alignment = .center
+            label.lineBreakMode = .byTruncatingTail
+            let item = NSCustomTouchBarItem(identifier: identifier)
+            item.view = label
+            cachedItems[identifier.rawValue] = item
+            return item
         case Identifier.playStop:
             let button = NSButtonTouchBarItem(
                 identifier: identifier,
@@ -117,16 +128,6 @@ extension TouchBarController {
                 await gameLaunchUseCase.launchGame(player: player, game: game)
             }
         }
-    }
-
-    @objc func selectPlayer(_ sender: NSButton) {
-        guard let rawIdentifier = sender.identifier?.rawValue,
-              let playerId = Identifier.id(afterPrefix: Identifier.playerPrefix, in: rawIdentifier) else {
-            return
-        }
-        playerListViewModel?.setCurrentPlayer(byID: playerId)
-        (cachedItems[Identifier.playerPicker.rawValue] as? NSPopoverTouchBarItem)?.dismissPopover(nil)
-        refresh()
     }
 
     @objc func selectGame(_ sender: NSButton) {

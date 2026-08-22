@@ -8,54 +8,6 @@
 import AppKit
 
 extension TouchBarController {
-    func updatePlayerPicker(currentPlayer: Player?) {
-        let item = mainItem(Identifier.playerPicker) {
-            let picker = NSPopoverTouchBarItem(identifier: Identifier.playerPicker)
-            picker.showsCloseButton = true
-            picker.collapsedRepresentationLabel = currentPlayer?.name ?? "menu.player.list".localized()
-            return picker
-        }
-        guard let picker = item as? NSPopoverTouchBarItem else { return }
-
-        picker.collapsedRepresentationLabel = currentPlayer?.name ?? "menu.player.list".localized()
-
-        let playerIDs = playerListViewModel?.players.map(\.id) ?? []
-        if playerIDs != playerPickerIDs {
-            playerPickerIDs = playerIDs
-
-            let childBar: NSTouchBar
-            if let existing = playerPickerTouchBar {
-                childBar = existing
-            } else {
-                let bar = NSTouchBar()
-                bar.delegate = self
-                playerPickerTouchBar = bar
-                childBar = bar
-            }
-            childBar.defaultItemIdentifiers = playerIDs.map { Identifier.player($0) }
-            playerPickerItems.removeAll()
-            picker.popoverTouchBar = childBar
-        } else if let bar = playerPickerTouchBar {
-            picker.popoverTouchBar = bar
-        }
-
-        refreshPlayerPickerItems()
-    }
-
-    /// Refreshes the titles of cached player-picker items so renames and
-    /// profile updates (same id) are reflected without rebuilding the bar.
-    func refreshPlayerPickerItems() {
-        for (rawKey, item) in playerPickerItems {
-            guard let button = item as? NSButtonTouchBarItem,
-                  let playerId = Identifier.id(afterPrefix: Identifier.playerPrefix, in: rawKey),
-                  let player = playerListViewModel?.players.first(where: { $0.id == playerId }) else {
-                continue
-            }
-            button.title = player.name
-            button.customizationLabel = player.name
-        }
-    }
-
     func updateGamePicker(games: [GameVersionInfo], selectedGame: GameVersionInfo?) {
         let item = mainItem(Identifier.gamePicker) {
             let picker = NSPopoverTouchBarItem(identifier: Identifier.gamePicker)
@@ -139,26 +91,6 @@ extension TouchBarController {
     func touchBarTitle(for name: String, maxCharacters: Int = 14) -> String {
         guard name.count > maxCharacters else { return name }
         return String(name.prefix(maxCharacters)) + "…"
-    }
-
-    func makePlayerPickerItem(for identifier: NSTouchBarItem.Identifier) -> NSTouchBarItem? {
-        if let item = playerPickerItems[identifier.rawValue] {
-            return item
-        }
-        guard let playerId = Identifier.id(afterPrefix: Identifier.playerPrefix, in: identifier.rawValue),
-              let player = playerListViewModel?.players.first(where: { $0.id == playerId }) else {
-            return nil
-        }
-
-        let item = NSButtonTouchBarItem(
-            identifier: identifier,
-            title: player.name,
-            target: self,
-            action: #selector(selectPlayer(_:)),
-        )
-        item.customizationLabel = player.name
-        playerPickerItems[identifier.rawValue] = item
-        return item
     }
 
     func makeGamePickerItem(for identifier: NSTouchBarItem.Identifier) -> NSTouchBarItem? {
