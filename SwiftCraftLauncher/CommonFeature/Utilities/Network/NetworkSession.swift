@@ -28,7 +28,7 @@ enum NetworkSession {
         let configuration = newConfiguration()
         configuration.httpMaximumConnectionsPerHost = max(
             1,
-            DIContainer.shared.ui.generalSettingsManager.concurrentDownloads,
+            DIContainer.shared.ui.gameSettingsManager.concurrentDownloads,
         )
         return URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
     }

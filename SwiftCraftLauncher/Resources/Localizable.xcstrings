@@ -10,10 +10,6 @@
     "-" : {
       "shouldTranslate" : false
     },
-    ":" : {
-      "shouldTranslate" : false
-    },
-
     "…" : {
       "shouldTranslate" : false
     },
@@ -10053,7 +10049,6 @@
       }
     },
     "error.authentication.minecraft_profile_missing" : {
-      "shouldTranslate" : true,
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
@@ -10186,282 +10181,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已擁有 Minecraft Java 版，但尚未建立遊戲檔案"
-          }
-        }
-      }
-    },
-    "minecraft.auth.create_profile" : {
-      "shouldTranslate" : true,
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "إنشاء ملف تعريف"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opret profil"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Profil erstellen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Create profile"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crear perfil"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Luo profiili"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Créer un profil"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "प्रोफ़ाइल बनाएँ"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crea profilo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プロフィールを作成"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "프로필 만들기"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opprett profil"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Profiel aanmaken"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utwórz profil"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Criar perfil"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Создать профиль"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skapa profil"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "สร้างโปรไฟล์"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Profil oluştur"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tạo hồ sơ"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "前往创建"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "前往建立"
-          }
-        }
-      }
-    },
-    "minecraft.auth.create_profile_message" : {
-      "shouldTranslate" : true,
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "يرجى النقر على زر «إنشاء ملف تعريف» لإنشاء ملف تعريف لعبة Minecraft."
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klik på knappen \"Opret profil\" for at oprette din Minecraft-spilprofil."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klicke auf „Profil erstellen“, um dein Minecraft-Spielprofil zu erstellen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please click \"Create profile\" to create your Minecraft game profile."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Haz clic en «Crear perfil» para crear tu perfil de juego de Minecraft."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Luo Minecraft-peliprofiilisi napsauttamalla Luo profiili -painiketta."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cliquez sur le bouton « Créer un profil » pour créer votre profil de jeu Minecraft."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "अपनी Minecraft गेम प्रोफ़ाइल बनाने के लिए “प्रोफ़ाइल बनाएँ” बटन पर क्लिक करें।"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fai clic sul pulsante “Crea profilo” per creare il tuo profilo di gioco Minecraft."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「プロフィールを作成」ボタンをクリックして、Minecraft のゲームプロフィールを作成してください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft 게임 프로필을 만들려면 “프로필 만들기” 버튼을 클릭하세요."
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klikk på knappen «Opprett profil» for å opprette Minecraft-spillprofilen din."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klik op de knop ‘Profiel aanmaken’ om je Minecraft-spelprofiel aan te maken."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kliknij przycisk „Utwórz profil”, aby utworzyć swój profil gry Minecraft."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clique no botão “Criar perfil” para criar o seu perfil de jogo do Minecraft."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Нажмите кнопку «Создать профиль», чтобы создать игровой профиль Minecraft."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klicka på knappen ”Skapa profil” för att skapa din Minecraft-spelprofil."
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "คลิกปุ่ม “สร้างโปรไฟล์” เพื่อสร้างโปรไฟล์เกม Minecraft ของคุณ"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft oyun profilinizi oluşturmak için “Profil oluştur” düğmesine tıklayın."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nhấp vào nút “Tạo hồ sơ” để tạo hồ sơ trò chơi Minecraft của bạn."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请点击「前往创建」按钮来创建游戏档案"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請點擊「前往建立」按鈕以建立 Minecraft 遊戲檔案。"
           }
         }
       }
@@ -38854,6 +38573,143 @@
         }
       }
     },
+    "game_launch.integrity.java_unusable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل تشغيل Java."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java kunne ikke startes."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java konnte nicht gestartet werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java failed to start."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo iniciar Java."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java ei käynnistynyt."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java n’a pas pu démarrer."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java शुरू नहीं हो सका।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java non è stato avviato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java の起動に失敗しました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java를 시작하지 못했습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java kunne ikke startes."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java kon niet worden gestart."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się uruchomić Javy."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível iniciar o Java."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось запустить Java."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java kunde inte startas."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ไม่สามารถเริ่ม Java ได้"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java başlatılamadı."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Không thể khởi động Java."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java 无法启动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Java 無法啟動"
+          }
+        }
+      }
+    },
     "game_launch.authlib_injector_missing.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -47244,6 +47100,280 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請點擊下方的「添加」按鈕確認使用此帳戶"
+          }
+        }
+      }
+    },
+    "minecraft.auth.create_profile" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إنشاء ملف تعريف"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opret profil"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profil erstellen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create profile"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crear perfil"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luo profiili"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un profil"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "प्रोफ़ाइल बनाएँ"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crea profilo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロフィールを作成"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프로필 만들기"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opprett profil"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profiel aanmaken"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utwórz profil"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criar perfil"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создать профиль"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skapa profil"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "สร้างโปรไฟล์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profil oluştur"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tạo hồ sơ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往创建"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往建立"
+          }
+        }
+      }
+    },
+    "minecraft.auth.create_profile_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى النقر على زر «إنشاء ملف تعريف» لإنشاء ملف تعريف لعبة Minecraft."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klik på knappen \"Opret profil\" for at oprette din Minecraft-spilprofil."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klicke auf „Profil erstellen“, um dein Minecraft-Spielprofil zu erstellen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please click \"Create profile\" to create your Minecraft game profile."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haz clic en «Crear perfil» para crear tu perfil de juego de Minecraft."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Luo Minecraft-peliprofiilisi napsauttamalla Luo profiili -painiketta."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cliquez sur le bouton « Créer un profil » pour créer votre profil de jeu Minecraft."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अपनी Minecraft गेम प्रोफ़ाइल बनाने के लिए “प्रोफ़ाइल बनाएँ” बटन पर क्लिक करें।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fai clic sul pulsante “Crea profilo” per creare il tuo profilo di gioco Minecraft."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「プロフィールを作成」ボタンをクリックして、Minecraft のゲームプロフィールを作成してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 게임 프로필을 만들려면 “프로필 만들기” 버튼을 클릭하세요."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klikk på knappen «Opprett profil» for å opprette Minecraft-spillprofilen din."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klik op de knop ‘Profiel aanmaken’ om je Minecraft-spelprofiel aan te maken."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kliknij przycisk „Utwórz profil”, aby utworzyć swój profil gry Minecraft."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clique no botão “Criar perfil” para criar o seu perfil de jogo do Minecraft."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите кнопку «Создать профиль», чтобы создать игровой профиль Minecraft."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klicka på knappen ”Skapa profil” för att skapa din Minecraft-spelprofil."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "คลิกปุ่ม “สร้างโปรไฟล์” เพื่อสร้างโปรไฟล์เกม Minecraft ของคุณ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft oyun profilinizi oluşturmak için “Profil oluştur” düğmesine tıklayın."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhấp vào nút “Tạo hồ sơ” để tạo hồ sơ trò chơi Minecraft của bạn."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请点击「前往创建」按钮来创建游戏档案"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請點擊「前往建立」按鈕以建立 Minecraft 遊戲檔案。"
           }
         }
       }
@@ -68243,133 +68373,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تحليل AI للتعطل"
+            "value" : "تحليل AI للتعطل:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI Analyse af Nedbrud"
+            "value" : "AI Analyse af Nedbrud:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "KI-Analyse bei Absturz"
+            "value" : "KI-Analyse bei Absturz:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI Crash Analysis"
+            "value" : "AI Crash Analysis:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Análisis de Fallos con IA"
+            "value" : "Análisis de Fallos con IA:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI-kaatumisanalyysi"
+            "value" : "AI-kaatumisanalyysi:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Analyse IA des Plantages"
+            "value" : "Analyse IA des Plantages:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI क्रैश विश्लेषण"
+            "value" : "AI क्रैश विश्लेषण:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Analisi Crash con IA"
+            "value" : "Analisi Crash con IA:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AIクラッシュ分析"
+            "value" : "AIクラッシュ分析："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 크래시 분석"
+            "value" : "AI 크래시 분석："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI Krasjanalyse"
+            "value" : "AI Krasjanalyse:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI Crash Analyse"
+            "value" : "AI Crash Analyse:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Analiza Awarii AI"
+            "value" : "Analiza Awarii AI:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Análise de Falhas com IA"
+            "value" : "Análise de Falhas com IA:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ИИ-анализ сбоев"
+            "value" : "ИИ-анализ сбоев:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI-kraschanalys"
+            "value" : "AI-kraschanalys:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "การวิเคราะห์การขัดข้องด้วย AI"
+            "value" : "การวิเคราะห์การขัดข้องด้วย AI:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI Çökme Analizi"
+            "value" : "AI Çökme Analizi:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Phân tích Sự cố bằng AI"
+            "value" : "Phân tích Sự cố bằng AI:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI分析崩溃"
+            "value" : "AI分析崩溃："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI分析崩潰"
+            "value" : "AI分析崩潰："
           }
         }
       }
@@ -68656,133 +68786,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "مفتاح API"
+            "value" : "مفتاح API:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-nøgle"
+            "value" : "API-nøgle:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-Schlüssel"
+            "value" : "API-Schlüssel:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API Key"
+            "value" : "API Key:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Clave API"
+            "value" : "Clave API:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-avain"
+            "value" : "API-avain:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Clé API"
+            "value" : "Clé API:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API कुंजी"
+            "value" : "API कुंजी:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chiave API"
+            "value" : "Chiave API:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "APIキー"
+            "value" : "APIキー："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 키"
+            "value" : "API 키："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-nøkkel"
+            "value" : "API-nøkkel:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-sleutel"
+            "value" : "API-sleutel:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Klucz API"
+            "value" : "Klucz API:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chave API"
+            "value" : "Chave API:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-ключ"
+            "value" : "API-ключ:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-nyckel"
+            "value" : "API-nyckel:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "คีย์ API"
+            "value" : "คีย์ API:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API Anahtarı"
+            "value" : "API Anahtarı:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Khóa API"
+            "value" : "Khóa API:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API密钥"
+            "value" : "API密钥："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API密鑰"
+            "value" : "API密鑰："
           }
         }
       }
@@ -68794,133 +68924,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "نوع API"
+            "value" : "نوع API:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-type"
+            "value" : "API-type:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-Typ"
+            "value" : "API-Typ:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API Type"
+            "value" : "API Type:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tipo de API"
+            "value" : "Tipo de API:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-tyyppi"
+            "value" : "API-tyyppi:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Type d'API"
+            "value" : "Type d'API:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API प्रकार"
+            "value" : "API प्रकार:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tipo di API"
+            "value" : "Tipo di API:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "APIタイプ"
+            "value" : "APIタイプ："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 유형"
+            "value" : "API 유형："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-type"
+            "value" : "API-type:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-type"
+            "value" : "API-type:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Typ API"
+            "value" : "Typ API:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tipo de API"
+            "value" : "Tipo de API:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Тип API"
+            "value" : "Тип API:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-typ"
+            "value" : "API-typ:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ประเภท API"
+            "value" : "ประเภท API:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API Türü"
+            "value" : "API Türü:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Loại API"
+            "value" : "Loại API:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API类型"
+            "value" : "API类型："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API類型"
+            "value" : "API類型："
           }
         }
       }
@@ -68932,133 +69062,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "عنوان API"
+            "value" : "عنوان API:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API URL"
+            "value" : "API URL:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-Adresse"
+            "value" : "API-Adresse:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API URL"
+            "value" : "API URL:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL de API"
+            "value" : "URL de API:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-osoite"
+            "value" : "API-osoite:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL de l'API"
+            "value" : "URL de l'API:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API URL"
+            "value" : "API URL:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL API"
+            "value" : "URL API:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API URL"
+            "value" : "API URL："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API URL"
+            "value" : "API URL："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API URL"
+            "value" : "API URL:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API URL"
+            "value" : "API URL:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL API"
+            "value" : "URL API:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL da API"
+            "value" : "URL da API:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL API"
+            "value" : "URL API:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API URL"
+            "value" : "API URL:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API URL"
+            "value" : "API URL:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API URL"
+            "value" : "API URL:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL API"
+            "value" : "URL API:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API地址"
+            "value" : "API地址："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API地址"
+            "value" : "API地址："
           }
         }
       }
@@ -69208,133 +69338,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "صورة AI"
+            "value" : "صورة AI:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI Avatar"
+            "value" : "AI Avatar:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI-Avatar"
+            "value" : "AI-Avatar:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI Avatar"
+            "value" : "AI Avatar:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avatar de IA"
+            "value" : "Avatar de IA:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI-avatar"
+            "value" : "AI-avatar:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avatar IA"
+            "value" : "Avatar IA:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI अवतार"
+            "value" : "AI अवतार:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avatar IA"
+            "value" : "Avatar IA:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AIアバター"
+            "value" : "AIアバター："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 아바타"
+            "value" : "AI 아바타："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI Avatar"
+            "value" : "AI Avatar:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI-avatar"
+            "value" : "AI-avatar:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Awatar AI"
+            "value" : "Awatar AI:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avatar de IA"
+            "value" : "Avatar de IA:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Аватар ИИ"
+            "value" : "Аватар ИИ:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI-avatar"
+            "value" : "AI-avatar:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "อวตาร AI"
+            "value" : "อวตาร AI:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI Avatar"
+            "value" : "AI Avatar:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avatar AI"
+            "value" : "Avatar AI:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI头像"
+            "value" : "AI头像："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI頭像"
+            "value" : "AI頭像："
           }
         }
       }
@@ -69484,133 +69614,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اسم النموذج"
+            "value" : "اسم النموذج:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modelnavn"
+            "value" : "Modelnavn:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modellname"
+            "value" : "Modellname:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Model Name"
+            "value" : "Model Name:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nombre del modelo"
+            "value" : "Nombre del modelo:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mallin nimi"
+            "value" : "Mallin nimi:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nom du modèle"
+            "value" : "Nom du modèle:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मॉडल नाम"
+            "value" : "मॉडल नाम:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nome del modello"
+            "value" : "Nome del modello:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "モデル名"
+            "value" : "モデル名："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모델 이름"
+            "value" : "모델 이름："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modellnavn"
+            "value" : "Modellnavn:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modelnaam"
+            "value" : "Modelnaam:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nazwa modelu"
+            "value" : "Nazwa modelu:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nome do modelo"
+            "value" : "Nome do modelo:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Название модели"
+            "value" : "Название модели:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modellnamn"
+            "value" : "Modellnamn:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ชื่อโมเดล"
+            "value" : "ชื่อโมเดล:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Model adı"
+            "value" : "Model adı:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tên mô hình"
+            "value" : "Tên mô hình:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "模型名称"
+            "value" : "模型名称："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "模型名稱"
+            "value" : "模型名稱："
           }
         }
       }
@@ -69760,133 +69890,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "عنوان Ollama"
+            "value" : "عنوان Ollama:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama URL"
+            "value" : "Ollama URL:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama-Adresse"
+            "value" : "Ollama-Adresse:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama URL"
+            "value" : "Ollama URL:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL de Ollama"
+            "value" : "URL de Ollama:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama-osoite"
+            "value" : "Ollama-osoite:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL Ollama"
+            "value" : "URL Ollama:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama URL"
+            "value" : "Ollama URL:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL Ollama"
+            "value" : "URL Ollama:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama URL"
+            "value" : "Ollama URL："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama URL"
+            "value" : "Ollama URL："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama URL"
+            "value" : "Ollama URL:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama URL"
+            "value" : "Ollama URL:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL Ollama"
+            "value" : "URL Ollama:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL do Ollama"
+            "value" : "URL do Ollama:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL Ollama"
+            "value" : "URL Ollama:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama URL"
+            "value" : "Ollama URL:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL Ollama"
+            "value" : "URL Ollama:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama URL"
+            "value" : "Ollama URL:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "URL Ollama"
+            "value" : "URL Ollama:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama地址"
+            "value" : "Ollama地址："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama地址"
+            "value" : "Ollama地址："
           }
         }
       }
@@ -70172,133 +70302,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "حد ارتفاع النافذة"
+            "value" : "حد ارتفاع النافذة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Højdebegrænsning for vindue"
+            "value" : "Højdebegrænsning for vindue:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fensterhöhenbegrenzung"
+            "value" : "Fensterhöhenbegrenzung:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Window Height Limit"
+            "value" : "Window Height Limit:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Límite de altura de la ventana"
+            "value" : "Límite de altura de la ventana:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ikkunan korkeuden rajoitus"
+            "value" : "Ikkunan korkeuden rajoitus:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limite de hauteur de la fenêtre"
+            "value" : "Limite de hauteur de la fenêtre:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "विंडो ऊंचाई सीमा"
+            "value" : "विंडो ऊंचाई सीमा:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limite altezza finestra"
+            "value" : "Limite altezza finestra:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ウィンドウの高さ制限"
+            "value" : "ウィンドウの高さ制限："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "창 높이 제한"
+            "value" : "창 높이 제한："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Høydebegrensning for vindu"
+            "value" : "Høydebegrensning for vindu:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hoogtelimiet voor venster"
+            "value" : "Hoogtelimiet voor venster:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limit wysokości okna"
+            "value" : "Limit wysokości okna:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limite de altura da janela"
+            "value" : "Limite de altura da janela:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ограничение высоты окна"
+            "value" : "Ограничение высоты окна:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Höjdbegränsning för fönster"
+            "value" : "Höjdbegränsning för fönster:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "จำกัดความสูงของหน้าต่าง"
+            "value" : "จำกัดความสูงของหน้าต่าง:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pencere yüksekliği sınırı"
+            "value" : "Pencere yüksekliği sınırı:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Giới hạn chiều cao cửa sổ"
+            "value" : "Giới hạn chiều cao cửa sổ:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "窗口高度限制"
+            "value" : "窗口高度限制："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "視窗高度限制"
+            "value" : "視窗高度限制："
           }
         }
       }
@@ -70309,133 +70439,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "التحميلات المتزامنة"
+            "value" : "التحميلات المتزامنة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Samtidige Downloads"
+            "value" : "Samtidige Downloads:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gleichzeitige Downloads"
+            "value" : "Gleichzeitige Downloads:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Concurrent Downloads"
+            "value" : "Concurrent Downloads:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Descargas Concurrentes"
+            "value" : "Descargas Concurrentes:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Samanaikaiset Lataukset"
+            "value" : "Samanaikaiset Lataukset:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Téléchargements Simultanés"
+            "value" : "Téléchargements Simultanés:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "समानांतर डाउनलोड"
+            "value" : "समानांतर डाउनलोड:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Download Simultanei"
+            "value" : "Download Simultanei:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同時ダウンロード数"
+            "value" : "同時ダウンロード数："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "동시 다운로드"
+            "value" : "동시 다운로드："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Samtidige Nedlastinger"
+            "value" : "Samtidige Nedlastinger:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gelijktijdige Downloads"
+            "value" : "Gelijktijdige Downloads:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Równoległe Pobierania"
+            "value" : "Równoległe Pobierania:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Downloads Simultâneos"
+            "value" : "Downloads Simultâneos:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Одновременные Загрузки"
+            "value" : "Одновременные Загрузки:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Samtidiga Nedladdningar"
+            "value" : "Samtidiga Nedladdningar:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "การดาวน์โหลดพร้อมกัน"
+            "value" : "การดาวน์โหลดพร้อมกัน:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eşzamanlı İndirmeler"
+            "value" : "Eşzamanlı İndirmeler:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tải Xuống Đồng Thời"
+            "value" : "Tải Xuống Đồng Thời:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下载并发数"
+            "value" : "下载并发数："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載並發數"
+            "value" : "下載並發數："
           }
         }
       }
@@ -70583,133 +70713,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "مصدر واجهة برمجة التطبيقات الافتراضي"
+            "value" : "مصدر واجهة برمجة التطبيقات الافتراضي:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standard API-kilde"
+            "value" : "Standard API-kilde:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standard-API-Quelle"
+            "value" : "Standard-API-Quelle:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Default API Source"
+            "value" : "Default API Source:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fuente de API Predeterminada"
+            "value" : "Fuente de API Predeterminada:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oletus-API-lähde"
+            "value" : "Oletus-API-lähde:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Source d'API par Défaut"
+            "value" : "Source d'API par Défaut:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "डिफ़ॉल्ट API स्रोत"
+            "value" : "डिफ़ॉल्ट API स्रोत:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sorgente API Predefinita"
+            "value" : "Sorgente API Predefinita:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "デフォルトAPIソース"
+            "value" : "デフォルトAPIソース："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기본 API 소스"
+            "value" : "기본 API 소스："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standard API-kilde"
+            "value" : "Standard API-kilde:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standaard API-bron"
+            "value" : "Standaard API-bron:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Domyślne Źródło API"
+            "value" : "Domyślne Źródło API:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fonte de API Padrão"
+            "value" : "Fonte de API Padrão:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Источник API по Умолчанию"
+            "value" : "Источник API по Умолчанию:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standard API-källa"
+            "value" : "Standard API-källa:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "แหล่ง API เริ่มต้น"
+            "value" : "แหล่ง API เริ่มต้น:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Varsayılan API Kaynağı"
+            "value" : "Varsayılan API Kaynağı:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nguồn API Mặc định"
+            "value" : "Nguồn API Mặc định:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "默认接口来源"
+            "value" : "默认接口来源："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "預設介面來源"
+            "value" : "預設介面來源："
           }
         }
       }
@@ -70994,133 +71124,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تخصيص الذاكرة العامة"
+            "value" : "تخصيص الذاكرة العامة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Global Hukommelsesallokering"
+            "value" : "Global Hukommelsesallokering:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Globale Speicherzuteilung"
+            "value" : "Globale Speicherzuteilung:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Global Memory Allocation"
+            "value" : "Global Memory Allocation:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Asignación Global de Memoria"
+            "value" : "Asignación Global de Memoria:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Globaali Muistin Allokointi"
+            "value" : "Globaali Muistin Allokointi:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Allocation Mémoire Globale"
+            "value" : "Allocation Mémoire Globale:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ग्लोबल मेमोरी आवंटन"
+            "value" : "ग्लोबल मेमोरी आवंटन:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Allocazione Memoria Globale"
+            "value" : "Allocazione Memoria Globale:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "グローバルメモリ割り当て"
+            "value" : "グローバルメモリ割り当て："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "전역 메모리 할당"
+            "value" : "전역 메모리 할당："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Global Minneallokering"
+            "value" : "Global Minneallokering:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Globale Geheugenallocatie"
+            "value" : "Globale Geheugenallocatie:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Globalna Alokacja Pamięci"
+            "value" : "Globalna Alokacja Pamięci:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alocação Global de Memória"
+            "value" : "Alocação Global de Memória:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Глобальное Выделение Памяти"
+            "value" : "Глобальное Выделение Памяти:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Global Minnesallokering"
+            "value" : "Global Minnesallokering:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "การจัดสรรหน่วยความจำทั่วโลก"
+            "value" : "การจัดสรรหน่วยความจำทั่วโลก:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Global Bellek Tahsisi"
+            "value" : "Global Bellek Tahsisi:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Phân Bổ Bộ Nhớ Toàn Cục"
+            "value" : "Phân Bổ Bộ Nhớ Toàn Cục:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全局内存分配"
+            "value" : "全局内存分配："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全域記憶體分配"
+            "value" : "全域記憶體分配："
           }
         }
       }
@@ -71268,133 +71398,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "إصدارات اللعبة"
+            "value" : "إصدارات اللعبة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spilversioner"
+            "value" : "Spilversioner:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spielversionen"
+            "value" : "Spielversionen:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Game Versions"
+            "value" : "Game Versions:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versiones del juego"
+            "value" : "Versiones del juego:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Peliversiot"
+            "value" : "Peliversiot:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versions du jeu"
+            "value" : "Versions du jeu:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "गेम संस्करण"
+            "value" : "गेम संस्करण:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versioni del gioco"
+            "value" : "Versioni del gioco:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ゲームバージョン"
+            "value" : "ゲームバージョン："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 버전"
+            "value" : "게임 버전："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spillversjoner"
+            "value" : "Spillversjoner:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spelversies"
+            "value" : "Spelversies:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wersje gry"
+            "value" : "Wersje gry:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versões do jogo"
+            "value" : "Versões do jogo:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Версии игры"
+            "value" : "Версии игры:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spelversioner"
+            "value" : "Spelversioner:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เวอร์ชันของเกม"
+            "value" : "เวอร์ชันของเกม:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oyun Sürümleri"
+            "value" : "Oyun Sürümleri:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Phiên bản trò chơi"
+            "value" : "Phiên bản trò chơi:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "游戏版本列表"
+            "value" : "游戏版本列表："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "遊戲版本列表"
+            "value" : "遊戲版本列表："
           }
         }
       }
@@ -71955,133 +72085,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "معاملات مخصصة"
+            "value" : "معاملات مخصصة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Brugerdefinerede Parametre"
+            "value" : "Brugerdefinerede Parametre:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Benutzerdefinierte Parameter"
+            "value" : "Benutzerdefinierte Parameter:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Custom Parameters"
+            "value" : "Custom Parameters:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parámetros Personalizados"
+            "value" : "Parámetros Personalizados:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mukautetut Parametrit"
+            "value" : "Mukautetut Parametrit:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Paramètres Personnalisés"
+            "value" : "Paramètres Personnalisés:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "कस्टम पैरामीटर"
+            "value" : "कस्टम पैरामीटर:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parametri Personalizzati"
+            "value" : "Parametri Personalizzati:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "カスタムパラメータ"
+            "value" : "カスタムパラメータ："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사용자 정의 매개변수"
+            "value" : "사용자 정의 매개변수："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Egendefinerte Parametere"
+            "value" : "Egendefinerte Parametere:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aangepaste Parameters"
+            "value" : "Aangepaste Parameters:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parametry Niestandardowe"
+            "value" : "Parametry Niestandardowe:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parâmetros Personalizados"
+            "value" : "Parâmetros Personalizados:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Пользовательские Параметры"
+            "value" : "Пользовательские Параметры:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anpassade Parametrar"
+            "value" : "Anpassade Parametrar:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "พารามิเตอร์กำหนดเอง"
+            "value" : "พารามิเตอร์กำหนดเอง:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Özel Parametreler"
+            "value" : "Özel Parametreler:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tham Số Tùy Chỉnh"
+            "value" : "Tham Số Tùy Chỉnh:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定义参数"
+            "value" : "自定义参数："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "自定義參數"
+            "value" : "自定義參數："
           }
         }
       }
@@ -72229,133 +72359,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "متغيرات البيئة"
+            "value" : "متغيرات البيئة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miljøvariabler"
+            "value" : "Miljøvariabler:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Umgebungsvariablen"
+            "value" : "Umgebungsvariablen:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Environment Variables"
+            "value" : "Environment Variables:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Variables de Entorno"
+            "value" : "Variables de Entorno:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ympäristömuuttujat"
+            "value" : "Ympäristömuuttujat:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Variables d'Environnement"
+            "value" : "Variables d'Environnement:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "पर्यावरण चर"
+            "value" : "पर्यावरण चर:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Variabili di Ambiente"
+            "value" : "Variabili di Ambiente:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "環境変数"
+            "value" : "環境変数："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "환경 변수"
+            "value" : "환경 변수："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miljøvariabler"
+            "value" : "Miljøvariabler:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Omgevingsvariabelen"
+            "value" : "Omgevingsvariabelen:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zmienne Środowiskowe"
+            "value" : "Zmienne Środowiskowe:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Variáveis de Ambiente"
+            "value" : "Variáveis de Ambiente:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Переменные Окружения"
+            "value" : "Переменные Окружения:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Miljövariabler"
+            "value" : "Miljövariabler:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ตัวแปรสภาพแวดล้อม"
+            "value" : "ตัวแปรสภาพแวดล้อม:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ortam Değişkenleri"
+            "value" : "Ortam Değişkenleri:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Biến Môi Trường"
+            "value" : "Biến Môi Trường:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "环境变量"
+            "value" : "环境变量："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "環境變數"
+            "value" : "環境變數："
           }
         }
       }
@@ -72504,133 +72634,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "جامع القمامة"
+            "value" : "جامع القمامة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Affaldsindsamler"
+            "value" : "Affaldsindsamler:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Garbage Collector"
+            "value" : "Garbage Collector:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Garbage Collector"
+            "value" : "Garbage Collector:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Recolector de Basura"
+            "value" : "Recolector de Basura:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Roskienkerääjä"
+            "value" : "Roskienkerääjä:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Collecteur de Déchets"
+            "value" : "Collecteur de Déchets:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "गार्बेज कलेक्टर"
+            "value" : "गार्बेज कलेक्टर:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Garbage Collector"
+            "value" : "Garbage Collector:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ガベージコレクタ"
+            "value" : "ガベージコレクタ："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "가비지 컬렉터"
+            "value" : "가비지 컬렉터："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Søppelsamler"
+            "value" : "Søppelsamler:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Garbage Collector"
+            "value" : "Garbage Collector:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odśmiecacz"
+            "value" : "Odśmiecacz:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Coletor de Lixo"
+            "value" : "Coletor de Lixo:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сборщик Мусора"
+            "value" : "Сборщик Мусора:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skräpuppsamlare"
+            "value" : "Skräpuppsamlare:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ตัวเก็บขยะ"
+            "value" : "ตัวเก็บขยะ:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Çöp Toplayıcı"
+            "value" : "Çöp Toplayıcı:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bộ Thu Gom Rác"
+            "value" : "Bộ Thu Gom Rác:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "垃圾回收器"
+            "value" : "垃圾回收器："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "垃圾回收器"
+            "value" : "垃圾回收器："
           }
         }
       }
@@ -74012,133 +74142,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "إعدادات الذاكرة"
+            "value" : "إعدادات الذاكرة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hukommelsesindstillinger"
+            "value" : "Hukommelsesindstillinger:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Speichereinstellungen"
+            "value" : "Speichereinstellungen:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Memory Settings"
+            "value" : "Memory Settings:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configuración de Memoria"
+            "value" : "Configuración de Memoria:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muistiasetukset"
+            "value" : "Muistiasetukset:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Paramètres Mémoire"
+            "value" : "Paramètres Mémoire:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मेमोरी सेटिंग्स"
+            "value" : "मेमोरी सेटिंग्स:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Impostazioni Memoria"
+            "value" : "Impostazioni Memoria:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "メモリ設定"
+            "value" : "メモリ設定："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "메모리 설정"
+            "value" : "메모리 설정："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minneinnstillinger"
+            "value" : "Minneinnstillinger:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geheugeninstellingen"
+            "value" : "Geheugeninstellingen:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ustawienia Pamięci"
+            "value" : "Ustawienia Pamięci:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Configurações de Memória"
+            "value" : "Configurações de Memória:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Настройки Памяти"
+            "value" : "Настройки Памяти:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minnesinställningar"
+            "value" : "Minnesinställningar:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "การตั้งค่าหน่วยความจำ"
+            "value" : "การตั้งค่าหน่วยความจำ:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bellek Ayarları"
+            "value" : "Bellek Ayarları:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cài đặt Bộ nhớ"
+            "value" : "Cài đặt Bộ nhớ:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内存设置"
+            "value" : "内存设置："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "記憶體設置"
+            "value" : "記憶體設置："
           }
         }
       }
@@ -75254,133 +75384,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "مسار Java"
+            "value" : "مسار Java:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-sti"
+            "value" : "Java-sti:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-Pfad"
+            "value" : "Java-Pfad:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java Path"
+            "value" : "Java Path:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ruta de Java"
+            "value" : "Ruta de Java:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-polku"
+            "value" : "Java-polku:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chemin Java"
+            "value" : "Chemin Java:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java पथ"
+            "value" : "Java पथ:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Percorso Java"
+            "value" : "Percorso Java:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Javaパス"
+            "value" : "Javaパス："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java 경로"
+            "value" : "Java 경로："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-sti"
+            "value" : "Java-sti:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-pad"
+            "value" : "Java-pad:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ścieżka Java"
+            "value" : "Ścieżka Java:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Caminho Java"
+            "value" : "Caminho Java:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Путь к Java"
+            "value" : "Путь к Java:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-sökväg"
+            "value" : "Java-sökväg:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เส้นทาง Java"
+            "value" : "เส้นทาง Java:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java Yolu"
+            "value" : "Java Yolu:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Đường dẫn Java"
+            "value" : "Đường dẫn Java:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java路径"
+            "value" : "Java路径："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java路徑"
+            "value" : "Java路徑："
           }
         }
       }
@@ -75529,133 +75659,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تحسين الأداء"
+            "value" : "تحسين الأداء:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ydelsesoptimering"
+            "value" : "Ydelsesoptimering:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Leistungsoptimierung"
+            "value" : "Leistungsoptimierung:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Performance Optimization"
+            "value" : "Performance Optimization:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Optimización de Rendimiento"
+            "value" : "Optimización de Rendimiento:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Suorituskyvyn optimointi"
+            "value" : "Suorituskyvyn optimointi:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Optimisation des Performances"
+            "value" : "Optimisation des Performances:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "प्रदर्शन अनुकूलन"
+            "value" : "प्रदर्शन अनुकूलन:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ottimizzazione delle Prestazioni"
+            "value" : "Ottimizzazione delle Prestazioni:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "パフォーマンス最適化"
+            "value" : "パフォーマンス最適化："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "성능 최적화"
+            "value" : "성능 최적화："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ytelsesoptimalisering"
+            "value" : "Ytelsesoptimalisering:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prestatieoptimalisatie"
+            "value" : "Prestatieoptimalisatie:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Optymalizacja Wydajności"
+            "value" : "Optymalizacja Wydajności:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Otimização de Desempenho"
+            "value" : "Otimização de Desempenho:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Оптимизация Производительности"
+            "value" : "Оптимизация Производительности:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prestandaoptimering"
+            "value" : "Prestandaoptimering:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "การปรับปรุงประสิทธิภาพ"
+            "value" : "การปรับปรุงประสิทธิภาพ:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Performans İyileştirmesi"
+            "value" : "Performans İyileştirmesi:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tối ưu hóa Hiệu suất"
+            "value" : "Tối ưu hóa Hiệu suất:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "性能优化"
+            "value" : "性能优化："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "性能優化"
+            "value" : "性能優化："
           }
         }
       }
@@ -75943,133 +76073,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "بيئات تشغيل Java"
+            "value" : "بيئات تشغيل Java:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-runtimes"
+            "value" : "Java-runtimes:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-Laufzeiten"
+            "value" : "Java-Laufzeiten:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java Runtimes"
+            "value" : "Java Runtimes:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Runtimes de Java"
+            "value" : "Runtimes de Java:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-ajonaikaiset"
+            "value" : "Java-ajonaikaiset:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Runtimes Java"
+            "value" : "Runtimes Java:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "जावा रनटाइम"
+            "value" : "जावा रनटाइम:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Runtime Java"
+            "value" : "Runtime Java:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Javaランタイム"
+            "value" : "Javaランタイム："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java 런타임"
+            "value" : "Java 런타임："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-runtimes"
+            "value" : "Java-runtimes:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-runtimes"
+            "value" : "Java-runtimes:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Środowiska Java"
+            "value" : "Środowiska Java:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Runtimes Java"
+            "value" : "Runtimes Java:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Среды выполнения Java"
+            "value" : "Среды выполнения Java:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java-runtimes"
+            "value" : "Java-runtimes:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "รันไทม์ Java"
+            "value" : "รันไทม์ Java:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java Çalışma Zamanları"
+            "value" : "Java Çalışma Zamanları:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Môi trường Java"
+            "value" : "Môi trường Java:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java运行时"
+            "value" : "Java运行时："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java執行環境"
+            "value" : "Java執行環境："
           }
         }
       }
@@ -76080,133 +76210,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "لغة اللعبة"
+            "value" : "لغة اللعبة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spilsprog"
+            "value" : "Spilsprog:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spielsprache"
+            "value" : "Spielsprache:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Game Language"
+            "value" : "Game Language:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Idioma del juego"
+            "value" : "Idioma del juego:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pelin kieli"
+            "value" : "Pelin kieli:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Langue du jeu"
+            "value" : "Langue du jeu:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "गेम भाषा"
+            "value" : "गेम भाषा:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lingua del gioco"
+            "value" : "Lingua del gioco:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ゲーム言語"
+            "value" : "ゲーム言語："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 언어"
+            "value" : "게임 언어："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spillspråk"
+            "value" : "Spillspråk:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Speltaal"
+            "value" : "Speltaal:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Język gry"
+            "value" : "Język gry:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Idioma do jogo"
+            "value" : "Idioma do jogo:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Язык игры"
+            "value" : "Язык игры:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spelspråk"
+            "value" : "Spelspråk:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ภาษาของเกม"
+            "value" : "ภาษาของเกม:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oyun dili"
+            "value" : "Oyun dili:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ngôn ngữ trò chơi"
+            "value" : "Ngôn ngữ trò chơi:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "游戏语言"
+            "value" : "游戏语言："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "遊戲語言"
+            "value" : "遊戲語言："
           }
         }
       }
@@ -76902,133 +77032,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "نمط الواجهة"
+            "value" : "نمط الواجهة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Grænsefladestil"
+            "value" : "Grænsefladestil:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oberflächenstil"
+            "value" : "Oberflächenstil:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Interface style"
+            "value" : "Interface style:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Estilo de interfaz"
+            "value" : "Estilo de interfaz:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Käyttöliittymän tyyli"
+            "value" : "Käyttöliittymän tyyli:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Style d'interface"
+            "value" : "Style d'interface:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "इंटरफ़ेस शैली"
+            "value" : "इंटरफ़ेस शैली:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stile interfaccia"
+            "value" : "Stile interfaccia:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "インターフェーススタイル"
+            "value" : "インターフェーススタイル："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "인터페이스 스타일"
+            "value" : "인터페이스 스타일："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Grensesnittstil"
+            "value" : "Grensesnittstil:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Interface-stijl"
+            "value" : "Interface-stijl:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Styl interfejsu"
+            "value" : "Styl interfejsu:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Estilo da interface"
+            "value" : "Estilo da interface:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Стиль интерфейса"
+            "value" : "Стиль интерфейса:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gränssnittsstil"
+            "value" : "Gränssnittsstil:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "สไตล์อินเทอร์เฟซ"
+            "value" : "สไตล์อินเทอร์เฟซ:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arayüz stili"
+            "value" : "Arayüz stili:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Phong cách giao diện"
+            "value" : "Phong cách giao diện:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "界面风格"
+            "value" : "界面风格："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "介面風格"
+            "value" : "介面風格："
           }
         }
       }
@@ -77040,133 +77170,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اللغة"
+            "value" : "اللغة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sprog"
+            "value" : "Sprog:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sprache"
+            "value" : "Sprache:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Language"
+            "value" : "Language:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Idioma"
+            "value" : "Idioma:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kieli"
+            "value" : "Kieli:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Langue"
+            "value" : "Langue:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "भाषा"
+            "value" : "भाषा:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lingua"
+            "value" : "Lingua:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "言語"
+            "value" : "言語："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "언어"
+            "value" : "언어："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Språk"
+            "value" : "Språk:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Taal"
+            "value" : "Taal:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Język"
+            "value" : "Język:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Idioma"
+            "value" : "Idioma:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Язык"
+            "value" : "Язык:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Språk"
+            "value" : "Språk:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ภาษา"
+            "value" : "ภาษา:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dil"
+            "value" : "Dil:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ngôn ngữ"
+            "value" : "Ngôn ngữ:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "语言"
+            "value" : "语言："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "語言"
+            "value" : "語言："
           }
         }
       }
@@ -77315,133 +77445,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "دليل العمل"
+            "value" : "دليل العمل:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arbejdsmappe"
+            "value" : "Arbejdsmappe:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arbeitsverzeichnis"
+            "value" : "Arbeitsverzeichnis:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Working Directory"
+            "value" : "Working Directory:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Directorio de Trabajo"
+            "value" : "Directorio de Trabajo:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Työhakemisto"
+            "value" : "Työhakemisto:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Répertoire de travail"
+            "value" : "Répertoire de travail:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "कार्य निर्देशिका"
+            "value" : "कार्य निर्देशिका:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Directory di lavoro"
+            "value" : "Directory di lavoro:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "作業ディレクトリ"
+            "value" : "作業ディレクトリ："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "작업 디렉토리"
+            "value" : "작업 디렉토리："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arbeidsmappe"
+            "value" : "Arbeidsmappe:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Werkmap"
+            "value" : "Werkmap:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Katalog roboczy"
+            "value" : "Katalog roboczy:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diretório de Trabalho"
+            "value" : "Diretório de Trabalho:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Рабочая папка"
+            "value" : "Рабочая папка:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arbetskatalog"
+            "value" : "Arbetskatalog:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ไดเร็กทอรีการทำงาน"
+            "value" : "ไดเร็กทอรีการทำงาน:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Çalışma Dizini"
+            "value" : "Çalışma Dizini:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Thư mục làm việc"
+            "value" : "Thư mục làm việc:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "工作目录"
+            "value" : "工作目录："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "工作目錄"
+            "value" : "工作目錄："
           }
         }
       }
@@ -77589,133 +77719,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تحذير ضغط الذاكرة"
+            "value" : "تحذير ضغط الذاكرة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hukommelsespresionsadvarsel"
+            "value" : "Hukommelsespresionsadvarsel:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Speicherdruck-Warnung"
+            "value" : "Speicherdruck-Warnung:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Memory Pressure Warning"
+            "value" : "Memory Pressure Warning:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Advertencia de presión de memoria"
+            "value" : "Advertencia de presión de memoria:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muistipainevaroitus"
+            "value" : "Muistipainevaroitus:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avertissement de pression mémoire"
+            "value" : "Avertissement de pression mémoire:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मेमोरी दबाव चेतावनी"
+            "value" : "मेमोरी दबाव चेतावनी:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avviso pressione sulla memoria"
+            "value" : "Avviso pressione sulla memoria:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "メモリプレッシャー警告"
+            "value" : "メモリプレッシャー警告："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "메모리 압력 경고"
+            "value" : "메모리 압력 경고："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minnetrykkadvarsel"
+            "value" : "Minnetrykkadvarsel:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geheugendrukwaarschuwing"
+            "value" : "Geheugendrukwaarschuwing:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ostrzeżenie o ciśnieniu pamięci"
+            "value" : "Ostrzeżenie o ciśnieniu pamięci:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aviso de pressão de memória"
+            "value" : "Aviso de pressão de memória:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Предупреждение о давлении памяти"
+            "value" : "Предупреждение о давлении памяти:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minnestrycksvarning"
+            "value" : "Minnestrycksvarning:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "คำเตือนแรงกดดันหน่วยความจำ"
+            "value" : "คำเตือนแรงกดดันหน่วยความจำ:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bellek basıncı uyarısı"
+            "value" : "Bellek basıncı uyarısı:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cảnh báo áp lực bộ nhớ"
+            "value" : "Cảnh báo áp lực bộ nhớ:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内存压力警告"
+            "value" : "内存压力警告："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "記憶體壓力警告"
+            "value" : "記憶體壓力警告："
           }
         }
       }
@@ -77726,133 +77856,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تنسيق تصدير حزمة المودات"
+            "value" : "تنسيق تصدير حزمة المودات:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eksportformat for modpack"
+            "value" : "Eksportformat for modpack:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack-Exportformat"
+            "value" : "Modpack-Exportformat:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack export format"
+            "value" : "Modpack export format:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Formato de exportación del modpack"
+            "value" : "Formato de exportación del modpack:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modipaketin vientimuoto"
+            "value" : "Modipaketin vientimuoto:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Format d'exportation du modpack"
+            "value" : "Format d'exportation du modpack:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मॉडपैक निर्यात प्रारूप"
+            "value" : "मॉडपैक निर्यात प्रारूप:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Formato di esportazione del modpack"
+            "value" : "Formato di esportazione del modpack:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpackのエクスポート形式"
+            "value" : "Modpackのエクスポート形式："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드팩 내보내기 형식"
+            "value" : "모드팩 내보내기 형식："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eksportformat for modpakke"
+            "value" : "Eksportformat for modpakke:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exportindeling voor modpack"
+            "value" : "Exportindeling voor modpack:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Format eksportu paczki modów"
+            "value" : "Format eksportu paczki modów:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Formato de exportação do modpack"
+            "value" : "Formato de exportação do modpack:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Формат экспорта модпака"
+            "value" : "Формат экспорта модпака:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exportformat för modpack"
+            "value" : "Exportformat för modpack:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "รูปแบบการส่งออกม็อดแพ็ก"
+            "value" : "รูปแบบการส่งออกม็อดแพ็ก:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod paketi dışa aktarma biçimi"
+            "value" : "Mod paketi dışa aktarma biçimi:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Định dạng xuất gói mod"
+            "value" : "Định dạng xuất gói mod:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "整合包导出格式"
+            "value" : "整合包导出格式："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "整合包匯出格式"
+            "value" : "整合包匯出格式："
           }
         }
       }
@@ -77863,133 +77993,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Authlib Injector"
+            "value" : "Authlib Injector："
           }
         }
       }
@@ -78000,133 +78130,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "خادم الشكل"
+            "value" : "خادم الشكل:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skin-server"
+            "value" : "Skin-server:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skin-Server"
+            "value" : "Skin-Server:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preferred skin server"
+            "value" : "Preferred skin server:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Servidor de skins"
+            "value" : "Servidor de skins:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skini-palvelin"
+            "value" : "Skini-palvelin:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Serveur de skins"
+            "value" : "Serveur de skins:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "स्किन सर्वर"
+            "value" : "स्किन सर्वर:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server delle skin"
+            "value" : "Server delle skin:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "スキンサーバー"
+            "value" : "スキンサーバー："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "스킨 서버"
+            "value" : "스킨 서버："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skin-server"
+            "value" : "Skin-server:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skinserver"
+            "value" : "Skinserver:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Serwer skórek"
+            "value" : "Serwer skórek:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Servidor de skins"
+            "value" : "Servidor de skins:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сервер скинов"
+            "value" : "Сервер скинов:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skinserver"
+            "value" : "Skinserver:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เซิร์ฟเวอร์สกิน"
+            "value" : "เซิร์ฟเวอร์สกิน:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skin sunucusu"
+            "value" : "Skin sunucusu:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Máy chủ skin"
+            "value" : "Máy chủ skin:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "预选皮肤站"
+            "value" : "预选皮肤站："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "預選皮膚站"
+            "value" : "預選皮膚站："
           }
         }
       }
@@ -78137,133 +78267,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تسجيل دخول خاص"
+            "value" : "تسجيل دخول خاص:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Privat login"
+            "value" : "Privat login:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inkognito-Anmeldung"
+            "value" : "Inkognito-Anmeldung:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Incognito Login"
+            "value" : "Incognito Login:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicio de sesión privado"
+            "value" : "Inicio de sesión privado:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yksityinen kirjautuminen"
+            "value" : "Yksityinen kirjautuminen:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connexion privée"
+            "value" : "Connexion privée:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "गुप्त लॉगिन"
+            "value" : "गुप्त लॉगिन:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accesso privato"
+            "value" : "Accesso privato:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "シークレットログイン"
+            "value" : "シークレットログイン："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "시크릿 로그인"
+            "value" : "시크릿 로그인："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Privat innlogging"
+            "value" : "Privat innlogging:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Incognito-inloggen"
+            "value" : "Incognito-inloggen:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Logowanie incognito"
+            "value" : "Logowanie incognito:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Login privado"
+            "value" : "Login privado:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Приватный вход"
+            "value" : "Приватный вход:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Privat inloggning"
+            "value" : "Privat inloggning:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เข้าสู่ระบบแบบไม่ระบุตัวตน"
+            "value" : "เข้าสู่ระบบแบบไม่ระบุตัวตน:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gizli giriş"
+            "value" : "Gizli giriş:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Đăng nhập ẩn danh"
+            "value" : "Đăng nhập ẩn danh:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无痕登录"
+            "value" : "无痕登录："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無痕登入"
+            "value" : "無痕登入："
           }
         }
       }
@@ -78548,133 +78678,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "مكتبة السكنات السابقة"
+            "value" : "مكتبة السكنات السابقة:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Historisk skinbibliotek"
+            "value" : "Historisk skinbibliotek:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Historische Skin-Bibliothek"
+            "value" : "Historische Skin-Bibliothek:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "History Skin Library"
+            "value" : "History Skin Library:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Biblioteca de skins históricas"
+            "value" : "Biblioteca de skins históricas:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Historiallinen skinkirjasto"
+            "value" : "Historiallinen skinkirjasto:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bibliotheque d'historique des skins"
+            "value" : "Bibliotheque d'historique des skins:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "इतिहास स्किन लाइब्रेरी"
+            "value" : "इतिहास स्किन लाइब्रेरी:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Libreria cronologia skin"
+            "value" : "Libreria cronologia skin:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "履歴スキンライブラリ"
+            "value" : "履歴スキンライブラリ："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기록 스킨 라이브러리"
+            "value" : "기록 스킨 라이브러리："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Historisk skin-bibliotek"
+            "value" : "Historisk skin-bibliotek:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Historische skinbibliotheek"
+            "value" : "Historische skinbibliotheek:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Biblioteka historii skinow"
+            "value" : "Biblioteka historii skinow:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Biblioteca de historico de skins"
+            "value" : "Biblioteca de historico de skins:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Biblioteka istorii skinov"
+            "value" : "Biblioteka istorii skinov:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Historiskt skinbibliotek"
+            "value" : "Historiskt skinbibliotek:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "คลังสกินประวัติ"
+            "value" : "คลังสกินประวัติ:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gecmis skin kutuphanesi"
+            "value" : "Gecmis skin kutuphanesi:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Thu vien skin lich su"
+            "value" : "Thu vien skin lich su:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "历史皮肤库"
+            "value" : "历史皮肤库："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "歷史皮膚庫"
+            "value" : "歷史皮膚庫："
           }
         }
       }
@@ -79507,133 +79637,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "أصدقاء حساب Minecraft"
+            "value" : "أصدقاء حساب Minecraft:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft-kontovenner"
+            "value" : "Minecraft-kontovenner:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft-Kontofreunde"
+            "value" : "Minecraft-Kontofreunde:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft account friends"
+            "value" : "Minecraft account friends:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Amigos de la cuenta de Minecraft"
+            "value" : "Amigos de la cuenta de Minecraft:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft-tilin kaverit"
+            "value" : "Minecraft-tilin kaverit:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Amis du compte Minecraft"
+            "value" : "Amis du compte Minecraft:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft खाता मित्र"
+            "value" : "Minecraft खाता मित्र:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Amici dell'account Minecraft"
+            "value" : "Amici dell'account Minecraft:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraftアカウントのフレンド"
+            "value" : "Minecraftアカウントのフレンド："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft 계정 친구"
+            "value" : "Minecraft 계정 친구："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft-konto venner"
+            "value" : "Minecraft-konto venner:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft-accountvrienden"
+            "value" : "Minecraft-accountvrienden:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przyjaciele konta Minecraft"
+            "value" : "Przyjaciele konta Minecraft:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Amigos da conta Minecraft"
+            "value" : "Amigos da conta Minecraft:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Друзья аккаунта Minecraft"
+            "value" : "Друзья аккаунта Minecraft:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft-kontokompisar"
+            "value" : "Minecraft-kontokompisar:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เพื่อนในบัญชี Minecraft"
+            "value" : "เพื่อนในบัญชี Minecraft:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft hesap arkadaşları"
+            "value" : "Minecraft hesap arkadaşları:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bạn bè tài khoản Minecraft"
+            "value" : "Bạn bè tài khoản Minecraft:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft账号好友"
+            "value" : "Minecraft账号好友："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Minecraft帳號好友"
+            "value" : "Minecraft帳號好友："
           }
         }
       }
@@ -79644,133 +79774,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "إشعارات نشاط الأصدقاء"
+            "value" : "إشعارات نشاط الأصدقاء:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notifikationer om venneaktivitet"
+            "value" : "Notifikationer om venneaktivitet:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Benachrichtigungen zu Freundesaktivitäten"
+            "value" : "Benachrichtigungen zu Freundesaktivitäten:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Friend activity notifications"
+            "value" : "Friend activity notifications:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notificaciones de actividad de amigos"
+            "value" : "Notificaciones de actividad de amigos:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kaveritoiminnan ilmoitukset"
+            "value" : "Kaveritoiminnan ilmoitukset:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notifications d’activité des amis"
+            "value" : "Notifications d’activité des amis:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मित्र गतिविधि सूचनाएँ"
+            "value" : "मित्र गतिविधि सूचनाएँ:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notifiche attività amici"
+            "value" : "Notifiche attività amici:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "フレンドのアクティビティ通知"
+            "value" : "フレンドのアクティビティ通知："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "친구 활동 알림"
+            "value" : "친구 활동 알림："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Varsler om venners aktivitet"
+            "value" : "Varsler om venners aktivitet:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Meldingen van vriendenactiviteit"
+            "value" : "Meldingen van vriendenactiviteit:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Powiadomienia o aktywności znajomych"
+            "value" : "Powiadomienia o aktywności znajomych:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notificações de atividade dos amigos"
+            "value" : "Notificações de atividade dos amigos:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Уведомления об активности друзей"
+            "value" : "Уведомления об активности друзей:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aviseringar om vänaktivitet"
+            "value" : "Aviseringar om vänaktivitet:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "การแจ้งเตือนกิจกรรมเพื่อน"
+            "value" : "การแจ้งเตือนกิจกรรมเพื่อน:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arkadaş etkinlik bildirimleri"
+            "value" : "Arkadaş etkinlik bildirimleri:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Thông báo hoạt động bạn bè"
+            "value" : "Thông báo hoạt động bạn bè:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "好友状态通知"
+            "value" : "好友状态通知："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "好友狀態通知"
+            "value" : "好友狀態通知："
           }
         }
       }
@@ -80055,133 +80185,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تسجيل دخول طرف ثالث"
+            "value" : "تسجيل دخول طرف ثالث:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tredjepartslogin"
+            "value" : "Tredjepartslogin:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anmeldung über Drittanbieter"
+            "value" : "Anmeldung über Drittanbieter:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Third-Party Login"
+            "value" : "Third-Party Login:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicio de sesión de terceros"
+            "value" : "Inicio de sesión de terceros:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kolmannen osapuolen kirjautuminen"
+            "value" : "Kolmannen osapuolen kirjautuminen:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Connexion via un tiers"
+            "value" : "Connexion via un tiers:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "थर्ड-पार्टी लॉगिन"
+            "value" : "थर्ड-पार्टी लॉगिन:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Accesso di terze parti"
+            "value" : "Accesso di terze parti:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "サードパーティログイン"
+            "value" : "サードパーティログイン："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "서드파티 로그인"
+            "value" : "서드파티 로그인："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Innlogging via tredjepart"
+            "value" : "Innlogging via tredjepart:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inloggen via derde partij"
+            "value" : "Inloggen via derde partij:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Logowanie przez stronę trzecią"
+            "value" : "Logowanie przez stronę trzecią:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Login de terceiros"
+            "value" : "Login de terceiros:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Вход через сторонний сервис"
+            "value" : "Вход через сторонний сервис:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inloggning via tredje part"
+            "value" : "Inloggning via tredje part:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เข้าสู่ระบบของบุคคลที่สาม"
+            "value" : "เข้าสู่ระบบของบุคคลที่สาม:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Üçüncü taraf girişi"
+            "value" : "Üçüncü taraf girişi:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Đăng nhập bên thứ ba"
+            "value" : "Đăng nhập bên thứ ba:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "三方登录"
+            "value" : "三方登录："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "三方登入"
+            "value" : "三方登入："
           }
         }
       }
@@ -80467,133 +80597,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "وكيل النظام"
+            "value" : "وكيل النظام:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Systemproxy"
+            "value" : "Systemproxy:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "System-Proxy"
+            "value" : "System-Proxy:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "System Proxy"
+            "value" : "System Proxy:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Proxy del sistema"
+            "value" : "Proxy del sistema:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Järjestelmän välityspalvelin"
+            "value" : "Järjestelmän välityspalvelin:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Proxy système"
+            "value" : "Proxy système:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "सिस्टम प्रॉक्सी"
+            "value" : "सिस्टम प्रॉक्सी:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Proxy di sistema"
+            "value" : "Proxy di sistema:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "システムプロキシ"
+            "value" : "システムプロキシ："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "시스템 프록시"
+            "value" : "시스템 프록시："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Systemproxy"
+            "value" : "Systemproxy:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Systeemproxy"
+            "value" : "Systeemproxy:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Proxy systemowe"
+            "value" : "Proxy systemowe:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Proxy do sistema"
+            "value" : "Proxy do sistema:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Системный прокси"
+            "value" : "Системный прокси:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Systemproxy"
+            "value" : "Systemproxy:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "พร็อกซีระบบ"
+            "value" : "พร็อกซีระบบ:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sistem Vekili"
+            "value" : "Sistem Vekili:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Proxy hệ thống"
+            "value" : "Proxy hệ thống:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "系统代理"
+            "value" : "系统代理："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "系統代理"
+            "value" : "系統代理："
           }
         }
       }
@@ -81015,133 +81145,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "المظهر"
+            "value" : "المظهر:"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Udseende"
+            "value" : "Udseende:"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erscheinungsbild"
+            "value" : "Erscheinungsbild:"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Appearance"
+            "value" : "Appearance:"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apariencia"
+            "value" : "Apariencia:"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ulkoasu"
+            "value" : "Ulkoasu:"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apparence"
+            "value" : "Apparence:"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "दिखावट"
+            "value" : "दिखावट:"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aspetto"
+            "value" : "Aspetto:"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "外観"
+            "value" : "外観："
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모양"
+            "value" : "모양："
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utseende"
+            "value" : "Utseende:"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uiterlijk"
+            "value" : "Uiterlijk:"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wygląd"
+            "value" : "Wygląd:"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aparência"
+            "value" : "Aparência:"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Внешний вид"
+            "value" : "Внешний вид:"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utseende"
+            "value" : "Utseende:"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "รูปลักษณ์"
+            "value" : "รูปลักษณ์:"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Görünüm"
+            "value" : "Görünüm:"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Giao diện"
+            "value" : "Giao diện:"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "外观"
+            "value" : "外观："
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "外觀"
+            "value" : "外觀："
           }
         }
       }
@@ -85273,21 +85403,9 @@
       }
     },
     "touchbar.instance_settings" : {
+      "comment" : "Touch Bar instance settings button",
       "extractionState" : "manual",
-      "shouldTranslate" : true,
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Instance Settings"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "实例设置"
-          }
-        },
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
@@ -85301,6 +85419,12 @@
           }
         },
         "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instance Settings"
+          }
+        },
+        "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Instance Settings"
@@ -85400,6 +85524,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Instance Settings"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "实例设置"
           }
         },
         "zh-Hant" : {

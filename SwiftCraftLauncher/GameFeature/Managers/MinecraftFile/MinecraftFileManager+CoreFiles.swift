@@ -56,7 +56,7 @@ extension MinecraftFileManager {
         }
 
         let semaphore = AsyncSemaphore(
-            value: DIContainer.shared.ui.generalSettingsManager.concurrentDownloads,
+            value: DIContainer.shared.ui.gameSettingsManager.concurrentDownloads,
         )
 
         let metaDirectory = AppPaths.metaDirectory

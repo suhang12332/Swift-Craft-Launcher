@@ -335,7 +335,7 @@ final class ModPackInstallCoordinator {
     private func calculateOverridesTotal(extractedPath: URL) async -> Int {
         var overridesPath = extractedPath.appendingPathComponent("overrides")
         if !FileManager.default.fileExists(atPath: overridesPath.path) {
-            let possiblePaths = ["overrides", "Override", "override"]
+            let possiblePaths = ["overrides", "Override", "override", "minecraft"]
             for pathName in possiblePaths {
                 let testPath = extractedPath.appendingPathComponent(pathName)
                 if FileManager.default.fileExists(atPath: testPath.path) {
