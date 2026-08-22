@@ -96,12 +96,11 @@ final class MMCIndexAdapterTests: XCTestCase {
         )
         try FileManager.default.copyItem(at: packJsonURL, to: directory.appendingPathComponent("mmc-pack.json"))
 
-        let cfgURL = TestSupport.fixtureURL(
-            subdirectory: "Fixtures/mmc",
-            name: "instance",
-            extension: "cfg",
-        )
-        try FileManager.default.copyItem(at: cfgURL, to: directory.appendingPathComponent("instance.cfg"))
+        guard let cfgData = "[General]\nname=My MMC Modpack\niconKey=grass\n".data(using: .utf8) else {
+            XCTFail("Failed to create cfg data")
+            return
+        }
+        try cfgData.write(to: directory.appendingPathComponent("instance.cfg"))
 
         let result = await adapter.parseToModrinthIndexInfo(extractedPath: directory)
 
