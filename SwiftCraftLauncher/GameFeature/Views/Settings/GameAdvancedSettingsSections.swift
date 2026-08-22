@@ -58,7 +58,6 @@ struct GameAdvancedSettingsGarbageCollectorSection: View {
                 viewModel.didSelectGarbageCollector()
             }
         }
-        .labeledContentStyle(.custom)
         .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)
         CommonDescriptionText(text: viewModel.selectedGarbageCollector.description)
     }
