@@ -122,7 +122,7 @@ struct ScreenshotImageView: View {
             } else if let image = viewModel.image {
                 Image(nsImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
             }
         }
         .task {

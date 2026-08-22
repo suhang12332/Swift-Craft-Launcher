@@ -58,7 +58,7 @@ struct ModrinthProjectDetailView: View {
                 case let .success(image):
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .scaledToFill()
                 case .failure:
                     Image(systemName: "photo")
                         .foregroundColor(.secondary)

@@ -102,7 +102,7 @@ struct ModrinthDetailCardView: View {
                 case let .success(image):
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .scaledToFill()
                         .transition(.opacity)
                 default:
                     ModrinthDetailCardPlaceholderIcon()

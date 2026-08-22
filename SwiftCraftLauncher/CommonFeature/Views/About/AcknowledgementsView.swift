@@ -143,7 +143,7 @@ public struct AcknowledgementsView: View {
         case let .success(image):
             image
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .scaledToFill()
         case .failure:
             avatarPlaceholder()
         @unknown default:
