@@ -16,8 +16,6 @@ import Foundation
 struct MMCIndexAdapter: ModPackIndexAdapter {
     let id: String = "mmc"
 
-    // MARK: - Internal Types
-
     /// Parsed result from mmc-pack.json.
     private struct MMCPackInfo {
         let minecraftVersion: String
@@ -25,8 +23,6 @@ struct MMCIndexAdapter: ModPackIndexAdapter {
         let name: String?
         let version: String?
     }
-
-    // MARK: - ModPackIndexAdapter
 
     func canParse(extractedPath: URL) async -> Bool {
         await Task.detached(priority: .userInitiated) {
@@ -46,7 +42,7 @@ struct MMCIndexAdapter: ModPackIndexAdapter {
         let modPackName = instanceName ?? packJson.name ?? "MMC Modpack"
 
         AppLog.modPack.info(
-            "MMC pack parsed: \(modPackName) — Minecraft \(gameVersion), loader: \(loaderInfo.type) \(loaderInfo.version)"
+            "MMC pack parsed: \(modPackName) — Minecraft \(gameVersion), loader: \(loaderInfo.type) \(loaderInfo.version)",
         )
 
         return ModrinthIndexInfo(
@@ -61,8 +57,6 @@ struct MMCIndexAdapter: ModPackIndexAdapter {
             source: .mmc,
         )
     }
-
-    // MARK: - mmc-pack.json parsing
 
     private func parsePackJson(extractedPath: URL) async -> MMCPackInfo? {
         let packJsonPath = extractedPath.appendingPathComponent("mmc-pack.json")
@@ -123,12 +117,10 @@ struct MMCIndexAdapter: ModPackIndexAdapter {
                 minecraftVersion: mcVersion,
                 loaderInfo: (resolvedLoaderType, resolvedLoaderVersion),
                 name: pack.name,
-                version: pack.versionId
+                version: pack.versionId,
             )
         }.value
     }
-
-    // MARK: - instance.cfg parsing
 
     private func parseInstanceCfgName(extractedPath: URL) async -> String? {
         await Task.detached(priority: .userInitiated) {
@@ -164,8 +156,6 @@ struct MMCIndexAdapter: ModPackIndexAdapter {
         return nil
     }
 }
-
-// MARK: - mmc-pack.json models
 
 /// Top-level structure of `mmc-pack.json`.
 private struct MMCPackJson: Codable {
