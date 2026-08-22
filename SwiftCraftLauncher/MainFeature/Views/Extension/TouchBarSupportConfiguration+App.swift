@@ -66,11 +66,27 @@ extension TouchBarSupportConfiguration {
                 }
                 openSettings()
             },
+            onExportModPack: {
+                guard let selectedId = container.core.selectedGameManager.selectedGameId,
+                      let game = gameRepository.games.first(where: { $0.id == selectedId }) else {
+                    return
+                }
+                container.ui.gameDialogsPresenter.presentModPackExport(for: game)
+            },
+            onShowInFinder: {
+                guard let selectedId = container.core.selectedGameManager.selectedGameId,
+                      let game = gameRepository.games.first(where: { $0.id == selectedId }) else {
+                    return
+                }
+                container.core.gameActionManager.showInFinder(game: game)
+            },
             strings: TouchBarStrings(
                 selectGame: "global_resource.select_game".localized(),
                 instanceSettings: "touchbar.instance_settings".localized(),
                 play: "play.fill".localized(),
                 stop: "common.stop".localized(),
+                exportModPack: "modpack.export.button".localized(),
+                showInFinder: "sidebar.context_menu.show_in_finder".localized(),
             ),
         )
     }
