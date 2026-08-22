@@ -69,6 +69,8 @@ extension TouchBarSupportConfiguration {
             strings: TouchBarStrings(
                 selectGame: "global_resource.select_game".localized(),
                 instanceSettings: "touchbar.instance_settings".localized(),
+                play: "play.fill".localized(),
+                stop: "common.stop".localized(),
             ),
         )
     }

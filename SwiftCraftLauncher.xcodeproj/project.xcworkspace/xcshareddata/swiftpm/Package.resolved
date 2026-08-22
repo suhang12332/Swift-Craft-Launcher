@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SimplyDanny/SwiftLintPlugins",
       "state" : {
-        "revision" : "3292bab28e6e92000161348003fdef8edc4e582d",
-        "version" : "0.65.0"
+        "revision" : "ef7d692fc6706e8f5628e26bcafaefa445c58a97",
+        "version" : "0.65.1"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/functy23/TouchBarSupport",
       "state" : {
-        "revision" : "d8e43004a9b3ff2562bc9a04b52cec4a3b6a63a0",
-        "version" : "0.1.0"
+        "revision" : "616bff76039472c0f28e88ed6ad9ab23fb886175",
+        "version" : "0.1.1"
       }
     },
     {
