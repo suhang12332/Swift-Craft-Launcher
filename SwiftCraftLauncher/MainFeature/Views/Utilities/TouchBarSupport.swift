@@ -276,6 +276,22 @@ private final class TouchBarController: NSObject, NSTouchBarDelegate {
         } else if let bar = playerPickerTouchBar {
             picker.popoverTouchBar = bar
         }
+
+        refreshPlayerPickerItems()
+    }
+
+    /// Refreshes the titles of cached player-picker items so renames and
+    /// profile updates (same id) are reflected without rebuilding the bar.
+    private func refreshPlayerPickerItems() {
+        for (rawKey, item) in playerPickerItems {
+            guard let button = item as? NSButtonTouchBarItem,
+                  let playerId = Identifier.id(afterPrefix: Identifier.playerPrefix, in: rawKey),
+                  let player = playerListViewModel?.players.first(where: { $0.id == playerId }) else {
+                continue
+            }
+            button.title = player.name
+            button.customizationLabel = player.name
+        }
     }
 
     private func updateGamePicker(games: [GameVersionInfo], selectedGame: GameVersionInfo?) {
