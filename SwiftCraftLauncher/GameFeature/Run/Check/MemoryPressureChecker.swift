@@ -49,10 +49,6 @@ enum GameIntegrityChecker {
     static func check(game: GameVersionInfo) -> GlobalError? {
         let javaManager = DIContainer.shared.system.javaManager
 
-        if game.javaPath.isEmpty || !FileManager.default.isExecutableFile(atPath: game.javaPath) {
-            return .gameLaunch(i18nKey: "game_launch.integrity.java_missing")
-        }
-
         guard javaManager.canJavaRun(at: game.javaPath) else {
             return .gameLaunch(i18nKey: "game_launch.integrity.java_unusable")
         }
