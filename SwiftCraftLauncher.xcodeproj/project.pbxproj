@@ -16,6 +16,8 @@
 		90DB5E133037E75B008C2DD6 /* SwiftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1D2FB6406900DAD001 /* SwiftNBT */; };
 		90DB5E143037E75B008C2DD6 /* SwiftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1D2FB6406900DAD001 /* SwiftNBT */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
+		B3084E483039E90D00CEB4EC /* TouchBarSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC2E2FB6406900DAD888 /* TouchBarSupport */; };
+		B3084E493039E90D00CEB4EC /* TouchBarSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC2E2FB6406900DAD888 /* TouchBarSupport */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3084E483039E90D00CEB4EC /* TouchBarSupport in Frameworks */,
 				90DB5E133037E75B008C2DD6 /* SwiftNBT in Frameworks */,
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
 				90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */,
@@ -79,6 +82,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3084E493039E90D00CEB4EC /* TouchBarSupport in Frameworks */,
 				90DB5E143037E75B008C2DD6 /* SwiftNBT in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -609,14 +613,6 @@
 				kind = branch;
 			};
 		};
-		90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
-			requirement = {
-				kind = exactVersion;
-				version = 2.7.1;
-			};
-		};
 		90A1FC2F2FB6406900DAD888 /* XCRemoteSwiftPackageReference "TouchBarSupport" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/functy23/TouchBarSupport";
@@ -625,8 +621,15 @@
 				minimumVersion = 0.1.0;
 			};
 		};
+		90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.7.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
-
 
 /* Begin XCSwiftPackageProductDependency section */
 		033870FB2E6059610056BDB2 /* SwiftLintBuildToolPlugin */ = {
@@ -668,15 +671,15 @@
 			package = 90A1FC1D2FB6406900DAD000 /* XCRemoteSwiftPackageReference "SwiftNBT" */;
 			productName = SwiftNBT;
 		};
-		90E123456789ABCD0002 /* Sparkle */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */;
-			productName = Sparkle;
-		};
 		90A1FC2E2FB6406900DAD888 /* TouchBarSupport */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 90A1FC2F2FB6406900DAD888 /* XCRemoteSwiftPackageReference "TouchBarSupport" */;
 			productName = TouchBarSupport;
+		};
+		90E123456789ABCD0002 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

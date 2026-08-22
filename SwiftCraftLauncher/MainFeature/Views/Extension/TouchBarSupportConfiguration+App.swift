@@ -19,7 +19,11 @@ extension TouchBarSupportConfiguration {
     ) -> TouchBarSupportConfiguration {
         TouchBarSupportConfiguration(
             currentPlayerName: {
-                playerListViewModel.currentPlayer?.name
+                TouchBarPlayerAvatarProvider.shared.sync(player: playerListViewModel.currentPlayer)
+                return playerListViewModel.currentPlayer?.name
+            },
+            playerAvatarImage: {
+                TouchBarPlayerAvatarProvider.shared.image
             },
             instances: {
                 gameRepository.games.map { TouchBarInstance(id: $0.id, name: $0.gameName) }
@@ -79,6 +83,13 @@ extension TouchBarSupportConfiguration {
                     return
                 }
                 container.core.gameActionManager.showInFinder(game: game)
+            },
+            onDeleteInstance: {
+                guard let selectedId = container.core.selectedGameManager.selectedGameId,
+                      let game = gameRepository.games.first(where: { $0.id == selectedId }) else {
+                    return
+                }
+                container.ui.gameDialogsPresenter.requestGameDeletion(of: game)
             },
             strings: TouchBarStrings(
                 selectGame: "global_resource.select_game".localized(),
