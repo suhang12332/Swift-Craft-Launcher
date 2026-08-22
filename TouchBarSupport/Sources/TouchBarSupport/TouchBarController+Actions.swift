@@ -1,6 +1,6 @@
 //
 //  TouchBarController+Actions.swift
-//  MainFeature
+//  TouchBarSupport
 //
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
@@ -13,41 +13,36 @@ extension TouchBarController {
     }
 
     /// Keeps the read-only current-player label in sync with the active player.
-    func updatePlayerLabelItem(currentPlayer: Player?) {
+    func updatePlayerLabelItem(currentPlayer: String?) {
         guard let item = cachedItems[Identifier.playerLabel.rawValue] as? NSCustomTouchBarItem,
               let label = item.view as? NSTextField else { return }
-        label.stringValue = currentPlayer?.name ?? ""
+        label.stringValue = currentPlayer ?? ""
     }
 
-    func updatePlayStopItem(selectedGame: GameVersionInfo?, currentPlayer: Player?) {
+    func updatePlayStopItem(selectedGame: TouchBarInstance?, hasCurrentPlayer: Bool) {
         let item = mainItem(Identifier.playStop) {
             NSButtonTouchBarItem(
                 identifier: Identifier.playStop,
-                title: "play.fill".localized(),
+                title: "play.fill",
                 target: self,
                 action: #selector(toggleSelectedGame),
             )
         }
         guard let button = item as? NSButtonTouchBarItem else { return }
 
-        let userId = currentPlayer?.id ?? ""
-        let isRunning = selectedGame.map {
-            container?.core.gameStatusManager.isGameRunning(gameId: $0.id, userId: userId) ?? false
-        } ?? false
-        let isLaunching = selectedGame.map {
-            container?.core.gameStatusManager.isGameLaunching(gameId: $0.id, userId: userId) ?? false
-        } ?? false
-        let title = isRunning ? "common.stop".localized() : "play.fill".localized()
+        let isRunning = selectedGame.map { configuration?.isRunning($0.id) ?? false } ?? false
+        let isLaunching = selectedGame.map { configuration?.isLaunching($0.id) ?? false } ?? false
+        let title = isRunning ? "stop.fill" : "play.fill"
 
         button.title = title
         button.image = symbolImage(isRunning ? "stop.fill" : "play.fill", accessibilityDescription: title)
-        button.isEnabled = selectedGame != nil && currentPlayer != nil && !isLaunching
+        button.isEnabled = selectedGame != nil && hasCurrentPlayer && !isLaunching
     }
 
     func makeMainItem(for identifier: NSTouchBarItem.Identifier) -> NSTouchBarItem? {
         switch identifier {
         case Identifier.playerLabel:
-            let label = NSTextField(labelWithString: playerListViewModel?.currentPlayer?.name ?? "")
+            let label = NSTextField(labelWithString: configuration?.currentPlayerName() ?? "")
             label.font = NSFont.systemFont(ofSize: 15, weight: .medium)
             label.textColor = .secondaryLabelColor
             label.alignment = .center
@@ -59,7 +54,7 @@ extension TouchBarController {
         case Identifier.playStop:
             let button = NSButtonTouchBarItem(
                 identifier: identifier,
-                title: "play.fill".localized(),
+                title: "play.fill",
                 target: self,
                 action: #selector(toggleSelectedGame),
             )
@@ -68,13 +63,13 @@ extension TouchBarController {
         case Identifier.gamePicker:
             let picker = NSPopoverTouchBarItem(identifier: identifier)
             picker.showsCloseButton = true
-            picker.collapsedRepresentationLabel = "global_resource.select_game".localized()
+            picker.collapsedRepresentationLabel = configuration?.strings.selectGame ?? ""
             cachedItems[identifier.rawValue] = picker
             return picker
         case Identifier.openSettings:
             let button = NSButtonTouchBarItem(
                 identifier: identifier,
-                title: "touchbar.instance_settings".localized(),
+                title: configuration?.strings.instanceSettings ?? "",
                 image: symbolImage("gearshape"),
                 target: self,
                 action: #selector(openInstanceSettingsFromTouchBar),
@@ -95,39 +90,20 @@ extension TouchBarController {
         return item
     }
 
-    func resolveSelectedGame(in games: [GameVersionInfo]) -> GameVersionInfo? {
-        guard let selectedId = container?.core.selectedGameManager.selectedGameId else {
+    func resolveSelectedGame(in instances: [TouchBarInstance]) -> TouchBarInstance? {
+        guard let selectedId = configuration?.currentInstanceID() else {
             return nil
         }
-        return games.first { $0.id == selectedId }
+        return instances.first { $0.id == selectedId }
     }
 
     @objc func toggleSelectedGame() {
-        guard let container, let gameLaunchUseCase, let game = resolveSelectedGame(in: gameRepository?.games ?? []) else {
+        guard let configuration,
+              resolveSelectedGame(in: gamePickerInstances) != nil,
+              configuration.currentPlayerName() != nil else {
             return
         }
-        guard let player = playerListViewModel?.currentPlayer else { return }
-
-        if container.core.selectedGameManager.selectedGameId != game.id {
-            container.core.selectedGameManager.setSelectedGame(game.id)
-        }
-
-        let userId = player.id
-        if container.core.gameStatusManager.isGameRunning(gameId: game.id, userId: userId) {
-            Task { @MainActor in
-                await gameLaunchUseCase.stopGame(player: player, game: game)
-            }
-        } else {
-            container.core.gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
-            refresh()
-
-            Task { @MainActor in
-                defer {
-                    container.core.gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false)
-                }
-                await gameLaunchUseCase.launchGame(player: player, game: game)
-            }
-        }
+        configuration.onPlayStop()
     }
 
     @objc func selectGame(_ sender: NSButton) {
@@ -135,18 +111,14 @@ extension TouchBarController {
               let gameId = Identifier.id(afterPrefix: Identifier.gamePrefix, in: rawIdentifier) else {
             return
         }
-        AppLog.touchbar.debug("Touch Bar instance tapped: \(gameId)")
-        container?.core.selectedGameManager.setSelectedGame(gameId)
+        TouchBarLog.log.debug("Touch Bar instance tapped: \(gameId)")
+        configuration?.onSelectInstance(gameId)
         (cachedItems[Identifier.gamePicker.rawValue] as? NSPopoverTouchBarItem)?.dismissPopover(nil)
         refresh()
     }
 
-    /// Opens the settings window and, when an instance is selected, jumps
-    /// straight to that instance's advanced settings tab.
+    /// Opens the settings via the app-provided action.
     @objc func openInstanceSettingsFromTouchBar() {
-        if let selectedId = container?.core.selectedGameManager.selectedGameId {
-            container?.core.selectedGameManager.setSelectedGameAndOpenAdvancedSettings(selectedId)
-        }
-        openSettingsAction?()
+        configuration?.onOpenSettings()
     }
 }

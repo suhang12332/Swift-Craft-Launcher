@@ -1,6 +1,6 @@
 //
 //  TouchBarController+Pickers.swift
-//  MainFeature
+//  TouchBarSupport
 //
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
@@ -8,22 +8,22 @@
 import AppKit
 
 extension TouchBarController {
-    func updateGamePicker(games: [GameVersionInfo], selectedGame: GameVersionInfo?) {
+    func updateGamePicker(instances: [TouchBarInstance], selectedGame: TouchBarInstance?) {
         let item = mainItem(Identifier.gamePicker) {
             let picker = NSPopoverTouchBarItem(identifier: Identifier.gamePicker)
             picker.showsCloseButton = true
-            picker.collapsedRepresentationLabel = selectedGame.map { touchBarTitle(for: $0.gameName) }
-                ?? "global_resource.select_game".localized()
+            picker.collapsedRepresentationLabel = selectedGame.map { touchBarTitle(for: $0.name) }
+                ?? configuration?.strings.selectGame ?? ""
             return picker
         }
         guard let picker = item as? NSPopoverTouchBarItem else { return }
 
-        refreshGamePickerSelection(games: games, selectedGame: selectedGame, picker: picker)
+        refreshGamePickerSelection(instances: instances, selectedGame: selectedGame, picker: picker)
 
-        let gameIDs = games.map(\.id)
+        let gameIDs = instances.map(\.id)
         if gameIDs != gamePickerIDs {
             gamePickerIDs = gameIDs
-            gamePickerGames = games
+            gamePickerInstances = instances
 
             let childBar: NSTouchBar
             if let existing = gamePickerTouchBar {
@@ -34,12 +34,10 @@ extension TouchBarController {
                 gamePickerTouchBar = bar
                 childBar = bar
             }
-            childBar.defaultItemIdentifiers = games.map { Identifier.game($0.id) }
+            childBar.defaultItemIdentifiers = instances.map { Identifier.game($0.id) }
             gamePickerItems.removeAll()
             picker.popoverTouchBar = childBar
-            AppLog.touchbar.debug(
-                "Game picker rebuilt: \(gameIDs.count) identifiers [\(gameIDs.joined(separator: ","))]",
-            )
+            TouchBarLog.log.debug("Game picker rebuilt: \(gameIDs.count) identifiers [\(gameIDs.joined(separator: ","))]")
         } else if let bar = gamePickerTouchBar {
             picker.popoverTouchBar = bar
         }
@@ -48,20 +46,20 @@ extension TouchBarController {
     /// Updates the collapsed representation and the check mark on each instance
     /// entry without rebuilding the expanded list.
     func refreshGamePickerSelection(
-        games: [GameVersionInfo],
-        selectedGame: GameVersionInfo?,
+        instances: [TouchBarInstance],
+        selectedGame: TouchBarInstance?,
         picker: NSPopoverTouchBarItem,
     ) {
-        picker.collapsedRepresentationLabel = selectedGame.map { touchBarTitle(for: $0.gameName) }
-            ?? "global_resource.select_game".localized()
+        picker.collapsedRepresentationLabel = selectedGame.map { touchBarTitle(for: $0.name) }
+            ?? configuration?.strings.selectGame ?? ""
         picker.collapsedRepresentationImage = symbolImage(
             "gamecontroller.fill",
-            accessibilityDescription: selectedGame?.gameName,
+            accessibilityDescription: selectedGame?.name,
         )
 
         for (rawKey, item) in gamePickerItems {
             guard let gameId = Identifier.id(afterPrefix: Identifier.gamePrefix, in: rawKey),
-                  let game = games.first(where: { $0.id == gameId }),
+                  let game = instances.first(where: { $0.id == gameId }),
                   let button = (item as? NSCustomTouchBarItem)?.view as? NSButton else {
                 continue
             }
@@ -74,8 +72,8 @@ extension TouchBarController {
     /// The paragraph style truncates the tail, so the text adapts to whatever
     /// width the button is finally assigned; the leading check mark marks the
     /// currently selected instance.
-    func instanceButtonTitle(for game: GameVersionInfo, isSelected: Bool) -> NSAttributedString {
-        let name = isSelected ? "✓ " + game.gameName : game.gameName
+    func instanceButtonTitle(for game: TouchBarInstance, isSelected: Bool) -> NSAttributedString {
+        let name = isSelected ? "✓ " + game.name : game.name
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineBreakMode = .byTruncatingTail
         paragraph.alignment = .center
@@ -98,27 +96,26 @@ extension TouchBarController {
             return item
         }
         guard let gameId = Identifier.id(afterPrefix: Identifier.gamePrefix, in: identifier.rawValue) else {
-            AppLog.touchbar.error("Cannot parse game id from \(identifier.rawValue)")
+            TouchBarLog.log.error("Cannot parse game id from \(identifier.rawValue)")
             return nil
         }
-        guard let game = gamePickerGames.first(where: { $0.id == gameId })
-            ?? gameRepository?.games.first(where: { $0.id == gameId }) else {
-            AppLog.touchbar.error("Cannot create game item for id=\(gameId)")
+        guard let game = gamePickerInstances.first(where: { $0.id == gameId }) else {
+            TouchBarLog.log.error("Cannot create game item for id=\(gameId)")
             return nil
         }
 
-        let isSelected = game.id == container?.core.selectedGameManager.selectedGameId
+        let isSelected = game.id == configuration?.currentInstanceID()
         let button = TouchBarInstanceButton(title: "", target: self, action: #selector(selectGame(_:)))
         button.identifier = NSUserInterfaceItemIdentifier(identifier.rawValue)
         button.bezelStyle = .texturedRounded
         button.attributedTitle = instanceButtonTitle(for: game, isSelected: isSelected)
         button.setContentHuggingPriority(.defaultLow, for: .horizontal)
         button.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        button.toolTip = game.gameName
+        button.toolTip = game.name
 
         let item = NSCustomTouchBarItem(identifier: identifier)
         item.view = button
-        item.customizationLabel = game.gameName
+        item.customizationLabel = game.name
         gamePickerItems[identifier.rawValue] = item
         return item
     }

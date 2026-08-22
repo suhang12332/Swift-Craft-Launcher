@@ -1,6 +1,6 @@
 //
 //  TouchBarController.swift
-//  MainFeature
+//  TouchBarSupport
 //
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
@@ -36,13 +36,8 @@ final class TouchBarController: NSObject, NSTouchBarDelegate {
     var gamePickerTouchBar: NSTouchBar?
     var gamePickerItems: [String: NSTouchBarItem] = [:]
     var gamePickerIDs: [String] = []
-    var gamePickerGames: [GameVersionInfo] = []
-
-    var container: DIContainer?
-    var gameRepository: GameRepository?
-    var gameLaunchUseCase: GameLaunchUseCase?
-    var playerListViewModel: PlayerListViewModel?
-    var openSettingsAction: (@MainActor () -> Void)?
+    var gamePickerInstances: [TouchBarInstance] = []
+    var configuration: TouchBarSupportConfiguration?
 
     private var isObservingState = false
     private var observationGeneration = 0
@@ -54,13 +49,8 @@ final class TouchBarController: NSObject, NSTouchBarDelegate {
         window.touchBar = touchBar
     }
 
-    func update(with configuration: TouchBarConfiguration) {
-        container = configuration.container
-        gameRepository = configuration.gameRepository
-        gameLaunchUseCase = configuration.gameLaunchUseCase
-        playerListViewModel = configuration.playerListViewModel
-        openSettingsAction = configuration.openSettings
-
+    func update(with configuration: TouchBarSupportConfiguration) {
+        self.configuration = configuration
         refresh()
         scheduleStateObservationIfNeeded()
     }
@@ -82,32 +72,30 @@ final class TouchBarController: NSObject, NSTouchBarDelegate {
     }
 
     func refresh() {
-        let games = gameRepository?.games ?? []
-        let currentPlayer = playerListViewModel?.currentPlayer
-        let selectedGame = resolveSelectedGame(in: games)
+        let instances = configuration?.instances() ?? []
+        let currentPlayer = configuration?.currentPlayerName()
+        let selectedGame = resolveSelectedGame(in: instances)
 
-        let gameIDsSummary = games.map(\.id).joined(separator: ",")
-        AppLog.touchbar.debug(
-            "Touch Bar refresh: \(games.count) games [\(gameIDsSummary)], player=\(currentPlayer?.name ?? "none"), selected=\(selectedGame?.gameName ?? "none")",
-        )
+        let idsSummary = instances.map(\.id).joined(separator: ",")
+        TouchBarLog.log.debug("Touch Bar refresh: \(instances.count) instances [\(idsSummary)], player=\(currentPlayer ?? "none"), selected=\(selectedGame?.name ?? "none")")
 
-        configureTouchBarLayout(hasPlayer: currentPlayer != nil, hasGame: !games.isEmpty)
+        configureTouchBarLayout(hasPlayer: currentPlayer != nil, hasInstance: !instances.isEmpty)
         updatePlayerLabelItem(currentPlayer: currentPlayer)
-        if !games.isEmpty {
-            updateGamePicker(games: games, selectedGame: selectedGame)
+        if !instances.isEmpty {
+            updateGamePicker(instances: instances, selectedGame: selectedGame)
         } else {
             gamePickerIDs = []
         }
-        updatePlayStopItem(selectedGame: selectedGame, currentPlayer: currentPlayer)
+        updatePlayStopItem(selectedGame: selectedGame, hasCurrentPlayer: currentPlayer != nil)
     }
 
-    private func configureTouchBarLayout(hasPlayer: Bool, hasGame: Bool) {
+    private func configureTouchBarLayout(hasPlayer: Bool, hasInstance: Bool) {
         var identifiers: [NSTouchBarItem.Identifier] = []
         if hasPlayer {
             identifiers.append(Identifier.playerLabel)
         }
         identifiers.append(Identifier.playStop)
-        if hasGame {
+        if hasInstance {
             identifiers.append(Identifier.gamePicker)
         }
         identifiers.append(Identifier.openSettings)
@@ -136,17 +124,13 @@ final class TouchBarController: NSObject, NSTouchBarDelegate {
     }
 
     private func observedStateFingerprint() -> Int {
-        var fingerprint = gameRepository?.games.count ?? 0
-        fingerprint &+= playerListViewModel?.players.count ?? 0
-        fingerprint &+= playerListViewModel?.currentPlayer?.id.hashValue ?? 0
-        fingerprint &+= container?.core.selectedGameManager.selectedGameId?.hashValue ?? 0
+        var fingerprint = configuration?.instances().count ?? 0
+        fingerprint &+= configuration?.currentPlayerName()?.hashValue ?? 0
+        fingerprint &+= configuration?.currentInstanceID()?.hashValue ?? 0
 
-        let userId = playerListViewModel?.currentPlayer?.id ?? ""
-        for game in gameRepository?.games ?? [] {
-            let isRunning = container?.core.gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: userId) ?? false
-            let isLaunching = container?.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: userId) ?? false
-            fingerprint &+= isRunning ? 1 : 0
-            fingerprint &+= isLaunching ? 1 : 0
+        for instance in configuration?.instances() ?? [] {
+            fingerprint &+= (configuration?.isRunning(instance.id) ?? false) ? 1 : 0
+            fingerprint &+= (configuration?.isLaunching(instance.id) ?? false) ? 1 : 0
         }
         return fingerprint
     }
