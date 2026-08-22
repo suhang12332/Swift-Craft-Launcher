@@ -100,7 +100,6 @@ struct SwiftCraftLauncherApp: App {
                 .environment(gameRepository)
                 .environment(gameLaunchUseCase)
                 .environment(container)
-                .environment(container.core.selectedGameManager)
             },
             label: {
                 HStack {

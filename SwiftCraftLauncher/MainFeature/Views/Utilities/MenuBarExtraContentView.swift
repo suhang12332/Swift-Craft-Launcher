@@ -19,8 +19,6 @@ struct MenuBarExtraContentView: View {
     private var gameRepository
     @Environment(GameLaunchUseCase.self)
     private var gameLaunchUseCase
-    @Environment(SelectedGameManager.self)
-    private var selectedGameManager
 
     let openSettings: () -> Void
 
@@ -60,9 +58,6 @@ struct MenuBarExtraContentView: View {
         .onChange(of: gameRepository.games.count) { _, _ in
             syncMenuBarGameStatuses()
         }
-        .onChange(of: selectedGameManager.selectedGameId) { _, _ in
-            syncMenuBarGameStatuses()
-        }
     }
 
     @ViewBuilder private var gamesSection: some View {
@@ -87,13 +82,8 @@ struct MenuBarExtraContentView: View {
         Menu {
             contextMenu
         } label: {
-            HStack {
-                Image(systemName: gameStatusSymbolName(for: game))
-                Text(game.gameName)
-                if selectedGameManager.selectedGameId == game.id {
-                    Image(systemName: "checkmark")
-                }
-            }
+            Image(systemName: gameStatusSymbolName(for: game))
+            Text(game.gameName)
         }
     }
 

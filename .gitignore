@@ -154,6 +154,3 @@ DerivedData/
 *.cer
 ed25519_priv.pem
 
-
-# Test result bundles
-TestResults.xcresult/
