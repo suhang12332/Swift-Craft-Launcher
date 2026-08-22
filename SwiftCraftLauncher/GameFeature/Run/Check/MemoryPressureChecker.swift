@@ -44,16 +44,9 @@ enum MemoryPressureChecker {
     }
 }
 
-/// Reports the Java state that would prevent a reliable launch.
-struct GameIntegrityReport {
-    let errors: [GlobalError]
-
-    var isValid: Bool { errors.isEmpty }
-}
-
 /// Performs the minimum pre-launch integrity check and repair.
 enum GameIntegrityChecker {
-    static func check(game: GameVersionInfo) async -> GameIntegrityReport {
+    static func check(game: GameVersionInfo) -> [GlobalError] {
         var errors: [GlobalError] = []
         let javaManager = DIContainer.shared.system.javaManager
 
@@ -63,7 +56,7 @@ enum GameIntegrityChecker {
             errors.append(.gameLaunch(i18nKey: "game_launch.integrity.java_unusable"))
         }
 
-        return GameIntegrityReport(errors: errors)
+        return errors
     }
 
     static func repair(game: GameVersionInfo) async throws -> GameVersionInfo {
@@ -78,11 +71,6 @@ enum GameIntegrityChecker {
                 message: "Failed to repair Java runtime for version \(manifest.javaVersion.component)",
             )
         }
-
-        try await MinecraftFileManager().downloadVersionFilesThrowing(
-            manifest: manifest,
-            gameName: game.gameName,
-        )
 
         var repairedGame = game
         repairedGame.javaPath = javaPath

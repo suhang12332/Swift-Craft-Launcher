@@ -26,10 +26,10 @@ struct MinecraftLaunchCommand {
     }
 
     func launchGameThrowing(gameRepository: GameRepository) async throws {
-        let integrityReport = await GameIntegrityChecker.check(game: game)
-        if !integrityReport.isValid {
+        let integrityErrors = GameIntegrityChecker.check(game: game)
+        if !integrityErrors.isEmpty {
             let choice = await DIContainer.shared.ui.gameIntegrityAlertPresenter.requestUserChoice(
-                for: integrityReport.errors,
+                for: integrityErrors,
             )
             switch choice {
             case .ignore:
