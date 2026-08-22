@@ -118,7 +118,7 @@ enum ForgeLikeLoaderService {
         let classpathString = CommonService.generateClasspath(from: profile, librariesDir: librariesDirectory)
         let mainClass = profile.mainClass
         guard let version = profile.version else {
-            throw GlobalError.resource(
+            throw GlobalError.installation(
                 i18nKey: config.missingVersionErrorKey,
                 level: .notification,
                 message: "\(config.labelName) profile missing version for game \(gameVersion), loaderVersion \(loaderVersion)",

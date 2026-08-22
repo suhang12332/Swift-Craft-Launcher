@@ -24,9 +24,7 @@ struct GeneralSettingsLanguageRow: View {
             }
             .help("settings.language.picker".localized())
         }
-        .labeledContentStyle(.custom)
         CommonDescriptionText(text: "settings.language.translation.notice".localized())
-            .padding(.bottom, 10)
     }
 }
 
@@ -42,7 +40,6 @@ struct GeneralSettingsThemeRow: View {
                 ThemeSelectorView(selectedTheme: $themeManager.themeMode)
                     .fixedSize()
             }
-            .labeledContentStyle(.custom)
             ThemeSelectorLabel()
         }
     }
@@ -64,8 +61,6 @@ struct GeneralSettingsInterfaceLayoutRow: View {
             .labelsHidden()
             .fixedSize()
         }
-        .labeledContentStyle(.custom)
-        .padding(.bottom, 10)
     }
 }
 
@@ -112,46 +107,11 @@ struct GeneralSettingsWorkingDirectoryRow: View {
                 }
             }
         }
-        .labeledContentStyle(.custom)
         .onAppear {
             Task { await gameRepository.refreshWorkingPathOptions() }
         }
         .onChange(of: generalSettings.launcherWorkingDirectory) { _, _ in
             viewModel.onWorkingDirectoryChanged()
-        }
-    }
-}
-
-/// A row with a slider for the maximum concurrent download count.
-struct GeneralSettingsConcurrentDownloadsRow: View {
-    @Environment(GeneralSettingsManager.self)
-    private var generalSettings
-    @Bindable var viewModel: GeneralSettingsViewModel
-
-    var body: some View {
-        LabeledContent("settings.concurrent_downloads.label".localized()) {
-            HStack {
-                Slider(
-                    value: $viewModel.concurrentDownloadsDraft,
-                    in: 1 ... 64,
-                ) { isEditing in
-                    viewModel.commitConcurrentDownloadsIfNeeded(isEditing: isEditing)
-                }
-                .controlSize(.mini)
-
-                Text("\(Int(viewModel.concurrentDownloadsDraft.rounded()))")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .fixedSize()
-            }
-            .frame(width: 200)
-            .gridColumnAlignment(.leading)
-            .labelsHidden()
-        }
-        .labeledContentStyle(.custom)
-        .onAppear { viewModel.onAppearSyncConcurrentDownloads() }
-        .onChange(of: generalSettings.concurrentDownloads) { _, newValue in
-            viewModel.onConcurrentDownloadsChanged(newValue)
         }
     }
 }
@@ -164,7 +124,6 @@ struct GeneralSettingsSystemProxyRow: View {
                 SystemSettings.open(AppConstants.SystemSettingsDeepLinks.networkProxies)
             }
         }
-        .labeledContentStyle(.custom)
     }
 }
 
@@ -181,6 +140,5 @@ struct GeneralSettingsCommonSheetHeightLimitRow: View {
                 isOn: $generalSettings.limitCommonSheetHeight,
             )
         }
-        .labeledContentStyle(.custom)
     }
 }

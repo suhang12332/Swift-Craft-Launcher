@@ -45,7 +45,7 @@ class MinecraftFileManager: @unchecked Sendable {
             } catch {
                 AppLog.modPack.error("Failed to create directory: \(dir.path), error: \(error.localizedDescription)")
                 DIContainer.shared.core.errorHandler.handle(
-                    GlobalError.fileSystem(i18nKey: "error.filesystem.directory_creation_failed", level: .notification),
+                    GlobalError.installation(i18nKey: "error.filesystem.directory_creation_failed", level: .notification),
                 )
                 return false
             }
@@ -168,7 +168,7 @@ class MinecraftFileManager: @unchecked Sendable {
                     withIntermediateDirectories: true,
                 )
             } catch {
-                throw GlobalError.fileSystem(
+                throw GlobalError.installation(
                     i18nKey: "error.filesystem.directory_creation_failed",
                     level: .notification,
                     message: "Failed to create directory \(directory.path) for manifestId=\(manifestId): \(error.localizedDescription)",

@@ -17,7 +17,7 @@ extension ModPackDependencyInstaller {
         var overridesPath = extractedPath.appendingPathComponent("overrides")
 
         if !FileManager.default.fileExists(atPath: overridesPath.path) {
-            let possiblePaths = ["overrides", "Override", "override"]
+            let possiblePaths = ["overrides", "Override", "override", "minecraft"]
 
             var foundPath: URL?
             for pathName in possiblePaths {

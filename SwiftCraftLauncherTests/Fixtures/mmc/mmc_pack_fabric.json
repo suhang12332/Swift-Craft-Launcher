@@ -1,0 +1,16 @@
+{
+  "formatVersion": 1,
+  "components": [
+    {
+      "uid": "net.minecraft",
+      "version": "1.20.1"
+    },
+    {
+      "uid": "net.fabricmc.fabric-loader",
+      "version": "0.14.21",
+      "important": true
+    }
+  ],
+  "name": "Fabric Test Pack",
+  "versionId": "1.0.0"
+}

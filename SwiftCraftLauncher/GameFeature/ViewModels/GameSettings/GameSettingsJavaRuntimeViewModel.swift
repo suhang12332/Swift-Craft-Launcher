@@ -61,6 +61,7 @@ final class GameSettingsJavaRuntimeViewModel {
     func refreshInstalledRuntimes(showScanningIndicator: Bool) {
         if showScanningIndicator {
             installedRuntimeComponents = nil
+            selectedRuntimeComponent = ""
         }
         Task { [weak self] in
             guard let self else { return }
