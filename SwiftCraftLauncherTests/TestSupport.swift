@@ -39,6 +39,16 @@ enum TestSupport {
             return url
         }
 
+        // Fallback: load from source tree relative to TestSupport.swift.
+        let sourceFixtures = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("Fixtures")
+            .appendingPathComponent(subdirectory)
+            .appendingPathComponent("\(name).\(ext)")
+        if FileManager.default.fileExists(atPath: sourceFixtures.path) {
+            return sourceFixtures
+        }
+
         XCTFail("Missing fixture \(subdirectory)/\(name).\(ext)")
         fatalError("Missing fixture \(subdirectory)/\(name).\(ext)")
     }
