@@ -80,6 +80,8 @@ final class GameStatusManager: @unchecked Sendable {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
         applyOnMain { [weak self] in
             guard let self else { return }
+            let currentState = gameRunningStates[key] ?? false
+            guard currentState != actuallyRunning else { return }
             gameRunningStates[key] = actuallyRunning
             AppLog.game.debug("Force refresh game state: \(key) -> \(actuallyRunning ? "Running" : "Stopped")")
         }

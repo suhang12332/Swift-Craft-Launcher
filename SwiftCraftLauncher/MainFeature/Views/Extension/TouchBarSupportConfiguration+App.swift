@@ -5,6 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import AppKit
 import SwiftUI
 import TouchBarSupport
 
@@ -18,7 +19,13 @@ extension TouchBarSupportConfiguration {
         playerListViewModel: PlayerListViewModel,
         openSettings: @escaping @MainActor () -> Void,
     ) -> TouchBarSupportConfiguration {
-        TouchBarSupportConfiguration(
+        @MainActor
+        func selectedGame() -> GameVersionInfo? {
+            guard let gameId = container.core.selectedGameManager.selectedGameId else { return nil }
+            return gameRepository.getGame(by: gameId)
+        }
+
+        return TouchBarSupportConfiguration(
             currentPlayerName: {
                 playerListViewModel.currentPlayer?.name
             },
@@ -27,27 +34,31 @@ extension TouchBarSupportConfiguration {
                     AnyView(MinecraftSkinUtils(type: $0.isRemote ? .url : .asset, src: $0.avatarName, size: 28))
                 }
             },
-            instances: {
-                gameRepository.games.map { TouchBarInstance(id: $0.id, name: $0.gameName) }
+            currentGameName: {
+                selectedGame()?.gameName
             },
-            currentInstanceID: {
-                container.core.selectedGameManager.selectedGameId
+            gameIconImage: {
+                selectedGame().flatMap { game in
+                    NSImage(contentsOf: AppPaths.profileDirectory(gameName: game.gameName)
+                        .appendingPathComponent(game.gameIcon))
+                }
             },
-            isRunning: { gameId in
+            isRunning: {
+                guard let gameId = selectedGame()?.id else { return false }
                 let userId = playerListViewModel.currentPlayer?.id ?? ""
                 return container.core.gameStatusManager.cachedIsGameRunning(gameId: gameId, userId: userId)
             },
-            isLaunching: { gameId in
+            isLaunching: {
+                guard let gameId = selectedGame()?.id else { return false }
                 let userId = playerListViewModel.currentPlayer?.id ?? ""
                 return container.core.gameStatusManager.isGameLaunching(gameId: gameId, userId: userId)
             },
-            onSelectInstance: { gameId in
-                container.core.selectedGameManager.setSelectedGame(gameId)
+            canExportModPack: {
+                selectedGame()?.modLoader != GameLoader.vanilla.displayName
             },
             onPlayStop: {
                 guard let player = playerListViewModel.currentPlayer,
-                      let selectedId = container.core.selectedGameManager.selectedGameId,
-                      let game = gameRepository.games.first(where: { $0.id == selectedId }) else {
+                      let game = selectedGame() else {
                     return
                 }
 
@@ -73,34 +84,17 @@ extension TouchBarSupportConfiguration {
                 openSettings()
             },
             onExportModPack: {
-                guard let selectedId = container.core.selectedGameManager.selectedGameId,
-                      let game = gameRepository.games.first(where: { $0.id == selectedId }) else {
-                    return
-                }
+                guard let game = selectedGame() else { return }
                 container.ui.gameDialogsPresenter.presentModPackExport(for: game)
             },
             onShowInFinder: {
-                guard let selectedId = container.core.selectedGameManager.selectedGameId,
-                      let game = gameRepository.games.first(where: { $0.id == selectedId }) else {
-                    return
-                }
+                guard let game = selectedGame() else { return }
                 container.core.gameActionManager.showInFinder(game: game)
             },
             onDeleteInstance: {
-                guard let selectedId = container.core.selectedGameManager.selectedGameId,
-                      let game = gameRepository.games.first(where: { $0.id == selectedId }) else {
-                    return
-                }
+                guard let game = selectedGame() else { return }
                 container.ui.gameDialogsPresenter.requestGameDeletion(of: game)
             },
-            strings: TouchBarStrings(
-                selectGame: "global_resource.select_game".localized(),
-                instanceSettings: "touchbar.instance_settings".localized(),
-                play: "play.fill".localized(),
-                stop: "common.stop".localized(),
-                exportModPack: "modpack.export.button".localized(),
-                showInFinder: "sidebar.context_menu.show_in_finder".localized(),
-            ),
         )
     }
 }

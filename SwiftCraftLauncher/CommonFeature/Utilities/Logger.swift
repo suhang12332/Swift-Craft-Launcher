@@ -27,7 +27,4 @@ enum AppLog {
 
     /// Main window, menus, and top-level UI coordination.
     static let main = os.Logger(subsystem: Bundle.main.identifier, category: "main")
-
-    /// Touch Bar controller, instance list, and item wiring.
-    static let touchbar = os.Logger(subsystem: Bundle.main.identifier, category: "touchbar")
 }
