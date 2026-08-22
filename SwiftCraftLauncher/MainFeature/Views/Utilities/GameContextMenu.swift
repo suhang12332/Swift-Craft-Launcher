@@ -120,7 +120,6 @@ struct GameContextMenu: View {
             player: playerListViewModel.currentPlayer,
             game: game,
             gameLaunchUseCase: gameLaunchUseCase,
-            gameRepository: gameRepository,
         )
     }
 }

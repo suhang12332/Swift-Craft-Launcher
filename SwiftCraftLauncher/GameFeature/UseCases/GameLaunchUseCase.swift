@@ -15,9 +15,9 @@ final class GameLaunchUseCase: @unchecked Sendable {
     /// - Parameters:
     ///   - player: The current player.
     ///   - game: The game version to launch.
-    func launchGame(player: Player, game: GameVersionInfo, gameRepository: GameRepository) async {
+    func launchGame(player: Player, game: GameVersionInfo) async {
         let command = MinecraftLaunchCommand(player: player, game: game)
-        await command.launchGame(gameRepository: gameRepository)
+        await command.launchGame()
     }
 
     /// Stops a running Minecraft game session.

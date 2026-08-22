@@ -46,35 +46,17 @@ enum MemoryPressureChecker {
 
 /// Performs the minimum pre-launch integrity check and repair.
 enum GameIntegrityChecker {
-    static func check(game: GameVersionInfo) -> [GlobalError] {
-        var errors: [GlobalError] = []
+    static func check(game: GameVersionInfo) -> GlobalError? {
         let javaManager = DIContainer.shared.system.javaManager
 
         if game.javaPath.isEmpty || !FileManager.default.isExecutableFile(atPath: game.javaPath) {
-            errors.append(.gameLaunch(i18nKey: "game_launch.integrity.java_missing"))
-        } else if !javaManager.canJavaRun(at: game.javaPath) {
-            errors.append(.gameLaunch(i18nKey: "game_launch.integrity.java_unusable"))
+            return .gameLaunch(i18nKey: "game_launch.integrity.java_missing")
         }
 
-        return errors
-    }
-
-    static func repair(game: GameVersionInfo) async throws -> GameVersionInfo {
-        let manifest = try await ModrinthService.fetchVersionInfo(from: game.gameVersion)
-        let javaPath = await DIContainer.shared.system.javaManager.ensureJavaExists(
-            version: manifest.javaVersion.component,
-        )
-        guard !javaPath.isEmpty else {
-            throw GlobalError.configuration(
-                i18nKey: "error.configuration.java_path_not_set",
-                level: .popup,
-                message: "Failed to repair Java runtime for version \(manifest.javaVersion.component)",
-            )
+        guard javaManager.canJavaRun(at: game.javaPath) else {
+            return .gameLaunch(i18nKey: "game_launch.integrity.java_unusable")
         }
 
-        var repairedGame = game
-        repairedGame.javaPath = javaPath
-        repairedGame.javaVersion = manifest.javaVersion.majorVersion
-        return repairedGame
+        return nil
     }
 }

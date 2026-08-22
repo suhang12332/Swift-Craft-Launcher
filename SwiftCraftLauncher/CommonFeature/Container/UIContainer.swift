@@ -15,7 +15,6 @@ final class UIContainer: @unchecked Sendable {
     @MainActorLazy var iconRefreshNotifier: IconRefreshNotifier = .init()
     @MainActorLazy var gameDialogsPresenter: GameDialogsPresenter = .init()
     @MainActorLazy var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter = .init()
-    @MainActorLazy var gameIntegrityAlertPresenter: GameIntegrityAlertPresenter = .init()
     @MainActorLazy var memoryPressureAlertPresenter: MemoryPressureAlertPresenter = .init()
     @MainActorLazy var openURLModPackImportPresenter: OpenURLModPackImportPresenter = .init()
 

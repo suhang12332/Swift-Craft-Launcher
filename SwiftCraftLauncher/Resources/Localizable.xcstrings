@@ -38853,60 +38853,6 @@
         }
       }
     },
-    "game_launch.integrity.title" : {
-      "shouldTranslate" : false,
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Game Integrity Check"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "游戏完整性检查"
-          }
-        }
-      }
-    },
-    "game_launch.integrity.ignore" : {
-      "shouldTranslate" : false,
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ignore"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "忽略"
-          }
-        }
-      }
-    },
-    "game_launch.integrity.repair" : {
-      "shouldTranslate" : false,
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Repair"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "修复"
-          }
-        }
-      }
-    },
     "game_launch.integrity.java_missing" : {
       "shouldTranslate" : false,
       "extractionState" : "manual",

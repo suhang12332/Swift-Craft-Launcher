@@ -18,7 +18,6 @@ struct MainViewPresentationModifier: ViewModifier {
 
     @State private var memoryPressureAlertPresenter: MemoryPressureAlertPresenter
     @State private var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter
-    @State private var gameIntegrityAlertPresenter: GameIntegrityAlertPresenter
     @State private var startupAnnouncementViewModel = StartupAnnouncementViewModel()
     @State private var showStartupInfo = false
     @State private var hasPresentedStartupInfo = false
@@ -33,7 +32,6 @@ struct MainViewPresentationModifier: ViewModifier {
         self.container = container
         _memoryPressureAlertPresenter = State(wrappedValue: container.ui.memoryPressureAlertPresenter)
         _authlibInjectorMissingPresenter = State(wrappedValue: container.ui.authlibInjectorMissingPresenter)
-        _gameIntegrityAlertPresenter = State(wrappedValue: container.ui.gameIntegrityAlertPresenter)
     }
 
     func body(content: Content) -> some View {
@@ -91,22 +89,6 @@ struct MainViewPresentationModifier: ViewModifier {
                 primaryTitle: "common.continue".localized(),
             ) {
                 authlibInjectorMissingPresenter.resolve(.continueWithoutInjector)
-            }
-            .alert(
-                "game_launch.integrity.title".localized(),
-                isPresented: gameIntegrityAlertPresenter.asBinding(),
-            ) {
-                Button("game_launch.integrity.ignore".localized()) {
-                    gameIntegrityAlertPresenter.resolve(.ignore)
-                }
-                Button("game_launch.integrity.repair".localized()) {
-                    gameIntegrityAlertPresenter.resolve(.repair)
-                }
-                Button("common.cancel".localized(), role: .cancel) {
-                    gameIntegrityAlertPresenter.resolve(.cancel)
-                }
-            } message: {
-                Text(gameIntegrityAlertPresenter.message)
             }
     }
 }
