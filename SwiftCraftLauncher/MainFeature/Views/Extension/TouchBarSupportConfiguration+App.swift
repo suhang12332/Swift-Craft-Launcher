@@ -5,6 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import SwiftUI
 import TouchBarSupport
 
 extension TouchBarSupportConfiguration {
@@ -22,7 +23,9 @@ extension TouchBarSupportConfiguration {
                 playerListViewModel.currentPlayer?.name
             },
             playerAvatarView: {
-                TouchBarPlayerAvatarViewProvider.shared.view(for: playerListViewModel.currentPlayer)
+                playerListViewModel.currentPlayer.map {
+                    AnyView(MinecraftSkinUtils(type: $0.isRemote ? .url : .asset, src: $0.avatarName, size: 28))
+                }
             },
             instances: {
                 gameRepository.games.map { TouchBarInstance(id: $0.id, name: $0.gameName) }
