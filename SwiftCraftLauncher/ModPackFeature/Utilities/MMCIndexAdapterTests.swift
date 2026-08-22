@@ -11,8 +11,6 @@ import XCTest
 final class MMCIndexAdapterTests: XCTestCase {
     private let adapter = MMCIndexAdapter()
 
-    // MARK: - canParse
-
     func testCanParse_withMmcPackJson() async throws {
         let directory = try await makeExtractedPackDirectory(
             packJsonName: "mmc_pack_fabric",
@@ -41,8 +39,6 @@ final class MMCIndexAdapterTests: XCTestCase {
         let result = await adapter.canParse(extractedPath: directory)
         XCTAssertFalse(result)
     }
-
-    // MARK: - parseToModrinthIndexInfo
 
     func testParse_fabricLoader() async throws {
         let directory = try await makeExtractedPackDirectory(
@@ -124,7 +120,10 @@ final class MMCIndexAdapterTests: XCTestCase {
         )
         try FileManager.default.copyItem(at: packJsonURL, to: directory.appendingPathComponent("mmc-pack.json"))
 
-        let cfgData = "[General]\nname=Config Name\n".data(using: .utf8)!
+        guard let cfgData = "[General]\nname=Config Name\n".data(using: .utf8) else {
+            XCTFail("Failed to create cfg data")
+            return
+        }
         try cfgData.write(to: directory.appendingPathComponent("instance.cfg"))
 
         let result = await adapter.parseToModrinthIndexInfo(extractedPath: directory)
@@ -200,8 +199,6 @@ final class MMCIndexAdapterTests: XCTestCase {
         XCTAssertEqual(result?.loaderType, GameLoader.quilt.rawValue)
         XCTAssertEqual(result?.loaderVersion, "0.19.0")
     }
-
-    // MARK: - Helpers
 
     private func makeExtractedPackDirectory(
         packJsonName: String,
