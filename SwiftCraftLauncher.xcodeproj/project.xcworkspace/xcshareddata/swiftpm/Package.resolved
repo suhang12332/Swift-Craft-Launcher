@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/functy23/TouchBarSupport",
       "state" : {
-        "revision" : "bd4d5fd37a14691bab11c444425aee83a8a2fdb7",
-        "version" : "0.1.5"
+        "revision" : "c3500681d8039fe52218447acdfe2ad5902350ce",
+        "version" : "0.1.6"
       }
     },
     {

@@ -19,11 +19,10 @@ extension TouchBarSupportConfiguration {
     ) -> TouchBarSupportConfiguration {
         TouchBarSupportConfiguration(
             currentPlayerName: {
-                TouchBarPlayerAvatarProvider.shared.sync(player: playerListViewModel.currentPlayer)
-                return playerListViewModel.currentPlayer?.name
+                playerListViewModel.currentPlayer?.name
             },
-            playerAvatarImage: {
-                TouchBarPlayerAvatarProvider.shared.image
+            playerAvatarView: {
+                TouchBarPlayerAvatarViewProvider.shared.view(for: playerListViewModel.currentPlayer)
             },
             instances: {
                 gameRepository.games.map { TouchBarInstance(id: $0.id, name: $0.gameName) }
