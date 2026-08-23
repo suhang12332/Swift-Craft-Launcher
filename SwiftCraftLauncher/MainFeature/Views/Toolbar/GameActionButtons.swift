@@ -94,7 +94,7 @@ struct GameActionButtons: View {
 
             if detailState.gameType == false,
                detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue
-                   || game.modLoader != GameLoader.vanilla.displayName {
+               || game.modLoader != GameLoader.vanilla.displayName {
                 ResourceImportButton(
                     game: game,
                     gameResourcesType: detailState.gameResourcesType,
