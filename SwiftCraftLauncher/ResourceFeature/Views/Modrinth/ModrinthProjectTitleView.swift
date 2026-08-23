@@ -85,7 +85,7 @@ struct ModrinthProjectTitleView: View {
                     .frame(width: 64, height: 64)
                     .cornerRadius(8)
             } else {
-                defaultIcon(systemName: "server.rack")
+                defaultIcon(systemName: "tv.badge.wifi")
             }
 
         case let .asyncImage(url):
@@ -107,7 +107,7 @@ struct ModrinthProjectTitleView: View {
                 .frame(width: 64, height: 64)
                 .cornerRadius(8)
             } else {
-                defaultIcon(systemName: "server.rack")
+                defaultIcon(systemName: "tv.badge.wifi")
             }
 
         case let .systemImage(name):
@@ -170,7 +170,7 @@ extension ModrinthProjectTitleView {
         var items: [InfoItem] = [
             InfoItem(
                 text: serverPort.flatMap { $0 > 0 ? "\(serverAddress):\($0)" : nil } ?? serverAddress,
-                systemImage: "server.rack",
+                systemImage: "tv.badge.wifi",
             ),
         ]
 
@@ -199,7 +199,7 @@ extension ModrinthProjectTitleView {
         if let serverInfo = projectDetail.fileName, !serverInfo.isEmpty {
             let parsed = CommonUtil.parseMinecraftJavaServerInfo(from: serverInfo)
             var items: [InfoItem] = [
-                InfoItem(text: parsed.address, systemImage: "server.rack"),
+                InfoItem(text: parsed.address, systemImage: "tv.badge.wifi"),
             ]
             if let playersText = parsed.playersText, !playersText.isEmpty {
                 items.append(InfoItem(text: playersText, systemImage: "person.2"))

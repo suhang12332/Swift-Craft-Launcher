@@ -19,6 +19,7 @@ struct ResourceImportButton: View {
     let gameResourcesType: String
 
     @State private var showImporter = false
+    @State private var showAddServerSheet = false
 
     init(
         game: GameVersionInfo,
@@ -28,35 +29,53 @@ struct ResourceImportButton: View {
         self.gameResourcesType = gameResourcesType
     }
 
+    private var isServer: Bool {
+        gameResourcesType.lowercased() == ResourceType.minecraftJavaServer.rawValue
+    }
+
     var body: some View {
-        Button {
-            showImporter = true
-        } label: {
-            Label("common.import".localized(), systemImage: "document.badge.plus")
-        }
-        .help("common.import".localized())
-        .fileImporter(
-            isPresented: $showImporter,
-            allowedContentTypes: {
-                var types: [UTType] = []
-                if let jarType = UTType(filenameExtension: "jar") {
-                    types.append(jarType)
+        if isServer {
+            Button {
+                showAddServerSheet = true
+            } label: {
+                Label("saveinfo.server.add".localized(), systemImage: "server.rack")
+            }
+            .help("saveinfo.server.add".localized())
+            .sheet(isPresented: $showAddServerSheet) {
+                ServerAddressEditView(gameName: game.gameName) {
+                    NotificationCenter.default.post(name: .localResourceImported, object: nil)
                 }
-                types.append(.zip)
-                return types
-            }(),
-            allowsMultipleSelection: true,
-        ) { result in
-            switch result {
-            case let .success(urls):
-                guard !urls.isEmpty else { return }
-                importSelectedFiles(urls)
-            case let .failure(error):
-                container.core.errorHandler.handle(GlobalError.fileSystem(
-                    i18nKey: "error.filesystem.file_selection_failed",
-                    level: .notification,
-                    message: "File picker failed: \(error.localizedDescription)",
-                ))
+            }
+        } else {
+            Button {
+                showImporter = true
+            } label: {
+                Label("common.import".localized(), systemImage: "document.badge.plus")
+            }
+            .help("common.import".localized())
+            .fileImporter(
+                isPresented: $showImporter,
+                allowedContentTypes: {
+                    var types: [UTType] = []
+                    if let jarType = UTType(filenameExtension: "jar") {
+                        types.append(jarType)
+                    }
+                    types.append(.zip)
+                    return types
+                }(),
+                allowsMultipleSelection: true,
+            ) { result in
+                switch result {
+                case let .success(urls):
+                    guard !urls.isEmpty else { return }
+                    importSelectedFiles(urls)
+                case let .failure(error):
+                    container.core.errorHandler.handle(GlobalError.fileSystem(
+                        i18nKey: "error.filesystem.file_selection_failed",
+                        level: .notification,
+                        message: "File picker failed: \(error.localizedDescription)",
+                    ))
+                }
             }
         }
     }

@@ -92,7 +92,9 @@ struct GameActionButtons: View {
             )
             .disabled(container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId))
 
-            if detailState.gameType == false, game.modLoader != GameLoader.vanilla.displayName {
+            if detailState.gameType == false,
+               detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue
+                   || game.modLoader != GameLoader.vanilla.displayName {
                 ResourceImportButton(
                     game: game,
                     gameResourcesType: detailState.gameResourcesType,
