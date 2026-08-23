@@ -15,9 +15,10 @@ final class GameHeaderViewModel {
 
     init() { }
 
-    func isNameValid(newName: String, currentName: String) -> Bool {
+    func isNameValid(newName: String, currentName: String, gameId: String) -> Bool {
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, trimmed != currentName else { return false }
+        if DIContainer.shared.core.gameProcessManager.isGameRunningForAnyUser(gameId: gameId) { return false }
         return !FileManager.default.fileExists(
             atPath: AppPaths.profileDirectory(gameName: trimmed).path
         )

@@ -180,7 +180,7 @@ struct GameHeaderListRow: View {
                     showRenamePopover = false
                 }
             }
-            .disabled(!viewModel.isNameValid(newName: viewModel.newName, currentName: game.gameName))
+            .disabled(!viewModel.isNameValid(newName: viewModel.newName, currentName: game.gameName, gameId: game.id))
             .keyboardShortcut(.defaultAction)
         }
         .padding()
