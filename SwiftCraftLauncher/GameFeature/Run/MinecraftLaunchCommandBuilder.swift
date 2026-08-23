@@ -49,7 +49,7 @@ enum MinecraftLaunchCommandBuilder {
         let variableMap: [String: String] = [
             "auth_player_name": "${auth_player_name}",
             "version_name": gameInfo.gameVersion,
-            "game_directory": paths.gameDir,
+            "game_directory": "${game_directory}",
             "assets_root": paths.assetsDir,
             "assets_index_name": gameInfo.assetIndex,
             "auth_uuid": "${auth_uuid}",
