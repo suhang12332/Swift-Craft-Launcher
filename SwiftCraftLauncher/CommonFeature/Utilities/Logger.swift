@@ -9,7 +9,7 @@ import Foundation
 import os.log
 
 /// Writes already-reviewed application log messages with visible interpolation values.
-struct VisibleLogger: Sendable {
+struct AppLogger: Sendable {
     private let logger: Logger
 
     init(subsystem: String, category: String) {
@@ -36,20 +36,20 @@ struct VisibleLogger: Sendable {
 /// Centralized module loggers for the application.
 enum AppLog {
     /// Common infrastructure, networking, authentication, and shared utilities.
-    static let common = VisibleLogger(subsystem: Bundle.main.identifier, category: "common")
+    static let common = AppLogger(subsystem: Bundle.main.identifier, category: "common")
 
     /// Game lifecycle: launch, Java management, mod scanning, version setup.
-    static let game = VisibleLogger(subsystem: Bundle.main.identifier, category: "game")
+    static let game = AppLogger(subsystem: Bundle.main.identifier, category: "game")
 
     /// Player profiles, skins, and authentication accounts.
-    static let player = VisibleLogger(subsystem: Bundle.main.identifier, category: "player")
+    static let player = AppLogger(subsystem: Bundle.main.identifier, category: "player")
 
     /// Remote resource browsing (Modrinth / CurseForge) and dependency resolution.
-    static let resource = VisibleLogger(subsystem: Bundle.main.identifier, category: "resource")
+    static let resource = AppLogger(subsystem: Bundle.main.identifier, category: "resource")
 
     /// Mod-pack import, export, and installation workflows.
-    static let modPack = VisibleLogger(subsystem: Bundle.main.identifier, category: "modpack")
+    static let modPack = AppLogger(subsystem: Bundle.main.identifier, category: "modpack")
 
     /// Main window, menus, and top-level UI coordination.
-    static let main = VisibleLogger(subsystem: Bundle.main.identifier, category: "main")
+    static let main = AppLogger(subsystem: Bundle.main.identifier, category: "main")
 }
