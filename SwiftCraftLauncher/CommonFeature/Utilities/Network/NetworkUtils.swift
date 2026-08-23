@@ -197,22 +197,4 @@ enum NetworkUtils {
             return .timeout
         }
     }
-
-    /// Checks whether a Minecraft server is reachable.
-    /// - Parameters:
-    ///   - address: The server address.
-    ///   - port: The server port.
-    ///   - timeout: The connection timeout in seconds. Defaults to 5.
-    /// - Returns: `true` if the server responded successfully.
-    static func checkServerConnection(
-        address: String,
-        port: Int,
-        timeout: TimeInterval = 5.0,
-    ) async throws -> Bool {
-        let status = await checkServerConnectionStatus(address: address, port: port, timeout: timeout)
-        if case .success = status {
-            return true
-        }
-        return false
-    }
 }

@@ -54,6 +54,9 @@ struct ServerAddressSectionView: View {
         .onChange(of: servers) { _, _ in
             viewModel.checkAllServers(for: servers)
         }
+        .onDisappear {
+            viewModel.cancelChecks()
+        }
     }
 
     private var headerView: some View {
