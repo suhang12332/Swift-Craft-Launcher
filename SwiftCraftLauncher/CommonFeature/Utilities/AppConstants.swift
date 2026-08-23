@@ -75,6 +75,7 @@ enum AppConstants {
         ResourceType.datapack.rawValue,
         ResourceType.shader.rawValue,
         ResourceType.resourcepack.rawValue,
+        ResourceType.minecraftJavaServer.rawValue,
     ]
     /// The CurseForge API key, decrypted at launch.
     static let curseForgeAPIKey: String? = {
