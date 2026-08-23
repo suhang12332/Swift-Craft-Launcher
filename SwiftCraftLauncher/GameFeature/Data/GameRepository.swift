@@ -229,6 +229,19 @@ class GameRepository: @unchecked Sendable {
         games.first { $0.gameName == gameName }
     }
 
+    /// Checks whether a game name is already used in the current working path.
+    func gameNameExists(_ gameName: String, excludingID: String) async throws -> Bool {
+        let workingPath = currentWorkingPath
+        return try await Task.detached(priority: .userInitiated) {
+            try self.database.initialize()
+            return try self.database.gameNameExists(
+                workingPath: workingPath,
+                gameName: gameName,
+                excludingID: excludingID,
+            )
+        }.value
+    }
+
     func updateGame(_ game: GameVersionInfo) async throws {
         let workingPath = currentWorkingPath
         let gameToSave = game

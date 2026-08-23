@@ -25,6 +25,7 @@ class GameVersionDatabase {
     private let deleteByIdSQL: String
     private let deleteByPathSQL: String
     private let deleteByPathAndNameSQL: String
+    private let existsByPathAndNameSQL: String
     private let updateLastPlayedSQL: String
 
     init(dbPath: String) {
@@ -54,6 +55,11 @@ class GameVersionDatabase {
         deleteByIdSQL = "DELETE FROM \(tableName) WHERE id = ?"
         deleteByPathSQL = "DELETE FROM \(tableName) WHERE working_path = ?"
         deleteByPathAndNameSQL = "DELETE FROM \(tableName) WHERE working_path = ? AND game_name = ?"
+        existsByPathAndNameSQL = """
+        SELECT 1 FROM \(tableName)
+        WHERE working_path = ? AND game_name = ? AND id != ?
+        LIMIT 1
+        """
         updateLastPlayedSQL = """
         UPDATE \(tableName)
         SET data_json = json_set(data_json, '$.lastPlayed', ?),
@@ -215,6 +221,16 @@ class GameVersionDatabase {
             }
         }
         return result
+    }
+
+    /// Checks whether a game name is already used in a working path.
+    func gameNameExists(workingPath: String, gameName: String, excludingID: String) throws -> Bool {
+        try withPreparedStatement(existsByPathAndNameSQL) { statement in
+            SQLiteDatabase.bind(statement, index: 1, value: workingPath)
+            SQLiteDatabase.bind(statement, index: 2, value: gameName)
+            SQLiteDatabase.bind(statement, index: 3, value: excludingID)
+            return sqlite3_step(statement) == SQLITE_ROW
+        }
     }
 
     /// Deletes a game by its identifier.

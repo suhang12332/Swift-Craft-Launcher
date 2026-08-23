@@ -6,7 +6,6 @@
 //
 
 // Displays game information details with local and remote resource browsing.
-import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -27,6 +26,8 @@ struct GameInfoDetailView: View {
     @Binding var gameType: Bool
     @Environment(GameRepository.self)
     private var gameRepository
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
     @Binding var localResourceFilter: LocalResourceFilter
@@ -36,6 +37,12 @@ struct GameInfoDetailView: View {
     @State private var scannedResources: Set<String> = []
     @State private var header: AnyView?
     @State private var showIconFilePicker = false
+    @State private var showGameNamePopover = false
+    @State private var editedGameName = ""
+    @State private var nameEditorError: String?
+    @State private var isNameDuplicate = false
+    @State private var isCheckingName = false
+    @State private var isSavingGameName = false
 
     init(
         game: GameVersionInfo,
@@ -171,82 +178,155 @@ struct GameInfoDetailView: View {
     private func updateHeaders() {
         let currentGame = gameRepository.games.first { $0.id == game.id } ?? game
 
-        header = AnyView(
-            GameHeaderListRow(
-                game: currentGame,
-                cacheInfo: container.core.cacheInfoManager.cacheInfo,
-                query: query,
-            ) {
-                showIconFilePicker = true
-            } onNameTap: {
-                presentGameNameEditor()
-            },
-        )
+        let headerView = GameHeaderListRow(
+            game: currentGame,
+            cacheInfo: container.core.cacheInfoManager.cacheInfo,
+            query: query,
+        ) {
+            showIconFilePicker = true
+        } onNameTap: {
+            beginGameNameEditing()
+        }
+        .popover(isPresented: $showGameNamePopover, arrowEdge: .bottom) {
+            gameNameEditorPopover
+        }
+        header = AnyView(headerView)
     }
 
-    private func presentGameNameEditor() {
-        let alert = NSAlert()
-        alert.messageText = "game.form.name".localized()
-        alert.informativeText = "game.form.name.placeholder".localized()
+    private var gameNameEditorPopover: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("game.form.name".localized())
+                .font(.headline)
+            TextField("game.form.name.placeholder".localized(), text: $editedGameName)
+                .textFieldStyle(.roundedBorder)
+                .onSubmit(saveGameName)
+            if isNameDuplicate {
+                Text("game.form.name.duplicate".localized())
+                    .foregroundStyle(.red)
+                    .font(.caption)
+            } else if let nameEditorError {
+                Text(nameEditorError)
+                    .foregroundStyle(.red)
+                    .font(.caption)
+            }
+            HStack {
+                Spacer()
+                Button("common.confirm".localized(), action: saveGameName)
+                    .buttonStyle(.borderedProminent)
+                    .disabled(
+                        isSavingGameName
+                            || isCurrentGameRunning
+                            || isCurrentGameLaunching
+                            || isCheckingName
+                            || isNameDuplicate
+                            || editedGameName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                            || editedGameName == game.gameName,
+                    )
+            }
+        }
+        .padding()
+        .frame(width: 300)
+        .task(id: editedGameName) {
+            await validateEditedGameName()
+        }
+    }
 
-        let textField = NSTextField(string: game.gameName)
-        textField.placeholderString = "game.form.name.placeholder".localized()
-        textField.frame = NSRect(x: 0, y: 0, width: 280, height: 24)
-        alert.accessoryView = textField
-        alert.addButton(withTitle: "common.confirm".localized())
-        alert.addButton(withTitle: "common.cancel".localized())
+    private func beginGameNameEditing() {
+        editedGameName = game.gameName
+        nameEditorError = nil
+        isNameDuplicate = false
+        showGameNamePopover = true
+    }
 
-        guard alert.runModal() == .alertFirstButtonReturn else { return }
+    private var currentUserID: String {
+        playerListViewModel.currentPlayer?.id ?? ""
+    }
 
-        let newName = textField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !newName.isEmpty else { return }
-        guard !gameRepository.games.contains(where: { $0.id != game.id && $0.gameName == newName }) else {
-            container.core.errorHandler.handle(
-                GlobalError.validation(
-                    i18nKey: "game.form.name.duplicate",
-                    level: .notification,
-                ),
-            )
+    private var isCurrentGameRunning: Bool {
+        container.core.gameProcessManager.isGameRunningForAnyUser(gameId: game.id)
+    }
+
+    private var isCurrentGameLaunching: Bool {
+        container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserID)
+    }
+
+    private func validateEditedGameName() async {
+        let newName = editedGameName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !newName.isEmpty, newName != game.gameName else {
+            isNameDuplicate = false
+            isCheckingName = false
             return
         }
 
-        guard var updatedGame = gameRepository.games.first(where: { $0.id == game.id }) else { return }
-        let oldDirectory = AppPaths.profileDirectory(gameName: updatedGame.gameName)
-        let newDirectory = AppPaths.profileDirectory(gameName: newName)
-
+        isCheckingName = true
         do {
-            if updatedGame.gameName != newName {
-                guard !FileManager.default.fileExists(atPath: newDirectory.path) else {
-                    throw GlobalError.validation(
-                        i18nKey: "game.form.name.duplicate",
-                        level: .notification,
-                    )
+            let exists = try await gameRepository.gameNameExists(newName, excludingID: game.id)
+            guard !Task.isCancelled else { return }
+            isNameDuplicate = exists
+        } catch {
+            guard !Task.isCancelled else { return }
+            isNameDuplicate = true
+            nameEditorError = GlobalError.from(error).localizedDescription
+        }
+        isCheckingName = false
+    }
+
+    private func saveGameName() {
+        guard !isSavingGameName else { return }
+        let newName = editedGameName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !newName.isEmpty, newName != game.gameName else { return }
+
+        isSavingGameName = true
+        nameEditorError = nil
+        Task { @MainActor in
+            do {
+                guard !isCurrentGameRunning, !isCurrentGameLaunching else {
+                    isSavingGameName = false
+                    return
                 }
+                guard var updatedGame = gameRepository.getGame(by: game.id) else {
+                    isSavingGameName = false
+                    return
+                }
+                guard try await !gameRepository.gameNameExists(newName, excludingID: game.id) else {
+                    isNameDuplicate = true
+                    nameEditorError = "game.form.name.duplicate".localized()
+                    isSavingGameName = false
+                    return
+                }
+
+                let oldDirectory = AppPaths.profileDirectory(gameName: updatedGame.gameName)
+                let newDirectory = AppPaths.profileDirectory(gameName: newName)
+                guard !FileManager.default.fileExists(atPath: newDirectory.path) else {
+                    isNameDuplicate = true
+                    nameEditorError = "game.form.name.duplicate".localized()
+                    isSavingGameName = false
+                    return
+                }
+
                 if FileManager.default.fileExists(atPath: oldDirectory.path) {
                     try FileManager.default.moveItem(at: oldDirectory, to: newDirectory)
                 }
-            }
+                updatedGame.gameName = newName
 
-            updatedGame.gameName = newName
-            Task { @MainActor in
                 do {
                     try await gameRepository.updateGame(updatedGame)
-                    container.ui.iconRefreshNotifier.notifyRefresh(for: nil)
-                    performRefresh()
                 } catch {
                     if FileManager.default.fileExists(atPath: newDirectory.path),
                        !FileManager.default.fileExists(atPath: oldDirectory.path) {
                         try? FileManager.default.moveItem(at: newDirectory, to: oldDirectory)
                     }
-                    container.core.errorHandler.handle(GlobalError.from(error))
+                    throw error
                 }
+
+                showGameNamePopover = false
+                isSavingGameName = false
+                container.ui.iconRefreshNotifier.notifyRefresh(for: nil)
+                performRefresh()
+            } catch {
+                isSavingGameName = false
+                container.core.errorHandler.handle(GlobalError.from(error))
             }
-        } catch {
-            if FileManager.default.fileExists(atPath: newDirectory.path),
-               !FileManager.default.fileExists(atPath: oldDirectory.path) {
-                try? FileManager.default.moveItem(at: newDirectory, to: oldDirectory)
-            }
-            container.core.errorHandler.handle(GlobalError.from(error))
         }
     }
 
