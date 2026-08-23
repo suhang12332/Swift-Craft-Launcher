@@ -259,6 +259,7 @@ struct GameInfoDetailView: View {
         }
 
         isCheckingName = true
+        defer { isCheckingName = false }
         do {
             let exists = try await gameRepository.gameNameExists(newName, excludingID: game.id)
             guard !Task.isCancelled else { return }
@@ -268,7 +269,6 @@ struct GameInfoDetailView: View {
             isNameDuplicate = true
             nameEditorError = GlobalError.from(error).localizedDescription
         }
-        isCheckingName = false
     }
 
     private func saveGameName() {
