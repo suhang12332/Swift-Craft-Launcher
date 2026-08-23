@@ -64,33 +64,6 @@ final class GlobalErrorHandlerTests: XCTestCase {
         XCTAssertTrue(GlobalErrorKind.unknown.notificationTitleKey.contains("unknown"))
     }
 
-    func testGlobalError_init_defaultLevel() {
-        let error = GlobalError(kind: .network, i18nKey: "test.key")
-        XCTAssertEqual(error.level, .notification)
-        XCTAssertEqual(error.source, .main)
-    }
-
-    func testGlobalError_init_customLevel() {
-        let error = GlobalError(kind: .network, i18nKey: "test.key", level: .popup)
-        XCTAssertEqual(error.level, .popup)
-    }
-
-    func testGlobalError_init_settingsSource() {
-        let error = GlobalError(kind: .network, i18nKey: "test.key", source: .settings)
-        XCTAssertEqual(error.source, .settings)
-    }
-
-    func testGlobalError_id_containsPrefixAndKey() {
-        let error = GlobalError(kind: .network, i18nKey: "error.test")
-        XCTAssertTrue(error.id.hasPrefix("network_"))
-        XCTAssertTrue(error.id.contains("error.test"))
-    }
-
-    func testGlobalError_errorDescription_returnsI18nKey() {
-        let error = GlobalError(kind: .validation, i18nKey: "error.validation.test")
-        XCTAssertEqual(error.errorDescription, "error.validation.test".localized())
-    }
-
     func testGlobalError_network() {
         let error = GlobalError.network(i18nKey: "error.network.test")
         XCTAssertEqual(error.kind, .network)

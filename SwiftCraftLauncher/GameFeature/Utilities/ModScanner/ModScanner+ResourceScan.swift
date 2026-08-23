@@ -195,7 +195,7 @@ extension ModScanner {
         }
 
         let pageFiles = Array(fileURLs[pageRange.startIndex ..< pageRange.endIndex])
-        let concurrentCount = DIContainer.shared.ui.generalSettingsManager.concurrentDownloads
+        let concurrentCount = DIContainer.shared.ui.gameSettingsManager.concurrentDownloads
         let semaphore = AsyncSemaphore(value: concurrentCount)
         let results = await scanFilesConcurrently(fileURLs: pageFiles, semaphore: semaphore)
 

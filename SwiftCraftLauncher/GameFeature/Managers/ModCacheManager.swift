@@ -69,12 +69,12 @@ class ModCacheManager {
         }
     }
 
-    /// Clears all cached mod data, handling errors silently.
-    func clearSilently() {
+    /// Clears cached mod entries that are local-only fallbacks, handling errors silently.
+    func clearLocalSilently() {
         do {
             try queue.sync {
                 try ensureInitialized()
-                try modCacheDB.clearAllModCaches()
+                try modCacheDB.clearLocalModCaches()
             }
         } catch {
             DIContainer.shared.core.errorHandler.handle(error)

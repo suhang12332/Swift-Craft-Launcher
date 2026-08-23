@@ -27,6 +27,14 @@ struct SwiftCraftLauncherAppCommands: Commands {
             .keyboardShortcut("u", modifiers: [.command, .shift])
         }
 
+        CommandGroup(after: .newItem) {
+            Button("settings.game.clear_cache.label".localized()) {
+                Task.detached(priority: .utility) {
+                    DIContainer.shared.core.modCacheManager.clearLocalSilently()
+                }
+            }
+        }
+
         CommandGroup(after: .help) {
             Divider()
 
@@ -64,7 +72,6 @@ struct SwiftCraftLauncherAppCommands: Commands {
             .keyboardShortcut("i", modifiers: [.command, .shift])
         }
 
-        CommandGroup(replacing: .newItem) { }
         CommandGroup(replacing: .saveItem) { }
     }
 }

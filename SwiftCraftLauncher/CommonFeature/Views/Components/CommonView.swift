@@ -29,7 +29,7 @@ func emptyDropBackground() -> some View {
 
 @MainActor
 func spacerView() -> some View {
-    Spacer().frame(maxHeight: 20)
+    Spacer().frame(height: 20)
 }
 
 /// A view that displays descriptive text in a standard secondary style.

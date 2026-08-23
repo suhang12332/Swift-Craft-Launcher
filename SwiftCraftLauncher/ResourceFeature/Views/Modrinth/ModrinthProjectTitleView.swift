@@ -82,7 +82,7 @@ struct ModrinthProjectTitleView: View {
                let nsImage = NSImage(data: imageData) {
                 Image(nsImage: nsImage)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(width: 64, height: 64)
                     .cornerRadius(8)
             } else {
@@ -96,7 +96,7 @@ struct ModrinthProjectTitleView: View {
                     case let .success(image):
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     default:
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.secondary.opacity(0.2))

@@ -135,6 +135,7 @@ struct ModrinthIndexFile: Codable {
 enum FileSource: String, Codable {
     case modrinth
     case curseforge
+    case mmc
 }
 
 /// Environment compatibility for a mod file.

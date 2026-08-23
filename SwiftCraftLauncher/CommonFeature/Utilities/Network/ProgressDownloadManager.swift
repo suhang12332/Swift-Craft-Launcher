@@ -177,7 +177,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
     /// The previous session is retired with `finishTasksAndInvalidate()` so in-flight
     /// downloads complete instead of being cancelled by session deallocation.
     private var session: URLSession {
-        let connectionsPerHost = max(1, DIContainer.shared.ui.generalSettingsManager.concurrentDownloads)
+        let connectionsPerHost = max(1, DIContainer.shared.ui.gameSettingsManager.concurrentDownloads)
         let (session, retiredSession) = sessionState.withLock { cache -> (URLSession, URLSession?) in
             if let cachedSession = cache.session, cache.connectionsPerHost == connectionsPerHost {
                 return (cachedSession, nil)

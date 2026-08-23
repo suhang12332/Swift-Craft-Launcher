@@ -60,8 +60,9 @@ public struct SettingsView: View {
                 .tag(SettingsTab.advanced)
                 .disabled(container.core.selectedGameManager.selectedGameId == nil)
         }
+        .fixedSize(horizontal: true, vertical: false)
         .frame(maxWidth: .infinity)
-        .padding()
+        .scenePadding()
         .onChange(of: container.core.selectedGameManager.shouldOpenAdvancedSettings) { _, shouldOpen in
             if shouldOpen {
                 checkAndOpenAdvancedSettings()

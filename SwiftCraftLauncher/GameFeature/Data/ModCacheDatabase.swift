@@ -20,7 +20,13 @@ class ModCacheDatabase {
     private let createTableSQL: String
     private let upsertSQL: String
     private let selectSQL: String
-    private let deleteAllSQL: String
+    private let selectAllSQL: String
+    private let deleteByHashSQL: String
+
+    /// A lightweight view of a cached mod detail used to inspect its `team` marker.
+    private struct CachedModTeam: Decodable {
+        let team: String?
+    }
 
     /// Creates a mod cache database.
     ///
@@ -43,7 +49,8 @@ class ModCacheDatabase {
             ?)
         """
         selectSQL = "SELECT json_data FROM \(tableName) WHERE hash = ? LIMIT 1"
-        deleteAllSQL = "DELETE FROM \(tableName)"
+        selectAllSQL = "SELECT hash, json_data FROM \(tableName)"
+        deleteByHashSQL = "DELETE FROM \(tableName) WHERE hash = ?"
     }
 
     /// Opens the database connection and creates the table if needed.
@@ -117,10 +124,29 @@ class ModCacheDatabase {
         return result
     }
 
-    /// Removes all cached mod entries from the database.
-    func clearAllModCaches() throws {
+    /// Removes cached mod entries whose metadata marks them as local-only fallbacks.
+    func clearLocalModCaches() throws {
+        var localHashes: [String] = []
+        try withPreparedStatement(selectAllSQL) { statement in
+            while sqlite3_step(statement) == SQLITE_ROW {
+                guard let hash = SQLiteDatabase.stringColumn(statement, index: 0),
+                      let data = SQLiteDatabase.dataColumn(statement, index: 1),
+                      let cached = try? JSONDecoder().decode(CachedModTeam.self, from: data),
+                      cached.team == "local"
+                else { continue }
+                localHashes.append(hash)
+            }
+        }
+
+        guard !localHashes.isEmpty else { return }
         try db.transaction {
-            try db.execute(deleteAllSQL)
+            try withPreparedStatement(deleteByHashSQL) { statement in
+                for hash in localHashes {
+                    sqlite3_reset(statement)
+                    SQLiteDatabase.bind(statement, index: 1, value: hash)
+                    try stepStatement(statement)
+                }
+            }
         }
     }
 

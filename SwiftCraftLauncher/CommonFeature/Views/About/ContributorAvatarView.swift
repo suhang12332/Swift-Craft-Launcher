@@ -58,7 +58,7 @@ private struct AvatarRemoteImageView: View {
                     case let .success(image):
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
+                            .scaledToFill()
                     case .empty:
                         avatarPlaceholder(showLoading: true)
                     case .failure:

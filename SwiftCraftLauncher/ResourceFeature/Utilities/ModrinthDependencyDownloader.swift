@@ -54,7 +54,7 @@ enum ModrinthDependencyDownloader {
             }
 
             let semaphore = AsyncSemaphore(
-                value: DIContainer.shared.ui.generalSettingsManager.concurrentDownloads,
+                value: DIContainer.shared.ui.gameSettingsManager.concurrentDownloads,
             )
 
             let allDownloaded: [ModrinthProjectDetail] = await withTaskGroup(
@@ -305,7 +305,7 @@ enum ModrinthDependencyDownloader {
         var resourcesToAdd: [ModrinthProjectDetail] = []
         var allSuccess = true
         let semaphore = AsyncSemaphore(
-            value: DIContainer.shared.ui.generalSettingsManager.concurrentDownloads,
+            value: DIContainer.shared.ui.gameSettingsManager.concurrentDownloads,
         )
 
         await withTaskGroup(of: (String, Bool, ModrinthProjectDetail?).self) { group in

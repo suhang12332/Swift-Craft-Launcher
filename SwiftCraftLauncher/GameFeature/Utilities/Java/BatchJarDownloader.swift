@@ -25,7 +25,7 @@ enum BatchJarDownloader {
         let total = tasks.count
         let counter = AtomicCounter()
 
-        let semaphore = AsyncSemaphore(value: DIContainer.shared.ui.generalSettingsManager.concurrentDownloads)
+        let semaphore = AsyncSemaphore(value: DIContainer.shared.ui.gameSettingsManager.concurrentDownloads)
 
         try await withThrowingTaskGroup(of: Void.self) { group in
             for task in tasks {

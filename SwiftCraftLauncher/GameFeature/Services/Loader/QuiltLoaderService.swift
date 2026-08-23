@@ -73,7 +73,7 @@ enum QuiltLoaderService {
         let classpathString = CommonService.generateFabricClasspath(from: quiltProfile, librariesDir: librariesDirectory)
         let mainClass = quiltProfile.mainClass
         guard let version = quiltProfile.version else {
-            throw GlobalError.resource(
+            throw GlobalError.installation(
                 i18nKey: "error.resource.quilt_missing_version",
                 level: .notification,
                 message: "Quilt profile missing version for game \(gameVersion), loaderVersion \(loaderVersion)",

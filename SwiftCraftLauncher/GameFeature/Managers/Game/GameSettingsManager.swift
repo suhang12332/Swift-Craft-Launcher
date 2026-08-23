@@ -38,6 +38,10 @@ final class GameSettingsManager {
         didSet { Defaults.save(globalXmx, forKey: AppConstants.UserDefaultsKeys.globalXmx) }
     }
 
+    var concurrentDownloads: Int = Defaults.loadInt(forKey: AppConstants.UserDefaultsKeys.concurrentDownloads, defaultValue: 64) {
+        didSet { Defaults.save(max(concurrentDownloads, 1), forKey: AppConstants.UserDefaultsKeys.concurrentDownloads) }
+    }
+
     var enableAICrashAnalysis: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableAICrashAnalysis) {
         didSet { Defaults.save(enableAICrashAnalysis, forKey: AppConstants.UserDefaultsKeys.enableAICrashAnalysis) }
     }

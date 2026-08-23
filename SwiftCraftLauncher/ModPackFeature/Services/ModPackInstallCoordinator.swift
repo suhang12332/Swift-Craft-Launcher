@@ -335,7 +335,7 @@ final class ModPackInstallCoordinator {
     private func calculateOverridesTotal(extractedPath: URL) async -> Int {
         var overridesPath = extractedPath.appendingPathComponent("overrides")
         if !FileManager.default.fileExists(atPath: overridesPath.path) {
-            let possiblePaths = ["overrides", "Override", "override"]
+            let possiblePaths = ["overrides", "Override", "override", "minecraft"]
             for pathName in possiblePaths {
                 let testPath = extractedPath.appendingPathComponent(pathName)
                 if FileManager.default.fileExists(atPath: testPath.path) {
@@ -418,7 +418,7 @@ final class ModPackInstallCoordinator {
             AppLog.modPack.error("Modpack dependency installation failed: \(gameName)")
             await cleanupGameDirectories(gameName: gameName)
             DIContainer.shared.core.errorHandler.handle(
-                GlobalError.resource(
+                GlobalError.installation(
                     i18nKey: "error.resource.modpack_dependencies_failed",
                     level: .notification,
                 ),

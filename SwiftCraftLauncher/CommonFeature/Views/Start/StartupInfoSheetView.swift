@@ -32,7 +32,7 @@ struct StartupInfoSheetView: View {
                             if let appIcon = NSApplication.shared.applicationIconImage {
                                 Image(nsImage: appIcon)
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .scaledToFit()
                                     .frame(width: 64, height: 64)
                             }
                             Spacer()

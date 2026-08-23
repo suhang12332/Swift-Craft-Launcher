@@ -46,7 +46,7 @@ extension ModScanner {
         let standardizedDir = dir.standardizedFileURL
         let jarFiles = try readJarZipFiles(from: standardizedDir)
 
-        let concurrentCount = DIContainer.shared.ui.generalSettingsManager.concurrentDownloads
+        let concurrentCount = DIContainer.shared.ui.gameSettingsManager.concurrentDownloads
         let semaphore = AsyncSemaphore(value: concurrentCount)
 
         let hashes: Set<String> = await withTaskGroup(of: String?.self) { group in

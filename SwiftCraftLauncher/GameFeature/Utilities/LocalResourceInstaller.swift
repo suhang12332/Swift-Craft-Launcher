@@ -44,7 +44,7 @@ enum LocalResourceInstaller {
 
         var isDir: ObjCBool = false
         guard FileManager.default.fileExists(atPath: gameRoot.path, isDirectory: &isDir), isDir.boolValue else {
-            throw GlobalError.fileSystem(
+            throw GlobalError.installation(
                 i18nKey: "error.filesystem.destination_unavailable",
                 level: .notification,
                 message: "game root directory does not exist or is not a directory: \(gameRoot.path)",
@@ -74,7 +74,7 @@ enum LocalResourceInstaller {
         do {
             try FileManager.default.copyItem(at: fileURL, to: destURL)
         } catch {
-            throw GlobalError.fileSystem(
+            throw GlobalError.installation(
                 i18nKey: "error.filesystem.copy_failed",
                 level: .notification,
                 message: "failed to copy \(fileURL.path) to \(destURL.path), error: \(error.localizedDescription)",

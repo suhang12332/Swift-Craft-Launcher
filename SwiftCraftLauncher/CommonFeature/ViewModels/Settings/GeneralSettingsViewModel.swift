@@ -15,14 +15,9 @@ import SwiftUI
 final class GeneralSettingsViewModel {
     var showDirectoryPicker = false
 
-    var concurrentDownloadsDraft: Double
-    var isEditingConcurrentDownloads = false
-
     private weak var gameRepository: GameRepository?
 
-    init() {
-        concurrentDownloadsDraft = Double(DIContainer.shared.ui.generalSettingsManager.concurrentDownloads)
-    }
+    init() { }
 
     /// Configures the view model with a game repository reference.
     func configure(gameRepository: GameRepository) {
@@ -94,25 +89,6 @@ final class GeneralSettingsViewModel {
     func onWorkingDirectoryChanged() {
         Task { [weak self] in
             await self?.gameRepository?.refreshWorkingPathOptions()
-        }
-    }
-
-    /// Syncs the concurrent downloads draft value with current settings.
-    func onAppearSyncConcurrentDownloads() {
-        concurrentDownloadsDraft = Double(DIContainer.shared.ui.generalSettingsManager.concurrentDownloads)
-    }
-
-    /// Updates the concurrent downloads draft when not actively editing.
-    func onConcurrentDownloadsChanged(_ newValue: Int) {
-        guard !isEditingConcurrentDownloads else { return }
-        concurrentDownloadsDraft = Double(newValue)
-    }
-
-    /// Commits the concurrent downloads value when editing ends.
-    func commitConcurrentDownloadsIfNeeded(isEditing: Bool) {
-        isEditingConcurrentDownloads = isEditing
-        if !isEditing {
-            DIContainer.shared.ui.generalSettingsManager.concurrentDownloads = Int(concurrentDownloadsDraft.rounded())
         }
     }
 
