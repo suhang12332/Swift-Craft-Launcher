@@ -12,30 +12,30 @@ import Foundation
 /// Represents information about a Minecraft server.
 struct MinecraftServerInfo: Codable, Sendable {
     /// The server version information.
-    struct Version: Codable {
+    struct Version: Codable, Sendable {
         let name: String
         let `protocol`: Int?
     }
 
     /// The player information.
-    struct Players: Codable {
+    struct Players: Codable, Sendable {
         let max: Int
         let online: Int
         let sample: [Player]?
 
-        struct Player: Codable {
+        struct Player: Codable, Sendable {
             let name: String
             let id: String?
         }
     }
 
     /// The server description (MOTD).
-    struct Description: Codable {
+    struct Description: Codable, Sendable {
         let text: String?
         let extra: [DescriptionElement]?
 
         /// A description element that can be either a string or a nested Description object.
-        enum DescriptionElement: Codable {
+        enum DescriptionElement: Codable, Sendable {
             case string(String)
             case object(Description)
 
@@ -96,14 +96,16 @@ struct MinecraftServerInfo: Codable, Sendable {
     let version: Version?
     let players: Players?
     let description: Description
-    let favicon: String? // Base64-encoded server icon.
-    let modinfo: ModInfo? // Mod information, if available.
+    // Base64-encoded server icon.
+    let favicon: String?
+    // Mod information, if available.
+    let modinfo: ModInfo?
 
-    struct ModInfo: Codable {
+    struct ModInfo: Codable, Sendable {
         let type: String
         let modList: [Mod]?
 
-        struct Mod: Codable {
+        struct Mod: Codable, Sendable {
             let modid: String
             let version: String
         }
