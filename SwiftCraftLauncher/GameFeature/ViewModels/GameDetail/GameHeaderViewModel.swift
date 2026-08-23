@@ -18,13 +18,15 @@ final class GameHeaderViewModel {
     func isNameValid(newName: String, currentName: String, gameId: String) -> Bool {
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty, trimmed != currentName else { return false }
-        if DIContainer.shared.core.gameProcessManager.isGameRunningForAnyUser(gameId: gameId) { return false }
+        if DIContainer.shared.core.gameProcessManager.isGameRunningForAnyUser(gameId: gameId) {
+            return false
+        }
         return !FileManager.default.fileExists(
-            atPath: AppPaths.profileDirectory(gameName: trimmed).path
+            atPath: AppPaths.profileDirectory(gameName: trimmed).path,
         )
     }
 
-    func performRename(gameId: String, currentName: String, gameRepository: GameRepository) async {
+    func performRename(gameId: String, currentName _: String, gameRepository: GameRepository) async {
         do {
             try await gameRepository.renameGame(id: gameId, to: newName.trimmingCharacters(in: .whitespacesAndNewlines))
         } catch {
