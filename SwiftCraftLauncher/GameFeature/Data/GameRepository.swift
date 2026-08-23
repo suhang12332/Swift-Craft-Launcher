@@ -242,6 +242,42 @@ class GameRepository: @unchecked Sendable {
         }.value
     }
 
+    /// Renames a game and its profile directory in the current working path.
+    func renameGame(id: String, to newName: String) async throws {
+        let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard var game = getGame(by: id), !trimmedName.isEmpty, trimmedName != game.gameName else { return }
+        guard try await !gameNameExists(trimmedName, excludingID: id) else {
+            throw GlobalError.validation(
+                i18nKey: "game.form.name.duplicate",
+                level: .notification,
+            )
+        }
+
+        let oldDirectory = AppPaths.profileDirectory(gameName: game.gameName)
+        let newDirectory = AppPaths.profileDirectory(gameName: trimmedName)
+        guard !FileManager.default.fileExists(atPath: newDirectory.path) else {
+            throw GlobalError.validation(
+                i18nKey: "game.form.name.duplicate",
+                level: .notification,
+            )
+        }
+
+        if FileManager.default.fileExists(atPath: oldDirectory.path) {
+            try FileManager.default.moveItem(at: oldDirectory, to: newDirectory)
+        }
+        game.gameName = trimmedName
+
+        do {
+            try await updateGame(game)
+        } catch {
+            if FileManager.default.fileExists(atPath: newDirectory.path),
+               !FileManager.default.fileExists(atPath: oldDirectory.path) {
+                try? FileManager.default.moveItem(at: newDirectory, to: oldDirectory)
+            }
+            throw error
+        }
+    }
+
     func updateGame(_ game: GameVersionInfo) async throws {
         let workingPath = currentWorkingPath
         let gameToSave = game

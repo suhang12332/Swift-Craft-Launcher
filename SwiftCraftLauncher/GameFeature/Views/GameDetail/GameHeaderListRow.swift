@@ -13,6 +13,8 @@ import SwiftUI
 struct GameHeaderListRow: View {
     @Environment(DIContainer.self)
     private var container
+    @Environment(GameRepository.self)
+    private var gameRepository
     private static let iconSize: CGFloat = 80
     private static let iconPaddingRatio: CGFloat = 0.125
     private static let iconCornerRadiusRatio: CGFloat = 0.2
@@ -20,30 +22,23 @@ struct GameHeaderListRow: View {
     let game: GameVersionInfo
     let cacheInfo: CacheInfo
     let query: String
-    @Binding var isNameEditorPresented: Bool
-    let nameEditorContent: AnyView
     var onIconTap: (() -> Void)?
-    var onNameTap: (() -> Void)?
 
     @State private var refreshTrigger: UUID = .init()
     @State private var cancellable: AnyCancellable?
+    @State private var showRenamePopover = false
+    @State private var viewModel = GameHeaderViewModel()
 
     init(
         game: GameVersionInfo,
         cacheInfo: CacheInfo,
         query: String,
-        isNameEditorPresented: Binding<Bool>,
-        nameEditorContent: AnyView,
         onIconTap: (() -> Void)? = nil,
-        onNameTap: (() -> Void)? = nil,
     ) {
         self.game = game
         self.cacheInfo = cacheInfo
         self.query = query
-        _isNameEditorPresented = isNameEditorPresented
-        self.nameEditorContent = nameEditorContent
         self.onIconTap = onIconTap
-        self.onNameTap = onNameTap
     }
 
     var body: some View {
@@ -51,15 +46,16 @@ struct GameHeaderListRow: View {
             gameIcon
             VStack(alignment: .leading, spacing: 4) {
                 Button {
-                    onNameTap?()
+                    viewModel.newName = game.gameName
+                    showRenamePopover = true
                 } label: {
                     Text(game.gameName)
                         .font(.title)
                         .bold()
                         .lineLimit(1)
                         .truncationMode(.tail)
-                        .popover(isPresented: $isNameEditorPresented, arrowEdge: .top) {
-                            nameEditorContent
+                        .popover(isPresented: $showRenamePopover, arrowEdge: .top) {
+                            renamePopover
                         }
                 }
                 .buttonStyle(.plain)
@@ -104,6 +100,45 @@ struct GameHeaderListRow: View {
         .listRowInsets(
             EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 8),
         )
+    }
+
+    private var renamePopover: some View {
+        @Bindable var viewModel = viewModel
+
+        return HStack(spacing: 8) {
+            TextField("game.form.name.placeholder".localized(), text: $viewModel.newName)
+                .textFieldStyle(.roundedBorder)
+                .onSubmit(renameGame)
+            Button("common.confirm".localized(), action: renameGame)
+                .buttonStyle(.borderedProminent)
+                .disabled(!canRename)
+        }
+        .padding()
+        .frame(width: 500)
+    }
+
+    private var canRename: Bool {
+        viewModel.isNameValid(newName: viewModel.newName, currentName: game.gameName)
+            && !viewModel.isRenaming
+            && !container.core.gameProcessManager.isGameRunningForAnyUser(gameId: game.id)
+    }
+
+    private func renameGame() {
+        guard canRename else { return }
+        let newName = viewModel.newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        viewModel.isRenaming = true
+
+        Task { @MainActor in
+            defer { viewModel.isRenaming = false }
+            do {
+                guard !container.core.gameProcessManager.isGameRunningForAnyUser(gameId: game.id) else { return }
+                try await gameRepository.renameGame(id: game.id, to: newName)
+                showRenamePopover = false
+                container.ui.iconRefreshNotifier.notifyRefresh(for: nil)
+            } catch {
+                container.core.errorHandler.handle(GlobalError.from(error))
+            }
+        }
     }
 
     /// The URL of the icon file in the game profile directory.
