@@ -20,6 +20,8 @@ struct GameHeaderListRow: View {
     let game: GameVersionInfo
     let cacheInfo: CacheInfo
     let query: String
+    @Binding var isNameEditorPresented: Bool
+    let nameEditorContent: AnyView
     var onIconTap: (() -> Void)?
     var onNameTap: (() -> Void)?
 
@@ -30,12 +32,16 @@ struct GameHeaderListRow: View {
         game: GameVersionInfo,
         cacheInfo: CacheInfo,
         query: String,
+        isNameEditorPresented: Binding<Bool>,
+        nameEditorContent: AnyView,
         onIconTap: (() -> Void)? = nil,
         onNameTap: (() -> Void)? = nil,
     ) {
         self.game = game
         self.cacheInfo = cacheInfo
         self.query = query
+        _isNameEditorPresented = isNameEditorPresented
+        self.nameEditorContent = nameEditorContent
         self.onIconTap = onIconTap
         self.onNameTap = onNameTap
     }
@@ -44,17 +50,21 @@ struct GameHeaderListRow: View {
         HStack {
             gameIcon
             VStack(alignment: .leading, spacing: 4) {
-                Text(game.gameName)
-                    .font(.title)
-                    .bold()
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .frame(maxWidth: 400, alignment: .leading)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        onNameTap?()
-                    }
-                    .applyPointerHandIfAvailable()
+                Button {
+                    onNameTap?()
+                } label: {
+                    Text(game.gameName)
+                        .font(.title)
+                        .bold()
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .popover(isPresented: $isNameEditorPresented, arrowEdge: .top) {
+                            nameEditorContent
+                        }
+                }
+                .buttonStyle(.plain)
+                .frame(maxWidth: 400, alignment: .leading)
+                .applyPointerHandIfAvailable()
 
                 HStack(spacing: 8) {
                     Label(game.gameVersion, systemImage: "gamecontroller.fill")

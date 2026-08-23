@@ -177,14 +177,11 @@ struct GameInfoDetailView: View {
                 game: currentGame,
                 cacheInfo: container.core.cacheInfoManager.cacheInfo,
                 query: query,
-            ) {
-                showIconFilePicker = true
-            } onNameTap: {
-                beginGameNameEditing()
-            }
-            .popover(isPresented: $showGameNamePopover, arrowEdge: .bottom) {
-                gameNameEditorPopover
-            },
+                isNameEditorPresented: $showGameNamePopover,
+                nameEditorContent: AnyView(gameNameEditorPopover),
+                onIconTap: { showIconFilePicker = true },
+                onNameTap: beginGameNameEditing,
+            ),
         )
     }
 
