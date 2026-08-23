@@ -249,6 +249,12 @@ class GameRepository: @unchecked Sendable {
         try fm.moveItem(at: oldDir, to: newDir)
 
         game.gameName = newName
+        // Backward compatibility: old games have the game directory path baked into launchCommand.
+        // Replace the hardcoded path with the ${game_directory} placeholder so it's resolved dynamically at launch time.
+        if !game.launchCommand.contains("${game_directory}") {
+            let oldPath = AppPaths.profileDirectory(gameName: oldName).path
+            game.launchCommand = game.launchCommand.map { $0.replacingOccurrences(of: oldPath, with: "${game_directory}") }
+        }
         try await updateGame(game)
         AppLog.game.info("Successfully renamed game from '\(oldName)' to '\(newName)'")
     }
