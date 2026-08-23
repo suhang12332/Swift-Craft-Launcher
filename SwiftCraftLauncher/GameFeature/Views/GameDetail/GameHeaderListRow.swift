@@ -8,7 +8,7 @@
 import Combine
 import SwiftUI
 
-// A list row displaying the game icon, name, version info, and cache size.
+/// A list row displaying the game icon, name, version info, and cache size.
 struct GameHeaderListRow: View {
     @Environment(DIContainer.self)
     private var container
