@@ -5,9 +5,9 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import MinecraftServerPingKit
 @testable import SwiftCraftLauncher
 import XCTest
-import MinecraftServerPingKit
 
 final class MinecraftServerInfoExtendedTests: XCTestCase {
     func testDescription_plainText_textOnly() {
