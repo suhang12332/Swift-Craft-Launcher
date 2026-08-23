@@ -10,6 +10,14 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct GameInfoDetailView: View {
+    private enum NameValidationState: Equatable {
+        case idle
+        case checking
+        case valid
+        case duplicate
+        case failed(String)
+    }
+
     @Environment(DIContainer.self)
     private var container
     let game: GameVersionInfo
@@ -33,14 +41,13 @@ struct GameInfoDetailView: View {
     @State private var ioViewModel = GameInfoDetailIOViewModel()
 
     @State private var scannedResources: Set<String> = []
-    @State private var header: AnyView?
     @State private var showIconFilePicker = false
     @State private var showGameNamePopover = false
     @State private var editedGameName = ""
-    @State private var nameEditorError: String?
-    @State private var isNameDuplicate = false
-    @State private var isCheckingName = false
+    @State private var nameValidationState: NameValidationState = .idle
+    @State private var nameValidationRequestID = UUID()
     @State private var isSavingGameName = false
+    @State private var isGameRunningForNameEdit = false
 
     init(
         game: GameVersionInfo,
@@ -110,12 +117,6 @@ struct GameInfoDetailView: View {
         .onChange(of: game.gameName) { _, _ in
             performRefresh()
         }
-        .onChange(of: game.modLoader) { _, _ in
-            updateHeaders()
-        }
-        .onChange(of: game.modVersion) { _, _ in
-            updateHeaders()
-        }
         .onChange(of: gameType) { _, _ in
             performRefresh()
         }
@@ -140,11 +141,7 @@ struct GameInfoDetailView: View {
             }
         }
         .onAppear {
-            updateHeaders()
             container.core.cacheInfoManager.calculateGameCacheInfo(game.gameName)
-        }
-        .onChange(of: container.core.cacheInfoManager.cacheInfo) { _, _ in
-            updateHeaders()
         }
         .onDisappear {
             clearAllData()
@@ -159,7 +156,6 @@ struct GameInfoDetailView: View {
     }
 
     private func performRefresh() {
-        updateHeaders()
         container.core.cacheInfoManager.calculateGameCacheInfo(game.gameName)
         if !gameType {
             triggerLocalRefresh()
@@ -173,123 +169,127 @@ struct GameInfoDetailView: View {
         localRefreshToken = UUID()
     }
 
-    private func updateHeaders() {
+    private var header: AnyView {
         let currentGame = gameRepository.games.first { $0.id == game.id } ?? game
 
-        let headerView = GameHeaderListRow(
-            game: currentGame,
-            cacheInfo: container.core.cacheInfoManager.cacheInfo,
-            query: query,
-        ) {
-            showIconFilePicker = true
-        } onNameTap: {
-            beginGameNameEditing()
-        }
-        .popover(isPresented: $showGameNamePopover, arrowEdge: .bottom) {
-            gameNameEditorPopover
-        }
-        header = AnyView(headerView)
+        return AnyView(
+            GameHeaderListRow(
+                game: currentGame,
+                cacheInfo: container.core.cacheInfoManager.cacheInfo,
+                query: query,
+            ) {
+                showIconFilePicker = true
+            } onNameTap: {
+                beginGameNameEditing()
+            }
+            .popover(isPresented: $showGameNamePopover, arrowEdge: .bottom) {
+                gameNameEditorPopover
+            },
+        )
     }
 
     private var gameNameEditorPopover: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("game.form.name".localized())
-                .font(.headline)
+        HStack(spacing: 12) {
             TextField("game.form.name.placeholder".localized(), text: $editedGameName)
                 .textFieldStyle(.roundedBorder)
-                .onSubmit(saveGameName)
-            if isNameDuplicate {
-                Text("game.form.name.duplicate".localized())
-                    .foregroundStyle(.red)
-                    .font(.caption)
-            } else if let nameEditorError {
-                Text(nameEditorError)
-                    .foregroundStyle(.red)
-                    .font(.caption)
-            }
-            HStack {
-                Spacer()
-                Button("common.confirm".localized(), action: saveGameName)
-                    .buttonStyle(.borderedProminent)
-                    .disabled(
-                        isSavingGameName
-                            || isCurrentGameRunning
-                            || isCheckingName
-                            || isNameDuplicate
-                            || editedGameName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                            || editedGameName == game.gameName,
-                    )
-            }
+                .frame(width: 340)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(nameValidationMessage == nil ? Color.clear : Color.red, lineWidth: 1)
+                }
+                .help(nameValidationMessage ?? "")
+                .onSubmit {
+                    guard canConfirmGameName else { return }
+                    saveGameName()
+                }
+            Button("common.confirm".localized(), action: saveGameName)
+                .buttonStyle(.borderedProminent)
+                .disabled(!canConfirmGameName)
         }
         .padding()
-        .frame(width: 300)
-        .task(id: editedGameName) {
-            await validateEditedGameName()
+        .onChange(of: editedGameName) { _, newValue in
+            validateEditedGameName(newValue)
+        }
+    }
+
+    private var nameValidationMessage: String? {
+        switch nameValidationState {
+        case .duplicate:
+            "game.form.name.duplicate".localized()
+        case let .failed(message):
+            message
+        case .idle, .checking, .valid:
+            nil
         }
     }
 
     private func beginGameNameEditing() {
-        editedGameName = game.gameName
-        nameEditorError = nil
-        isNameDuplicate = false
+        editedGameName = currentGameName
+        nameValidationState = .idle
+        nameValidationRequestID = UUID()
+        isGameRunningForNameEdit = isCurrentGameRunning
         showGameNamePopover = true
+    }
+
+    private var currentGameName: String {
+        gameRepository.getGame(by: game.id)?.gameName ?? game.gameName
     }
 
     private var isCurrentGameRunning: Bool {
         container.core.gameProcessManager.isGameRunningForAnyUser(gameId: game.id)
     }
 
-    private func validateEditedGameName() async {
-        let newName = editedGameName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !newName.isEmpty, newName != game.gameName else {
-            isNameDuplicate = false
-            isCheckingName = false
+    private var canConfirmGameName: Bool {
+        nameValidationState == .valid
+            && !isSavingGameName
+            && !isGameRunningForNameEdit
+    }
+
+    private func validateEditedGameName(_ value: String) {
+        let newName = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        let requestID = UUID()
+        nameValidationRequestID = requestID
+
+        guard !newName.isEmpty, newName != currentGameName else {
+            nameValidationState = .idle
             return
         }
 
-        isCheckingName = true
-        defer { isCheckingName = false }
-        do {
-            let exists = try await gameRepository.gameNameExists(newName, excludingID: game.id)
-            guard !Task.isCancelled else { return }
-            isNameDuplicate = exists
-        } catch {
-            guard !Task.isCancelled else { return }
-            isNameDuplicate = true
-            nameEditorError = GlobalError.from(error).localizedDescription
+        nameValidationState = .checking
+        Task { @MainActor in
+            do {
+                let exists = try await gameRepository.gameNameExists(newName, excludingID: game.id)
+                guard requestID == nameValidationRequestID else { return }
+                nameValidationState = exists ? .duplicate : .valid
+            } catch {
+                guard requestID == nameValidationRequestID else { return }
+                nameValidationState = .failed(GlobalError.from(error).localizedDescription)
+            }
         }
     }
 
     private func saveGameName() {
-        guard !isSavingGameName else { return }
+        guard canConfirmGameName else { return }
         let newName = editedGameName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !newName.isEmpty, newName != game.gameName else { return }
 
         isSavingGameName = true
-        nameEditorError = nil
         Task { @MainActor in
+            defer { isSavingGameName = false }
             do {
                 guard !isCurrentGameRunning else {
-                    isSavingGameName = false
+                    isGameRunningForNameEdit = true
                     return
                 }
-                guard var updatedGame = gameRepository.getGame(by: game.id) else {
-                    isSavingGameName = false
-                    return
-                }
+                guard var updatedGame = gameRepository.getGame(by: game.id) else { return }
                 guard try await !gameRepository.gameNameExists(newName, excludingID: game.id) else {
-                    isNameDuplicate = true
-                    nameEditorError = "game.form.name.duplicate".localized()
-                    isSavingGameName = false
+                    nameValidationState = .duplicate
                     return
                 }
 
                 let oldDirectory = AppPaths.profileDirectory(gameName: updatedGame.gameName)
                 let newDirectory = AppPaths.profileDirectory(gameName: newName)
                 guard !FileManager.default.fileExists(atPath: newDirectory.path) else {
-                    isNameDuplicate = true
-                    nameEditorError = "game.form.name.duplicate".localized()
-                    isSavingGameName = false
+                    nameValidationState = .duplicate
                     return
                 }
 
@@ -309,11 +309,9 @@ struct GameInfoDetailView: View {
                 }
 
                 showGameNamePopover = false
-                isSavingGameName = false
                 container.ui.iconRefreshNotifier.notifyRefresh(for: nil)
                 performRefresh()
             } catch {
-                isSavingGameName = false
                 container.core.errorHandler.handle(GlobalError.from(error))
             }
         }
@@ -355,7 +353,6 @@ struct GameInfoDetailView: View {
                     }
                 }
                 container.ui.iconRefreshNotifier.notifyRefresh(for: gameName)
-                updateHeaders()
             }
         }
     }
