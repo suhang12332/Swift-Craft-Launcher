@@ -95,9 +95,8 @@ struct ModrinthDetailCardView: View {
     @ViewBuilder private var iconView: some View {
         if project.projectId.hasPrefix("local_") || project.projectId.hasPrefix("file_") {
             ModrinthDetailCardPlaceholderIcon()
-        } else if let iconUrl = project.iconUrl,
-                  let url = URL(string: iconUrl) {
-            AsyncImage(url: url) { phase in
+        } else if let iconURL = CommonUtil.iconURL(from: project.iconUrl) {
+            AsyncImage(url: iconURL) { phase in
                 switch phase {
                 case let .success(image):
                     image
@@ -109,7 +108,7 @@ struct ModrinthDetailCardView: View {
                 }
             }
             .onDisappear {
-                URLCache.shared.removeCachedResponse(for: URLRequest(url: url))
+                URLCache.shared.removeCachedResponse(for: URLRequest(url: iconURL))
             }
             .frame(
                 width: ModrinthConstants.UIConstants.iconSize,
@@ -134,13 +133,19 @@ struct ModrinthDetailCardView: View {
                     .lineLimit(1)
             }
             if type == false, let fileName = project.fileName {
-                Text(fileName)
+                Text(displayFileName(fileName))
                     .font(.subheadline)
                     .bold()
                     .foregroundColor(.secondary)
                     .lineLimit(1)
             }
         }
+    }
+
+    private func displayFileName(_ raw: String) -> String {
+        guard query == ResourceType.minecraftJavaServer.rawValue else { return raw }
+        let parsed = CommonUtil.parseMinecraftJavaServerInfo(from: raw)
+        return parsed.address.isEmpty ? raw : parsed.address
     }
 
     private var descriptionView: some View {
@@ -174,8 +179,13 @@ struct ModrinthDetailCardView: View {
 
     private var infoView: some View {
         VStack(alignment: .trailing, spacing: ModrinthConstants.UIConstants.spacing) {
-            downloadInfoView
-            followerInfoView
+            if query == ResourceType.minecraftJavaServer.rawValue,
+               type == false {
+                serverPlayersInfoView
+            } else {
+                downloadInfoView
+                followerInfoView
+            }
             HStack(spacing: 6) {
                 if type {
                     FavoriteButton(
@@ -200,6 +210,15 @@ struct ModrinthDetailCardView: View {
                 }
             }
         }
+    }
+
+    private var serverPlayersInfoView: some View {
+        ModrinthDetailCardInfoRowView(
+            icon: "person.2",
+            text: project.playersText,
+            iconColor: project.statusColor,
+            font: .subheadline,
+        )
     }
 
     private var downloadInfoView: some View {
@@ -245,14 +264,24 @@ struct ModrinthDetailCardTagView: View {
 struct ModrinthDetailCardInfoRowView: View {
     let icon: String
     let text: String
+    var iconColor: Color?
+    var font: Font
+
+    init(icon: String, text: String, iconColor: Color? = nil, font: Font = .caption2) {
+        self.icon = icon
+        self.text = text
+        self.iconColor = iconColor
+        self.font = font
+    }
 
     var body: some View {
         HStack(spacing: 2) {
             Image(systemName: icon)
                 .imageScale(.small)
+                .foregroundColor(iconColor)
             Text(text)
         }
-        .font(.caption2)
+        .font(font)
         .foregroundColor(.secondary)
     }
 }

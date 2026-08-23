@@ -233,6 +233,11 @@ final class GameLocalResourceViewModel {
             return
         }
 
+        if query.lowercased() == ResourceType.minecraftJavaServer.rawValue {
+            allFiles = []
+            return
+        }
+
         initializeResourceDirectoryIfNeeded()
 
         guard let resourceDir = currentResourceDirectory() else {
@@ -265,6 +270,11 @@ final class GameLocalResourceViewModel {
             isLoadingResources = false
             isLoadingMore = false
             hasMoreResults = false
+            return
+        }
+
+        if query.lowercased() == ResourceType.minecraftJavaServer.rawValue {
+            loadServers(searchText: searchText)
             return
         }
 
@@ -319,5 +329,68 @@ final class GameLocalResourceViewModel {
                 }
             }
         }
+    }
+
+    private func loadServers(searchText: String? = nil) {
+        guard let game else {
+            scannedResources = []
+            isLoadingResources = false
+            isLoadingMore = false
+            hasMoreResults = false
+            return
+        }
+
+        isLoadingResources = true
+
+        Task {
+            do {
+                let loadedServers = try await DIContainer.shared.system.serverAddressService.loadServerAddresses(for: game.gameName)
+                let details = loadedServers.map {
+                    ModrinthProjectDetail.fromServer($0, info: nil, status: .checking)
+                }
+                let searchLower = (searchText ?? currentSearchText).lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+                scannedResources = searchLower.isEmpty ? details : details.filter { $0.title.lowercased().contains(searchLower) }
+                hasMoreResults = false
+                checkServerStatuses(loadedServers)
+            } catch {
+                scannedResources = []
+            }
+            isLoadingResources = false
+            isLoadingMore = false
+        }
+    }
+
+    /// Checks connection status for all servers concurrently and updates the displayed details.
+    private func checkServerStatuses(_ servers: [ServerAddress]) {
+        guard !servers.isEmpty else { return }
+        Task.detached(priority: .userInitiated) {
+            await withTaskGroup(of: (ServerAddress, ServerConnectionStatus, MinecraftServerInfo?).self) { group in
+                for server in servers {
+                    group.addTask {
+                        let status = await NetworkUtils.checkServerConnectionStatus(
+                            address: server.address,
+                            port: server.port,
+                            timeout: 5.0,
+                        )
+                        if case let .success(info) = status {
+                            return (server, status, info)
+                        }
+                        return (server, status, nil)
+                    }
+                }
+
+                for await (server, status, serverInfo) in group {
+                    await MainActor.run {
+                        self.applyServerResult(server: server, status: status, info: serverInfo)
+                    }
+                }
+            }
+        }
+    }
+
+    @MainActor
+    private func applyServerResult(server: ServerAddress, status: ServerConnectionStatus, info: MinecraftServerInfo?) {
+        guard let index = scannedResources.firstIndex(where: { $0.id == "server_\(server.id)" }) else { return }
+        scannedResources[index] = ModrinthProjectDetail.fromServer(server, info: info, status: status)
     }
 }

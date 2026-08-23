@@ -54,7 +54,9 @@ struct GameLocalResourceListContent: View {
             .listRowSeparator(.hidden)
             .contentShape(Rectangle())
             .onTapGesture {
-                if !mod.projectId.hasPrefix("local_"), !mod.projectId.hasPrefix("file_") {
+                if query != ResourceType.minecraftJavaServer.rawValue,
+                   !mod.projectId.hasPrefix("local_"),
+                   !mod.projectId.hasPrefix("file_") {
                     selectedProjectId = mod.projectId
                     if let type = ResourceType(rawValue: query) {
                         selectedItem = .resource(type)

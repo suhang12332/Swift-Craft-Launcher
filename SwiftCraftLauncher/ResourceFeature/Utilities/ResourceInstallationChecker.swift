@@ -28,6 +28,13 @@ enum ResourceInstallationChecker {
         selectedLoaders: [String],
         gameInfo: GameVersionInfo?,
     ) async -> Bool {
+        if resourceType == ResourceType.minecraftJavaServer.rawValue {
+            guard !installedHashes.isEmpty,
+                  let address = await serverAddress(for: project)
+            else { return false }
+            return installedHashes.contains(CommonUtil.serverMatchKey(address: address))
+        }
+
         guard !installedHashes.isEmpty else { return false }
 
         // Build version and loader filters using user selection or game info as fallback.
@@ -77,5 +84,24 @@ enum ResourceInstallationChecker {
         }
 
         return false
+    }
+
+    /// Resolves the server address for a Minecraft Java server project.
+    ///
+    /// Uses the project's file name when available, otherwise fetches the project detail.
+    private static func serverAddress(for project: ModrinthProject) async -> String? {
+        if let fileName = project.fileName,
+           !fileName.isEmpty {
+            let address = CommonUtil.parseMinecraftJavaServerInfo(from: fileName).address
+            if !address.isEmpty {
+                return address
+            }
+        }
+
+        guard let detail = await ModrinthService.fetchProjectDetails(
+            id: project.projectId,
+            type: ResourceType.minecraftJavaServer.rawValue,
+        ) else { return nil }
+        return MinecraftJavaServerResourceUtils.parseAddress(from: detail)
     }
 }

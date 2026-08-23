@@ -25,6 +25,9 @@ struct GameToolbarItems: View {
             .id(controlActiveState)
         if detailState.gameType {
             ResourceFilterMenus.dataSourceMenu(filterState: filterState)
+                .disabled(
+                    detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue,
+                )
                 .id(controlActiveState)
             ResourceFilterMenus.favoritesFilterButton(filterState: filterState)
                 .id(controlActiveState)

@@ -129,7 +129,7 @@ private struct ServerInfoSection: View {
                 title: item.id,
                 isSelected: false,
                 action: { },
-                iconName: "server.rack",
+                iconName: "tv.badge.wifi",
                 iconColor: connectionStatus.statusColor,
             )
             .frame(maxWidth: 160, alignment: .leading)

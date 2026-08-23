@@ -47,6 +47,11 @@ extension AddOrDeleteResourceButtonViewModel {
                 Task { await loadModPackDetailBeforeOpeningSheet() }
                 return
             }
+            if query == ResourceType.minecraftJavaServer.rawValue {
+                addButtonState = .loading
+                Task { await addServerToGame() }
+                return
+            }
             addButtonState = .loading
             Task { await loadGameResourceInstallDetailBeforeOpeningSheet() }
         case .installed, .update:
@@ -56,6 +61,55 @@ extension AddOrDeleteResourceButtonViewModel {
         default:
             break
         }
+    }
+
+    func addServerToGame() async {
+        guard let gameInfo else {
+            addButtonState = .idle
+            return
+        }
+
+        guard let gameRepository,
+              let result = await ResourceDetailLoader.loadProjectDetail(
+                  projectId: project.projectId,
+                  gameRepository: gameRepository,
+                  resourceType: query,
+                  skipCompatibleGameResolution: true,
+              )
+        else {
+            addButtonState = .idle
+            return
+        }
+
+        do {
+            try await MinecraftJavaServerResourceUtils.addServerToGameIfNeeded(
+                game: gameInfo,
+                detail: result.detail,
+            )
+            addButtonState = .installed
+        } catch {
+            addButtonState = .idle
+            let globalError = GlobalError.from(error)
+            AppLog.game.error("Failed to add server: \(globalError.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(globalError)
+        }
+    }
+
+    func deleteServer(gameName: String) {
+        guard let serverId = getServerId() else { return }
+        Task {
+            var servers = try? await DIContainer.shared.system.serverAddressService.loadServerAddresses(for: gameName)
+            servers?.removeAll { $0.id == serverId }
+            if let servers {
+                try? await DIContainer.shared.system.serverAddressService.saveServerAddresses(servers, for: gameName)
+            }
+            onResourceChanged?()
+        }
+    }
+
+    private func getServerId() -> String? {
+        guard project.projectId.hasPrefix("server_") else { return nil }
+        return String(project.projectId.dropFirst("server_".count))
     }
 
     func handlePrimaryTapInResource() {

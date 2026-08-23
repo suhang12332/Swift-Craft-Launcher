@@ -38,7 +38,7 @@ final class ResourceTypeTests: XCTestCase {
         XCTAssertEqual(ResourceType.shader.systemImage, "sparkles")
         XCTAssertEqual(ResourceType.resourcepack.systemImage, "paintpalette")
         XCTAssertEqual(ResourceType.modpack.systemImage, "cube.box")
-        XCTAssertEqual(ResourceType.minecraftJavaServer.systemImage, "server.rack")
+        XCTAssertEqual(ResourceType.minecraftJavaServer.systemImage, "tv.badge.wifi")
     }
 
     func testResourceType_overridesSubdirectory() {

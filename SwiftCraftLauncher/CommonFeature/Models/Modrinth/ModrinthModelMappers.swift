@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 public extension ModrinthProjectDetail {
     /// Creates a `ModrinthProjectDetail` from the V3 API response format.
@@ -72,6 +73,53 @@ public extension ModrinthProjectDetail {
     }
 }
 
+extension ModrinthProjectDetail {
+    /// Creates a `ModrinthProjectDetail` for a server, embedding connection-check results in existing fields.
+    static func fromServer(
+        _ server: ServerAddress,
+        info: MinecraftServerInfo?,
+        status: ServerConnectionStatus,
+    ) -> ModrinthProjectDetail {
+        let displayAddress: String = {
+            if server.port > 0 {
+                return "\(server.address):\(server.port)"
+            }
+            return server.address
+        }()
+
+        let motd = info?.description.plainText ?? ""
+
+        return ModrinthProjectDetail(
+            slug: server.name.lowercased().replacingOccurrences(of: " ", with: "-"),
+            title: server.name,
+            description: motd.isEmpty ? displayAddress : motd,
+            categories: ["server"],
+            clientSide: "unknown",
+            serverSide: status.statusCode,
+            body: server.address,
+            additionalCategories: nil,
+            issuesUrl: nil,
+            sourceUrl: nil,
+            wikiUrl: nil,
+            discordUrl: nil,
+            projectType: ResourceType.minecraftJavaServer.rawValue,
+            downloads: info?.players?.online ?? 0,
+            iconUrl: info?.favicon ?? server.icon,
+            id: "server_\(server.id)",
+            team: "local",
+            published: Date(),
+            updated: Date(),
+            followers: info?.players?.max ?? 0,
+            license: nil,
+            versions: [],
+            gameVersions: [],
+            loaders: [],
+            type: nil,
+            fileName: displayAddress,
+        )
+    }
+}
+
 public extension ModrinthProject {
     /// Creates a `ModrinthProject` from a detailed project response.
     static func from(detail: ModrinthProjectDetail) -> ModrinthProject {
@@ -92,6 +140,68 @@ public extension ModrinthProject {
             clientSide: detail.clientSide,
             serverSide: detail.serverSide,
             fileName: detail.fileName,
+        )
+    }
+
+    /// The color representing the server connection status.
+    var statusColor: Color? {
+        switch serverStatus {
+        case .checking:
+            return .blue.opacity(0.5)
+        case .success:
+            return .green
+        case .timeout, .failed:
+            return .red
+        case .unknown, nil:
+            return nil
+        }
+    }
+
+    /// The online player count text, or a placeholder when the player data is unavailable.
+    var playersText: String {
+        switch serverStatus {
+        case .checking, .unknown, .timeout, .failed:
+            return "-- / --"
+        default:
+            return "\(downloads) / \(follows)"
+        }
+    }
+}
+
+extension ModrinthProject {
+    /// The server connection status parsed from `serverSide`.
+    var serverStatus: ServerConnectionStatus? {
+        ServerConnectionStatus(statusCode: serverSide)
+    }
+
+    /// The `ServerAddress` reconstructed from the project, used for editing.
+    var serverAddress: ServerAddress? {
+        guard projectId.hasPrefix("server_") else { return nil }
+        let serverId = String(projectId.dropFirst("server_".count))
+        let (host, port) = CommonUtil.parseServerAddressComponents(fileName ?? "")
+        return ServerAddress(
+            id: serverId,
+            name: title,
+            address: host,
+            port: port ?? 0,
+        )
+    }
+
+    /// The connection information reconstructed from the project, used for editing.
+    var serverInfo: MinecraftServerInfo? {
+        guard let serverStatus, case .success = serverStatus else { return nil }
+        let players: MinecraftServerInfo.Players? = (follows > 0 || downloads > 0)
+            ? MinecraftServerInfo.Players(max: follows, online: downloads, sample: nil)
+            : nil
+        return MinecraftServerInfo(
+            version: nil,
+            players: players,
+            description: MinecraftServerInfo.Description(
+                text: description.isEmpty ? nil : description,
+                extra: nil,
+            ),
+            favicon: iconUrl,
+            modinfo: nil,
         )
     }
 }

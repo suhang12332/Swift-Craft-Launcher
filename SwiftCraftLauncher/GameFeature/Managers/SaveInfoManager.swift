@@ -9,7 +9,7 @@ import Foundation
 import Observation
 import SwiftNBT
 
-/// Loads and manages save information including worlds, screenshots, servers,
+/// Loads and manages save information including worlds, screenshots,
 /// litematica files, and logs for a specific game instance.
 @Observable
 final class SaveInfoManager: @unchecked Sendable {
@@ -105,18 +105,20 @@ final class SaveInfoManager: @unchecked Sendable {
     }
 
     let gameName: String
+    let modLoader: String
     private(set) var worlds: [WorldInfo] = []
     private(set) var screenshots: [ScreenshotInfo] = []
-    private(set) var servers: [ServerAddress] = []
     private(set) var litematicaFiles: [LitematicaInfo] = []
     private(set) var logs: [LogInfo] = []
     private(set) var isLoading: Bool = true
 
     private(set) var isLoadingWorlds: Bool = false
     private(set) var isLoadingScreenshots: Bool = false
-    private(set) var isLoadingServers: Bool = false
     private(set) var isLoadingLitematica: Bool = false
     private(set) var isLoadingLogs: Bool = false
+
+    /// Resource counts keyed by resource type (mod, datapack, resourcepack, shader, litematica, worlds, servers).
+    private(set) var resourceCounts: [(type: String, count: Int, directory: URL?)] = []
 
     private(set) var hasWorldsType: Bool = false
     private(set) var hasScreenshotsType: Bool = false
@@ -125,10 +127,16 @@ final class SaveInfoManager: @unchecked Sendable {
 
     private var loadTask: Task<Void, Never>?
 
+    private var isVanilla: Bool {
+        modLoader.lowercased() == GameLoader.vanilla.displayName
+    }
+
     init(
         gameName: String,
+        modLoader: String,
     ) {
         self.gameName = gameName
+        self.modLoader = modLoader
     }
 
     deinit {
@@ -184,13 +192,12 @@ final class SaveInfoManager: @unchecked Sendable {
     @MainActor
     private func checkTypesAvailability() async {
         let name = gameName
-        let (worlds, screenshots, _, litematica, logs) = await Task.detached(priority: .userInitiated) {
+        let (worlds, screenshots, litematica, logs) = await Task.detached(priority: .userInitiated) {
             let fm = FileManager.default
             let profileDir = AppPaths.profileDirectory(gameName: name)
             let savesPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
             let screenshotsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)
             let logsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
-            let serversDatURL = profileDir.appendingPathComponent("servers.dat")
             let schematicsDir = AppPaths.schematicsDirectory(gameName: name)
 
             var hasWorlds = false
@@ -269,7 +276,6 @@ final class SaveInfoManager: @unchecked Sendable {
             return (
                 hasWorlds,
                 hasScreenshots,
-                fm.fileExists(atPath: serversDatURL.path),
                 hasLitematicaFiles,
                 hasLogs,
             )
@@ -300,7 +306,7 @@ final class SaveInfoManager: @unchecked Sendable {
             }
 
             group.addTask { [weak self] in
-                await self?.loadServers()
+                await self?.loadResourceCounts()
             }
 
             if hasLitematicaType {
@@ -352,19 +358,6 @@ final class SaveInfoManager: @unchecked Sendable {
     }
 
     @MainActor
-    private func loadServers() async {
-        isLoadingServers = true
-        defer { isLoadingServers = false }
-
-        do {
-            servers = try await DIContainer.shared.system.serverAddressService.loadServerAddresses(for: gameName)
-        } catch {
-            AppLog.game.error("Failed to load server address info: \(error.localizedDescription)")
-            servers = []
-        }
-    }
-
-    @MainActor
     private func loadLitematicaFiles() async {
         isLoadingLitematica = true
         defer { isLoadingLitematica = false }
@@ -393,19 +386,59 @@ final class SaveInfoManager: @unchecked Sendable {
         logs = result
     }
 
+    @MainActor
+    private func loadResourceCounts() async {
+        let name = gameName
+        let vanilla = isVanilla
+        var counts: [(type: String, count: Int, directory: URL?)] = await Task.detached(priority: .userInitiated) {
+            let fm = FileManager.default
+            let profileDir = AppPaths.profileDirectory(gameName: name)
+            let allTypes: [(String, URL)] = [
+                (ResourceType.mod.rawValue, AppPaths.modsDirectory(gameName: name)),
+                (ResourceType.datapack.rawValue, AppPaths.datapacksDirectory(gameName: name)),
+                (ResourceType.resourcepack.rawValue, AppPaths.resourcepacksDirectory(gameName: name)),
+                (ResourceType.shader.rawValue, AppPaths.shaderpacksDirectory(gameName: name)),
+                ("litematica", AppPaths.schematicsDirectory(gameName: name)),
+                ("worlds", profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)),
+                ("screenshots", profileDir.appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)),
+                ("logs", profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)),
+            ]
+            let hidden: Set<String> = vanilla ? [ResourceType.mod.rawValue, ResourceType.shader.rawValue, "litematica"] : []
+            let types = allTypes.filter { !hidden.contains($0.0) }
+            return types.map { type, url in
+                (type: type, count: Self.countFiles(in: url, fm: fm), directory: url)
+            }
+        }.value
+
+        if let servers = try? await DIContainer.shared.system.serverAddressService.loadServerAddresses(for: name) {
+            counts.append((type: "servers", count: servers.count, directory: nil))
+        }
+        resourceCounts = counts
+    }
+
+    private static func countFiles(in directory: URL, fm: FileManager) -> Int {
+        guard fm.fileExists(atPath: directory.path) else { return 0 }
+        guard let contents = try? fm.contentsOfDirectory(
+            at: directory,
+            includingPropertiesForKeys: nil,
+            options: [.skipsHiddenFiles],
+        ) else { return 0 }
+        return contents.count
+    }
+
     private func resetData() {
         worlds.removeAll(keepingCapacity: false)
         screenshots.removeAll(keepingCapacity: false)
-        servers.removeAll(keepingCapacity: false)
         litematicaFiles.removeAll(keepingCapacity: false)
         logs.removeAll(keepingCapacity: false)
         isLoading = false
 
         isLoadingWorlds = false
         isLoadingScreenshots = false
-        isLoadingServers = false
         isLoadingLitematica = false
         isLoadingLogs = false
+
+        resourceCounts = []
 
         hasWorldsType = false
         hasScreenshotsType = false

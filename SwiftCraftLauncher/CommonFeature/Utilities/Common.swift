@@ -83,6 +83,18 @@ enum CommonUtil {
         return nil
     }
 
+    /// Resolves a project icon string into a loadable URL, converting base64 data into a `data:` URI.
+    static func iconURL(from iconUrl: String?) -> URL? {
+        guard let iconUrl else { return nil }
+        if iconUrl.hasPrefix("data:image") {
+            return URL(string: iconUrl)
+        }
+        if let url = URL(string: iconUrl), url.scheme != nil {
+            return url
+        }
+        return URL(string: "data:image/png;base64,\(iconUrl)")
+    }
+
     /// Formats an ISO 8601 date string into a relative time description.
     static func formatRelativeTime(_ isoString: String) -> String {
         let isoFormatter = ISO8601DateFormatter()
@@ -157,6 +169,32 @@ enum CommonUtil {
         } else {
             return (address, nil)
         }
+    }
+
+    /// Parses a server address string into its host and optional port components.
+    /// - Parameter raw: The raw address string, optionally including a `:port` suffix.
+    /// - Returns: The host and the port, or `nil` when no explicit port is present.
+    static func parseServerAddressComponents(_ raw: String) -> (host: String, port: Int?) {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let colonIndex = trimmed.lastIndex(of: ":") {
+            let afterColon = String(trimmed[trimmed.index(after: colonIndex)...])
+            if let port = Int(afterColon), port > 0, port <= 65535 {
+                let host = String(trimmed[..<colonIndex]).trimmingCharacters(in: .whitespacesAndNewlines)
+                return (host, port)
+            }
+        }
+        return (trimmed, nil)
+    }
+
+    /// Builds a normalized match key from a server address string and port.
+    ///
+    /// The key is `host:port` with a lowercased host. An absent or zero port
+    /// resolves to the default Minecraft port. A port embedded in `address`
+    /// takes precedence over the `port` parameter.
+    static func serverMatchKey(address: String, port: Int = 0) -> String {
+        let components = parseServerAddressComponents(address)
+        let effectivePort = components.port ?? (port > 0 ? port : AppConstants.defaultPort)
+        return "\(components.host.lowercased()):\(effectivePort)"
     }
 
     /// Compares two Minecraft version strings.

@@ -5,12 +5,13 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-// Main view displaying save information including worlds, screenshots, servers, and schematics.
+// Main view displaying save information including worlds, screenshots, and schematics.
 import SwiftUI
 
 struct SaveInfoView: View {
     let gameId: String
     let gameName: String
+    let modLoader: String
     @State private var manager: SaveInfoManager
     @Environment(DIContainer.self)
     private var container
@@ -20,10 +21,12 @@ struct SaveInfoView: View {
     init(
         gameId: String,
         gameName: String,
+        modLoader: String,
     ) {
         self.gameId = gameId
         self.gameName = gameName
-        _manager = State(wrappedValue: SaveInfoManager(gameName: gameName))
+        self.modLoader = modLoader
+        _manager = State(wrappedValue: SaveInfoManager(gameName: gameName, modLoader: modLoader))
     }
 
     private var currentGameRunningState: Bool {
@@ -38,6 +41,7 @@ struct SaveInfoView: View {
 
     var body: some View {
         VStack {
+            ResourceCountSectionView(counts: manager.resourceCounts)
             if manager.hasWorldsType {
                 WorldInfoSectionView(
                     worlds: manager.worlds,
@@ -52,16 +56,6 @@ struct SaveInfoView: View {
                     isLoading: manager.isLoadingScreenshots,
                     gameName: gameName,
                 )
-            }
-
-            ServerAddressSectionView(
-                servers: manager.servers,
-                isLoading: manager.isLoadingServers,
-                gameName: gameName,
-            ) {
-                Task {
-                    await manager.loadData()
-                }
             }
 
             if manager.hasLitematicaType {

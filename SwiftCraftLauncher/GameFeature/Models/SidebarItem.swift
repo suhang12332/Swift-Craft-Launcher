@@ -61,7 +61,7 @@ public enum ResourceType: String, CaseIterable {
         case .modpack:
             return "cube.box"
         case .minecraftJavaServer:
-            return "server.rack"
+            return "tv.badge.wifi"
         }
     }
 

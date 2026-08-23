@@ -21,6 +21,10 @@ final class GameInfoDetailIOViewModel {
             return []
         }
 
+        if query.lowercased() == ResourceType.minecraftJavaServer.rawValue {
+            return await scanServerDetailIds(gameName: gameName)
+        }
+
         guard let resourceDir = AppPaths.resourceDirectory(for: query, gameName: gameName) else {
             return []
         }
@@ -35,6 +39,17 @@ final class GameInfoDetailIOViewModel {
             let globalError = GlobalError.from(error)
             AppLog.game.error("Failed to scan all resources: \(globalError.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(globalError)
+            return []
+        }
+    }
+
+    /// Scans server addresses and returns match keys (host + effective port) of added servers.
+    private func scanServerDetailIds(gameName: String) async -> Set<String> {
+        do {
+            let servers = try await DIContainer.shared.system.serverAddressService.loadServerAddresses(for: gameName)
+            return Set(servers.map { CommonUtil.serverMatchKey(address: $0.address, port: $0.port) })
+        } catch {
+            AppLog.game.error("Failed to scan server addresses: \(error.localizedDescription)")
             return []
         }
     }
