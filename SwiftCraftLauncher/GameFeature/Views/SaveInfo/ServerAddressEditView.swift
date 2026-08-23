@@ -6,6 +6,7 @@
 //
 
 import AppKit
+import MinecraftServerPingKit
 
 // A sheet for editing server address details including name, address, port, and options.
 import SwiftUI

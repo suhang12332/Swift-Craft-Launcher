@@ -7,6 +7,7 @@
 
 @testable import SwiftCraftLauncher
 import XCTest
+import MinecraftServerPingKit
 
 final class MinecraftServerInfoTests: XCTestCase {
     func testDescription_plainText_textOnly() throws {

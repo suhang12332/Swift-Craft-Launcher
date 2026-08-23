@@ -7,7 +7,7 @@
 
 // Provides Minecraft server address resolution and connectivity checks.
 import Foundation
-import Network
+import MinecraftServerPingKit
 
 /// The status of a server connection check.
 enum ServerConnectionStatus: Sendable {

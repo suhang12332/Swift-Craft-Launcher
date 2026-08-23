@@ -5,6 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import MinecraftServerPingKit
 import SwiftUI
 
 /// A title card view for displaying Modrinth project or server information.

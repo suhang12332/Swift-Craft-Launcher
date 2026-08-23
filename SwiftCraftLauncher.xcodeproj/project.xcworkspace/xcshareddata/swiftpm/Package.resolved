@@ -1,5 +1,5 @@
 {
-  "originHash" : "4c8ada645b8eb5d4a9f1a7c1ee33bf55089880d05c82c6b6ff39f81957d6a311",
+  "originHash" : "6cb201d104fcf9e05cd2d9e1901d56d00aa2e8cde74ff09b395c4bef253b71a3",
   "pins" : [
     {
       "identity" : "cfmodrinthadapterkit",
@@ -17,6 +17,15 @@
       "state" : {
         "branch" : "release",
         "revision" : "1df9ef7eb4e259922d2f12f995478258396a7c01"
+      }
+    },
+    {
+      "identity" : "minecraftserverpingkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hjy-233/MinecraftServerPingKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "50b7df84ee790743f43fd11245f5a24425f1dec8"
       }
     },
     {

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MinecraftServerPingKit
 import Observation
 
 /// View model that manages server connection status checks and visibility computation for a list of server addresses.
