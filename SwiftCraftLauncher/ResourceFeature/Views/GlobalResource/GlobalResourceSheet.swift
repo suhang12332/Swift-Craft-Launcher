@@ -64,44 +64,39 @@ struct GlobalResourceSheet: View {
             },
             body: {
                 if let detail = preloadedDetail {
-                    if preloadedCompatibleGames.isEmpty {
-                        Text("global_resource.no_game_list".localized())
-                            .foregroundColor(.secondary).padding()
-                    } else {
-                        VStack {
-                            ModrinthProjectTitleView(
-                                projectDetail: detail,
-                            ).padding(.bottom, 18)
+                    VStack {
+                        ModrinthProjectTitleView(
+                            projectDetail: detail,
+                        ).padding(.bottom, 18)
 
-                            Text("settings.game.tab".localized())
-                                .font(.headline)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            CommonSheetGameBody(
-                                compatibleGames: preloadedCompatibleGames,
-                                selectedGame: $selectedGame,
-                            )
-                            if let game = selectedGame {
-                                if resourceType != ResourceType.minecraftJavaServer.rawValue {
-                                    spacerView()
-                                    VersionPickerForSheet(
-                                        project: project,
-                                        resourceType: resourceType,
-                                        selectedGame: $selectedGame,
-                                        selectedVersion: $selectedVersion,
-                                        availableVersions: $availableVersions,
-                                        mainVersionId: $mainVersionId,
-                                    ) { version in
-                                        if resourceType == ResourceType.mod.rawValue,
-                                           let v = version {
-                                            loadDependencies(for: v, game: game)
-                                        } else {
-                                            dependencyState = DependencyState()
-                                        }
+                        Text("settings.game.tab".localized())
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        CommonSheetGameBody(
+                            compatibleGames: preloadedCompatibleGames,
+                            selectedGame: $selectedGame,
+                        )
+                        if let game = selectedGame {
+                            if resourceType != ResourceType.minecraftJavaServer.rawValue {
+                                spacerView()
+                                VersionPickerForSheet(
+                                    project: project,
+                                    resourceType: resourceType,
+                                    selectedGame: $selectedGame,
+                                    selectedVersion: $selectedVersion,
+                                    availableVersions: $availableVersions,
+                                    mainVersionId: $mainVersionId,
+                                ) { version in
+                                    if resourceType == ResourceType.mod.rawValue,
+                                       let v = version {
+                                        loadDependencies(for: v, game: game)
+                                    } else {
+                                        dependencyState = DependencyState()
                                     }
-                                    if resourceType == ResourceType.mod.rawValue {
-                                        if dependencyState.isLoading || !dependencyState.dependencies.isEmpty {
-                                            DependencySectionView(state: $dependencyState)
-                                        }
+                                }
+                                if resourceType == ResourceType.mod.rawValue {
+                                    if dependencyState.isLoading || !dependencyState.dependencies.isEmpty {
+                                        DependencySectionView(state: $dependencyState)
                                     }
                                 }
                             }

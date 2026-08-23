@@ -87,7 +87,12 @@ extension AddOrDeleteResourceButtonViewModel {
 
         preloadedDetail = result.detail
         preloadedCompatibleGames = result.compatibleGames
-        showGlobalResourceSheet = true
+
+        if preloadedCompatibleGames.isEmpty {
+            activeAlert = .noCompatibleGame
+        } else {
+            showGlobalResourceSheet = true
+        }
     }
 
     func loadModPackDetailBeforeOpeningSheet() async {
