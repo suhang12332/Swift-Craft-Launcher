@@ -620,7 +620,7 @@
 		};
 		909FCDCB303A038B001CBE3D /* XCRemoteSwiftPackageReference "TouchBarSupport" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/suhang12332/TouchBarSupport.git";
+			repositoryURL = "https://github.com/functy23/TouchBarSupport.git";
 			requirement = {
 				branch = main;
 				kind = branch;
