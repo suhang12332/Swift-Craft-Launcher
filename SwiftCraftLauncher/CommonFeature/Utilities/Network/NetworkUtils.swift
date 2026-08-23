@@ -18,6 +18,38 @@ enum ServerConnectionStatus: Sendable {
     case failed
 }
 
+extension ServerConnectionStatus {
+    /// The display status code stored in a project detail's `serverSide` field.
+    var statusCode: String {
+        switch self {
+        case .unknown:
+            return "unknown"
+        case .checking:
+            return "checking"
+        case .success:
+            return "online"
+        case .timeout, .failed:
+            return "unreachable"
+        }
+    }
+
+    /// Creates a status from a stored `serverSide` code.
+    init?(statusCode: String) {
+        switch statusCode {
+        case "unknown":
+            self = .unknown
+        case "checking":
+            self = .checking
+        case "online":
+            self = .success(serverInfo: nil)
+        case "unreachable":
+            self = .timeout
+        default:
+            return nil
+        }
+    }
+}
+
 /// A resolved server address containing both the connection target and the original user input.
 struct ResolvedServerAddress {
     let address: String

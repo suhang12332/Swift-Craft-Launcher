@@ -33,9 +33,11 @@ struct ResourcePrimaryActionButton: View {
     @ViewBuilder private var label: some View {
         switch addButtonState {
         case .idle:
-            Text((
-                query == ResourceType.minecraftJavaServer.rawValue ? "addplayer.auth.add" : "resource.add"
-            ).localized())
+            Text(
+                query == ResourceType.minecraftJavaServer.rawValue
+                    ? (!type ? "saveinfo.server.edit".localized() : "addplayer.auth.add".localized())
+                    : "resource.add".localized(),
+            )
         case .loading:
             ProgressView()
                 .controlSize(.mini)

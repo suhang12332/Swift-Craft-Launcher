@@ -11,7 +11,7 @@ import SwiftUI
 @MainActor
 enum ResourceFilterMenus {
     private static func resourceTypesForCurrentGame(currentGame: GameVersionInfo?) -> [String] {
-        var types = [ResourceType.datapack.rawValue, ResourceType.resourcepack.rawValue]
+        var types = [ResourceType.datapack.rawValue, ResourceType.resourcepack.rawValue, ResourceType.minecraftJavaServer.rawValue]
         if let game = currentGame, game.modLoader.lowercased() != GameLoader.vanilla.displayName {
             types.insert(ResourceType.mod.rawValue, at: 0)
             types.insert(ResourceType.shader.rawValue, at: 2)

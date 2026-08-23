@@ -35,7 +35,7 @@ class ServerAddressService {
         var currentServers = try await loadServerAddresses(for: gameName)
 
         let exists = currentServers.contains {
-            $0.address.caseInsensitiveCompare(trimmedAddress) == .orderedSame
+            CommonUtil.serverMatchKey(address: $0.address, port: $0.port) == CommonUtil.serverMatchKey(address: trimmedAddress)
         }
         guard !exists else {
             throw GlobalError.validation(
@@ -166,7 +166,6 @@ class ServerAddressService {
             return games
         }
 
-        let normalizedAddress = address.lowercased()
         var result: [GameVersionInfo] = []
 
         for game in games {
@@ -176,7 +175,7 @@ class ServerAddressService {
                 )) ?? []
 
             let hasSameServer = currentServers.contains {
-                $0.address.lowercased() == normalizedAddress
+                CommonUtil.serverMatchKey(address: $0.address, port: $0.port) == CommonUtil.serverMatchKey(address: address)
             }
 
             if !hasSameServer {

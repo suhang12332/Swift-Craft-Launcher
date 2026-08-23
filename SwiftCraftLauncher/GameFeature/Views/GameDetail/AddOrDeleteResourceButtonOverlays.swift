@@ -23,10 +23,18 @@ struct AddOrDeleteResourceButtonOverlays: ViewModifier {
                 pendingDeletion: $viewModel.projectPendingDeletion,
                 title: "common.delete".localized(),
                 message: { project in
-                    String(format: "resource.delete.confirm".localized(), project.title)
+                    if query.lowercased() == ResourceType.minecraftJavaServer.rawValue {
+                        return String(format: "saveinfo.server.delete_confirmation".localized(), project.title)
+                    }
+                    return String(format: "resource.delete.confirm".localized(), project.title)
                 },
                 delete: { _ in
-                    viewModel.confirmDelete()
+                    if query.lowercased() == ResourceType.minecraftJavaServer.rawValue,
+                       let gameName = gameInfo?.gameName {
+                        viewModel.deleteServer(gameName: gameName)
+                    } else {
+                        viewModel.confirmDelete()
+                    }
                 },
             )
             .sheet(

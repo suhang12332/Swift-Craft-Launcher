@@ -30,6 +30,7 @@ struct AddOrDeleteResourceButton: View {
     var onResourceUpdated: ((String, String, String, String?) -> Void)?
 
     @State private var viewModel: AddOrDeleteResourceButtonViewModel
+    @State private var serverToEdit: ServerAddress?
 
     init(
         project: ModrinthProject,
@@ -75,21 +76,43 @@ struct AddOrDeleteResourceButton: View {
         )
     }
 
+    private var isServer: Bool {
+        query.lowercased() == ResourceType.minecraftJavaServer.rawValue
+    }
+
     var body: some View {
         HStack(spacing: 8) {
-            LocalResourceUpdateButton(
-                isVisible: type == false && viewModel.addButtonState == .update && !isResourceDisabled,
-                isUpdateButtonLoading: $viewModel.isUpdateButtonLoading,
-                addButtonState: viewModel.addButtonState,
-                onTap: viewModel.handleUpdateTap,
-            )
+            if isServer, type == false {
+                ResourcePrimaryActionButton(
+                    addButtonState: .idle,
+                    type: false,
+                    isDisabled: false,
+                    onTap: { serverToEdit = project.serverAddress },
+                    query: ResourceType.minecraftJavaServer.rawValue,
+                )
+                .sheet(item: $serverToEdit) { server in
+                    ServerAddressEditView(
+                        server: server,
+                        gameName: gameInfo?.gameName ?? "",
+                        serverInfo: project.serverInfo,
+                        onRefresh: onResourceChanged,
+                    )
+                }
+            }
 
-            LocalResourceToggle(
-                isVisible: type == false,
-                isDisabled: $viewModel.isDisabled,
-                onToggle: viewModel.toggleDisableState,
-            )
-
+            if !isServer {
+                LocalResourceUpdateButton(
+                    isVisible: type == false && viewModel.addButtonState == .update && !isResourceDisabled,
+                    isUpdateButtonLoading: $viewModel.isUpdateButtonLoading,
+                    addButtonState: viewModel.addButtonState,
+                    onTap: viewModel.handleUpdateTap,
+                )
+                LocalResourceToggle(
+                    isVisible: type == false,
+                    isDisabled: $viewModel.isDisabled,
+                    onToggle: viewModel.toggleDisableState,
+                )
+            }
             ResourcePrimaryActionButton(
                 addButtonState: viewModel.addButtonState,
                 type: type,

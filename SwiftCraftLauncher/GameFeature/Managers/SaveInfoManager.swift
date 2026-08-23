@@ -9,7 +9,7 @@ import Foundation
 import Observation
 import SwiftNBT
 
-/// Loads and manages save information including worlds, screenshots, servers,
+/// Loads and manages save information including worlds, screenshots,
 /// litematica files, and logs for a specific game instance.
 @Observable
 final class SaveInfoManager: @unchecked Sendable {
@@ -107,14 +107,12 @@ final class SaveInfoManager: @unchecked Sendable {
     let gameName: String
     private(set) var worlds: [WorldInfo] = []
     private(set) var screenshots: [ScreenshotInfo] = []
-    private(set) var servers: [ServerAddress] = []
     private(set) var litematicaFiles: [LitematicaInfo] = []
     private(set) var logs: [LogInfo] = []
     private(set) var isLoading: Bool = true
 
     private(set) var isLoadingWorlds: Bool = false
     private(set) var isLoadingScreenshots: Bool = false
-    private(set) var isLoadingServers: Bool = false
     private(set) var isLoadingLitematica: Bool = false
     private(set) var isLoadingLogs: Bool = false
 
@@ -184,13 +182,12 @@ final class SaveInfoManager: @unchecked Sendable {
     @MainActor
     private func checkTypesAvailability() async {
         let name = gameName
-        let (worlds, screenshots, _, litematica, logs) = await Task.detached(priority: .userInitiated) {
+        let (worlds, screenshots, litematica, logs) = await Task.detached(priority: .userInitiated) {
             let fm = FileManager.default
             let profileDir = AppPaths.profileDirectory(gameName: name)
             let savesPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
             let screenshotsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)
             let logsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
-            let serversDatURL = profileDir.appendingPathComponent("servers.dat")
             let schematicsDir = AppPaths.schematicsDirectory(gameName: name)
 
             var hasWorlds = false
@@ -269,7 +266,6 @@ final class SaveInfoManager: @unchecked Sendable {
             return (
                 hasWorlds,
                 hasScreenshots,
-                fm.fileExists(atPath: serversDatURL.path),
                 hasLitematicaFiles,
                 hasLogs,
             )
@@ -297,10 +293,6 @@ final class SaveInfoManager: @unchecked Sendable {
                 group.addTask { [weak self] in
                     await self?.loadScreenshots()
                 }
-            }
-
-            group.addTask { [weak self] in
-                await self?.loadServers()
             }
 
             if hasLitematicaType {
@@ -352,19 +344,6 @@ final class SaveInfoManager: @unchecked Sendable {
     }
 
     @MainActor
-    private func loadServers() async {
-        isLoadingServers = true
-        defer { isLoadingServers = false }
-
-        do {
-            servers = try await DIContainer.shared.system.serverAddressService.loadServerAddresses(for: gameName)
-        } catch {
-            AppLog.game.error("Failed to load server address info: \(error.localizedDescription)")
-            servers = []
-        }
-    }
-
-    @MainActor
     private func loadLitematicaFiles() async {
         isLoadingLitematica = true
         defer { isLoadingLitematica = false }
@@ -396,14 +375,12 @@ final class SaveInfoManager: @unchecked Sendable {
     private func resetData() {
         worlds.removeAll(keepingCapacity: false)
         screenshots.removeAll(keepingCapacity: false)
-        servers.removeAll(keepingCapacity: false)
         litematicaFiles.removeAll(keepingCapacity: false)
         logs.removeAll(keepingCapacity: false)
         isLoading = false
 
         isLoadingWorlds = false
         isLoadingScreenshots = false
-        isLoadingServers = false
         isLoadingLitematica = false
         isLoadingLogs = false
 

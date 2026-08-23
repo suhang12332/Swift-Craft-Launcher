@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-// Main view displaying save information including worlds, screenshots, servers, and schematics.
+// Main view displaying save information including worlds, screenshots, and schematics.
 import SwiftUI
 
 struct SaveInfoView: View {
@@ -52,16 +52,6 @@ struct SaveInfoView: View {
                     isLoading: manager.isLoadingScreenshots,
                     gameName: gameName,
                 )
-            }
-
-            ServerAddressSectionView(
-                servers: manager.servers,
-                isLoading: manager.isLoadingServers,
-                gameName: gameName,
-            ) {
-                Task {
-                    await manager.loadData()
-                }
             }
 
             if manager.hasLitematicaType {
