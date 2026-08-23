@@ -96,9 +96,9 @@ struct MinecraftServerInfo: Codable, Sendable {
     let version: Version?
     let players: Players?
     let description: Description
-    // Base64-encoded server icon.
+    /// Base64-encoded server icon.
     let favicon: String?
-    // Mod information, if available.
+    /// Mod information, if available.
     let modinfo: ModInfo?
 
     struct ModInfo: Codable, Sendable {
