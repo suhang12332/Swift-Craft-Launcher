@@ -345,8 +345,11 @@ final class GameLocalResourceViewModel {
         Task {
             do {
                 let loadedServers = try await DIContainer.shared.system.serverAddressService.loadServerAddresses(for: game.gameName)
-                scannedResources = await makeServerDetails(for: loadedServers)
+                scannedResources = loadedServers.map {
+                    ModrinthProjectDetail.fromServer($0, info: nil, status: .checking)
+                }
                 hasMoreResults = false
+                checkServerStatuses(loadedServers)
             } catch {
                 scannedResources = []
             }
@@ -355,40 +358,37 @@ final class GameLocalResourceViewModel {
         }
     }
 
-    /// Runs connection checks for all servers concurrently and builds fully-populated details.
-    private func makeServerDetails(for servers: [ServerAddress]) async -> [ModrinthProjectDetail] {
-        guard !servers.isEmpty else { return [] }
-
-        let results: [(ServerAddress, ServerConnectionStatus, MinecraftServerInfo?)] = await withTaskGroup(of: (ServerAddress, ServerConnectionStatus, MinecraftServerInfo?).self) { group in
-            for server in servers {
-                group.addTask {
-                    let status = await NetworkUtils.checkServerConnectionStatus(
-                        address: server.address,
-                        port: server.port,
-                        timeout: 5.0,
-                    )
-                    if case let .success(info) = status {
-                        return (server, status, info)
+    /// Checks connection status for all servers concurrently and updates the displayed details.
+    private func checkServerStatuses(_ servers: [ServerAddress]) {
+        guard !servers.isEmpty else { return }
+        Task.detached(priority: .userInitiated) {
+            await withTaskGroup(of: (ServerAddress, ServerConnectionStatus, MinecraftServerInfo?).self) { group in
+                for server in servers {
+                    group.addTask {
+                        let status = await NetworkUtils.checkServerConnectionStatus(
+                            address: server.address,
+                            port: server.port,
+                            timeout: 5.0,
+                        )
+                        if case let .success(info) = status {
+                            return (server, status, info)
+                        }
+                        return (server, status, nil)
                     }
-                    return (server, status, nil)
+                }
+
+                for await (server, status, serverInfo) in group {
+                    await MainActor.run {
+                        self.applyServerResult(server: server, status: status, info: serverInfo)
+                    }
                 }
             }
-
-            var collected: [(ServerAddress, ServerConnectionStatus, MinecraftServerInfo?)] = []
-            for await result in group {
-                collected.append(result)
-            }
-            return collected
         }
+    }
 
-        let resultsByServer = Dictionary(uniqueKeysWithValues: results.map { ($0.0.id, ($0.1, $0.2)) })
-        return servers.map { server in
-            let (status, info) = resultsByServer[server.id] ?? (.failed, nil)
-            return ModrinthProjectDetail.fromServer(
-                server,
-                info: info,
-                status: status,
-            )
-        }
+    @MainActor
+    private func applyServerResult(server: ServerAddress, status: ServerConnectionStatus, info: MinecraftServerInfo?) {
+        guard let index = scannedResources.firstIndex(where: { $0.id == "server_\(server.id)" }) else { return }
+        scannedResources[index] = ModrinthProjectDetail.fromServer(server, info: info, status: status)
     }
 }

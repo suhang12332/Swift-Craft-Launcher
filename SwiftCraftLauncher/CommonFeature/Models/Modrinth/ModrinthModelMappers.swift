@@ -157,10 +157,10 @@ public extension ModrinthProject {
         }
     }
 
-    /// The online player count text, or a placeholder when the server is unreachable.
+    /// The online player count text, or a placeholder when the player data is unavailable.
     var playersText: String {
         switch serverStatus {
-        case .timeout, .failed:
+        case .checking, .unknown, .timeout, .failed:
             return "-- / --"
         default:
             return "\(downloads) / \(follows)"
