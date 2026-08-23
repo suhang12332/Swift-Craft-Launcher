@@ -51,26 +51,24 @@ struct WorldDetailSheetView: View {
     }
 
     private func metadataContentView(metadata: WorldDetailMetadata) -> some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                HStack(alignment: .top, spacing: 24) {
-                    WorldDetailBasicInfoSectionView(metadata: metadata)
-                    WorldDetailGameSettingsSectionView(metadata: metadata)
-                }
-                if let seed = metadata.seed {
-                    SeedCopyRow(seed: seed)
-                }
-                WorldDetailOtherInfoSectionView(metadata: metadata)
-                WorldDetailPathRowView(worldPath: metadata.path)
-                if let filteredRaw = viewModel.filteredRawData {
-                    WorldDetailRawDataToggleView(
-                        filteredRawData: filteredRaw,
-                        showRawData: $viewModel.showRawData,
-                    )
-                }
+        VStack(alignment: .leading, spacing: 20) {
+            HStack(alignment: .top, spacing: 24) {
+                WorldDetailBasicInfoSectionView(metadata: metadata)
+                WorldDetailGameSettingsSectionView(metadata: metadata)
             }
-            .padding(.vertical, 8)
+            if let seed = metadata.seed {
+                SeedCopyRow(seed: seed)
+            }
+            WorldDetailOtherInfoSectionView(metadata: metadata)
+            WorldDetailPathRowView(worldPath: metadata.path)
+            if let filteredRaw = viewModel.filteredRawData {
+                WorldDetailRawDataToggleView(
+                    filteredRawData: filteredRaw,
+                    showRawData: $viewModel.showRawData,
+                )
+            }
         }
+        .padding(.vertical, 8)
     }
 
     private var footerView: some View {
