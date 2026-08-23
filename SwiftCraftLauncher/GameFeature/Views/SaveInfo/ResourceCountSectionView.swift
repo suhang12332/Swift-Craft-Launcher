@@ -9,18 +9,23 @@
 import SwiftUI
 
 struct ResourceCountSectionView: View {
-    let counts: [(type: String, count: Int)]
+    let counts: [(type: String, count: Int, directory: URL?)]
 
     var body: some View {
         GenericSectionView(
             title: "game.info.overview",
-            items: counts.map { ResourceCountItem(type: $0.type, count: $0.count) },
+            items: counts.map { ResourceCountItem(type: $0.type, count: $0.count, directory: $0.directory) },
             isLoading: false,
             maxItems: counts.count,
             iconName: "shippingbox",
         ) { item in
             FilterChip(
                 title: "\(label(for: item.type)) \(item.count)",
+                action: {
+                    if let url = item.directory {
+                        NSWorkspace.shared.open(url)
+                    }
+                },
                 iconName: icon(for: item.type),
             )
         }
@@ -81,6 +86,7 @@ struct ResourceCountSectionView: View {
 struct ResourceCountItem: Identifiable {
     let type: String
     let count: Int
+    let directory: URL?
 
     var id: String { type }
 }

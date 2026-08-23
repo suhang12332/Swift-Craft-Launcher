@@ -59,7 +59,7 @@ struct ContentView: View {
     }
 
     private func localModeView(game: GameVersionInfo, gameId: String) -> some View {
-        SaveInfoView(gameId: gameId, gameName: game.gameName)
+        SaveInfoView(gameId: gameId, gameName: game.gameName, modLoader: game.modLoader)
             .id(gameId)
     }
 

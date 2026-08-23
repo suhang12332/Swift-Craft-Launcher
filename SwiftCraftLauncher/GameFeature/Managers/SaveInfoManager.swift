@@ -105,6 +105,7 @@ final class SaveInfoManager: @unchecked Sendable {
     }
 
     let gameName: String
+    let modLoader: String
     private(set) var worlds: [WorldInfo] = []
     private(set) var screenshots: [ScreenshotInfo] = []
     private(set) var litematicaFiles: [LitematicaInfo] = []
@@ -117,7 +118,7 @@ final class SaveInfoManager: @unchecked Sendable {
     private(set) var isLoadingLogs: Bool = false
 
     /// Resource counts keyed by resource type (mod, datapack, resourcepack, shader, litematica, worlds, servers).
-    private(set) var resourceCounts: [(type: String, count: Int)] = []
+    private(set) var resourceCounts: [(type: String, count: Int, directory: URL?)] = []
 
     private(set) var hasWorldsType: Bool = false
     private(set) var hasScreenshotsType: Bool = false
@@ -126,10 +127,16 @@ final class SaveInfoManager: @unchecked Sendable {
 
     private var loadTask: Task<Void, Never>?
 
+    private var isVanilla: Bool {
+        modLoader.lowercased() == GameLoader.vanilla.displayName
+    }
+
     init(
         gameName: String,
+        modLoader: String,
     ) {
         self.gameName = gameName
+        self.modLoader = modLoader
     }
 
     deinit {
@@ -382,10 +389,11 @@ final class SaveInfoManager: @unchecked Sendable {
     @MainActor
     private func loadResourceCounts() async {
         let name = gameName
-        var counts = await Task.detached(priority: .userInitiated) {
+        let vanilla = isVanilla
+        var counts: [(type: String, count: Int, directory: URL?)] = await Task.detached(priority: .userInitiated) {
             let fm = FileManager.default
             let profileDir = AppPaths.profileDirectory(gameName: name)
-            let types: [(String, URL)] = [
+            let allTypes: [(String, URL)] = [
                 (ResourceType.mod.rawValue, AppPaths.modsDirectory(gameName: name)),
                 (ResourceType.datapack.rawValue, AppPaths.datapacksDirectory(gameName: name)),
                 (ResourceType.resourcepack.rawValue, AppPaths.resourcepacksDirectory(gameName: name)),
@@ -395,13 +403,15 @@ final class SaveInfoManager: @unchecked Sendable {
                 ("screenshots", profileDir.appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)),
                 ("logs", profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)),
             ]
+            let hidden: Set<String> = vanilla ? [ResourceType.mod.rawValue, ResourceType.shader.rawValue, "litematica"] : []
+            let types = allTypes.filter { !hidden.contains($0.0) }
             return types.map { type, url in
-                (type: type, count: Self.countFiles(in: url, fm: fm))
+                (type: type, count: Self.countFiles(in: url, fm: fm), directory: url)
             }
         }.value
 
         if let servers = try? await DIContainer.shared.system.serverAddressService.loadServerAddresses(for: name) {
-            counts.append((type: "servers", count: servers.count))
+            counts.append((type: "servers", count: servers.count, directory: nil))
         }
         resourceCounts = counts
     }

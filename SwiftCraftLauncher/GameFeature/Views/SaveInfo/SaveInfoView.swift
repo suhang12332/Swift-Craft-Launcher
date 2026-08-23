@@ -11,6 +11,7 @@ import SwiftUI
 struct SaveInfoView: View {
     let gameId: String
     let gameName: String
+    let modLoader: String
     @State private var manager: SaveInfoManager
     @Environment(DIContainer.self)
     private var container
@@ -20,10 +21,12 @@ struct SaveInfoView: View {
     init(
         gameId: String,
         gameName: String,
+        modLoader: String,
     ) {
         self.gameId = gameId
         self.gameName = gameName
-        _manager = State(wrappedValue: SaveInfoManager(gameName: gameName))
+        self.modLoader = modLoader
+        _manager = State(wrappedValue: SaveInfoManager(gameName: gameName, modLoader: modLoader))
     }
 
     private var currentGameRunningState: Bool {
