@@ -116,6 +116,9 @@ final class SaveInfoManager: @unchecked Sendable {
     private(set) var isLoadingLitematica: Bool = false
     private(set) var isLoadingLogs: Bool = false
 
+    /// Resource counts keyed by resource type (mod, datapack, resourcepack, shader, litematica, worlds, servers).
+    private(set) var resourceCounts: [(type: String, count: Int)] = []
+
     private(set) var hasWorldsType: Bool = false
     private(set) var hasScreenshotsType: Bool = false
     private(set) var hasLitematicaType: Bool = false
@@ -295,6 +298,10 @@ final class SaveInfoManager: @unchecked Sendable {
                 }
             }
 
+            group.addTask { [weak self] in
+                await self?.loadResourceCounts()
+            }
+
             if hasLitematicaType {
                 group.addTask { [weak self] in
                     await self?.loadLitematicaFiles()
@@ -372,6 +379,43 @@ final class SaveInfoManager: @unchecked Sendable {
         logs = result
     }
 
+    @MainActor
+    private func loadResourceCounts() async {
+        let name = gameName
+        var counts = await Task.detached(priority: .userInitiated) {
+            let fm = FileManager.default
+            let profileDir = AppPaths.profileDirectory(gameName: name)
+            let types: [(String, URL)] = [
+                (ResourceType.mod.rawValue, AppPaths.modsDirectory(gameName: name)),
+                (ResourceType.datapack.rawValue, AppPaths.datapacksDirectory(gameName: name)),
+                (ResourceType.resourcepack.rawValue, AppPaths.resourcepacksDirectory(gameName: name)),
+                (ResourceType.shader.rawValue, AppPaths.shaderpacksDirectory(gameName: name)),
+                ("litematica", AppPaths.schematicsDirectory(gameName: name)),
+                ("worlds", profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)),
+                ("screenshots", profileDir.appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)),
+                ("logs", profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)),
+            ]
+            return types.map { type, url in
+                (type: type, count: Self.countFiles(in: url, fm: fm))
+            }
+        }.value
+
+        if let servers = try? await DIContainer.shared.system.serverAddressService.loadServerAddresses(for: name) {
+            counts.append((type: "servers", count: servers.count))
+        }
+        resourceCounts = counts
+    }
+
+    private static func countFiles(in directory: URL, fm: FileManager) -> Int {
+        guard fm.fileExists(atPath: directory.path) else { return 0 }
+        guard let contents = try? fm.contentsOfDirectory(
+            at: directory,
+            includingPropertiesForKeys: nil,
+            options: [.skipsHiddenFiles],
+        ) else { return 0 }
+        return contents.count
+    }
+
     private func resetData() {
         worlds.removeAll(keepingCapacity: false)
         screenshots.removeAll(keepingCapacity: false)
@@ -383,6 +427,8 @@ final class SaveInfoManager: @unchecked Sendable {
         isLoadingScreenshots = false
         isLoadingLitematica = false
         isLoadingLogs = false
+
+        resourceCounts = []
 
         hasWorldsType = false
         hasScreenshotsType = false

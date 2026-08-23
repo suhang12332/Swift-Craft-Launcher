@@ -38,6 +38,7 @@ struct SaveInfoView: View {
 
     var body: some View {
         VStack {
+            ResourceCountSectionView(counts: manager.resourceCounts)
             if manager.hasWorldsType {
                 WorldInfoSectionView(
                     worlds: manager.worlds,
