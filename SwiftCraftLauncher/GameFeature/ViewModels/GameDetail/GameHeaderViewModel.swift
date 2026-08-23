@@ -21,4 +21,17 @@ final class GameHeaderViewModel {
             atPath: AppPaths.profileDirectory(gameName: trimmed).path,
         )
     }
+
+    func performRename(gameId: String, currentName _: String, gameRepository: GameRepository) async {
+        guard !isRenaming else { return }
+        isRenaming = true
+        defer { isRenaming = false }
+
+        do {
+            let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+            try await gameRepository.renameGame(id: gameId, to: trimmedName)
+        } catch {
+            DIContainer.shared.core.errorHandler.handle(error)
+        }
+    }
 }

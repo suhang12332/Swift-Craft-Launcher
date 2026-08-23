@@ -45,22 +45,21 @@ struct GameHeaderListRow: View {
         HStack {
             gameIcon
             VStack(alignment: .leading, spacing: 4) {
-                Button {
-                    viewModel.newName = game.gameName
-                    showRenamePopover = true
-                } label: {
-                    Text(game.gameName)
-                        .font(.title)
-                        .bold()
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .popover(isPresented: $showRenamePopover, arrowEdge: .top) {
-                            renamePopover
-                        }
-                }
-                .buttonStyle(.plain)
-                .frame(maxWidth: 400, alignment: .leading)
-                .applyPointerHandIfAvailable()
+                Text(game.gameName)
+                    .font(.title)
+                    .bold()
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .frame(maxWidth: 400, alignment: .leading)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        viewModel.newName = game.gameName
+                        showRenamePopover = true
+                    }
+                    .popover(isPresented: $showRenamePopover) {
+                        renamePopover
+                    }
+                    .applyPointerHandIfAvailable()
 
                 HStack(spacing: 8) {
                     Label(game.gameVersion, systemImage: "gamecontroller.fill")
@@ -108,37 +107,28 @@ struct GameHeaderListRow: View {
         return HStack(spacing: 8) {
             TextField("game.form.name.placeholder".localized(), text: $viewModel.newName)
                 .textFieldStyle(.roundedBorder)
-                .onSubmit(renameGame)
-            Button("common.confirm".localized(), action: renameGame)
-                .buttonStyle(.borderedProminent)
-                .disabled(!canRename)
+            Button("common.confirm".localized()) {
+                Task {
+                    await viewModel.performRename(
+                        gameId: game.id,
+                        currentName: game.gameName,
+                        gameRepository: gameRepository,
+                    )
+                    showRenamePopover = false
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(
+                viewModel.isRenaming
+                    || !viewModel.isNameValid(
+                        newName: viewModel.newName,
+                        currentName: game.gameName,
+                    ),
+            )
+            .keyboardShortcut(.defaultAction)
         }
         .padding()
-        .frame(width: 500)
-    }
-
-    private var canRename: Bool {
-        viewModel.isNameValid(newName: viewModel.newName, currentName: game.gameName)
-            && !viewModel.isRenaming
-            && !container.core.gameProcessManager.isGameRunningForAnyUser(gameId: game.id)
-    }
-
-    private func renameGame() {
-        guard canRename else { return }
-        let newName = viewModel.newName.trimmingCharacters(in: .whitespacesAndNewlines)
-        viewModel.isRenaming = true
-
-        Task { @MainActor in
-            defer { viewModel.isRenaming = false }
-            do {
-                guard !container.core.gameProcessManager.isGameRunningForAnyUser(gameId: game.id) else { return }
-                try await gameRepository.renameGame(id: game.id, to: newName)
-                showRenamePopover = false
-                container.ui.iconRefreshNotifier.notifyRefresh(for: nil)
-            } catch {
-                container.core.errorHandler.handle(GlobalError.from(error))
-            }
-        }
+        .frame(width: 400)
     }
 
     /// The URL of the icon file in the game profile directory.

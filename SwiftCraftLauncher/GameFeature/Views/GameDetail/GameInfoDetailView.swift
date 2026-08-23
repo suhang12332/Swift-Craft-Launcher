@@ -33,6 +33,7 @@ struct GameInfoDetailView: View {
     @State private var ioViewModel = GameInfoDetailIOViewModel()
 
     @State private var scannedResources: Set<String> = []
+    @State private var header: AnyView?
     @State private var showIconFilePicker = false
 
     init(
@@ -103,6 +104,12 @@ struct GameInfoDetailView: View {
         .onChange(of: game.gameName) { _, _ in
             performRefresh()
         }
+        .onChange(of: game.modLoader) { _, _ in
+            updateHeaders()
+        }
+        .onChange(of: game.modVersion) { _, _ in
+            updateHeaders()
+        }
         .onChange(of: gameType) { _, _ in
             performRefresh()
         }
@@ -127,7 +134,11 @@ struct GameInfoDetailView: View {
             }
         }
         .onAppear {
+            updateHeaders()
             container.core.cacheInfoManager.calculateGameCacheInfo(game.gameName)
+        }
+        .onChange(of: container.core.cacheInfoManager.cacheInfo) { _, _ in
+            updateHeaders()
         }
         .onDisappear {
             clearAllData()
@@ -142,6 +153,7 @@ struct GameInfoDetailView: View {
     }
 
     private func performRefresh() {
+        updateHeaders()
         container.core.cacheInfoManager.calculateGameCacheInfo(game.gameName)
         if !gameType {
             triggerLocalRefresh()
@@ -155,10 +167,10 @@ struct GameInfoDetailView: View {
         localRefreshToken = UUID()
     }
 
-    private var header: AnyView {
+    private func updateHeaders() {
         let currentGame = gameRepository.games.first { $0.id == game.id } ?? game
 
-        return AnyView(
+        header = AnyView(
             GameHeaderListRow(
                 game: currentGame,
                 cacheInfo: container.core.cacheInfoManager.cacheInfo,
