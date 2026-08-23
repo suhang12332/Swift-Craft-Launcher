@@ -6,6 +6,7 @@
 //
 
 // Displays game information details with local and remote resource browsing.
+import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -177,8 +178,76 @@ struct GameInfoDetailView: View {
                 query: query,
             ) {
                 showIconFilePicker = true
+            } onNameTap: {
+                presentGameNameEditor()
             },
         )
+    }
+
+    private func presentGameNameEditor() {
+        let alert = NSAlert()
+        alert.messageText = "game.form.name".localized()
+        alert.informativeText = "game.form.name.placeholder".localized()
+
+        let textField = NSTextField(string: game.gameName)
+        textField.placeholderString = "game.form.name.placeholder".localized()
+        textField.frame = NSRect(x: 0, y: 0, width: 280, height: 24)
+        alert.accessoryView = textField
+        alert.addButton(withTitle: "common.confirm".localized())
+        alert.addButton(withTitle: "common.cancel".localized())
+
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+
+        let newName = textField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !newName.isEmpty else { return }
+        guard !gameRepository.games.contains(where: { $0.id != game.id && $0.gameName == newName }) else {
+            container.core.errorHandler.handle(
+                GlobalError.validation(
+                    i18nKey: "game.form.name.duplicate",
+                    level: .notification,
+                ),
+            )
+            return
+        }
+
+        guard var updatedGame = gameRepository.games.first(where: { $0.id == game.id }) else { return }
+        let oldDirectory = AppPaths.profileDirectory(gameName: updatedGame.gameName)
+        let newDirectory = AppPaths.profileDirectory(gameName: newName)
+
+        do {
+            if updatedGame.gameName != newName {
+                guard !FileManager.default.fileExists(atPath: newDirectory.path) else {
+                    throw GlobalError.validation(
+                        i18nKey: "game.form.name.duplicate",
+                        level: .notification,
+                    )
+                }
+                if FileManager.default.fileExists(atPath: oldDirectory.path) {
+                    try FileManager.default.moveItem(at: oldDirectory, to: newDirectory)
+                }
+            }
+
+            updatedGame.gameName = newName
+            Task { @MainActor in
+                do {
+                    try await gameRepository.updateGame(updatedGame)
+                    container.ui.iconRefreshNotifier.notifyRefresh(for: nil)
+                    performRefresh()
+                } catch {
+                    if FileManager.default.fileExists(atPath: newDirectory.path),
+                       !FileManager.default.fileExists(atPath: oldDirectory.path) {
+                        try? FileManager.default.moveItem(at: newDirectory, to: oldDirectory)
+                    }
+                    container.core.errorHandler.handle(GlobalError.from(error))
+                }
+            }
+        } catch {
+            if FileManager.default.fileExists(atPath: newDirectory.path),
+               !FileManager.default.fileExists(atPath: oldDirectory.path) {
+                try? FileManager.default.moveItem(at: newDirectory, to: oldDirectory)
+            }
+            container.core.errorHandler.handle(GlobalError.from(error))
+        }
     }
 
     private func clearAllData() {

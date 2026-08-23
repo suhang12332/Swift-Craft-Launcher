@@ -21,6 +21,7 @@ struct GameHeaderListRow: View {
     let cacheInfo: CacheInfo
     let query: String
     var onIconTap: (() -> Void)?
+    var onNameTap: (() -> Void)?
 
     @State private var refreshTrigger: UUID = .init()
     @State private var cancellable: AnyCancellable?
@@ -30,11 +31,13 @@ struct GameHeaderListRow: View {
         cacheInfo: CacheInfo,
         query: String,
         onIconTap: (() -> Void)? = nil,
+        onNameTap: (() -> Void)? = nil,
     ) {
         self.game = game
         self.cacheInfo = cacheInfo
         self.query = query
         self.onIconTap = onIconTap
+        self.onNameTap = onNameTap
     }
 
     var body: some View {
@@ -47,6 +50,11 @@ struct GameHeaderListRow: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .frame(maxWidth: 400, alignment: .leading)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onNameTap?()
+                    }
+                    .applyPointerHandIfAvailable()
 
                 HStack(spacing: 8) {
                     Label(game.gameVersion, systemImage: "gamecontroller.fill")
