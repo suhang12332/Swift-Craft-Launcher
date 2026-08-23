@@ -26,8 +26,6 @@ struct GameInfoDetailView: View {
     @Binding var gameType: Bool
     @Environment(GameRepository.self)
     private var gameRepository
-    @Environment(PlayerListViewModel.self)
-    private var playerListViewModel
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
     @Binding var localResourceFilter: LocalResourceFilter
@@ -216,7 +214,6 @@ struct GameInfoDetailView: View {
                     .disabled(
                         isSavingGameName
                             || isCurrentGameRunning
-                            || isCurrentGameLaunching
                             || isCheckingName
                             || isNameDuplicate
                             || editedGameName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -238,16 +235,8 @@ struct GameInfoDetailView: View {
         showGameNamePopover = true
     }
 
-    private var currentUserID: String {
-        playerListViewModel.currentPlayer?.id ?? ""
-    }
-
     private var isCurrentGameRunning: Bool {
         container.core.gameProcessManager.isGameRunningForAnyUser(gameId: game.id)
-    }
-
-    private var isCurrentGameLaunching: Bool {
-        container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserID)
     }
 
     private func validateEditedGameName() async {
@@ -280,7 +269,7 @@ struct GameInfoDetailView: View {
         nameEditorError = nil
         Task { @MainActor in
             do {
-                guard !isCurrentGameRunning, !isCurrentGameLaunching else {
+                guard !isCurrentGameRunning else {
                     isSavingGameName = false
                     return
                 }
