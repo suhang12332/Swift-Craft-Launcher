@@ -229,29 +229,10 @@ class GameRepository: @unchecked Sendable {
         games.first { $0.gameName == gameName }
     }
 
-    /// Checks whether a game name is already used in the current working path.
-    func gameNameExists(_ gameName: String, excludingID: String) async throws -> Bool {
-        let workingPath = currentWorkingPath
-        return try await Task.detached(priority: .userInitiated) {
-            try self.database.initialize()
-            return try self.database.gameNameExists(
-                workingPath: workingPath,
-                gameName: gameName,
-                excludingID: excludingID,
-            )
-        }.value
-    }
-
     /// Renames a game and its profile directory in the current working path.
     func renameGame(id: String, to newName: String) async throws {
         let trimmedName = newName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard var game = getGame(by: id), !trimmedName.isEmpty, trimmedName != game.gameName else { return }
-        guard try await !gameNameExists(trimmedName, excludingID: id) else {
-            throw GlobalError.validation(
-                i18nKey: "game.form.name.duplicate",
-                level: .notification,
-            )
-        }
 
         let oldDirectory = AppPaths.profileDirectory(gameName: game.gameName)
         let newDirectory = AppPaths.profileDirectory(gameName: trimmedName)
