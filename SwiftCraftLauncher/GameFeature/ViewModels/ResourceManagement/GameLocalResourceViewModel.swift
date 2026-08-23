@@ -274,7 +274,7 @@ final class GameLocalResourceViewModel {
         }
 
         if query.lowercased() == ResourceType.minecraftJavaServer.rawValue {
-            loadServers()
+            loadServers(searchText: searchText)
             return
         }
 
@@ -331,7 +331,7 @@ final class GameLocalResourceViewModel {
         }
     }
 
-    private func loadServers() {
+    private func loadServers(searchText: String? = nil) {
         guard let game else {
             scannedResources = []
             isLoadingResources = false
@@ -345,9 +345,11 @@ final class GameLocalResourceViewModel {
         Task {
             do {
                 let loadedServers = try await DIContainer.shared.system.serverAddressService.loadServerAddresses(for: game.gameName)
-                scannedResources = loadedServers.map {
+                let details = loadedServers.map {
                     ModrinthProjectDetail.fromServer($0, info: nil, status: .checking)
                 }
+                let searchLower = (searchText ?? currentSearchText).lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+                scannedResources = searchLower.isEmpty ? details : details.filter { $0.title.lowercased().contains(searchLower) }
                 hasMoreResults = false
                 checkServerStatuses(loadedServers)
             } catch {
