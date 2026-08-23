@@ -11,6 +11,7 @@
 		9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9049FDB02F1151B50070A9E3 /* SkinRenderKit */; };
 		90645F072F6BF80C006AD2D8 /* SwiftMarkDownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 90645F062F6BF80C006AD2D8 /* SwiftMarkDownUI */; };
 		9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9098463E2F688B0400D7876B /* CFModrinthAdapterKit */; };
+		909FCDCD303A038B001CBE3D /* TouchBarSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 909FCDCC303A038B001CBE3D /* TouchBarSupport */; };
 		90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */; };
 		90A1FC1D2FB6406900DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */; };
 		90DB5E133037E75B008C2DD6 /* SwiftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1D2FB6406900DAD001 /* SwiftNBT */; };
@@ -68,6 +69,7 @@
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
 				90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */,
 				9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */,
+				909FCDCD303A038B001CBE3D /* TouchBarSupport in Frameworks */,
 				90E123456789ABCD0001 /* Sparkle in Frameworks */,
 				90645F072F6BF80C006AD2D8 /* SwiftMarkDownUI in Frameworks */,
 				90A1FC1D2FB6406900DAD886 /* MinecraftFriendsKit in Frameworks */,
@@ -125,6 +127,7 @@
 				90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */,
 				90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */,
 				90A1FC1D2FB6406900DAD001 /* SwiftNBT */,
+				909FCDCC303A038B001CBE3D /* TouchBarSupport */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90D620D12FD7083C00108105 /* Swift Craft Launcher.app */;
@@ -212,6 +215,7 @@
 				90645F052F6BF80C006AD2D8 /* XCRemoteSwiftPackageReference "SwiftMarkDownUI" */,
 				90A1FC1B2FB6406900DAD886 /* XCRemoteSwiftPackageReference "MinecraftFriendsKit" */,
 				90A1FC1D2FB6406900DAD000 /* XCRemoteSwiftPackageReference "SwiftNBT" */,
+				909FCDCB303A038B001CBE3D /* XCRemoteSwiftPackageReference "TouchBarSupport" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -614,6 +618,14 @@
 				version = 2.7.1;
 			};
 		};
+		909FCDCB303A038B001CBE3D /* XCRemoteSwiftPackageReference "TouchBarSupport" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/functy23/TouchBarSupport.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -641,6 +653,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */;
 			productName = CFModrinthAdapterKit;
+		};
+		909FCDCC303A038B001CBE3D /* TouchBarSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 909FCDCB303A038B001CBE3D /* XCRemoteSwiftPackageReference "TouchBarSupport" */;
+			productName = TouchBarSupport;
 		};
 		90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */ = {
 			isa = XCSwiftPackageProductDependency;
