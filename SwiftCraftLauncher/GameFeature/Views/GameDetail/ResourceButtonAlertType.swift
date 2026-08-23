@@ -10,12 +10,14 @@ import SwiftUI
 
 enum ResourceButtonAlertType: Identifiable {
     case noGame
+    case noCompatibleGame
     case noPlayer
     case noPlayerForLaunch
 
     var id: String {
         switch self {
         case .noGame: return "noGame"
+        case .noCompatibleGame: return "noCompatibleGame"
         case .noPlayer: return "noPlayer"
         case .noPlayerForLaunch: return "noPlayerForLaunch"
         }
@@ -28,6 +30,12 @@ enum ResourceButtonAlertType: Identifiable {
             return Alert(
                 title: Text("no_local_game.title".localized()),
                 message: Text("no_local_game.message".localized()),
+                dismissButton: .default(Text("common.confirm".localized())),
+            )
+        case .noCompatibleGame:
+            return Alert(
+                title: Text("global_resource.no_game_list".localized()),
+                message: Text("global_resource.no_game_list.message".localized()),
                 dismissButton: .default(Text("common.confirm".localized())),
             )
         case .noPlayer:

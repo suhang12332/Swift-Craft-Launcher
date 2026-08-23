@@ -6,13 +6,14 @@
 //
 
 import Combine
-
-// A list row displaying the game icon, name, version info, and cache size.
 import SwiftUI
 
+/// A list row displaying the game icon, name, version info, and cache size.
 struct GameHeaderListRow: View {
     @Environment(DIContainer.self)
     private var container
+    @Environment(GameRepository.self)
+    private var gameRepository
     private static let iconSize: CGFloat = 80
     private static let iconPaddingRatio: CGFloat = 0.125
     private static let iconCornerRadiusRatio: CGFloat = 0.2
@@ -24,6 +25,8 @@ struct GameHeaderListRow: View {
 
     @State private var refreshTrigger: UUID = .init()
     @State private var cancellable: AnyCancellable?
+    @State private var showRenamePopover = false
+    @State private var viewModel = GameHeaderViewModel()
 
     init(
         game: GameVersionInfo,
@@ -47,6 +50,15 @@ struct GameHeaderListRow: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .frame(maxWidth: 400, alignment: .leading)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        viewModel.newName = game.gameName
+                        showRenamePopover = true
+                    }
+                    .popover(isPresented: $showRenamePopover) {
+                        renamePopover
+                    }
+                    .applyPointerHandIfAvailable()
 
                 HStack(spacing: 8) {
                     Label(game.gameVersion, systemImage: "gamecontroller.fill")
@@ -156,6 +168,23 @@ struct GameHeaderListRow: View {
 
     private var profileDir: URL {
         AppPaths.profileDirectory(gameName: game.gameName)
+    }
+
+    private var renamePopover: some View {
+        HStack(spacing: 8) {
+            TextField("game.rename.placeholder".localized(), text: $viewModel.newName)
+                .textFieldStyle(.roundedBorder)
+            Button("common.confirm".localized()) {
+                Task {
+                    await viewModel.performRename(gameId: game.id, currentName: game.gameName, gameRepository: gameRepository)
+                    showRenamePopover = false
+                }
+            }
+            .disabled(!viewModel.isNameValid(newName: viewModel.newName, currentName: game.gameName, gameId: game.id))
+            .keyboardShortcut(.defaultAction)
+        }
+        .padding()
+        .frame(width: 400)
     }
 
     private var defaultIcon: some View {

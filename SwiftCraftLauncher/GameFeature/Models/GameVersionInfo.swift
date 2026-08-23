@@ -14,7 +14,7 @@ struct GameVersionInfo: Codable, Identifiable, Hashable, Sendable {
     let id: String
 
     /// The display name of the game.
-    let gameName: String
+    var gameName: String
 
     /// The path or URL of the game icon.
     var gameIcon: String

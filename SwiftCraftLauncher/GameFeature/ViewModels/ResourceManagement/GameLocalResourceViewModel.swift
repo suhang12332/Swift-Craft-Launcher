@@ -199,6 +199,10 @@ final class GameLocalResourceViewModel {
     private func initializeResourceDirectoryIfNeeded() {
         guard let game else { return }
 
+        if query.lowercased() == ResourceType.minecraftJavaServer.rawValue {
+            return
+        }
+
         if let existingDir = resourceDirectory {
             let expectedDir = AppPaths.resourceDirectory(for: query, gameName: game.gameName)
             if existingDir == expectedDir {

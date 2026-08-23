@@ -194,6 +194,7 @@ struct MinecraftLaunchCommand {
         let replacements: [String: String] = [
             "${xms}": "\(xms)",
             "${xmx}": "\(xmx)",
+            "${game_directory}": AppPaths.profileDirectory(gameName: game.gameName).path,
         ]
         var replacedCommand = command.map { arg in
             replacements.reduce(into: arg) { result, pair in

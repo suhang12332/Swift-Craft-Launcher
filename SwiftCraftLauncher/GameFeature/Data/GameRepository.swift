@@ -221,6 +221,44 @@ class GameRepository: @unchecked Sendable {
         AppLog.game.info("Successfully deleted game record named \(gameName) (working path: \(workingPath))")
     }
 
+    /// Renames a game by updating its profile directory and database record.
+    func renameGame(id: String, to newName: String) async throws {
+        guard var game = getGame(by: id) else {
+            throw GlobalError.validation(
+                i18nKey: "error.validation.game_not_found_status",
+                level: .notification,
+                message: "Game not found for rename: id=\(id)",
+            )
+        }
+
+        let oldName = game.gameName
+        guard oldName != newName else { return }
+
+        let fm = FileManager.default
+        let oldDir = AppPaths.profileDirectory(gameName: oldName)
+        let newDir = AppPaths.profileDirectory(gameName: newName)
+
+        guard !fm.fileExists(atPath: newDir.path) else {
+            throw GlobalError.validation(
+                i18nKey: "error.validation.game_name_already_exists",
+                level: .notification,
+                message: "A game with the name '\(newName)' already exists",
+            )
+        }
+
+        try fm.moveItem(at: oldDir, to: newDir)
+
+        game.gameName = newName
+        // Backward compatibility: old games have the game directory path baked into launchCommand.
+        // Replace the hardcoded path with the ${game_directory} placeholder so it's resolved dynamically at launch time.
+        if !game.launchCommand.contains("${game_directory}") {
+            let oldPath = AppPaths.profileDirectory(gameName: oldName).path
+            game.launchCommand = game.launchCommand.map { $0.replacingOccurrences(of: oldPath, with: "${game_directory}") }
+        }
+        try await updateGame(game)
+        AppLog.game.info("Successfully renamed game from '\(oldName)' to '\(newName)'")
+    }
+
     func getGame(by id: String) -> GameVersionInfo? {
         games.first { $0.id == id }
     }
