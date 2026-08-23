@@ -58,7 +58,7 @@ extension ModrinthSearchViewModel {
         }
 
         if !filterOptions.loaders.isEmpty, projectType != ResourceType.resourcepack.rawValue,
-           projectType != ResourceType.datapack.rawValue {
+           projectType != ResourceType.datapack.rawValue, projectType != ResourceType.minecraftJavaServer.rawValue {
             var loadersToUse = filterOptions.loaders
             if let first = filterOptions.loaders.first, first.lowercased() == GameLoader.vanilla.displayName {
                 loadersToUse = ["minecraft"]

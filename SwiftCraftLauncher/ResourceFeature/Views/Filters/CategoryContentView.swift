@@ -81,7 +81,7 @@ struct CategoryContentView: View {
             selectedVersions = [gameVersion]
         }
         if let gameLoader {
-            if project != ResourceType.shader.rawValue {
+            if project != ResourceType.shader.rawValue, project != ResourceType.minecraftJavaServer.rawValue {
                 selectedLoaders = [gameLoader]
             } else {
                 selectedLoaders = []
