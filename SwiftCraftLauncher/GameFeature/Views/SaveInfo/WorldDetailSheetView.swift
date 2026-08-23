@@ -46,7 +46,9 @@ struct WorldDetailSheetView: View {
 
     @ViewBuilder private var bodyView: some View {
         if let metadata = viewModel.metadata {
-            metadataContentView(metadata: metadata)
+            ScrollView {
+                metadataContentView(metadata: metadata)
+            }
         }
     }
 
