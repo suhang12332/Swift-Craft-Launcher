@@ -250,4 +250,123 @@ final class MinecraftManifestTests: XCTestCase {
         XCTAssertTrue(rule.features?.is_demo_user ?? false)
         XCTAssertNil(rule.os)
     }
+
+    // MARK: - Arguments Conditional Decoding
+
+    func testArguments_jvmConditionalArgMatchingOS_isIncluded() throws {
+        let osName = MacOS.osx.rawValue
+        let json = """
+        {
+            "game": [],
+            "jvm": [
+                "-Xmx1G",
+                {
+                    "rules": [{"action": "allow", "os": {"name": "\(osName)"}}],
+                    "value": "-XstartOnFirstThread"
+                }
+            ]
+        }
+        """
+        let data = Data(json.utf8)
+        let args = try JSONDecoder().decode(Arguments.self, from: data)
+
+        XCTAssertEqual(args.jvm, ["-Xmx1G", "-XstartOnFirstThread"])
+    }
+
+    func testArguments_jvmConditionalArgNonMatchingOS_isExcluded() throws {
+        let json = """
+        {
+            "game": [],
+            "jvm": [
+                "-Xmx1G",
+                {
+                    "rules": [{"action": "allow", "os": {"name": "windows"}}],
+                    "value": "-XX:+UseG1GC"
+                }
+            ]
+        }
+        """
+        let data = Data(json.utf8)
+        let args = try JSONDecoder().decode(Arguments.self, from: data)
+
+        XCTAssertEqual(args.jvm, ["-Xmx1G"])
+    }
+
+    func testArguments_gameConditionalArg_isExcluded() throws {
+        let osName = MacOS.osx.rawValue
+        let json = """
+        {
+            "game": [
+                "--width",
+                {
+                    "rules": [{"action": "allow", "os": {"name": "\(osName)"}}],
+                    "value": "--demo"
+                }
+            ],
+            "jvm": []
+        }
+        """
+        let data = Data(json.utf8)
+        let args = try JSONDecoder().decode(Arguments.self, from: data)
+
+        XCTAssertEqual(args.game, ["--width"])
+    }
+
+    func testArguments_lastMatchingRuleWins() throws {
+        let json = """
+        {
+            "game": [],
+            "jvm": [
+                {
+                    "rules": [
+                        {"action": "allow", "os": {"name": "osx"}},
+                        {"action": "disallow", "os": {"name": "osx"}}
+                    ],
+                    "value": "-XstartOnFirstThread"
+                }
+            ]
+        }
+        """
+        let data = Data(json.utf8)
+        let args = try JSONDecoder().decode(Arguments.self, from: data)
+
+        XCTAssertEqual(args.jvm, [])
+    }
+
+    func testArguments_conditionalArgArrayValue() throws {
+        let osName = MacOS.osx.rawValue
+        let json = """
+        {
+            "game": [],
+            "jvm": [
+                {
+                    "rules": [{"action": "allow", "os": {"name": "\(osName)"}}],
+                    "value": ["-Djava.library.path=natives", "-Djna.tmpdir=natives"]
+                }
+            ]
+        }
+        """
+        let data = Data(json.utf8)
+        let args = try JSONDecoder().decode(Arguments.self, from: data)
+
+        XCTAssertEqual(args.jvm, ["-Djava.library.path=natives", "-Djna.tmpdir=natives"])
+    }
+
+    func testArguments_featureRule_ignored() throws {
+        let json = """
+        {
+            "game": [],
+            "jvm": [
+                {
+                    "rules": [{"action": "allow", "features": {"is_demo_user": true}}],
+                    "value": "-Ddemo=true"
+                }
+            ]
+        }
+        """
+        let data = Data(json.utf8)
+        let args = try JSONDecoder().decode(Arguments.self, from: data)
+
+        XCTAssertEqual(args.jvm, ["-Ddemo=true"])
+    }
 }
