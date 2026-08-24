@@ -93,7 +93,7 @@ extension MinecraftFileManager {
             if existingPath.hasPrefix("/") {
                 destinationURL = URL(fileURLWithPath: existingPath)
             } else {
-                destinationURL = metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.libraries)
+                destinationURL = AppPaths.librariesDirectory
                     .appendingPathComponent(existingPath)
             }
         } else {
@@ -139,19 +139,19 @@ extension MinecraftFileManager {
             return
         }
 
+        let nativesDir = AppPaths.nativesDirectory.appendingPathComponent(minecraftVersion)
+
         let destinationURL: URL
         if let existingPath = nativeArtifact.path {
             if existingPath.hasPrefix("/") {
                 destinationURL = URL(fileURLWithPath: existingPath)
             } else {
-                destinationURL = metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.natives)
-                    .appendingPathComponent(existingPath)
+                destinationURL = nativesDir.appendingPathComponent(existingPath)
             }
         } else {
             let relativePath = CommonService.mavenCoordinateToRelativePath(library.name)
                 ?? "\(library.name.replacingOccurrences(of: ":", with: "-")).jar"
-            destinationURL = metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.natives)
-                .appendingPathComponent(relativePath)
+            destinationURL = nativesDir.appendingPathComponent(relativePath)
         }
 
         guard let nativeURL = nativeArtifact.url else {
@@ -162,25 +162,107 @@ extension MinecraftFileManager {
             )
         }
 
-        try await downloadAndSaveFile(
-            from: nativeURL,
-            to: destinationURL,
-            sha1: nativeArtifact.sha1,
-            fileNameForNotification: library.name,
-            type: .core,
-            i18nKey: "error.download.native_library_failed",
-            errorMessage: "Failed to download native library \(library.name) from \(nativeURL.absoluteString)",
-        )
+        let fileManager = FileManager.default
+        if !fileManager.fileExists(atPath: destinationURL.path) {
+            try await downloadAndSaveFile(
+                from: nativeURL,
+                to: destinationURL,
+                sha1: nativeArtifact.sha1,
+                fileNameForNotification: library.name,
+                type: .core,
+                i18nKey: "error.download.native_library_failed",
+                errorMessage: "Failed to download native library \(library.name) from \(nativeURL.absoluteString)",
+            )
+        } else {
+            await incrementCompletedFilesCount(
+                fileName: library.name,
+                type: .core,
+            )
+        }
+
+        if !fileManager.fileExists(atPath: nativesDir.path) {
+            try fileManager.createDirectory(at: nativesDir, withIntermediateDirectories: true)
+        }
+
+        if destinationURL.pathExtension == "jar" {
+            try await extractNativeLibrary(
+                jarURL: destinationURL,
+                nativesDir: nativesDir,
+                excludePatterns: library.extract?.exclude ?? [],
+            )
+        }
+    }
+
+    private func extractNativeLibrary(
+        jarURL: URL,
+        nativesDir: URL,
+        excludePatterns: [String],
+    ) async throws {
+        let fm = FileManager.default
+        let tempDir = fm.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+
+        try fm.createDirectory(at: tempDir, withIntermediateDirectories: true)
+
+        defer {
+            try? fm.removeItem(at: tempDir)
+        }
+
+        try fm.unzipItem(at: jarURL, to: tempDir)
+
+        guard let enumerator = fm.enumerator(
+            at: tempDir,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        ) else {
+            return
+        }
+
+        while let fileURL = enumerator.nextObject() as? URL {
+            let relativePath = fileURL.path.replacingOccurrences(of: tempDir.path + "/", with: "")
+
+            if shouldExcludeNativeEntry(relativePath, excludePatterns: excludePatterns) {
+                continue
+            }
+
+            let isDirectory = (try? fileURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+            if isDirectory {
+                continue
+            }
+
+            let ext = fileURL.pathExtension.lowercased()
+            guard ext == "dylib" else {
+                continue
+            }
+
+            let fileName = fileURL.lastPathComponent
+            let destination = nativesDir.appendingPathComponent(fileName)
+
+            if fm.fileExists(atPath: destination.path) {
+                try fm.removeItem(at: destination)
+            }
+
+            try fm.copyItem(at: fileURL, to: destination)
+        }
+    }
+
+    private func shouldExcludeNativeEntry(_ path: String, excludePatterns: [String]) -> Bool {
+        for pattern in excludePatterns {
+            let normalizedPattern = pattern.hasSuffix("/") ? String(pattern.dropLast()) : pattern
+            let normalizedPath = path.hasSuffix("/") ? String(path.dropLast()) : path
+
+            if normalizedPath == normalizedPattern || normalizedPath.hasPrefix(normalizedPattern + "/") {
+                return true
+            }
+        }
+        return false
     }
 
     private func downloadLoggingConfig(
         manifest: MinecraftVersionManifest,
     ) async throws {
         let loggingFile = manifest.logging.client.file
-        let versionDir = AppPaths.metaDirectory.appendingPathComponent(
-            AppConstants.DirectoryNames.versions,
-        )
-        .appendingPathComponent(manifest.id)
+        let versionDir = AppPaths.versionsDirectory.appendingPathComponent(manifest.id)
 
         let destinationURL = versionDir.appendingPathComponent(loggingFile.id)
 

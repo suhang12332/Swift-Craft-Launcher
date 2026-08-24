@@ -47,21 +47,16 @@ enum MinecraftLaunchCommandBuilder {
         )
 
         let variableMap: [String: String] = [
-            "auth_player_name": "${auth_player_name}",
             "version_name": gameInfo.gameVersion,
-            "game_directory": "${game_directory}",
             "assets_root": paths.assetsDir,
             "assets_index_name": gameInfo.assetIndex,
-            "auth_uuid": "${auth_uuid}",
-            "auth_access_token": "${auth_access_token}",
             "clientid": AppConstants.minecraftClientId,
-            "auth_xuid": "${auth_xuid}",
             "user_type": "msa",
             "version_type": Bundle.main.appName,
-            "natives_directory": paths.nativesDir,
             "launcher_name": Bundle.main.appName,
             "launcher_version": launcherVersion,
             "classpath": classpath,
+            "natives_directory": paths.nativesDir,
         ]
 
         var jvmArgs = manifest.arguments.jvm?
@@ -72,8 +67,6 @@ enum MinecraftLaunchCommandBuilder {
         let xmsArg = "-Xms${xms}M"
         let xmxArg = "-Xmx${xmx}M"
         jvmArgs.insert(contentsOf: [xmsArg, xmxArg], at: 0)
-
-        jvmArgs.insert("-XstartOnFirstThread", at: 0)
 
         if !gameInfo.modJvm.isEmpty {
             jvmArgs.append(contentsOf: gameInfo.modJvm)
@@ -109,7 +102,7 @@ enum MinecraftLaunchCommandBuilder {
         }
 
         return GamePaths(
-            nativesDir: AppPaths.nativesDirectory.path,
+            nativesDir: AppPaths.nativesDirectory.appendingPathComponent(manifest.id).path,
             librariesDir: AppPaths.librariesDirectory,
             assetsDir: AppPaths.assetsDirectory.path,
             gameDir: AppPaths.profileDirectory(gameName: gameInfo.gameName).path,

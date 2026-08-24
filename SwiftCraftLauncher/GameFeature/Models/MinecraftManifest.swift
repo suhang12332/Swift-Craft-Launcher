@@ -71,14 +71,24 @@ struct Arguments: Codable {
 
         if container.contains(.jvm) {
             let jvmArgs = try container.decode([ArgumentValue].self, forKey: .jvm)
-            jvm = jvmArgs.compactMap { arg in
-                if case let .string(value) = arg {
-                    return value
-                }
-                return nil
-            }
+            jvm = jvmArgs.flatMap { Self.extractJvmValues(from: $0) }
         } else {
             jvm = nil
+        }
+    }
+
+    private static func extractJvmValues(from value: ArgumentValue) -> [String] {
+        switch value {
+        case let .string(str):
+            return [str]
+        case let .objectWithRules(ruleObject):
+            guard MacRuleEvaluator.isAllowed(ruleObject.rules) else { return [] }
+            switch ruleObject.value {
+            case let .string(str):
+                return [str]
+            case let .array(arr):
+                return arr
+            }
         }
     }
 
