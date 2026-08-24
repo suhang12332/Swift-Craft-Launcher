@@ -58,11 +58,6 @@ enum ModrinthService {
         }
     }
 
-    static func fetchVersionInfoThrowing(from version: String) async throws -> MinecraftVersionManifest {
-        let data = try await fetchVersionInfoDataThrowing(from: version)
-        return try decodeVersionInfo(from: data, version: version)
-    }
-
     /// Fetches the raw Modrinth version manifest JSON data.
     private static func fetchVersionInfoDataThrowing(from version: String) async throws -> Data {
         let url = URLConfig.API.Modrinth.versionInfo(version: version)
