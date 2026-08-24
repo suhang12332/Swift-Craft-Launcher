@@ -305,6 +305,57 @@ enum CommonService {
         return processedLoader
     }
 
+    /// Fetches a mod loader profile, caching the raw Modrinth JSON data.
+    ///
+    /// Caching the raw response (rather than the decoded object) preserves the
+    /// conditional rule structure so it can be re-evaluated on every decode.
+    /// - Parameters:
+    ///   - loaderId: The Modrinth loader identifier (e.g. "fabric").
+    ///   - loaderVersion: The specific loader version.
+    ///   - namespace: The cache namespace.
+    ///   - gameVersion: The Minecraft game version.
+    /// - Returns: The processed `ModrinthLoader`.
+    static func fetchLoaderProfile(
+        loaderId: String,
+        loaderVersion: String,
+        namespace: String,
+        gameVersion: String,
+    ) async throws -> ModrinthLoader {
+        if let cachedData: Data = DIContainer.shared.core.appCacheManager.get(
+            namespace: namespace,
+            key: "profile",
+            as: Data.self,
+            directory: AppPaths.loaderCache,
+        ) {
+            return try decodeLoaderProfile(from: cachedData, loaderVersion: loaderVersion, gameVersion: gameVersion)
+        }
+
+        let url = URLConfig.API.Modrinth.loaderProfile(loader: loaderId, version: loaderVersion)
+        let data = try await APIClient.get(url: url)
+        let loader = try decodeLoaderProfile(from: data, loaderVersion: loaderVersion, gameVersion: gameVersion)
+
+        DIContainer.shared.core.appCacheManager.setSilently(
+            namespace: namespace,
+            key: "profile",
+            value: data,
+            directory: AppPaths.loaderCache,
+        )
+
+        return loader
+    }
+
+    /// Decodes a `ModrinthLoader` from raw JSON and applies game-version processing.
+    private static func decodeLoaderProfile(
+        from data: Data,
+        loaderVersion: String,
+        gameVersion: String,
+    ) throws -> ModrinthLoader {
+        var loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
+        loader = processGameVersionPlaceholders(loader: loader, gameVersion: gameVersion)
+        loader.version = loaderVersion
+        return loader
+    }
+
     /// Fetches loader version identifiers for the given loader type at the given Minecraft version.
     ///
     /// This is the shared implementation used by both game creation and loader version change
