@@ -127,7 +127,7 @@ extension MinecraftFileManager {
     func downloadNativeLibrary(
         library: Library,
         classifiers: [String: LibraryArtifact],
-        metaDirectory: URL,
+        metaDirectory _: URL,
         minecraftVersion: String,
     ) async throws {
         guard let natives = library.natives else { return }
@@ -213,7 +213,7 @@ extension MinecraftFileManager {
         guard let enumerator = fm.enumerator(
             at: tempDir,
             includingPropertiesForKeys: [.isDirectoryKey],
-            options: [.skipsHiddenFiles]
+            options: [.skipsHiddenFiles],
         ) else {
             return
         }
