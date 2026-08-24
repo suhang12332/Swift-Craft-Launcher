@@ -18,6 +18,12 @@ struct GameMoreMenu: View {
     private var openSettings
     @Environment(ResourceDetailState.self)
     private var detailState
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
+
+    private var currentUserId: String {
+        playerListViewModel.currentPlayer?.id ?? ""
+    }
 
     var body: some View {
         Menu {
@@ -35,7 +41,21 @@ struct GameMoreMenu: View {
                 } label: {
                     Label("game.loader.update.title".localized(), systemImage: "arrow.triangle.2.circlepath")
                 }
+                .disabled(
+                    container.core.gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: currentUserId)
+                        || container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId),
+                )
             }
+
+            Button {
+                container.ui.gameDialogsPresenter.presentLoaderUpdate(for: game, mode: .repair)
+            } label: {
+                Label("game.repair.title".localized(), systemImage: "wrench.and.screwdriver")
+            }
+            .disabled(
+                container.core.gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: currentUserId)
+                    || container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId),
+            )
 
             Button {
                 container.core.selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
