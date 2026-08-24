@@ -10,5 +10,4 @@ import Foundation
 /// Utility for validating and converting text to CurseForge-compatible slugs.
 ///
 /// CurseForge slug rules: `^[\w!@$()`.+,"\-']{3,64}$`
-enum CurseForgeSlugHelper {
-}
+enum CurseForgeSlugHelper { }
