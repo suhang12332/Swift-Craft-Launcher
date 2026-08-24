@@ -251,8 +251,6 @@ final class MinecraftManifestTests: XCTestCase {
         XCTAssertNil(rule.os)
     }
 
-    // MARK: - Arguments Conditional Decoding
-
     func testArguments_jvmConditionalArgMatchingOS_isIncluded() throws {
         let osName = MacOS.osx.rawValue
         let json = """
