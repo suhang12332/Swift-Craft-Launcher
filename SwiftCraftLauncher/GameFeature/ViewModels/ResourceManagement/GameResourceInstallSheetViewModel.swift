@@ -128,7 +128,7 @@ final class GameResourceInstallSheetViewModel {
             )
         }
 
-        guard let gameRepository else {
+        guard gameRepository != nil else {
             throw GlobalError.configuration(
                 i18nKey: "error.configuration.game_repository_missing",
                 level: .notification,
@@ -194,7 +194,7 @@ final class GameResourceInstallSheetViewModel {
             )
         }
 
-        guard let gameRepository else {
+        guard gameRepository != nil else {
             throw GlobalError.configuration(
                 i18nKey: "error.configuration.game_repository_missing",
                 level: .notification,
