@@ -94,6 +94,7 @@ struct GameLoaderUpdateView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
+    }
 
     private var currentInfoSection: some View {
         VStack(alignment: .leading, spacing: 4) {
