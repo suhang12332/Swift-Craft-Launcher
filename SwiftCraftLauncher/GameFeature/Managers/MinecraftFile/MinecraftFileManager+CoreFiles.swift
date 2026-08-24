@@ -221,7 +221,11 @@ extension MinecraftFileManager {
         while let fileURL = enumerator.nextObject() as? URL {
             let relativePath = fileURL.path.replacingOccurrences(of: tempDir.path + "/", with: "")
 
-            if shouldExcludeNativeEntry(relativePath, excludePatterns: excludePatterns) {
+            if excludePatterns.contains(where: { pattern in
+                let p = pattern.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                let r = relativePath.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                return r == p || r.hasPrefix(p + "/")
+            }) {
                 continue
             }
 
@@ -244,18 +248,6 @@ extension MinecraftFileManager {
 
             try fm.copyItem(at: fileURL, to: destination)
         }
-    }
-
-    private func shouldExcludeNativeEntry(_ path: String, excludePatterns: [String]) -> Bool {
-        for pattern in excludePatterns {
-            let normalizedPattern = pattern.hasSuffix("/") ? String(pattern.dropLast()) : pattern
-            let normalizedPath = path.hasSuffix("/") ? String(path.dropLast()) : path
-
-            if normalizedPath == normalizedPattern || normalizedPath.hasPrefix(normalizedPattern + "/") {
-                return true
-            }
-        }
-        return false
     }
 
     private func downloadLoggingConfig(
