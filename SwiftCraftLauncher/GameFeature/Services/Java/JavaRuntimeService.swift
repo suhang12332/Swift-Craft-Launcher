@@ -31,19 +31,6 @@ class JavaRuntimeService {
         }
     }
 
-    func getGamecoreSupportedVersions() async throws -> [String] {
-        let json = try await fetchJavaRuntimeAPI()
-        guard let gamecore = json["gamecore"] as? [String: Any] else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.gamecore_not_found",
-                level: .notification,
-                message: "no 'gamecore' key found in Java runtime API response",
-            )
-        }
-
-        return Array(gamecore.keys)
-    }
-
     func getMacJavaRuntimeData() async throws -> [String: Any] {
         let json = try await fetchJavaRuntimeAPI()
         let platform = getCurrentMacPlatform()

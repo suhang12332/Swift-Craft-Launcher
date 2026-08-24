@@ -42,11 +42,6 @@ class AlertPresenter<Choice: AlertChoice> {
         continuation.resume(returning: choice)
     }
 
-    func dismissIfNeeded(as choice: Choice = .cancel) {
-        guard continuation != nil else { return }
-        resolve(choice)
-    }
-
     /// Returns a `Binding<Bool>` suitable for `.alert(isPresented:)` or `.presenterAlert(isPresented:)`.
     func asBinding() -> Binding<Bool> {
         Binding(

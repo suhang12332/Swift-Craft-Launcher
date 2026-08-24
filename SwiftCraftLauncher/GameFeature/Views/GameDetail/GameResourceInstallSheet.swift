@@ -130,7 +130,7 @@ private struct GameResourceInstallFooter: View {
                                     ProgressView().controlSize(.small)
                                 } else {
                                     Text(
-                                        "global_resource.download_all"
+                                        "global_resource.download"
                                             .localized(),
                                     )
                                 }

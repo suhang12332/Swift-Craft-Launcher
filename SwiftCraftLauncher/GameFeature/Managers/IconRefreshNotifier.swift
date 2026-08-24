@@ -26,9 +26,4 @@ final class IconRefreshNotifier {
     func notifyRefresh(for gameName: String?) {
         refreshSubject.send(gameName)
     }
-
-    /// Notifies observers to refresh all icons.
-    func notifyRefreshAll() {
-        refreshSubject.send(nil)
-    }
 }

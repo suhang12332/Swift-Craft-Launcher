@@ -49,12 +49,6 @@ class WindowManager {
         openWindowAction?(id)
     }
 
-    /// Opens the specified auxiliary window and activates the application.
-    func showAndActivateWindow(id: AuxiliaryWindowID) {
-        openWindow(id: id)
-        NSApplication.shared.activate(ignoringOtherApps: true)
-    }
-
     /// Closes the specified auxiliary window by invoking its registered dismiss action.
     func closeWindow(id: AuxiliaryWindowID) {
         dismissActions[id]?()

@@ -34,23 +34,6 @@ final class ModPackFeatureExtendedTests: XCTestCase {
         XCTAssertEqual(decoded.sha512, "def456")
     }
 
-    func testToSlug_specialCharacters() {
-        let slug = CurseForgeSlugHelper.toSlug("Hello World! @#$%")
-        XCTAssertFalse(slug.contains(" "))
-    }
-
-    func testIsValid_validSlug() {
-        XCTAssertTrue(CurseForgeSlugHelper.isValid("my-mod-pack"))
-    }
-
-    func testIsValid_emptySlug() {
-        XCTAssertFalse(CurseForgeSlugHelper.isValid(""))
-    }
-
-    func testIsValid_tooShort() {
-        XCTAssertFalse(CurseForgeSlugHelper.isValid("ab"))
-    }
-
     func testManifestFile_codable() throws {
         let file = CurseForgeManifestBuilder.ManifestFile(
             projectID: 123,

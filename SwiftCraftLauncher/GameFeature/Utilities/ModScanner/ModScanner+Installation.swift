@@ -38,13 +38,6 @@ extension ModScanner {
         }
     }
 
-    /// Returns all jar and zip files in the directory with their hashes and cached details, throwing on errors.
-    public func localModDetailsThrowing(in dir: URL) throws -> [(
-        file: URL, hash: String, detail: ModrinthProjectDetail?
-    )] {
-        try scanDirectoryForDetails(in: dir)
-    }
-
     /// Checks whether a mod is installed by consulting the cache, throwing on errors.
     func isModInstalled(
         hash: String,
@@ -69,30 +62,6 @@ extension ModScanner {
             AppLog.game.error("Failed to check mod installation status: \(globalError.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(globalError)
             return false
-        }
-    }
-
-    /// Checks whether a mod is installed, returning the result via a completion handler.
-    func isModInstalled(
-        hash: String,
-        in modsDir: URL,
-        completion: @Sendable @escaping (Bool) -> Void,
-    ) {
-        Task {
-            do {
-                let result = try await isModInstalled(
-                    hash: hash,
-                    in: modsDir,
-                )
-                completion(result)
-            } catch {
-                let globalError = GlobalError.from(error)
-                AppLog.game.error(
-                    "Failed to check mod installation status: \(globalError.localizedDescription)",
-                )
-                DIContainer.shared.core.errorHandler.handle(globalError)
-                completion(false)
-            }
         }
     }
 }

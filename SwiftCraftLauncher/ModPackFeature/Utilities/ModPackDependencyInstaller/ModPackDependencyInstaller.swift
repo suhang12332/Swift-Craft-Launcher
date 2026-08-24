@@ -18,44 +18,6 @@ enum ModPackDependencyInstaller {
         case dependencies
         case overrides
     }
-
-    /// Installs all required dependencies for a modpack version.
-    static func installVersionDependencies(
-        indexInfo: ModrinthIndexInfo,
-        gameInfo: GameVersionInfo,
-        extractedPath _: URL? = nil,
-        onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)? = nil,
-    ) async -> Bool {
-        let resourceDir = AppPaths.profileDirectory(gameName: gameInfo.gameName)
-
-        async let filesResult = installModPackFiles(
-            files: indexInfo.files,
-            resourceDir: resourceDir,
-            gameInfo: gameInfo,
-            onProgressUpdate: onProgressUpdate,
-        )
-
-        async let dependenciesResult = installModPackDependencies(
-            dependencies: indexInfo.dependencies,
-            gameInfo: gameInfo,
-            resourceDir: resourceDir,
-            onProgressUpdate: onProgressUpdate,
-        )
-
-        let (failedFiles, failedDependencies) = await (filesResult, dependenciesResult)
-
-        if !failedFiles.isEmpty {
-            AppLog.modPack.error("Modpack file installation failed")
-            return false
-        }
-
-        if !failedDependencies.isEmpty {
-            AppLog.modPack.error("Modpack dependency installation failed")
-            return false
-        }
-
-        return true
-    }
 }
 
 // ModPackCounter removed — replaced by shared AtomicCounter actor.

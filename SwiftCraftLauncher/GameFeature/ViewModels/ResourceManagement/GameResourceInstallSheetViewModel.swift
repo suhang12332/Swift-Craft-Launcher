@@ -146,7 +146,6 @@ final class GameResourceInstallSheetViewModel {
                     mainProjectVersionId: mainVersionId.isEmpty ? nil : mainVersionId,
                     gameInfo: gameInfo,
                     resourceType: resourceType,
-                    gameRepository: gameRepository,
                 ),
                 onDependencyDownloadStart: { @Sendable _ in },
                 onDependencyDownloadFinish: { @Sendable _, _ in },
@@ -208,7 +207,6 @@ final class GameResourceInstallSheetViewModel {
                 mainProjectId: project.projectId,
                 gameInfo: gameInfo,
                 query: resourceType,
-                gameRepository: gameRepository,
                 filterLoader: true,
             )
 

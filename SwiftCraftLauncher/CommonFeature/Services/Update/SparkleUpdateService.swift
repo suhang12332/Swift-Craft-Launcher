@@ -15,18 +15,13 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
     private var hasStartedUpdater = false
     private var hasScheduledStartupCheck = false
 
-    var isCheckingForUpdates = false
     var updateAvailable = false
-    var currentVersion = ""
-    var latestVersion = ""
-    var updateDescription = ""
     var versionString = ""
 
     private let startupCheckDelay: TimeInterval = 2.0
 
     override init() {
         super.init()
-        currentVersion = Bundle.main.appVersion
     }
 
     /// Configures and starts the Sparkle updater.
@@ -61,28 +56,22 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
 
     func updaterDidNotFindUpdate(_: SPUUpdater) {
         AppLog.common.info("Check completed, no new version found")
-        isCheckingForUpdates = false
         updateAvailable = false
     }
 
     func updater(_: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
         AppLog.common.info("New version found: \(item.versionString)")
-        isCheckingForUpdates = false
         updateAvailable = true
-        latestVersion = item.versionString
         versionString = item.displayVersionString
-        updateDescription = item.itemDescription ?? ""
     }
 
     func updater(_: SPUUpdater, didFailToCheckForUpdatesWithError error: Error) {
         AppLog.common.error("Update check failed: \(error.localizedDescription)")
-        isCheckingForUpdates = false
         updateAvailable = false
     }
 
     func updater(_: SPUUpdater, willInstallUpdate item: SUAppcastItem) {
         AppLog.common.info("Starting update installation: \(item.versionString)")
-        isCheckingForUpdates = false
     }
 
     func updater(_: SPUUpdater, didFinishLoading _: SUAppcast) {
@@ -91,19 +80,6 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
 
     private func getSystemArchitecture() -> String {
         Architecture.current.sparkleArch
-    }
-
-    /// Returns the current system architecture identifier.
-    func getCurrentArchitecture() -> String {
-        getSystemArchitecture()
-    }
-
-    /// Returns the current updater state.
-    func getUpdaterStatus() -> (isInitialized: Bool, sessionInProgress: Bool, isChecking: Bool) {
-        guard let updater else {
-            return (isInitialized: false, sessionInProgress: false, isChecking: isCheckingForUpdates)
-        }
-        return (isInitialized: true, sessionInProgress: updater.sessionInProgress, isChecking: isCheckingForUpdates)
     }
 
     func scheduleStartupCheckIfNeeded() {
@@ -127,8 +103,6 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
             return
         }
 
-        isCheckingForUpdates = true
-
         updater.checkForUpdates()
     }
 
@@ -145,8 +119,6 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
             return
         }
 
-        isCheckingForUpdates = true
-
         updater.checkForUpdatesInBackground()
     }
 }
@@ -158,7 +130,7 @@ extension SparkleUpdateService {
 
         let version = versionString
         guard !version.isEmpty else {
-            AppLog.common.warning("Update download URL rewrite skipped: latestVersion is empty, using original URL")
+            AppLog.common.warning("Update download URL rewrite skipped: version is empty, using original URL")
             return
         }
 

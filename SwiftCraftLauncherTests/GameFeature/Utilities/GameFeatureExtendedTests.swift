@@ -9,22 +9,6 @@
 import XCTest
 
 final class GameFeatureExtendedTests: XCTestCase {
-    func testMacOS_fromJavaArch_aarch64() {
-        XCTAssertEqual(MacOS.fromJavaArch("aarch64"), .osxArm64)
-    }
-
-    func testMacOS_fromJavaArch_x86_64() {
-        XCTAssertEqual(MacOS.fromJavaArch("x86_64"), .osxX86_64)
-    }
-
-    func testMacOS_fromJavaArch_amd64() {
-        XCTAssertEqual(MacOS.fromJavaArch("amd64"), .osxX86_64)
-    }
-
-    func testMacOS_fromJavaArch_unknown() {
-        XCTAssertEqual(MacOS.fromJavaArch("arm"), .osx)
-    }
-
     func testMacOS_rawValues() {
         XCTAssertEqual(MacOS.osx.rawValue, "osx")
         XCTAssertEqual(MacOS.osxArm64.rawValue, "osx-arm64")
@@ -115,21 +99,5 @@ final class GameFeatureExtendedTests: XCTestCase {
         """.utf8)
         let library = try JSONDecoder().decode(Library.self, from: json)
         XCTAssertFalse(LibraryFilter.shouldDownloadLibrary(library))
-    }
-
-    func testShouldIncludeInClasspath_notDownloadable_returnsFalse() throws {
-        let json = Data("""
-        {"name": "test", "downloads": {"artifact": {"path": "test.jar", "sha1": "", "size": 0, "url": ""}}, "downloadable": false, "include_in_classpath": true}
-        """.utf8)
-        let library = try JSONDecoder().decode(Library.self, from: json)
-        XCTAssertFalse(LibraryFilter.shouldIncludeInClasspath(library))
-    }
-
-    func testShouldIncludeInClasspath_notInClasspath_returnsFalse() throws {
-        let json = Data("""
-        {"name": "test", "downloads": {"artifact": {"path": "test.jar", "sha1": "", "size": 0, "url": ""}}, "downloadable": true, "include_in_classpath": false}
-        """.utf8)
-        let library = try JSONDecoder().decode(Library.self, from: json)
-        XCTAssertFalse(LibraryFilter.shouldIncludeInClasspath(library))
     }
 }

@@ -96,16 +96,6 @@ final class MinecraftFriendsPresencePollingCoordinator {
         }
     }
 
-    /// Stops all observations and the polling loop.
-    func stop() {
-        currentPlayerObservationTask?.cancel()
-        currentPlayerObservationTask = nil
-        presenceNotificationsSettingObservation?.cancel()
-        presenceNotificationsSettingObservation = nil
-        playerListViewModel = nil
-        stopPollingLoop()
-    }
-
     /// Starts or stops the polling loop based on the current player and settings.
     private func syncPollingToCurrentPlayer() {
         guard DIContainer.shared.ui.playerSettingsManager.enableMinecraftFriendsPresenceNotifications else {

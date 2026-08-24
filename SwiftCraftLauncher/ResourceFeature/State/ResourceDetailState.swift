@@ -48,16 +48,6 @@ public final class ResourceDetailState {
         self.loadedProjectDetail = loadedProjectDetail
     }
 
-    /// Selects a game by its identifier.
-    public func selectGame(id: String?) {
-        gameId = id
-    }
-
-    /// Selects a resource type.
-    public func selectResource(type: String) {
-        gameResourcesType = type
-    }
-
     /// Clears the current project and game selection.
     public func clearSelection() {
         selectedProjectId = nil

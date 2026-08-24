@@ -9,26 +9,6 @@
 import XCTest
 
 final class MacRuleEvaluatorTests: XCTestCase {
-    func testMacOS_fromJavaArch_aarch64() {
-        XCTAssertEqual(MacOS.fromJavaArch("aarch64"), .osxArm64)
-    }
-
-    func testMacOS_fromJavaArch_x86_64() {
-        XCTAssertEqual(MacOS.fromJavaArch("x86_64"), .osxX86_64)
-    }
-
-    func testMacOS_fromJavaArch_amd64() {
-        XCTAssertEqual(MacOS.fromJavaArch("amd64"), .osxX86_64)
-    }
-
-    func testMacOS_fromJavaArch_unknown() {
-        XCTAssertEqual(MacOS.fromJavaArch("other"), .osx)
-    }
-
-    func testMacOS_fromJavaArch_caseInsensitive() {
-        XCTAssertEqual(MacOS.fromJavaArch("AARCH64"), .osxArm64)
-    }
-
     func testMacOS_rawValues() {
         XCTAssertEqual(MacOS.osx.rawValue, "osx")
         XCTAssertEqual(MacOS.osxArm64.rawValue, "osx-arm64")

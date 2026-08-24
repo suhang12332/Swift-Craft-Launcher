@@ -35,7 +35,7 @@ struct ModPackDownloadSheet: View {
         self.gameInfo = gameInfo
         self.query = query
         self.preloadedDetail = preloadedDetail
-        _gameNameValidator = State(wrappedValue: GameNameValidator(gameSetupService: GameSetupUtil()))
+        _gameNameValidator = State(wrappedValue: GameNameValidator())
     }
 
     var body: some View {

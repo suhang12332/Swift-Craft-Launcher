@@ -11,181 +11,6 @@ import os
 
 /// Downloads Modrinth project dependencies and manages recursive and manual dependency resolution.
 enum ModrinthDependencyDownloader {
-    /// Recursively downloads all dependencies for a project using the official dependencies API.
-    static func downloadAllDependenciesRecursive(
-        for projectId: String,
-        gameInfo: GameVersionInfo,
-        query: String,
-        gameRepository _: GameRepository,
-        actuallyDownloaded: inout [ModrinthProjectDetail],
-        visited _: inout Set<String>,
-    ) async {
-        // Validate that the query is a supported resource type.
-        let queryLowercased = query.lowercased()
-
-        // Return early for modpacks or unrecognized types.
-        if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
-            AppLog.resource.error("Downloading this resource type is not supported: \(query)")
-            return
-        }
-
-        do {
-            let resourceDir = AppPaths.resourceDirectory(
-                for: query,
-                gameName: gameInfo.gameName,
-            )
-            guard let resourceDirUnwrapped = resourceDir else { return }
-
-            // Check installed state using ModScanner.
-            let dependencies =
-                (try? await ModrinthService.fetchProjectDependencies(
-                    type: query,
-                    cachePath: resourceDirUnwrapped,
-                    id: projectId,
-                    selectedVersions: [gameInfo.gameVersion],
-                    selectedLoaders: [gameInfo.modLoader],
-                )) ?? ModrinthProjectDependency(projects: [])
-
-            guard
-                (try? await ModrinthService.fetchProjectDetailsThrowing(id: projectId)) != nil
-            else {
-                AppLog.resource.error("Unable to get main project details (ID: \(projectId))")
-                return
-            }
-
-            let semaphore = AsyncSemaphore(
-                value: DIContainer.shared.ui.gameSettingsManager.concurrentDownloads,
-            )
-
-            let allDownloaded: [ModrinthProjectDetail] = await withTaskGroup(
-                of: ModrinthProjectDetail?.self,
-            ) { group in
-                for depVersion in dependencies.projects {
-                    group.addTask {
-                        await Self.downloadDependency(
-                            depVersion,
-                            semaphore: semaphore,
-                            gameInfo: gameInfo,
-                            query: query,
-                        )
-                    }
-                }
-                group.addTask {
-                    await Self.downloadMainModForRecursive(
-                        projectId: projectId,
-                        semaphore: semaphore,
-                        gameInfo: gameInfo,
-                        query: query,
-                    )
-                }
-                var localResults: [ModrinthProjectDetail] = []
-                for await result in group {
-                    if let project = result {
-                        localResults.append(project)
-                    }
-                }
-                return localResults
-            }
-
-            actuallyDownloaded.append(contentsOf: allDownloaded)
-        }
-    }
-
-    /// Downloads a single dependency from a pre-resolved version entry.
-    private static func downloadDependency(
-        _ depVersion: ModrinthProjectDetailVersion,
-        semaphore: AsyncSemaphore,
-        gameInfo: GameVersionInfo,
-        query: String,
-    ) async -> ModrinthProjectDetail? {
-        await semaphore.wait()
-        defer { Task { await semaphore.signal() } }
-
-        guard
-            let projectDetail =
-            try? await ModrinthService.fetchProjectDetailsThrowing(id: depVersion.projectId)
-        else {
-            AppLog.resource.error(
-                "Unable to get dependency project details (ID: \(depVersion.projectId))",
-            )
-            return nil
-        }
-
-        guard let file = ModrinthService.filterPrimaryFiles(from: depVersion.files) else {
-            return nil
-        }
-
-        let fileURL = try? await DownloadManager.downloadResource(
-            for: gameInfo,
-            urlString: file.url,
-            resourceType: query,
-            expectedSha1: file.hashes.sha1,
-        )
-        var detail = projectDetail
-        detail.fileName = file.filename
-        detail.type = query
-        if let fileURL,
-           let hash = DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
-            DIContainer.shared.core.modScanner.saveToCache(hash: hash, detail: detail)
-            if query.lowercased() == ResourceType.mod.rawValue {
-                DIContainer.shared.core.modScanner.addModHash(hash, to: gameInfo.gameName)
-            }
-        }
-        return detail
-    }
-
-    /// Downloads the main mod during recursive dependency resolution.
-    private static func downloadMainModForRecursive(
-        projectId: String,
-        semaphore: AsyncSemaphore,
-        gameInfo: GameVersionInfo,
-        query: String,
-    ) async -> ModrinthProjectDetail? {
-        await semaphore.wait()
-        defer { Task { await semaphore.signal() } }
-
-        do {
-            guard
-                var mainDetail = try? await ModrinthService.fetchProjectDetailsThrowing(id: projectId)
-            else {
-                AppLog.resource.error("Unable to get main project details (ID: \(projectId))")
-                return nil
-            }
-            let filteredVersions = try await ModrinthService.fetchProjectVersionsFilter(
-                id: projectId,
-                selectedVersions: [gameInfo.gameVersion],
-                selectedLoaders: [gameInfo.modLoader],
-                type: query,
-            )
-            guard let file = ModrinthService.filterPrimaryFiles(from: filteredVersions.first?.files) else {
-                return nil
-            }
-            let fileURL = try? await DownloadManager.downloadResource(
-                for: gameInfo,
-                urlString: file.url,
-                resourceType: query,
-                expectedSha1: file.hashes.sha1,
-            )
-            mainDetail.fileName = file.filename
-            mainDetail.type = query
-            if let fileURL,
-               let hash = DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
-                DIContainer.shared.core.modScanner.saveToCache(hash: hash, detail: mainDetail)
-                if query.lowercased() == ResourceType.mod.rawValue {
-                    DIContainer.shared.core.modScanner.addModHash(hash, to: gameInfo.gameName)
-                }
-            }
-            return mainDetail
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.resource.error(
-                "Failed to download main resource \(projectId): \(globalError.localizedDescription)",
-            )
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return nil
-        }
-    }
-
     /// Fetches missing dependencies with their available versions.
     static func getMissingDependenciesWithVersions(
         for projectId: String,
@@ -254,37 +79,6 @@ enum ModrinthDependencyDownloader {
         }
     }
 
-    /// Fetches missing dependencies without version details.
-    static func getMissingDependencies(
-        for projectId: String,
-        gameInfo: GameVersionInfo,
-    ) async -> [ModrinthProjectDetail] {
-        let query = ResourceType.mod.rawValue
-        let resourceDir = AppPaths.modsDirectory(
-            gameName: gameInfo.gameName,
-        )
-
-        let dependencies = (try? await ModrinthService.fetchProjectDependencies(
-            type: query,
-            cachePath: resourceDir,
-            id: projectId,
-            selectedVersions: [gameInfo.gameVersion],
-            selectedLoaders: [gameInfo.modLoader],
-        )) ?? ModrinthProjectDependency(projects: [])
-
-        // Convert ModrinthProjectDetailVersion values to ModrinthProjectDetail.
-        var projectDetails: [ModrinthProjectDetail] = []
-        for depVersion in dependencies.projects {
-            if let projectDetail = try? await ModrinthService.fetchProjectDetailsThrowing(
-                id: depVersion.projectId,
-            ) {
-                projectDetails.append(projectDetail)
-            }
-        }
-
-        return projectDetails
-    }
-
     struct ManualDownloadInput {
         let dependencies: [ModrinthProjectDetail]
         let selectedVersions: [String: String]
@@ -293,7 +87,6 @@ enum ModrinthDependencyDownloader {
         let mainProjectVersionId: String?
         let gameInfo: GameVersionInfo
         let resourceType: String
-        let gameRepository: GameRepository
     }
 
     /// Downloads dependencies and the main mod manually, without recursion.
@@ -462,7 +255,6 @@ enum ModrinthDependencyDownloader {
         mainProjectId: String,
         gameInfo: GameVersionInfo,
         query: String,
-        gameRepository _: GameRepository,
         filterLoader: Bool = true,
     ) async -> (Bool, fileName: String?, hash: String?) {
         do {

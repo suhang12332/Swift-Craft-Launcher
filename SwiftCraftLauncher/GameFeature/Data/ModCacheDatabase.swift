@@ -89,25 +89,6 @@ class ModCacheDatabase {
         }
     }
 
-    /// Stores multiple mod cache entries within a single transaction.
-    /// - Parameter data: A dictionary mapping file hashes to JSON data.
-    func saveModCaches(_ data: [String: Data]) throws {
-        try db.transaction {
-            let now = Date()
-            try withPreparedStatement(upsertSQL) { statement in
-                for (hash, jsonData) in data {
-                    sqlite3_reset(statement)
-                    SQLiteDatabase.bind(statement, index: 1, value: hash)
-                    SQLiteDatabase.bind(statement, index: 2, data: jsonData)
-                    SQLiteDatabase.bind(statement, index: 3, value: hash)
-                    SQLiteDatabase.bind(statement, index: 4, value: now)
-                    SQLiteDatabase.bind(statement, index: 5, value: now)
-                    try stepStatement(statement)
-                }
-            }
-        }
-    }
-
     /// Retrieves cached mod data for the specified hash.
     /// - Parameter hash: The hash of the mod file.
     /// - Returns: The raw JSON data, or `nil` if no cached entry exists.

@@ -11,7 +11,7 @@ import XCTest
 @MainActor
 final class GameNameValidatorTests: XCTestCase {
     private func makeValidator() -> GameNameValidator {
-        GameNameValidator(gameSetupService: GameSetupUtil())
+        GameNameValidator()
     }
 
     func testIsFormValid_emptyName_returnsFalse() {
@@ -76,14 +76,6 @@ final class GameNameValidatorTests: XCTestCase {
         let validator = makeValidator()
         validator.reset()
         XCTAssertEqual(validator.gameName, "")
-        XCTAssertFalse(validator.isGameNameDuplicate)
-    }
-
-    func testValidateGameName_emptyName_setsDuplicateFalse() async {
-        let validator = makeValidator()
-        validator.gameName = ""
-        validator.isGameNameDuplicate = true
-        await validator.validateGameName()
         XCTAssertFalse(validator.isGameNameDuplicate)
     }
 }

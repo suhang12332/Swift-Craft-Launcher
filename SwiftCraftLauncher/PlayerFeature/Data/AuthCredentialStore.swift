@@ -49,20 +49,4 @@ class AuthCredentialStore {
     func deleteCredential(userId: String) -> Bool {
         KeychainManager.delete(account: userId, key: AppConstants.KeychainKeys.authCredential)
     }
-
-    /// Deletes all credentials associated with the given user.
-    ///
-    /// - Parameter userId: The user whose credentials should be removed.
-    /// - Returns: `true` if the credentials were deleted successfully.
-    func deleteAllCredentials(userId: String) -> Bool {
-        KeychainManager.deleteAll(account: userId)
-    }
-
-    /// Updates an existing credential in the Keychain.
-    ///
-    /// - Parameter credential: The updated credential.
-    /// - Returns: `true` if the credential was updated successfully.
-    func updateCredential(_ credential: AuthCredential) -> Bool {
-        saveCredential(credential)
-    }
 }

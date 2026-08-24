@@ -367,10 +367,6 @@ final class GlobalErrorHandler: @unchecked Sendable {
         currentError = nil
     }
 
-    func clearHistory() {
-        errorHistory.removeAll()
-    }
-
     private func addToHistory(_ error: GlobalError) {
         errorHistory.append(error)
 

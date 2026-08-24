@@ -237,10 +237,6 @@ class GameRepository: @unchecked Sendable {
         games.first { $0.id == id }
     }
 
-    func getGameByName(by gameName: String) -> GameVersionInfo? {
-        games.first { $0.gameName == gameName }
-    }
-
     func updateGame(_ game: GameVersionInfo) async throws {
         let workingPath = currentWorkingPath
         let gameToSave = game
@@ -262,82 +258,6 @@ class GameRepository: @unchecked Sendable {
         }
 
         AppLog.game.info("Successfully updated game: \(game.gameName) (working path: \(workingPath))")
-    }
-
-    func updateGameLastPlayed(id: String, lastPlayed: Date = Date()) async throws {
-        let workingPath = currentWorkingPath
-        guard var game = getGame(by: id) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.game_not_found_status",
-                level: .notification,
-                message: "Game not found for status update: id=\(id) in workingPath=\(workingPath)",
-            )
-        }
-        try await Task.detached(priority: .userInitiated) {
-            try? self.database.initialize()
-            try self.database.updateLastPlayed(id: id, lastPlayed: lastPlayed)
-        }.value
-
-        game.lastPlayed = lastPlayed
-        let updatedGame = game
-        await MainActor.run {
-            if let index = gamesByWorkingPath[workingPath]?.firstIndex(where: { $0.id == id }) {
-                gamesByWorkingPath[workingPath]?[index] = updatedGame
-            }
-        }
-
-        AppLog.game.info("Successfully updated game last played time: \(game.gameName) (working path: \(workingPath))")
-    }
-
-    func updateJavaPath(id: String, javaPath: String) async throws {
-        guard var game = getGame(by: id) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.game_not_found_java",
-                level: .notification,
-                message: "Game not found for Java path update: id=\(id)",
-            )
-        }
-
-        game.javaPath = javaPath
-        try await updateGame(game)
-        AppLog.game.info("Successfully updated game Java path: \(game.gameName)")
-    }
-
-    func updateJvmArguments(id: String, jvmArguments: String) async throws {
-        guard var game = getGame(by: id) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.game_not_found_jvm",
-                level: .notification,
-                message: "Game not found for JVM arguments update: id=\(id)",
-            )
-        }
-
-        game.jvmArguments = jvmArguments
-        try await updateGame(game)
-        AppLog.game.info("Successfully updated game JVM arguments: \(game.gameName)")
-    }
-
-    func updateMemorySize(id: String, xms: Int, xmx: Int) async throws {
-        guard var game = getGame(by: id) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.game_not_found_memory",
-                level: .notification,
-                message: "Game not found for memory size update: id=\(id)",
-            )
-        }
-
-        guard xms > 0, xmx > 0, xms <= xmx else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.invalid_memory_params",
-                level: .notification,
-                message: "Invalid memory params: xms=\(xms), xmx=\(xmx) for game id=\(id)",
-            )
-        }
-
-        game.xms = xms
-        game.xmx = xmx
-        try await updateGame(game)
-        AppLog.game.info("Successfully updated game memory size: \(game.gameName)")
     }
 
     func loadGames() {

@@ -58,19 +58,4 @@ final class LibraryFilterTests: XCTestCase {
         let library = try makeLibrary(downloadable: false)
         XCTAssertFalse(LibraryFilter.shouldDownloadLibrary(library))
     }
-
-    func testShouldIncludeInClasspath_bothTrue() throws {
-        let library = try makeLibrary(downloadable: true, includeInClasspath: true)
-        XCTAssertTrue(LibraryFilter.shouldIncludeInClasspath(library))
-    }
-
-    func testShouldIncludeInClasspath_notDownloadable() throws {
-        let library = try makeLibrary(downloadable: false, includeInClasspath: true)
-        XCTAssertFalse(LibraryFilter.shouldIncludeInClasspath(library))
-    }
-
-    func testShouldIncludeInClasspath_notInClasspath() throws {
-        let library = try makeLibrary(downloadable: true, includeInClasspath: false)
-        XCTAssertFalse(LibraryFilter.shouldIncludeInClasspath(library))
-    }
 }

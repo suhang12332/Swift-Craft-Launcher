@@ -28,16 +28,4 @@ enum LibraryFilter {
         guard library.downloadable else { return false }
         return isLibraryAllowed(library, minecraftVersion: minecraftVersion)
     }
-
-    /// Determines whether a library should be included in the classpath.
-    /// - Parameters:
-    ///   - library: The library to check.
-    ///   - minecraftVersion: The Minecraft version string, if available.
-    /// - Returns: `true` if the library should be included in the classpath; `false` otherwise.
-    static func shouldIncludeInClasspath(_ library: Library, minecraftVersion: String? = nil) -> Bool {
-        guard library.downloadable == true, library.includeInClasspath == true else {
-            return false
-        }
-        return isLibraryAllowed(library, minecraftVersion: minecraftVersion)
-    }
 }

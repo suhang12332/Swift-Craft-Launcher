@@ -89,15 +89,4 @@ enum NotificationManager {
             DIContainer.shared.core.errorHandler.handle(globalError)
         }
     }
-
-    /// Returns the current notification authorization status.
-    static func checkAuthorizationStatus() async -> UNAuthorizationStatus {
-        await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
-    }
-
-    /// Returns whether the app is authorized to send notifications.
-    static func hasAuthorization() async -> Bool {
-        let status = await checkAuthorizationStatus()
-        return status == .authorized
-    }
 }

@@ -156,36 +156,6 @@ extension ModScanner {
         }
     }
 
-    /// Synchronously scans the mods directory for the given game, blocking until complete.
-    public func scanGameModsDirectorySync(game: GameVersionInfo) {
-        let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
-
-        guard FileManager.default.fileExists(atPath: modsDir.path) else {
-            AppLog.game.debug("Game \(game.gameName) mods directory does not exist, skipping scan")
-            return
-        }
-
-        let standardizedModsDir = modsDir.standardizedFileURL
-        let semaphore = DispatchSemaphore(value: 0)
-        Task {
-            defer { semaphore.signal() }
-            await self.ensureFSEventsWatcherRegistered(
-                standardizedDirectory: standardizedModsDir,
-                gameNameHint: game.gameName,
-            )
-            do {
-                let detailIds = try await self.scanAllDetailIdsAfterWatcherRegisteredThrowing(
-                    standardizedDirectory: standardizedModsDir,
-                )
-                AppLog.game.debug("Game \(game.gameName) scan completed, found \(detailIds.count) mods")
-            } catch {
-                let globalError = GlobalError.from(error)
-                AppLog.game.error("Failed to scan game \(game.gameName) mods directory: \(globalError.localizedDescription)")
-            }
-        }
-        semaphore.wait()
-    }
-
     /// Returns `true` if the directory is a mods directory.
     func isModsDirectory(_ dir: URL) -> Bool {
         dir.lastPathComponent.lowercased() == "mods"

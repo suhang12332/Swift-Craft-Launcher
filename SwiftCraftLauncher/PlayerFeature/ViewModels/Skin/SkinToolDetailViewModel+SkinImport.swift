@@ -145,13 +145,4 @@ extension SkinToolDetailViewModel {
             return nil
         }
     }
-
-    /// Clears the selected skin and resets the preview.
-    func clearSelectedSkin() {
-        selectedSkinData = nil
-        selectedSkinImage = nil
-        selectedSkinPath = nil
-        showingSkinPreview = false
-        updateHasChanges()
-    }
 }

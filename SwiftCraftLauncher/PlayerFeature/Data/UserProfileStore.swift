@@ -129,18 +129,4 @@ class UserProfileStore {
             )
         }
     }
-
-    /// Checks whether a profile with the given identifier exists.
-    ///
-    /// - Parameter id: The identifier to check.
-    /// - Returns: `true` if a matching profile exists.
-    func profileExists(id: String) -> Bool {
-        do {
-            let profiles = try loadProfilesThrowing()
-            return profiles.contains { $0.id == id }
-        } catch {
-            AppLog.player.error("Failed to check user existence: \(error.localizedDescription)")
-            return false
-        }
-    }
 }

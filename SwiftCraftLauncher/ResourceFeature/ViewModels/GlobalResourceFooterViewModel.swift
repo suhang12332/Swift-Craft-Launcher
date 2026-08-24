@@ -15,45 +15,19 @@ import SwiftUI
 final class GlobalResourceFooterViewModel {
     private let project: ModrinthProject
     private let resourceType: String
-    private let gameRepository: GameRepository
     private let isPresented: Binding<Bool>
     private let isDownloadingAll: Binding<Bool>
-    private let isDownloadingMainOnly: Binding<Bool>
 
     init(
         project: ModrinthProject,
         resourceType: String,
         isPresented: Binding<Bool>,
         isDownloadingAll: Binding<Bool>,
-        isDownloadingMainOnly: Binding<Bool>,
-        gameRepository: GameRepository,
     ) {
         self.project = project
         self.resourceType = resourceType
         self.isPresented = isPresented
         self.isDownloadingAll = isDownloadingAll
-        self.isDownloadingMainOnly = isDownloadingMainOnly
-        self.gameRepository = gameRepository
-    }
-
-    /// Downloads the main resource only for the selected game.
-    /// - Parameter selectedGame: The game version to download for.
-    func downloadMainOnly(selectedGame: GameVersionInfo?) {
-        guard let game = selectedGame else { return }
-
-        isDownloadingMainOnly.wrappedValue = true
-        Task {
-            do {
-                try await downloadMainOnlyThrowing(game: game)
-            } catch {
-                let globalError = GlobalError.from(error)
-                AppLog.resource.error("Failed to download main resource: \(globalError.localizedDescription)")
-                DIContainer.shared.core.errorHandler.handle(globalError)
-            }
-
-            isDownloadingMainOnly.wrappedValue = false
-            isPresented.wrappedValue = false
-        }
     }
 
     /// Downloads the main resource and all manually selected dependencies.
@@ -135,33 +109,6 @@ final class GlobalResourceFooterViewModel {
         }
     }
 
-    private func downloadMainOnlyThrowing(game: GameVersionInfo) async throws {
-        guard !project.projectId.isEmpty else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.project_id_empty",
-                level: .notification,
-                message: "project.projectId is empty for downloadMainOnly, project='\(project.title)'",
-            )
-        }
-
-        let (success, _, _) =
-            await ModrinthDependencyDownloader.downloadMainResourceOnly(
-                mainProjectId: project.projectId,
-                gameInfo: game,
-                query: resourceType,
-                gameRepository: gameRepository,
-                filterLoader: true,
-            )
-
-        if !success {
-            throw GlobalError.download(
-                i18nKey: "error.download.main_resource_failed",
-                level: .notification,
-                message: "downloadMainResourceOnly failed for projectId='\(project.projectId)', game='\(game.gameName)'",
-            )
-        }
-    }
-
     private func downloadAllManualThrowing(
         game: GameVersionInfo,
         dependencyState: DependencyState,
@@ -185,7 +132,6 @@ final class GlobalResourceFooterViewModel {
                     mainProjectVersionId: mainVersionId.isEmpty ? nil : mainVersionId,
                     gameInfo: game,
                     resourceType: resourceType,
-                    gameRepository: gameRepository,
                 ),
                 onDependencyDownloadStart: { _ in },
                 onDependencyDownloadFinish: { _, _ in },
@@ -214,7 +160,6 @@ final class GlobalResourceFooterViewModel {
                 mainProjectId: project.projectId,
                 gameInfo: game,
                 query: resourceType,
-                gameRepository: gameRepository,
                 filterLoader: true,
             )
 

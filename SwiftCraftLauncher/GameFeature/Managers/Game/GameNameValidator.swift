@@ -14,24 +14,7 @@ class GameNameValidator {
     var gameName: String = ""
     var isGameNameDuplicate: Bool = false
 
-    private let gameSetupService: GameSetupUtil
-
-    init(gameSetupService: GameSetupUtil) {
-        self.gameSetupService = gameSetupService
-    }
-
-    /// Validates whether the current game name is a duplicate.
-    func validateGameName() async {
-        guard !gameName.isEmpty else {
-            isGameNameDuplicate = false
-            return
-        }
-
-        let isDuplicate = await gameSetupService.checkGameNameDuplicate(gameName)
-        if isDuplicate != isGameNameDuplicate {
-            isGameNameDuplicate = isDuplicate
-        }
-    }
+    init() { }
 
     /// Sets a default game name only when the current name is empty.
     /// - Parameter name: The default name to set.

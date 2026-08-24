@@ -16,14 +16,11 @@ struct GlobalResourceSheet: View {
     @Binding var isPresented: Bool
     let preloadedDetail: ModrinthProjectDetail?
     let preloadedCompatibleGames: [GameVersionInfo]
-    @Environment(GameRepository.self)
-    private var gameRepository
     @State private var selectedGame: GameVersionInfo?
     @State private var selectedVersion: ModrinthProjectDetailVersion?
     @State private var availableVersions: [ModrinthProjectDetailVersion] = []
     @State private var dependencyState = DependencyState()
     @State private var isDownloadingAll = false
-    @State private var isDownloadingMainOnly = false
     @State private var mainVersionId = ""
 
     init(
@@ -114,8 +111,6 @@ struct GlobalResourceSheet: View {
                     selectedVersion: selectedVersion,
                     dependencyState: dependencyState,
                     isDownloadingAll: $isDownloadingAll,
-                    isDownloadingMainOnly: $isDownloadingMainOnly,
-                    gameRepository: gameRepository,
                     loadDependencies: loadDependencies,
                     mainVersionId: $mainVersionId,
                     compatibleGames: preloadedCompatibleGames,
@@ -128,7 +123,6 @@ struct GlobalResourceSheet: View {
             availableVersions = []
             dependencyState = DependencyState()
             isDownloadingAll = false
-            isDownloadingMainOnly = false
             mainVersionId = ""
         }
     }

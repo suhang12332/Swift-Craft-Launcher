@@ -12,20 +12,6 @@ enum MacOS: String {
     case osx
     case osxArm64 = "osx-arm64"
     case osxX86_64 = "osx-x86_64"
-
-    /// Creates a `MacOS` value from a Java architecture string.
-    /// - Parameter javaArch: The Java architecture identifier (e.g., "aarch64", "x86_64").
-    /// - Returns: The corresponding `MacOS` value.
-    static func fromJavaArch(_ javaArch: String) -> Self {
-        let arch = javaArch.lowercased()
-        if arch.contains("aarch64") {
-            return .osxArm64
-        } else if arch.contains("x86_64") || arch.contains("amd64") {
-            return .osxX86_64
-        } else {
-            return .osx
-        }
-    }
 }
 
 /// Represents a rule action for library compatibility.
@@ -42,16 +28,6 @@ struct MacRule {
 
 /// Evaluates Minecraft library rules against the current platform.
 enum MacRuleEvaluator {
-    /// Returns the Java architecture string for the current platform.
-    /// - Returns: A Java architecture identifier (e.g., "aarch64", "x86_64").
-    static func getCurrentJavaArch() -> String {
-        #if os(macOS)
-            return Architecture.current.javaArch
-        #else
-            return "x86_64"
-        #endif
-    }
-
     /// Determines whether the given Minecraft version uses strict architecture matching.
     /// - Parameter version: The Minecraft version string.
     /// - Returns: `true` if the version is below 1.19.

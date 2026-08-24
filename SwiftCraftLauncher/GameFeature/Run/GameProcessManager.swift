@@ -152,11 +152,6 @@ final class GameProcessManager: @unchecked Sendable {
         }
     }
 
-    func getProcess(for gameId: String, userId: String) -> Process? {
-        let key = Self.processKey(gameId: gameId, userId: userId)
-        return queue.sync { gameProcesses[key] }
-    }
-
     func stopProcess(for gameId: String, userId: String) -> Bool {
         let key = Self.processKey(gameId: gameId, userId: userId)
         let process: Process? = queue.sync {
@@ -187,41 +182,6 @@ final class GameProcessManager: @unchecked Sendable {
         return queue.sync {
             gameProcesses.contains { key, proc in key.hasPrefix(prefix) && proc.isRunning }
         }
-    }
-
-    func cleanupTerminatedProcesses() {
-        let terminatedKeys: [String] = queue.sync {
-            let keys = gameProcesses.compactMap { key, process in
-                !process.isRunning ? key : nil
-            }
-            guard !keys.isEmpty else { return [] }
-            for key in keys {
-                gameProcesses.removeValue(forKey: key)
-                manuallyStoppedGames.remove(key)
-            }
-            return keys
-        }
-
-        guard !terminatedKeys.isEmpty else { return }
-
-        for key in terminatedKeys {
-            AppLog.game.debug("Cleaning up terminated process: \(key)")
-        }
-
-        Task { @MainActor in
-            for key in terminatedKeys {
-                if let idx = key.firstIndex(of: "_") {
-                    let gameId = String(key[..<idx])
-                    let userId = String(key[key.index(after: idx)...])
-                    DIContainer.shared.core.gameStatusManager.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
-                }
-            }
-        }
-    }
-
-    func isManuallyStopped(gameId: String, userId: String) -> Bool {
-        let key = Self.processKey(gameId: gameId, userId: userId)
-        return queue.sync { manuallyStoppedGames.contains(key) }
     }
 
     func removeGameState(gameId: String) {

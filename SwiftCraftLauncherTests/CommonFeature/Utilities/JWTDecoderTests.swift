@@ -44,25 +44,6 @@ final class JWTDecoderTests: XCTestCase {
         XCTAssertNil(JWTDecoder.extractExpirationTime(from: jwt))
     }
 
-    func testExtractAllInfo_validJWT() throws {
-        let payload: [String: Any] = ["sub": "1234567890", "name": "TestUser", "exp": 1_700_000_000.0]
-        let jwt = try Self.makeJWT(payload: payload)
-
-        let info = JWTDecoder.extractAllInfo(from: jwt)
-        XCTAssertNotNil(info)
-        XCTAssertEqual(info?["sub"] as? String, "1234567890")
-        XCTAssertEqual(info?["name"] as? String, "TestUser")
-        XCTAssertEqual(info?["exp"] as? TimeInterval, 1_700_000_000)
-    }
-
-    func testExtractAllInfo_invalidFormat() {
-        XCTAssertNil(JWTDecoder.extractAllInfo(from: "invalid"))
-    }
-
-    func testExtractAllInfo_emptyString() {
-        XCTAssertNil(JWTDecoder.extractAllInfo(from: ""))
-    }
-
     func testIsTokenExpiringSoon_alreadyExpired() throws {
         let payload: [String: Any] = ["exp": 1_000_000_000.0]
         let jwt = try Self.makeJWT(payload: payload)

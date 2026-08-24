@@ -104,24 +104,6 @@ final class GameStatusManager: @unchecked Sendable {
         }
     }
 
-    /// Removes cached states for games that are no longer running.
-    func cleanupStoppedGames() {
-        let processManager = DIContainer.shared.core.gameProcessManager
-
-        applyOnMain { [weak self] in
-            guard let self else { return }
-            gameRunningStates = gameRunningStates.filter { key, isRunning in
-                guard isRunning else { return false }
-                if let idx = key.firstIndex(of: "_") {
-                    let gameId = String(key[..<idx])
-                    let userId = String(key[key.index(after: idx)...])
-                    return processManager.isGameRunning(gameId: gameId, userId: userId)
-                }
-                return false
-            }
-        }
-    }
-
     /// All cached game states keyed by processKey.
     var allGameStates: [String: Bool] {
         gameRunningStates

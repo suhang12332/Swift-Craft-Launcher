@@ -167,18 +167,6 @@ class MinecraftFileManager: @unchecked Sendable {
         onProgressUpdate?(fileName, currentCount, total, type)
     }
 
-    func verifyExistingFile(
-        at url: URL,
-        expectedSha1: String,
-    ) async throws -> Bool {
-        let fileSha1 = try await calculateFileSHA1(at: url)
-        return fileSha1 == expectedSha1
-    }
-
-    func calculateFileSHA1(at url: URL) async throws -> String {
-        try SHA1Calculator.sha1(ofFileAt: url)
-    }
-
     /// Downloads a file, verifies its SHA1, and increments the progress counter.
     ///
     /// Non-`GlobalError` failures are wrapped into a `GlobalError.download` with
@@ -221,10 +209,5 @@ class MinecraftFileManager: @unchecked Sendable {
 
     func shouldDownloadLibrary(_ library: Library, minecraftVersion: String? = nil) -> Bool {
         LibraryFilter.shouldDownloadLibrary(library, minecraftVersion: minecraftVersion)
-    }
-
-    func isLibraryAllowedOnOSX(_ rules: [Rule]?) -> Bool {
-        guard let rules, !rules.isEmpty else { return true }
-        return MacRuleEvaluator.isAllowed(rules)
     }
 }

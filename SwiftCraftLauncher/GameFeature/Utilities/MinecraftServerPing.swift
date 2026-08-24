@@ -163,12 +163,6 @@ enum MinecraftServerPing {
                     return true
                 }
 
-                func setTimeout() {
-                    lock.lock()
-                    defer { lock.unlock() }
-                    _isTimeout = true
-                }
-
                 func setResumedAndTimeout() -> Bool {
                     lock.lock()
                     defer { lock.unlock() }
