@@ -145,37 +145,29 @@ enum ModrinthResourceIdentifier {
             return ModrinthLookupResult(info: cached, fileHash: hash)
         }
 
-        return await withCheckedContinuation { continuation in
-            ModrinthService.fetchModrinthDetail(by: hash) { detail in
-                guard let detail else {
-                    continuation.resume(returning: nil)
-                    return
-                }
-                Task {
-                    do {
-                        let versions = try await ModrinthService.fetchProjectVersionsThrowing(id: detail.id)
-                        if let matchingVersion = versions.first(where: { version in
-                            version.files.contains { $0.hashes.sha1 == hash }
-                        }) {
-                            let info = ModrinthModInfo(
-                                projectDetail: detail,
-                                version: matchingVersion,
-                            )
-                            await infoCache.set(info: info, for: hash)
-                            continuation.resume(
-                                returning: ModrinthLookupResult(
-                                    info: info,
-                                    fileHash: hash,
-                                ),
-                            )
-                        } else {
-                            continuation.resume(returning: nil)
-                        }
-                    } catch {
-                        continuation.resume(returning: nil)
-                    }
-                }
+        guard let detail = try? await ModrinthService.fetchModrinthDetailThrowing(by: hash) else {
+            return nil
+        }
+
+        do {
+            let versions = try await ModrinthService.fetchProjectVersionsThrowing(id: detail.id)
+            if let matchingVersion = versions.first(where: { version in
+                version.files.contains { $0.hashes.sha1 == hash }
+            }) {
+                let info = ModrinthModInfo(
+                    projectDetail: detail,
+                    version: matchingVersion,
+                )
+                await infoCache.set(info: info, for: hash)
+                return ModrinthLookupResult(
+                    info: info,
+                    fileHash: hash,
+                )
+            } else {
+                return nil
             }
+        } catch {
+            return nil
         }
     }
 }

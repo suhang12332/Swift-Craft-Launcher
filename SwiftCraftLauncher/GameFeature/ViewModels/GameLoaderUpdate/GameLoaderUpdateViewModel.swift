@@ -123,7 +123,7 @@ final class GameLoaderUpdateViewModel {
         await withTaskGroup(of: GameLoader?.self) { group in
             for loader in GameLoader.allCases where loader != .vanilla {
                 group.addTask {
-                    let result = await CommonService.fetchAllLoaderVersionsSilently(
+                    let result = try? await CommonService.fetchAllLoaderVersionsThrowing(
                         type: loader.modrinthLoaderId,
                         minecraftVersion: gameVersion,
                     )

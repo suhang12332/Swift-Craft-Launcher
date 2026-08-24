@@ -90,7 +90,7 @@ extension ModPackDependencyInstaller {
         fileId: Int,
         resourceDir: URL,
     ) async -> Bool {
-        guard let fileDetail = await CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId) else {
+        guard let fileDetail = try? await CurseForgeService.fetchFileDetailThrowing(projectId: projectId, fileId: fileId) else {
             AppLog.modPack.error("Failed to fetch CurseForge file detail for project \(projectId), file \(fileId)")
             return false
         }

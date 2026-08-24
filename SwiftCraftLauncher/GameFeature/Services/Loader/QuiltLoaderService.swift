@@ -11,17 +11,6 @@ import Foundation
 enum QuiltLoaderService {
     private static let config = FabricLikeLoaderService.Config(gameLoader: .quilt)
 
-    static func fetchAllQuiltLoaders(for minecraftVersion: String) async -> [QuiltLoaderResponse] {
-        do {
-            return try await fetchAllQuiltLoadersThrowing(for: minecraftVersion)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error("Failed to get Quilt loader version: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
-        }
-    }
-
     static func fetchAllQuiltLoadersThrowing(for minecraftVersion: String) async throws -> [QuiltLoaderResponse] {
         let url = URLConfig.API.Quilt.loaderBase.appendingPathComponent(minecraftVersion)
         let data = try await APIClient.get(url: url)
@@ -68,7 +57,7 @@ enum QuiltLoaderService {
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
         fileManager.onProgressUpdate = onProgressUpdate
 
-        await fileManager.downloadFabricJars(libraries: quiltProfile.libraries)
+        try await fileManager.downloadFabricJarsThrowing(libraries: quiltProfile.libraries)
 
         let classpathString = CommonService.generateFabricClasspath(from: quiltProfile, librariesDir: librariesDirectory)
         let mainClass = quiltProfile.mainClass

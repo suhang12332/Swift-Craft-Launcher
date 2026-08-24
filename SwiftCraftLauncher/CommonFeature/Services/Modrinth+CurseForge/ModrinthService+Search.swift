@@ -9,23 +9,6 @@ import Foundation
 
 /// Provides search operations for Modrinth projects.
 extension ModrinthService {
-    static func searchProjects(
-        facets: [[String]]? = nil,
-        offset: Int = 0,
-        limit: Int,
-        query: String?,
-    ) async -> ModrinthResult {
-        await withServiceErrorHandling(context: "search Modrinth projects", fallback: ModrinthResult(hits: [], offset: offset, limit: limit, totalHits: 0)) {
-            try await searchProjectsThrowing(
-                facets: facets,
-                index: AppConstants.modrinthIndex,
-                offset: offset,
-                limit: limit,
-                query: query,
-            )
-        }
-    }
-
     static func searchProjectsThrowing(
         facets: [[String]]? = nil,
         index: String,

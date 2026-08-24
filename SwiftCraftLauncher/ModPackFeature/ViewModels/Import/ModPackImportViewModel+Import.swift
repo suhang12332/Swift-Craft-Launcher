@@ -80,6 +80,6 @@ extension ModPackImportViewModel {
     /// Cleans up game directories on the file system.
     /// - Parameter gameName: The name of the game whose directories should be removed.
     func cleanupGameDirectories(gameName: String) async {
-        await MinecraftFileManager.cleanupGameDirectoriesSafely(gameName: gameName)
+        try? MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
     }
 }

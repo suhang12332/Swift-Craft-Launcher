@@ -162,16 +162,6 @@ class GameRepository: @unchecked Sendable {
         AppLog.game.info("Successfully added game: \(game.gameName) (working path: \(workingPath))")
     }
 
-    func addGameSilently(_ game: GameVersionInfo) {
-        Task {
-            do {
-                try await addGame(game)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-    }
-
     func deleteGame(id: String) async throws {
         let workingPath = currentWorkingPath
         guard let game = getGame(by: id) else {
@@ -191,16 +181,6 @@ class GameRepository: @unchecked Sendable {
         }
 
         AppLog.game.info("Successfully deleted game: \(game.gameName) (working path: \(workingPath))")
-    }
-
-    func deleteGameSilently(id: String) {
-        Task {
-            do {
-                try await deleteGame(id: id)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
     }
 
     /// Deletes all games with the specified name in the current working path.
@@ -284,17 +264,6 @@ class GameRepository: @unchecked Sendable {
         AppLog.game.info("Successfully updated game: \(game.gameName) (working path: \(workingPath))")
     }
 
-    func updateGameSilently(_ game: GameVersionInfo) -> Bool {
-        Task {
-            do {
-                try await updateGame(game)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-        return true
-    }
-
     func updateGameLastPlayed(id: String, lastPlayed: Date = Date()) async throws {
         let workingPath = currentWorkingPath
         guard var game = getGame(by: id) else {
@@ -320,17 +289,6 @@ class GameRepository: @unchecked Sendable {
         AppLog.game.info("Successfully updated game last played time: \(game.gameName) (working path: \(workingPath))")
     }
 
-    func updateGameLastPlayedSilently(id: String, lastPlayed: Date = Date()) -> Bool {
-        Task {
-            do {
-                try await updateGameLastPlayed(id: id, lastPlayed: lastPlayed)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-        return true
-    }
-
     func updateJavaPath(id: String, javaPath: String) async throws {
         guard var game = getGame(by: id) else {
             throw GlobalError.validation(
@@ -345,17 +303,6 @@ class GameRepository: @unchecked Sendable {
         AppLog.game.info("Successfully updated game Java path: \(game.gameName)")
     }
 
-    func updateJavaPathSilently(id: String, javaPath: String) -> Bool {
-        Task {
-            do {
-                try await updateJavaPath(id: id, javaPath: javaPath)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-        return true
-    }
-
     func updateJvmArguments(id: String, jvmArguments: String) async throws {
         guard var game = getGame(by: id) else {
             throw GlobalError.validation(
@@ -368,17 +315,6 @@ class GameRepository: @unchecked Sendable {
         game.jvmArguments = jvmArguments
         try await updateGame(game)
         AppLog.game.info("Successfully updated game JVM arguments: \(game.gameName)")
-    }
-
-    func updateJvmArgumentsSilently(id: String, jvmArguments: String) -> Bool {
-        Task {
-            do {
-                try await updateJvmArguments(id: id, jvmArguments: jvmArguments)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-        return true
     }
 
     func updateMemorySize(id: String, xms: Int, xmx: Int) async throws {
@@ -402,17 +338,6 @@ class GameRepository: @unchecked Sendable {
         game.xmx = xmx
         try await updateGame(game)
         AppLog.game.info("Successfully updated game memory size: \(game.gameName)")
-    }
-
-    func updateMemorySizeSilently(id: String, xms: Int, xmx: Int) -> Bool {
-        Task {
-            do {
-                try await updateMemorySize(id: id, xms: xms, xmx: xmx)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-        return true
     }
 
     func loadGames() {

@@ -16,7 +16,7 @@ extension CurseForgeService {
         id: String,
         selectedVersions: [String],
         selectedLoaders: [String],
-    ) async -> ModrinthProjectDependency {
+    ) async throws -> ModrinthProjectDependency {
         let context = DependencyResolver.Context(
             type: type,
             cachePath: cachePath,
@@ -35,7 +35,7 @@ extension CurseForgeService {
             // lookup is not needed; resolution falls back to the first compatible version.
             fetchVersionById: nil,
         )
-        return await DependencyResolver.resolve(context)
+        return try await DependencyResolver.resolveThrowing(context)
     }
 
     /// Fetches versions for a project, handling both CurseForge and Modrinth IDs.

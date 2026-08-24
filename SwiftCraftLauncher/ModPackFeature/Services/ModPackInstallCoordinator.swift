@@ -440,6 +440,6 @@ final class ModPackInstallCoordinator {
     }
 
     private func cleanupGameDirectories(gameName: String) async {
-        await MinecraftFileManager.cleanupGameDirectoriesSafely(gameName: gameName)
+        try? MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
     }
 }

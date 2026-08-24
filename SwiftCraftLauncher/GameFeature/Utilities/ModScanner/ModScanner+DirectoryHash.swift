@@ -118,24 +118,6 @@ extension ModScanner {
         return try await rebuildDirectoryHashes(dir: standardizedDirectory)
     }
 
-    /// Scans the directory for all detail IDs, returning the result via a completion handler.
-    public func scanAllDetailIds(
-        in dir: URL,
-        completion: @escaping @Sendable (Set<String>) -> Void,
-    ) {
-        Task {
-            do {
-                let detailIds = try await scanAllDetailIdsThrowing(in: dir)
-                completion(detailIds)
-            } catch {
-                let globalError = GlobalError.from(error)
-                AppLog.game.error("Failed to scan all detailIds: \(globalError.localizedDescription)")
-                DIContainer.shared.core.errorHandler.handle(globalError)
-                completion(Set<String>())
-            }
-        }
-    }
-
     /// Scans the directory for all detail IDs, returning a set for O(1) lookups.
     public func scanAllDetailIdsThrowing(in dir: URL) async throws -> Set<String> {
         let standardizedDir = dir.standardizedFileURL

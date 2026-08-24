@@ -69,22 +69,6 @@ class PlayerListViewModel: @unchecked Sendable {
         }
     }
 
-    /// Adds an offline player with the given name.
-    ///
-    /// - Parameter name: The player's display name.
-    /// - Returns: `true` if the player was added successfully.
-    func addPlayer(name: String) -> Bool {
-        do {
-            try addPlayerThrowing(name: name)
-            return true
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to add player: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return false
-        }
-    }
-
     /// Adds an offline player with the given name, throwing on failure.
     ///
     /// - Parameter name: The player's display name.
@@ -97,17 +81,17 @@ class PlayerListViewModel: @unchecked Sendable {
         AppLog.player.debug("Current player (after adding): \(playerName)")
     }
 
-    /// Adds an online (Minecraft) player from a profile response.
+    /// Adds an offline player with the given name.
     ///
-    /// - Parameter profile: The Minecraft profile response.
+    /// - Parameter name: The player's display name.
     /// - Returns: `true` if the player was added successfully.
-    func addOnlinePlayer(profile: MinecraftProfileResponse) -> Bool {
+    func addPlayer(name: String) -> Bool {
         do {
-            try addOnlinePlayerThrowing(profile: profile)
+            try addPlayerThrowing(name: name)
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to add online player: \(globalError.localizedDescription)")
+            AppLog.player.error("Failed to add player: \(globalError.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(globalError)
             return false
         }
@@ -135,17 +119,17 @@ class PlayerListViewModel: @unchecked Sendable {
         AppLog.player.debug("Current player (after adding): \(playerName)")
     }
 
-    /// Adds a Yggdrasil-authenticated player from a profile.
+    /// Adds an online (Minecraft) player from a profile response.
     ///
-    /// - Parameter profile: The Yggdrasil player profile.
+    /// - Parameter profile: The Minecraft profile response.
     /// - Returns: `true` if the player was added successfully.
-    func addOnlinePlayer(profile: YggdrasilProfile) -> Bool {
+    func addOnlinePlayer(profile: MinecraftProfileResponse) -> Bool {
         do {
             try addOnlinePlayerThrowing(profile: profile)
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to add Yggdrasil player: \(globalError.localizedDescription)")
+            AppLog.player.error("Failed to add online player: \(globalError.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(globalError)
             return false
         }
@@ -170,17 +154,17 @@ class PlayerListViewModel: @unchecked Sendable {
         AppLog.player.debug("Yggdrasil player \(profile.name) added successfully, list updated.")
     }
 
-    /// Deletes a player by identifier.
+    /// Adds a Yggdrasil-authenticated player from a profile.
     ///
-    /// - Parameter id: The identifier of the player to delete.
-    /// - Returns: `true` if the player was deleted successfully.
-    func deletePlayer(byID id: String) -> Bool {
+    /// - Parameter profile: The Yggdrasil player profile.
+    /// - Returns: `true` if the player was added successfully.
+    func addOnlinePlayer(profile: YggdrasilProfile) -> Bool {
         do {
-            try deletePlayerThrowing(byID: id)
+            try addOnlinePlayerThrowing(profile: profile)
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to delete player: \(globalError.localizedDescription)")
+            AppLog.player.error("Failed to add Yggdrasil player: \(globalError.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(globalError)
             return false
         }
@@ -198,18 +182,19 @@ class PlayerListViewModel: @unchecked Sendable {
         AppLog.player.debug("Current player (after deletion): \(playerName)")
     }
 
-    /// Sets the current player by identifier, without propagating errors.
+    /// Deletes a player by identifier.
     ///
-    /// - Parameter playerId: The identifier of the player to set as current.
-    func setCurrentPlayer(byID playerId: String) {
-        if playerId != currentPlayer?.id {
-            do {
-                try setCurrentPlayerThrowing(byID: playerId)
-            } catch {
-                let globalError = GlobalError.from(error)
-                AppLog.player.error("Failed to set current player: \(globalError.localizedDescription)")
-                DIContainer.shared.core.errorHandler.handle(globalError)
-            }
+    /// - Parameter id: The identifier of the player to delete.
+    /// - Returns: `true` if the player was deleted successfully.
+    func deletePlayer(byID id: String) -> Bool {
+        do {
+            try deletePlayerThrowing(byID: id)
+            return true
+        } catch {
+            let globalError = GlobalError.from(error)
+            AppLog.player.error("Failed to delete player: \(globalError.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(globalError)
+            return false
         }
     }
 
@@ -239,15 +224,30 @@ class PlayerListViewModel: @unchecked Sendable {
         )
     }
 
+    /// Sets the current player by identifier.
+    ///
+    /// - Parameter playerId: The identifier of the player to set as current.
+    func setCurrentPlayer(byID playerId: String) {
+        if playerId != currentPlayer?.id {
+            do {
+                try setCurrentPlayerThrowing(byID: playerId)
+            } catch {
+                let globalError = GlobalError.from(error)
+                AppLog.player.error("Failed to set current player: \(globalError.localizedDescription)")
+                DIContainer.shared.core.errorHandler.handle(globalError)
+            }
+        }
+    }
+
     /// Checks whether a player with the given name already exists.
     ///
     /// - Parameter name: The name to check.
     /// - Returns: `true` if a matching player exists.
     func playerExists(name: String) -> Bool {
-        DIContainer.shared.ui.playerDataManager.playerExists(name: name)
+        (try? DIContainer.shared.ui.playerDataManager.playerExistsThrowing(name: name)) ?? false
     }
 
-    /// Updates a player in the local list from an external update notification.
+    /// Updates a player in the local list.
     ///
     /// - Parameter updatedPlayer: The player with updated values.
     func updatePlayerInList(_ updatedPlayer: Player) {
@@ -255,7 +255,7 @@ class PlayerListViewModel: @unchecked Sendable {
             try updatePlayerInListThrowing(updatedPlayer)
         } catch {
             let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to update player list: \(globalError.localizedDescription)")
+            AppLog.player.error("Failed to update player in list: \(globalError.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(globalError)
         }
     }

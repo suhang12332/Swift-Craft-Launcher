@@ -9,25 +9,6 @@ import Foundation
 
 /// Provides shared utilities for mod loader version management and classpath generation.
 enum CommonService {
-    static func compatibleVersions(
-        for loader: String,
-        includeSnapshots: Bool = false,
-    ) async -> [String] {
-        do {
-            return try await compatibleVersionsThrowing(
-                for: loader,
-                includeSnapshots: includeSnapshots,
-            )
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error(
-                "Failed to get \(loader) version: \(globalError.localizedDescription)",
-            )
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
-        }
-    }
-
     static func compatibleVersionsThrowing(
         for loader: String,
         includeSnapshots: Bool = false,
@@ -52,7 +33,7 @@ enum CommonService {
             let sortResult = CommonUtil.sortMinecraftVersions(filteredVersions)
             result = CommonUtil.versionsAtLeast(sortResult)
         default:
-            let gameVersions = await ModrinthService.fetchGameVersions(
+            let gameVersions = try await ModrinthService.fetchGameVersionsThrowing(
                 includeSnapshots: includeSnapshots,
             )
             let versionNames = gameVersions
@@ -61,11 +42,15 @@ enum CommonService {
                     let formattedTime = CommonUtil.formatRelativeTime(
                         version.date,
                     )
-                    DIContainer.shared.core.appCacheManager.setSilently(
-                        namespace: "version_time",
-                        key: cacheKey,
-                        value: formattedTime,
-                    )
+                    do {
+                        try DIContainer.shared.core.appCacheManager.set(
+                            namespace: "version_time",
+                            key: cacheKey,
+                            value: formattedTime,
+                        )
+                    } catch {
+                        DIContainer.shared.core.errorHandler.handle(error)
+                    }
                     return version.version
                 }
             result = CommonUtil.versionsAtLeast(versionNames)
@@ -85,33 +70,6 @@ enum CommonService {
             return librariesDir.appendingPathComponent(artifactPath).path
         }
         return jarPaths.joined(separator: ":")
-    }
-
-    static func fetchAllLoaderVersions(
-        type: String,
-        minecraftVersion: String,
-    ) async -> LoaderVersion? {
-        do {
-            return try await fetchAllLoaderVersionsThrowing(
-                type: type,
-                minecraftVersion: minecraftVersion,
-            )
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error("Failed to get loader version: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return nil
-        }
-    }
-
-    static func fetchAllLoaderVersionsSilently(
-        type: String,
-        minecraftVersion: String,
-    ) async -> LoaderVersion? {
-        try? await fetchAllLoaderVersionsThrowing(
-            type: type,
-            minecraftVersion: minecraftVersion,
-        )
     }
 
     static func fetchAllLoaderVersionsThrowing(
@@ -334,12 +292,16 @@ enum CommonService {
         let data = try await APIClient.get(url: url)
         let loader = try decodeLoaderProfile(from: data, loaderVersion: loaderVersion, gameVersion: gameVersion)
 
-        DIContainer.shared.core.appCacheManager.setSilently(
-            namespace: namespace,
-            key: "profile",
-            value: data,
-            directory: AppPaths.loaderCache,
-        )
+        do {
+            try DIContainer.shared.core.appCacheManager.set(
+                namespace: namespace,
+                key: "profile",
+                value: data,
+                directory: AppPaths.loaderCache,
+            )
+        } catch {
+            DIContainer.shared.core.errorHandler.handle(error)
+        }
 
         return loader
     }
@@ -367,7 +329,7 @@ enum CommonService {
     static func fetchLoaderVersionStrings(for loader: String, gameVersion: String) async -> [String] {
         switch loader.lowercased() {
         case GameLoader.fabric.displayName:
-            return await FabricLoaderService.fetchAllLoaderVersions(for: gameVersion).map(\.loader.version)
+            return (try? await FabricLoaderService.fetchAllLoaderVersionsThrowing(for: gameVersion))?.map(\.loader.version) ?? []
         case GameLoader.forge.displayName:
             do {
                 return try await ForgeLoaderService.fetchAllForgeVersions(for: gameVersion).loaders.map(\.id)
@@ -383,7 +345,7 @@ enum CommonService {
                 return []
             }
         case GameLoader.quilt.rawValue:
-            return await QuiltLoaderService.fetchAllQuiltLoaders(for: gameVersion).map(\.loader.version)
+            return (try? await QuiltLoaderService.fetchAllQuiltLoadersThrowing(for: gameVersion))?.map(\.loader.version) ?? []
         default:
             return []
         }

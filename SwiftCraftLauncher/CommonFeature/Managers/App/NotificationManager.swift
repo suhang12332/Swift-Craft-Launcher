@@ -50,20 +50,6 @@ enum NotificationManager {
         }
     }
 
-    /// Sends a notification silently, logging errors instead of throwing.
-    /// - Parameters:
-    ///   - title: The notification title.
-    ///   - body: The notification body text.
-    static func sendSilently(title: String, body: String) async {
-        do {
-            try await send(title: title, body: body)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to send notification: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-        }
-    }
-
     /// Requests authorization to display notifications.
     /// - Throws: A `GlobalError` when authorization is denied or fails.
     static func requestAuthorization() async throws {

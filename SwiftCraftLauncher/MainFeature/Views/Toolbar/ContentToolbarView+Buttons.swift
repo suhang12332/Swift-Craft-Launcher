@@ -66,11 +66,7 @@ struct AddPlayerToolbarButton: View {
                 playerName: $playerName,
                 isPlayerNameValid: $isPlayerNameValid,
                 onAdd: {
-                    if playerListViewModel.addPlayer(name: playerName) {
-                        AppLog.main.debug("Player \(playerName) added successfully (via ViewModel).")
-                    } else {
-                        AppLog.main.debug("Failed to add player \(playerName) (via ViewModel).")
-                    }
+                    _ = playerListViewModel.addPlayer(name: playerName)
                     isPlayerNameValid = true
                     showSheet = false
                 },

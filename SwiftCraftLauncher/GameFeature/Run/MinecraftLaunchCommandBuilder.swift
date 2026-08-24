@@ -9,27 +9,6 @@ import Foundation
 
 /// Builds the JVM launch command array for a Minecraft game session.
 enum MinecraftLaunchCommandBuilder {
-    static func build(
-        manifest: MinecraftVersionManifest,
-        gameInfo: GameVersionInfo,
-        launcherBrand: String,
-        launcherVersion: String,
-    ) -> [String] {
-        do {
-            return try buildThrowing(
-                manifest: manifest,
-                gameInfo: gameInfo,
-                launcherBrand: launcherBrand,
-                launcherVersion: launcherVersion,
-            )
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error("Failed to build launch command: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
-        }
-    }
-
     static func buildThrowing(
         manifest: MinecraftVersionManifest,
         gameInfo: GameVersionInfo,

@@ -38,20 +38,6 @@ extension ModScanner {
         }
     }
 
-    /// Returns all jar and zip files in the directory with their hashes and cached details.
-    public func localModDetails(in dir: URL) -> [(
-        file: URL, hash: String, detail: ModrinthProjectDetail?
-    )] {
-        do {
-            return try localModDetailsThrowing(in: dir)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error("Failed to get local mod details: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
-        }
-    }
-
     /// Returns all jar and zip files in the directory with their hashes and cached details, throwing on errors.
     public func localModDetailsThrowing(in dir: URL) throws -> [(
         file: URL, hash: String, detail: ModrinthProjectDetail?

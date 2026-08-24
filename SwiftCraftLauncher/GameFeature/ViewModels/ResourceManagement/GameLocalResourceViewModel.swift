@@ -49,7 +49,7 @@ final class GameLocalResourceViewModel {
         refreshAllFiles()
         resetPagination()
         currentSearchText = searchText
-        loadPage(page: 1, append: false, searchText: currentSearchText)
+        Task { await loadPage(page: 1, append: false, searchText: currentSearchText) }
     }
 
     func updateContextOnQueryChanged(game: GameVersionInfo, query: String, localFilter: LocalResourceFilter) {
@@ -57,7 +57,7 @@ final class GameLocalResourceViewModel {
         refreshAllFiles()
         resetPagination()
         currentSearchText = ""
-        loadPage(page: 1, append: false, searchText: currentSearchText)
+        Task { await loadPage(page: 1, append: false, searchText: currentSearchText) }
     }
 
     func updateContextOnLocalFilterChanged(game: GameVersionInfo, query: String, localFilter: LocalResourceFilter, searchText: String) {
@@ -65,7 +65,7 @@ final class GameLocalResourceViewModel {
         refreshAllFiles()
         resetPagination()
         currentSearchText = searchText
-        loadPage(page: 1, append: false, searchText: currentSearchText)
+        Task { await loadPage(page: 1, append: false, searchText: currentSearchText) }
     }
 
     func onSearchTextChanged(_ newValue: String) {
@@ -81,7 +81,7 @@ final class GameLocalResourceViewModel {
         let thresholdIndex = max(scannedResources.count - 5, 0)
         if index >= thresholdIndex {
             currentPage += 1
-            loadPage(page: currentPage, append: true, searchText: nil)
+            Task { await loadPage(page: currentPage, append: true, searchText: nil) }
         }
     }
 
@@ -92,7 +92,7 @@ final class GameLocalResourceViewModel {
         }
         refreshAllFiles()
         resetPagination()
-        loadPage(page: 1, append: false, searchText: nil)
+        Task { await loadPage(page: 1, append: false, searchText: nil) }
     }
 
     func handleLocalDisableStateChanged(projectId: String, oldFileName: String, isDisabled: Bool) {
@@ -183,7 +183,7 @@ final class GameLocalResourceViewModel {
             try? await Task.sleep(nanoseconds: 500_000_000)
             guard let self, !Task.isCancelled else { return }
             guard generationAtSchedule == searchGeneration else { return }
-            loadPage(page: 1, append: false, searchText: searchText)
+            await loadPage(page: 1, append: false, searchText: searchText)
         }
     }
 
@@ -249,7 +249,14 @@ final class GameLocalResourceViewModel {
             return
         }
 
-        allFiles = DIContainer.shared.core.modScanner.getAllResourceFiles(resourceDir)
+        do {
+            allFiles = try DIContainer.shared.core.modScanner.getAllResourceFilesThrowing(resourceDir)
+        } catch {
+            let globalError = GlobalError.from(error)
+            AppLog.game.error("Failed to get resource file list: \(globalError.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(globalError)
+            allFiles = []
+        }
     }
 
     private func filterResourcesByTitle(_ details: [ModrinthProjectDetail], searchText: String) -> [ModrinthProjectDetail] {
@@ -266,7 +273,7 @@ final class GameLocalResourceViewModel {
         return filteredByType.filter { $0.title.lowercased().contains(searchLower) }
     }
 
-    private func loadPage(page: Int, append: Bool, searchText: String?) {
+    private func loadPage(page: Int, append: Bool, searchText: String?) async {
         guard !isLoadingResources, !isLoadingMore else { return }
 
         if query.lowercased() == ResourceType.modpack.rawValue {
@@ -301,37 +308,42 @@ final class GameLocalResourceViewModel {
         let isSearching = !effectiveSearchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let generationAtStart = searchGeneration
 
-        DIContainer.shared.core.modScanner.scanResourceFilesPage(
-            fileURLs: sourceFiles,
-            page: page,
-            pageSize: pageSize,
-        ) { [weak self] details, hasMore in
-            DispatchQueue.main.async {
-                guard let self else { return }
-                guard generationAtStart == self.searchGeneration else { return }
+        let (details, hasMore): ([ModrinthProjectDetail], Bool)
+        do {
+            (details, hasMore) = try await DIContainer.shared.core.modScanner.scanResourceFilesPageThrowing(
+                fileURLs: sourceFiles,
+                page: page,
+                pageSize: pageSize,
+            )
+        } catch {
+            let globalError = GlobalError.from(error)
+            AppLog.game.error("Failed to scan resource files (paged): \(globalError.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(globalError)
+            (details, hasMore) = ([], false)
+        }
 
-                let filteredDetails = self.filterResourcesByTitle(details, searchText: effectiveSearchText)
+        guard generationAtStart == searchGeneration else { return }
 
-                if append {
-                    let existingIds = Set(self.scannedResources.map(\.id))
-                    let newDetails = filteredDetails.filter { !existingIds.contains($0.id) }
-                    self.scannedResources.append(contentsOf: newDetails)
-                } else {
-                    self.scannedResources = filteredDetails
-                }
+        let filteredDetails = filterResourcesByTitle(details, searchText: effectiveSearchText)
 
-                if isSearching, hasMore {
-                    self.isLoadingResources = false
-                    self.isLoadingMore = false
-                    let nextPage = page + 1
-                    self.currentPage = nextPage
-                    self.loadPage(page: nextPage, append: true, searchText: effectiveSearchText)
-                } else {
-                    self.hasMoreResults = hasMore
-                    self.isLoadingResources = false
-                    self.isLoadingMore = false
-                }
-            }
+        if append {
+            let existingIds = Set(scannedResources.map(\.id))
+            let newDetails = filteredDetails.filter { !existingIds.contains($0.id) }
+            scannedResources.append(contentsOf: newDetails)
+        } else {
+            scannedResources = filteredDetails
+        }
+
+        if isSearching, hasMore {
+            isLoadingResources = false
+            isLoadingMore = false
+            let nextPage = page + 1
+            currentPage = nextPage
+            await loadPage(page: nextPage, append: true, searchText: effectiveSearchText)
+        } else {
+            hasMoreResults = hasMore
+            isLoadingResources = false
+            isLoadingMore = false
         }
     }
 

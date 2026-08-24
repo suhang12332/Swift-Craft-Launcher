@@ -11,23 +11,6 @@ import Foundation
 class UserProfileStore {
     init() { }
 
-    /// Loads all stored user profiles.
-    ///
-    /// - Returns: An array of user profiles, or an empty array if none exist.
-    func loadProfiles() -> [UserProfile] {
-        guard let profilesData = UserDefaults.standard.data(forKey: AppConstants.UserDefaultsKeys.userProfiles) else {
-            return []
-        }
-
-        do {
-            let decoder = JSONDecoder()
-            return try decoder.decode([UserProfile].self, from: profilesData)
-        } catch {
-            AppLog.player.error("Failed to load user profile: \(error.localizedDescription)")
-            return []
-        }
-    }
-
     /// Loads all stored user profiles, throwing on failure.
     ///
     /// - Returns: An array of user profiles.
@@ -46,19 +29,6 @@ class UserProfileStore {
                 level: .notification,
                 message: "Failed to decode user profiles from UserDefaults: \(error.localizedDescription)",
             )
-        }
-    }
-
-    /// Saves an array of user profiles.
-    ///
-    /// - Parameter profiles: The profiles to save.
-    func saveProfiles(_ profiles: [UserProfile]) {
-        do {
-            try saveProfilesThrowing(profiles)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to save user profile: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
         }
     }
 

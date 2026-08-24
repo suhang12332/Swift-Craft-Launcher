@@ -17,14 +17,18 @@ enum ForgeLikeLoaderService {
     }
 
     static func fetchAllVersions(config: Config, for minecraftVersion: String) async throws -> LoaderVersion {
-        guard let result = await CommonService.fetchAllLoaderVersions(type: config.gameLoader.modrinthLoaderId, minecraftVersion: minecraftVersion) else {
+        do {
+            return try await CommonService.fetchAllLoaderVersionsThrowing(
+                type: config.gameLoader.modrinthLoaderId,
+                minecraftVersion: minecraftVersion,
+            )
+        } catch {
             throw GlobalError.resource(
                 i18nKey: config.versionNotFoundErrorKey,
                 level: .notification,
                 message: "\(config.labelName) loader version not found for Minecraft \(minecraftVersion)",
             )
         }
-        return result
     }
 
     static func fetchSpecificProfile(config: Config, for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
@@ -84,7 +88,7 @@ enum ForgeLikeLoaderService {
 
         fileManager.onProgressUpdate = { name, completed, _ in onProgressUpdate(name, completed, totalTasks) }
 
-        await fileManager.downloadForgeJars(libraries: profile.libraries)
+        try await fileManager.downloadForgeJarsThrowing(libraries: profile.libraries)
 
         if let processors = profile.processors, totalProcessors > 0 {
             try await fileManager.executeProcessors(

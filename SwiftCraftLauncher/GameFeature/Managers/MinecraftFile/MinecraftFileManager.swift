@@ -24,15 +24,6 @@ class MinecraftFileManager: @unchecked Sendable {
 
     init() { }
 
-    /// Cleans up game directories, logging errors instead of throwing.
-    static func cleanupGameDirectoriesSafely(gameName: String) async {
-        do {
-            try MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
-        } catch {
-            AppLog.modPack.error("Failed to clean up game directories: \(error.localizedDescription)")
-        }
-    }
-
     /// Creates the profile directory structure for a game.
     static func createProfileDirectories(for gameName: String) async -> Bool {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
@@ -80,26 +71,6 @@ class MinecraftFileManager: @unchecked Sendable {
                 level: .notification,
                 message: "Failed to remove profile directory \(profileDirectory.path) for gameName=\(gameName): \(error.localizedDescription)",
             )
-        }
-    }
-
-    func downloadVersionFiles(
-        manifest: MinecraftVersionManifest,
-        gameName: String,
-    ) async -> Bool {
-        do {
-            try await downloadVersionFilesThrowing(
-                manifest: manifest,
-                gameName: gameName,
-            )
-            return true
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error(
-                "Failed to download Minecraft version files: \(globalError.localizedDescription)",
-            )
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return false
         }
     }
 

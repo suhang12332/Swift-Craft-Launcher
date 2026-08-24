@@ -51,19 +51,6 @@ class AppCacheManager {
         }
     }
 
-    /// Stores a codable value silently, reporting errors to the error handler instead of throwing.
-    /// - Parameters:
-    ///   - namespace: The cache namespace.
-    ///   - key: The cache key.
-    ///   - value: The value to store.
-    func setSilently(namespace: String, key: String, value: some Codable, directory: URL = AppPaths.appCache) {
-        do {
-            try set(namespace: namespace, key: key, value: value, directory: directory)
-        } catch {
-            DIContainer.shared.core.errorHandler.handle(error)
-        }
-    }
-
     /// Retrieves a cached value for the given key and namespace.
     /// - Parameters:
     ///   - namespace: The cache namespace.

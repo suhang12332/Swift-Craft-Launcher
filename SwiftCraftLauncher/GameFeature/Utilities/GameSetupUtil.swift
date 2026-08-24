@@ -90,7 +90,7 @@ class GameSetupUtil {
                 selectedModLoader: input.selectedModLoader,
                 specifiedLoaderVersion: input.specifiedLoaderVersion,
             )
-            gameRepository.addGameSilently(gameInfo)
+            try await gameRepository.addGame(gameInfo)
 
             if DIContainer.shared.ui.gameSettingsManager.syncLanguageForNewGames {
                 configureGameLanguage(for: gameInfo.gameName)
@@ -100,7 +100,7 @@ class GameSetupUtil {
                 await DIContainer.shared.core.modScanner.scanGameModsDirectory(game: gameInfo)
             }
 
-            await NotificationManager.sendSilently(
+            try? await NotificationManager.send(
                 title: "notification.download.complete.title".localized(),
                 body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader),
             )
@@ -251,7 +251,7 @@ class GameSetupUtil {
 
             let loaderLabel = GameLoader(rawValue: finalizedInfo.modLoader)?.labelName ?? finalizedInfo.modLoader
             let loaderDescription = finalizedInfo.modVersion.isEmpty ? loaderLabel : "\(loaderLabel) \(finalizedInfo.modVersion)"
-            await NotificationManager.sendSilently(
+            try? await NotificationManager.send(
                 title: "notification.loader.update.complete.title".localized(),
                 body: String(
                     format: "notification.loader.update.complete.body".localized(),
@@ -275,7 +275,7 @@ class GameSetupUtil {
     /// Removes partial game files after a failed or cancelled download.
     /// - Parameter gameName: The name of the game instance.
     private func cleanupGameDirectories(gameName: String) async {
-        await MinecraftFileManager.cleanupGameDirectoriesSafely(gameName: gameName)
+        try? MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
     }
 
     private func saveGameIcon(
@@ -495,12 +495,19 @@ class GameSetupUtil {
             updatedGameInfo.gameArguments = []
         }
 
-        updatedGameInfo.launchCommand = MinecraftLaunchCommandBuilder.build(
-            manifest: manifest,
-            gameInfo: updatedGameInfo,
-            launcherBrand: Bundle.main.appName,
-            launcherVersion: Bundle.main.fullVersion,
-        )
+        do {
+            updatedGameInfo.launchCommand = try MinecraftLaunchCommandBuilder.buildThrowing(
+                manifest: manifest,
+                gameInfo: updatedGameInfo,
+                launcherBrand: Bundle.main.appName,
+                launcherVersion: Bundle.main.fullVersion,
+            )
+        } catch {
+            let globalError = GlobalError.from(error)
+            AppLog.game.error("Failed to build launch command: \(globalError.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(globalError)
+            updatedGameInfo.launchCommand = []
+        }
 
         return updatedGameInfo
     }

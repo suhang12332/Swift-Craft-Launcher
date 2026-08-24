@@ -57,11 +57,7 @@ class ModScanner: @unchecked Sendable {
             return updatedCached
         }
 
-        let detail = await withCheckedContinuation { continuation in
-            ModrinthService.fetchModrinthDetail(by: hash) { detail in
-                continuation.resume(returning: detail)
-            }
-        }
+        let detail = try? await ModrinthService.fetchModrinthDetailThrowing(by: hash)
 
         if var detail {
             detail.type = inferredType
@@ -72,7 +68,7 @@ class ModScanner: @unchecked Sendable {
         }
 
         let fingerprint = try CurseForgeFingerprint.fingerprint(fileAt: fileURL)
-        if let cfAsModrinth = await CurseForgeService.fetchProjectDetailsAsModrinthByFingerprint(
+        if let cfAsModrinth = try? await CurseForgeService.fetchProjectDetailsAsModrinthByFingerprintThrowing(
             fingerprint: fingerprint,
         ) {
             var detailWithFileName = cfAsModrinth
@@ -107,7 +103,7 @@ class ModScanner: @unchecked Sendable {
     func saveToCache(hash: String, detail: ModrinthProjectDetail) {
         do {
             let jsonData = try JSONEncoder().encode(detail)
-            DIContainer.shared.core.modCacheManager.setSilently(hash: hash, jsonData: jsonData)
+            try? DIContainer.shared.core.modCacheManager.set(hash: hash, jsonData: jsonData)
         } catch {
             AppLog.game.error("Failed to encode mod cache: \(error.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(GlobalError.validation(

@@ -98,7 +98,7 @@ enum ResourceInstallationChecker {
             }
         }
 
-        guard let detail = await ModrinthService.fetchProjectDetails(
+        guard let detail = try? await ModrinthService.fetchProjectDetailsThrowing(
             id: project.projectId,
             type: ResourceType.minecraftJavaServer.rawValue,
         ) else { return nil }

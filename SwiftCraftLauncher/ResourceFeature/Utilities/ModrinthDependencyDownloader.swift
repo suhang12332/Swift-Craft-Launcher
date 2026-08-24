@@ -38,16 +38,16 @@ enum ModrinthDependencyDownloader {
 
             // Check installed state using ModScanner.
             let dependencies =
-                await ModrinthService.fetchProjectDependencies(
+                (try? await ModrinthService.fetchProjectDependencies(
                     type: query,
                     cachePath: resourceDirUnwrapped,
                     id: projectId,
                     selectedVersions: [gameInfo.gameVersion],
                     selectedLoaders: [gameInfo.modLoader],
-                )
+                )) ?? ModrinthProjectDependency(projects: [])
 
             guard
-                await ModrinthService.fetchProjectDetails(id: projectId) != nil
+                (try? await ModrinthService.fetchProjectDetailsThrowing(id: projectId)) != nil
             else {
                 AppLog.resource.error("Unable to get main project details (ID: \(projectId))")
                 return
@@ -103,7 +103,7 @@ enum ModrinthDependencyDownloader {
 
         guard
             let projectDetail =
-            await ModrinthService.fetchProjectDetails(id: depVersion.projectId)
+            try? await ModrinthService.fetchProjectDetailsThrowing(id: depVersion.projectId)
         else {
             AppLog.resource.error(
                 "Unable to get dependency project details (ID: \(depVersion.projectId))",
@@ -146,7 +146,7 @@ enum ModrinthDependencyDownloader {
 
         do {
             guard
-                var mainDetail = await ModrinthService.fetchProjectDetails(id: projectId)
+                var mainDetail = try? await ModrinthService.fetchProjectDetailsThrowing(id: projectId)
             else {
                 AppLog.resource.error("Unable to get main project details (ID: \(projectId))")
                 return nil
@@ -198,13 +198,13 @@ enum ModrinthDependencyDownloader {
             gameName: gameInfo.gameName,
         )
 
-        let dependencies = await ModrinthService.fetchProjectDependencies(
+        let dependencies = (try? await ModrinthService.fetchProjectDependencies(
             type: query,
             cachePath: resourceDir,
             id: projectId,
             selectedVersions: [gameInfo.gameVersion],
             selectedLoaders: [gameInfo.modLoader],
-        )
+        )) ?? ModrinthProjectDependency(projects: [])
 
         // Concurrently fetch project details and version info for all dependencies.
         return await withTaskGroup(
@@ -215,7 +215,7 @@ enum ModrinthDependencyDownloader {
                     // Fetch the project detail.
                     guard
                         let projectDetail =
-                        await ModrinthService.fetchProjectDetails(
+                        try? await ModrinthService.fetchProjectDetailsThrowing(
                             id: depVersion.projectId,
                         )
                     else {
@@ -264,18 +264,18 @@ enum ModrinthDependencyDownloader {
             gameName: gameInfo.gameName,
         )
 
-        let dependencies = await ModrinthService.fetchProjectDependencies(
+        let dependencies = (try? await ModrinthService.fetchProjectDependencies(
             type: query,
             cachePath: resourceDir,
             id: projectId,
             selectedVersions: [gameInfo.gameVersion],
             selectedLoaders: [gameInfo.modLoader],
-        )
+        )) ?? ModrinthProjectDependency(projects: [])
 
         // Convert ModrinthProjectDetailVersion values to ModrinthProjectDetail.
         var projectDetails: [ModrinthProjectDetail] = []
         for depVersion in dependencies.projects {
-            if let projectDetail = await ModrinthService.fetchProjectDetails(
+            if let projectDetail = try? await ModrinthService.fetchProjectDetailsThrowing(
                 id: depVersion.projectId,
             ) {
                 projectDetails.append(projectDetail)
@@ -387,7 +387,7 @@ enum ModrinthDependencyDownloader {
         do {
             guard
                 var mainProjectDetail =
-                await ModrinthService.fetchProjectDetails(id: input.mainProjectId)
+                try? await ModrinthService.fetchProjectDetailsThrowing(id: input.mainProjectId)
             else {
                 AppLog.resource.error("Unable to get main project details (ID: \(input.mainProjectId))")
                 return false
@@ -468,7 +468,7 @@ enum ModrinthDependencyDownloader {
         do {
             guard
                 var mainProjectDetail =
-                await ModrinthService.fetchProjectDetails(id: mainProjectId)
+                try? await ModrinthService.fetchProjectDetailsThrowing(id: mainProjectId)
             else {
                 AppLog.resource.error("Unable to get main project details (ID: \(mainProjectId))")
                 return (false, nil, nil)

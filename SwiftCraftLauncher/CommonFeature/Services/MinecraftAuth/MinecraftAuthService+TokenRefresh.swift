@@ -9,27 +9,6 @@ import Foundation
 
 /// Handles Minecraft token validation and refresh operations.
 extension MinecraftAuthService {
-    @MainActor
-    func refreshPlayerToken(for player: Player) async -> Result<Player, GlobalError> {
-        isLoading = true
-        defer { isLoading = false }
-
-        do {
-            let refreshedPlayer = try await validateAndRefreshPlayerTokenThrowing(for: player)
-            AppLog.common.info("Successfully refreshed token for player \(player.name)")
-            return .success(refreshedPlayer)
-        } catch let error as GlobalError {
-            return .failure(error)
-        } catch {
-            let globalError = GlobalError.authentication(
-                i18nKey: "error.authentication.unknown_refresh_error",
-                level: .popup,
-                message: "Unexpected error refreshing token for player \(player.name): \(error.localizedDescription)",
-            )
-            return .failure(globalError)
-        }
-    }
-
     func validateAndRefreshPlayerTokenThrowing(for player: Player) async throws -> Player {
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(

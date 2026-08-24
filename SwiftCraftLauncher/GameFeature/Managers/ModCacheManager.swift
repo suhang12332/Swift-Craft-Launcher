@@ -42,18 +42,6 @@ class ModCacheManager {
         }
     }
 
-    /// Stores mod metadata in the cache, handling errors silently.
-    /// - Parameters:
-    ///   - hash: The hash of the mod file.
-    ///   - jsonData: The raw JSON bytes to cache.
-    func setSilently(hash: String, jsonData: Data) {
-        do {
-            try set(hash: hash, jsonData: jsonData)
-        } catch {
-            DIContainer.shared.core.errorHandler.handle(error)
-        }
-    }
-
     /// Retrieves cached mod data for the given hash.
     /// - Parameter hash: The hash of the mod file.
     /// - Returns: The cached JSON data, or `nil` if not found.
@@ -69,15 +57,11 @@ class ModCacheManager {
         }
     }
 
-    /// Clears cached mod entries that are local-only fallbacks, handling errors silently.
-    func clearLocalSilently() {
-        do {
-            try queue.sync {
-                try ensureInitialized()
-                try modCacheDB.clearLocalModCaches()
-            }
-        } catch {
-            DIContainer.shared.core.errorHandler.handle(error)
+    /// Clears cached mod entries that are local-only fallbacks.
+    func clearLocal() throws {
+        try queue.sync {
+            try ensureInitialized()
+            try modCacheDB.clearLocalModCaches()
         }
     }
 }

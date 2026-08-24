@@ -65,6 +65,12 @@ final class MinecraftFriendsPresenceMonitorHostAdapter: MinecraftFriendsPresence
     ///   - title: The notification title.
     ///   - body: The notification body text.
     func sendSilentNotification(title: String, body: String) async {
-        await NotificationManager.sendSilently(title: title, body: body)
+        do {
+            try await NotificationManager.send(title: title, body: body)
+        } catch {
+            let globalError = GlobalError.from(error)
+            AppLog.common.error("Failed to send notification: \(globalError.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(globalError)
+        }
     }
 }

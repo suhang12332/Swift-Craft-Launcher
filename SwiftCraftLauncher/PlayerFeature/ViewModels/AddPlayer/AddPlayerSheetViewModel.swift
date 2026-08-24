@@ -43,7 +43,8 @@ final class AddPlayerSheetViewModel {
         let hasFlag = DIContainer.shared.system.premiumAccountFlagManager.hasAddedPremiumAccount()
 
         if !hasFlag {
-            let foreign = await DIContainer.shared.system.ipLocationService.isForeignIP()
+            // If IP detection fails, assume foreign as a conservative default.
+            let foreign = (try? await DIContainer.shared.system.ipLocationService.isForeignIPThrowing()) ?? true
             isForeignIP = foreign
         }
 

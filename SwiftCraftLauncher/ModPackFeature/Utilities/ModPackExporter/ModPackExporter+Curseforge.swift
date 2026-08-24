@@ -55,7 +55,7 @@ extension ModPackExporter {
             )
         }
         guard let fingerprint = try? CurseForgeFingerprint.fingerprint(fileAt: file),
-              let match = await CurseForgeService.fetchProjectAndFileByFingerprint(fingerprint: fingerprint) else {
+              let match = try? await CurseForgeService.fetchProjectAndFileByFingerprintThrowing(fingerprint: fingerprint) else {
             return SelectedResourceProcessResult(
                 indexFile: nil,
                 curseForgeFile: nil,

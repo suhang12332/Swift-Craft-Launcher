@@ -45,12 +45,16 @@ struct MinecraftFriendsMicrosoftPlayerSideEffects {
     ///
     /// - Parameter updated: The player to persist.
     func persistPlayerIfNeeded(_ updated: Player) {
-        guard dataManager.updatePlayerSilently(updated) else { return }
-        NotificationCenter.default.post(
-            name: .playerUpdated,
-            object: nil,
-            userInfo: ["updatedPlayer": updated],
-        )
+        do {
+            try dataManager.updatePlayer(updated)
+            NotificationCenter.default.post(
+                name: .playerUpdated,
+                object: nil,
+                userInfo: ["updatedPlayer": updated],
+            )
+        } catch {
+            reportGlobalError(error)
+        }
     }
 
     /// Forwards an error to the error handler.
