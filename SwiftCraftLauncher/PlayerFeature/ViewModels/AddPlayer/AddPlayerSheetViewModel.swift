@@ -40,13 +40,11 @@ final class AddPlayerSheetViewModel {
 
     /// Checks whether a premium account flag exists and detects foreign IP if not.
     func checkPremiumAccountFlag() async {
-        let hasFlag = DIContainer.shared.system.premiumAccountFlagManager.hasAddedPremiumAccount()
-
-        if !hasFlag {
-            // If IP detection fails, assume foreign as a conservative default.
-            let foreign = (try? await DIContainer.shared.system.ipLocationService.isForeignIPThrowing()) ?? true
-            isForeignIP = foreign
-        }
+        let container = DIContainer.shared.system
+        let canAdd = await container.premiumAccountFlagManager.canAddOfflineAccount(
+            ipLocationService: container.ipLocationService,
+        )
+        isForeignIP = !canAdd
 
         isCheckingFlag = false
 

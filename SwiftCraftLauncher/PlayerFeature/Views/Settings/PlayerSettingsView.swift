@@ -17,6 +17,7 @@ public struct PlayerSettingsView: View {
     @State private var viewModel = PlayerSettingsViewModel()
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
+    @State private var canAddOffline: Bool = false
 
     private var currentPlayer: Player? {
         playerListViewModel.currentPlayer
@@ -30,7 +31,9 @@ public struct PlayerSettingsView: View {
     public var body: some View {
         Form {
             PlayerSettingsEphemeralLoginRow()
-            PlayerSettingsOfflineLoginRow()
+            if canAddOffline {
+                PlayerSettingsOfflineLoginRow()
+            }
             PlayerSettingsDefaultSkinServerRow()
             spacerView()
             if isMinecraftAccount {
@@ -44,6 +47,10 @@ public struct PlayerSettingsView: View {
         .environment(playerSettingsManager)
         .task(id: currentPlayer?.id) {
             viewModel.refreshAuthlibInjectorExists()
+            let container = DIContainer.shared.system
+            canAddOffline = await container.premiumAccountFlagManager.canAddOfflineAccount(
+                ipLocationService: container.ipLocationService,
+            )
             guard let p = currentPlayer, p.isOnlineAccount else {
                 viewModel.clearMinecraftFriendAccountPreferences()
                 return
