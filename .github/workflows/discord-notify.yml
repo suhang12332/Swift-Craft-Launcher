@@ -1,0 +1,56 @@
+name: Notify Discord
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  notify-manual:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Get latest release info
+        id: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATA=$(gh release view --repo "${{ github.repository }}" \
+            --json name,body,url \
+            --jq '{ name: .name, body: .body, url: .url }')
+          echo "release_name=$(echo "$DATA" | jq -r '.name')" >> "$GITHUB_OUTPUT"
+          echo "release_body<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$(echo "$DATA" | jq -r '.body')" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "release_url=$(echo "$DATA" | jq -r '.url')" >> "$GITHUB_OUTPUT"
+
+      - name: Notify Discord
+        uses: SethCohen/github-releases-to-discord@v1
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          color: "2105893"
+          username: "Swift Craft Launcher"
+          footer_title: "Changelog"
+          footer_timestamp: "true"
+          reduce_headings: "true"
+          release_name: ${{ steps.release.outputs.release_name }}
+          release_body: ${{ steps.release.outputs.release_body }}
+          release_html_url: ${{ steps.release.outputs.release_url }}
+
+  notify-release:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify Discord
+        uses: SethCohen/github-releases-to-discord@v1
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          color: "2105893"
+          username: "Swift Craft Launcher"
+          footer_title: "Changelog"
+          footer_timestamp: "true"
+          reduce_headings: "true"
