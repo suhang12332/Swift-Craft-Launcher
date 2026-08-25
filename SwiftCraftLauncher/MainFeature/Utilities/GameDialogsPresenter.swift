@@ -15,6 +15,7 @@ final class GameDialogsPresenter {
     var gameForExport: GameVersionInfo?
     var gamePendingDeletion: GameVersionInfo?
     var gamePendingLoaderUpdate: GameVersionInfo?
+    var pendingLoaderUpdateMode: GameLoaderUpdateMode = .adjust
 
     init() { }
 
@@ -26,7 +27,8 @@ final class GameDialogsPresenter {
         gamePendingDeletion = game
     }
 
-    func presentLoaderUpdate(for game: GameVersionInfo) {
+    func presentLoaderUpdate(for game: GameVersionInfo, mode: GameLoaderUpdateMode = .adjust) {
         gamePendingLoaderUpdate = game
+        pendingLoaderUpdateMode = mode
     }
 }

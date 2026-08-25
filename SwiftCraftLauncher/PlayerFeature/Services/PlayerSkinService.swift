@@ -123,65 +123,36 @@ enum PlayerSkinService {
     /// Fetches the current player's skin information from the Minecraft Services API.
     ///
     /// - Parameter player: The player to query.
-    /// - Returns: Skin information, or `nil` if the fetch fails.
-    static func fetchCurrentPlayerSkinFromServices(player: Player) async -> PublicSkinInfo? {
-        do {
-            let profile = try await fetchPlayerProfileThrowing(player: player)
+    /// - Returns: Skin information, or `nil` if the player has no skin.
+    /// - Throws: A `GlobalError` if the profile fetch fails.
+    static func fetchCurrentPlayerSkinFromServicesThrowing(player: Player) async throws -> PublicSkinInfo? {
+        let profile = try await fetchPlayerProfileThrowing(player: player)
 
-            guard !profile.skins.isEmpty else {
-                AppLog.player.error("Player has no skin information")
-                return nil
-            }
-
-            let activeSkin = profile.skins.first { $0.state == "ACTIVE" } ?? profile.skins.first
-
-            guard let skin = activeSkin else {
-                AppLog.player.error("No active skin found")
-                return nil
-            }
-
-            return PublicSkinInfo(
-                skinURL: skin.url,
-                model: skin.variant == "SLIM" ? .slim : .classic,
-                capeURL: nil,
-                fetchedAt: Date(),
-            )
-        } catch {
-            AppLog.player.error("Failed to fetch skin info from Minecraft Services API: \(error.localizedDescription)")
+        guard !profile.skins.isEmpty else {
+            AppLog.player.error("Player has no skin information")
             return nil
         }
-    }
 
-    /// Uploads a skin for the specified player.
-    ///
-    /// - Parameters:
-    ///   - imageData: The PNG image data (64×64 or 64×32 resolution).
-    ///   - model: The skin model type (classic or slim).
-    ///   - player: The player whose skin should be updated.
-    /// - Returns: `true` if the upload succeeded.
-    static func uploadSkin(
-        imageData: Data,
-        model: PublicSkinInfo.SkinModel,
-        player: Player,
-    ) async -> Bool {
-        do {
-            try await uploadSkinThrowing(
-                imageData: imageData,
-                model: model,
-                player: player,
-            )
-            return true
-        } catch {
-            handleError(error, operation: "Upload skin")
-            return false
+        let activeSkin = profile.skins.first { $0.state == "ACTIVE" } ?? profile.skins.first
+
+        guard let skin = activeSkin else {
+            AppLog.player.error("No active skin found")
+            return nil
         }
+
+        return PublicSkinInfo(
+            skinURL: skin.url,
+            model: skin.variant == "SLIM" ? .slim : .classic,
+            capeURL: nil,
+            fetchedAt: Date(),
+        )
     }
 
     /// Refreshes the skin information for the given player.
     ///
     /// - Parameter player: The player whose skin information should be refreshed.
     private static func refreshSkinInfo(player: Player) async {
-        if let newSkinInfo = await fetchCurrentPlayerSkinFromServices(player: player) {
+        if let newSkinInfo = try? await fetchCurrentPlayerSkinFromServicesThrowing(player: player) {
             _ = await updatePlayerSkinInfo(uuid: player.id, skinInfo: newSkinInfo)
         }
     }
@@ -198,11 +169,14 @@ enum PlayerSkinService {
         model: PublicSkinInfo.SkinModel,
         player: Player,
     ) async -> Bool {
-        let success = await uploadSkin(imageData: imageData, model: model, player: player)
-        if success {
+        do {
+            try await uploadSkinThrowing(imageData: imageData, model: model, player: player)
             await refreshSkinInfo(player: player)
+            return true
+        } catch {
+            handleError(error, operation: "Upload skin")
+            return false
         }
-        return success
     }
 
     /// Resets the player's skin to the default and refreshes local information.
@@ -210,11 +184,14 @@ enum PlayerSkinService {
     /// - Parameter player: The player whose skin should be reset.
     /// - Returns: `true` if the reset and refresh succeeded.
     static func resetSkinAndRefresh(player: Player) async -> Bool {
-        let success = await resetSkin(player: player)
-        if success {
+        do {
+            try await resetSkinThrowing(player: player)
             await refreshSkinInfo(player: player)
+            return true
+        } catch {
+            handleError(error, operation: "Reset skin")
+            return false
         }
-        return success
     }
 
     /// Uploads a skin image for the specified player, throwing on failure.
@@ -295,20 +272,6 @@ enum PlayerSkinService {
         AppLog.player.info("Skin upload successful with variant: \(variantValue)")
     }
 
-    /// Resets the player's skin to the default.
-    ///
-    /// - Parameter player: The player whose skin should be reset.
-    /// - Returns: `true` if the reset succeeded.
-    static func resetSkin(player: Player) async -> Bool {
-        do {
-            try await resetSkinThrowing(player: player)
-            return true
-        } catch {
-            handleError(error, operation: "Reset skin")
-            return false
-        }
-    }
-
     /// Returns the identifier of the currently active cape, or `nil` if none is active.
     ///
     /// - Parameter profile: The player's Minecraft profile response.
@@ -353,20 +316,6 @@ enum PlayerSkinService {
         selectedCapeId != currentActiveCapeId
     }
 
-    /// Fetches the player's Minecraft profile including cape information.
-    ///
-    /// - Parameter player: The player to query.
-    /// - Returns: The profile response, or `nil` on failure.
-    static func fetchPlayerProfile(player: Player) async
-    -> MinecraftProfileResponse? {
-        do {
-            return try await fetchPlayerProfileThrowing(player: player)
-        } catch {
-            handleError(error, operation: "Fetch player profile")
-            return nil
-        }
-    }
-
     /// Fetches the player's Minecraft profile including cape information, throwing on failure.
     static func fetchPlayerProfileThrowing(player: Player) async throws
     -> MinecraftProfileResponse {
@@ -390,22 +339,6 @@ enum PlayerSkinService {
             authXuid: player.authXuid,
             refreshToken: player.authRefreshToken,
         )
-    }
-
-    /// Equips a cape for the specified player.
-    ///
-    /// - Parameters:
-    ///   - capeId: The cape's UUID to equip.
-    ///   - player: The player whose cape should be changed.
-    /// - Returns: `true` if the operation succeeded.
-    static func showCape(capeId: String, player: Player) async -> Bool {
-        do {
-            try await showCapeThrowing(capeId: capeId, player: player)
-            return true
-        } catch {
-            handleError(error, operation: "Show cape")
-            return false
-        }
     }
 
     /// Equips a cape for the specified player, throwing on failure.
@@ -437,20 +370,6 @@ enum PlayerSkinService {
             default:
                 try handleHTTPError(error, operation: "equip_cape")
             }
-        }
-    }
-
-    /// Hides the currently active cape.
-    ///
-    /// - Parameter player: The player whose cape should be hidden.
-    /// - Returns: `true` if the operation succeeded.
-    static func hideCape(player: Player) async -> Bool {
-        do {
-            try await hideCapeThrowing(player: player)
-            return true
-        } catch {
-            handleError(error, operation: "Hide cape")
-            return false
         }
     }
 

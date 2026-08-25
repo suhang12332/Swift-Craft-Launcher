@@ -15,11 +15,11 @@ extension ModrinthService {
         id: String,
         selectedVersions: [String],
         selectedLoaders: [String],
-    ) async -> ModrinthProjectDependency {
+    ) async throws -> ModrinthProjectDependency {
         let projectId = id.asProjectId
 
         if projectId.isCurseForge {
-            return await CurseForgeService.fetchProjectDependenciesAsModrinth(
+            return try await CurseForgeService.fetchProjectDependenciesAsModrinth(
                 type: type,
                 cachePath: cachePath,
                 id: id,
@@ -46,7 +46,7 @@ extension ModrinthService {
                 try await fetchProjectVersionThrowing(id: versionID)
             },
         )
-        return await DependencyResolver.resolve(context)
+        return try await DependencyResolver.resolveThrowing(context)
     }
 
     static func isProjectInstalledByAnyCompatibleVersion(

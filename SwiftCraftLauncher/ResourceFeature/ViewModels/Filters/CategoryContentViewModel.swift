@@ -58,13 +58,13 @@ final class CategoryContentViewModel {
         error = nil
 
         do {
-            async let categoriesTask = ModrinthService.fetchCategories()
-            async let versionsTask = ModrinthService.fetchGameVersions()
+            async let categoriesTask = try ModrinthService.fetchCategoriesThrowing()
+            async let versionsTask = try ModrinthService.fetchGameVersionsThrowing()
 
-            let loadersTask: Task<[Loader], Never>
+            let loadersTask: Task<[Loader], Error>
             if project == ProjectType.shader {
                 loadersTask = Task {
-                    await ModrinthService.fetchLoaders()
+                    try await ModrinthService.fetchLoadersThrowing()
                 }
             } else {
                 loadersTask = Task {
@@ -72,7 +72,7 @@ final class CategoryContentViewModel {
                 }
             }
 
-            let (categoriesResult, versionsResult, loadersResult) = await (
+            let (categoriesResult, versionsResult, loadersResult) = try await (
                 categoriesTask, versionsTask, loadersTask.value
             )
 

@@ -38,31 +38,6 @@ final class ResourceDetailStateTests: XCTestCase {
         XCTAssertEqual(state.selectedProjectId, "proj-id")
     }
 
-    func testSelectGame() {
-        let state = ResourceDetailState()
-
-        state.selectGame(id: "my-game")
-
-        XCTAssertEqual(state.gameId, "my-game")
-    }
-
-    func testSelectGame_nil() {
-        let state = ResourceDetailState()
-        state.selectGame(id: "my-game")
-
-        state.selectGame(id: nil)
-
-        XCTAssertNil(state.gameId)
-    }
-
-    func testSelectResource() {
-        let state = ResourceDetailState()
-
-        state.selectResource(type: "shader")
-
-        XCTAssertEqual(state.gameResourcesType, "shader")
-    }
-
     func testClearSelection() {
         let state = ResourceDetailState(
             selectedProjectId: "proj-id",

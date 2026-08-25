@@ -17,18 +17,6 @@ class CommonFileManager: @unchecked Sendable {
         self.librariesDir = librariesDir
     }
 
-    /// Downloads Forge JAR files, handling errors silently.
-    /// - Parameter libraries: The loader libraries to download.
-    func downloadForgeJars(libraries: [ModrinthLoaderLibrary]) async {
-        do {
-            try await downloadForgeJarsThrowing(libraries: libraries)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error("Failed to download Forge JAR file: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-        }
-    }
-
     /// Downloads Forge JAR files.
     /// - Parameter libraries: The loader libraries to download.
     /// - Throws: A ``GlobalError`` if the download fails.
@@ -70,18 +58,6 @@ class CommonFileManager: @unchecked Sendable {
                 level: .notification,
                 message: "Failed to download Forge JAR files (\(tasks.count) tasks): \(globalError.localizedDescription)",
             )
-        }
-    }
-
-    /// Downloads Fabric JAR files, handling errors silently.
-    /// - Parameter libraries: The loader libraries to download.
-    func downloadFabricJars(libraries: [ModrinthLoaderLibrary]) async {
-        do {
-            try await downloadFabricJarsThrowing(libraries: libraries)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error("Failed to download JAR file: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
         }
     }
 

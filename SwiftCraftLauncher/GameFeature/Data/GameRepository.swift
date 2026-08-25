@@ -162,16 +162,6 @@ class GameRepository: @unchecked Sendable {
         AppLog.game.info("Successfully added game: \(game.gameName) (working path: \(workingPath))")
     }
 
-    func addGameSilently(_ game: GameVersionInfo) {
-        Task {
-            do {
-                try await addGame(game)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-    }
-
     func deleteGame(id: String) async throws {
         let workingPath = currentWorkingPath
         guard let game = getGame(by: id) else {
@@ -191,16 +181,6 @@ class GameRepository: @unchecked Sendable {
         }
 
         AppLog.game.info("Successfully deleted game: \(game.gameName) (working path: \(workingPath))")
-    }
-
-    func deleteGameSilently(id: String) {
-        Task {
-            do {
-                try await deleteGame(id: id)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
     }
 
     /// Deletes all games with the specified name in the current working path.
@@ -249,22 +229,12 @@ class GameRepository: @unchecked Sendable {
         try fm.moveItem(at: oldDir, to: newDir)
 
         game.gameName = newName
-        // Backward compatibility: old games have the game directory path baked into launchCommand.
-        // Replace the hardcoded path with the ${game_directory} placeholder so it's resolved dynamically at launch time.
-        if !game.launchCommand.contains("${game_directory}") {
-            let oldPath = AppPaths.profileDirectory(gameName: oldName).path
-            game.launchCommand = game.launchCommand.map { $0.replacingOccurrences(of: oldPath, with: "${game_directory}") }
-        }
         try await updateGame(game)
         AppLog.game.info("Successfully renamed game from '\(oldName)' to '\(newName)'")
     }
 
     func getGame(by id: String) -> GameVersionInfo? {
         games.first { $0.id == id }
-    }
-
-    func getGameByName(by gameName: String) -> GameVersionInfo? {
-        games.first { $0.gameName == gameName }
     }
 
     func updateGame(_ game: GameVersionInfo) async throws {
@@ -288,137 +258,6 @@ class GameRepository: @unchecked Sendable {
         }
 
         AppLog.game.info("Successfully updated game: \(game.gameName) (working path: \(workingPath))")
-    }
-
-    func updateGameSilently(_ game: GameVersionInfo) -> Bool {
-        Task {
-            do {
-                try await updateGame(game)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-        return true
-    }
-
-    func updateGameLastPlayed(id: String, lastPlayed: Date = Date()) async throws {
-        let workingPath = currentWorkingPath
-        guard var game = getGame(by: id) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.game_not_found_status",
-                level: .notification,
-                message: "Game not found for status update: id=\(id) in workingPath=\(workingPath)",
-            )
-        }
-        try await Task.detached(priority: .userInitiated) {
-            try? self.database.initialize()
-            try self.database.updateLastPlayed(id: id, lastPlayed: lastPlayed)
-        }.value
-
-        game.lastPlayed = lastPlayed
-        let updatedGame = game
-        await MainActor.run {
-            if let index = gamesByWorkingPath[workingPath]?.firstIndex(where: { $0.id == id }) {
-                gamesByWorkingPath[workingPath]?[index] = updatedGame
-            }
-        }
-
-        AppLog.game.info("Successfully updated game last played time: \(game.gameName) (working path: \(workingPath))")
-    }
-
-    func updateGameLastPlayedSilently(id: String, lastPlayed: Date = Date()) -> Bool {
-        Task {
-            do {
-                try await updateGameLastPlayed(id: id, lastPlayed: lastPlayed)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-        return true
-    }
-
-    func updateJavaPath(id: String, javaPath: String) async throws {
-        guard var game = getGame(by: id) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.game_not_found_java",
-                level: .notification,
-                message: "Game not found for Java path update: id=\(id)",
-            )
-        }
-
-        game.javaPath = javaPath
-        try await updateGame(game)
-        AppLog.game.info("Successfully updated game Java path: \(game.gameName)")
-    }
-
-    func updateJavaPathSilently(id: String, javaPath: String) -> Bool {
-        Task {
-            do {
-                try await updateJavaPath(id: id, javaPath: javaPath)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-        return true
-    }
-
-    func updateJvmArguments(id: String, jvmArguments: String) async throws {
-        guard var game = getGame(by: id) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.game_not_found_jvm",
-                level: .notification,
-                message: "Game not found for JVM arguments update: id=\(id)",
-            )
-        }
-
-        game.jvmArguments = jvmArguments
-        try await updateGame(game)
-        AppLog.game.info("Successfully updated game JVM arguments: \(game.gameName)")
-    }
-
-    func updateJvmArgumentsSilently(id: String, jvmArguments: String) -> Bool {
-        Task {
-            do {
-                try await updateJvmArguments(id: id, jvmArguments: jvmArguments)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-        return true
-    }
-
-    func updateMemorySize(id: String, xms: Int, xmx: Int) async throws {
-        guard var game = getGame(by: id) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.game_not_found_memory",
-                level: .notification,
-                message: "Game not found for memory size update: id=\(id)",
-            )
-        }
-
-        guard xms > 0, xmx > 0, xms <= xmx else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.invalid_memory_params",
-                level: .notification,
-                message: "Invalid memory params: xms=\(xms), xmx=\(xmx) for game id=\(id)",
-            )
-        }
-
-        game.xms = xms
-        game.xmx = xmx
-        try await updateGame(game)
-        AppLog.game.info("Successfully updated game memory size: \(game.gameName)")
-    }
-
-    func updateMemorySizeSilently(id: String, xms: Int, xmx: Int) -> Bool {
-        Task {
-            do {
-                try await updateMemorySize(id: id, xms: xms, xmx: xmx)
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-            }
-        }
-        return true
     }
 
     func loadGames() {

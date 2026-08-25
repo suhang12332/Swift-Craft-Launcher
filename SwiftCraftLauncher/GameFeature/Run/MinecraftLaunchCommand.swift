@@ -76,14 +76,17 @@ struct MinecraftLaunchCommand {
 
     private func updatePlayerInDataManager(_ updatedPlayer: Player) async {
         let dataManager = DIContainer.shared.ui.playerDataManager
-        let success = dataManager.updatePlayerSilently(updatedPlayer)
-        if success {
+        do {
+            try dataManager.updatePlayer(updatedPlayer)
             AppLog.game.debug("Updated token info in player data manager")
             NotificationCenter.default.post(
                 name: .playerUpdated,
                 object: nil,
                 userInfo: ["updatedPlayer": updatedPlayer],
             )
+        } catch {
+            AppLog.game.error("Failed to save updated token: \(error.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(error)
         }
     }
 

@@ -10,31 +10,6 @@ import XCTest
 
 @MainActor
 final class PlayerFeatureExtendedTests: XCTestCase {
-    func testSkinSelectionStore_select_setsId() {
-        let store = SkinSelectionStore()
-        store.select("player1")
-        XCTAssertEqual(store.selectedPlayerId, "player1")
-    }
-
-    func testSkinSelectionStore_select_nil_clearsId() {
-        let store = SkinSelectionStore()
-        store.select("player1")
-        store.select(nil)
-        XCTAssertNil(store.selectedPlayerId)
-    }
-
-    func testSkinSelectionStore_select_sameId_noChange() {
-        let store = SkinSelectionStore()
-        store.select("player1")
-        store.select("player1")
-        XCTAssertEqual(store.selectedPlayerId, "player1")
-    }
-
-    func testSkinSelectionStore_initialValue_isNil() {
-        let store = SkinSelectionStore()
-        XCTAssertNil(store.selectedPlayerId)
-    }
-
     func testMinecraftSkinConstants_headRegion() {
         XCTAssertEqual(MinecraftSkinConstants.headStartX, 8)
         XCTAssertEqual(MinecraftSkinConstants.headStartY, 8)

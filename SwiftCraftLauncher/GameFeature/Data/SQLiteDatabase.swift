@@ -254,15 +254,6 @@ class SQLiteDatabase {
     var database: OpaquePointer? {
         sync { db }
     }
-
-    /// Executes a block with direct access to the raw database pointer.
-    ///
-    /// - Parameter block: The work to perform with the database pointer.
-    func perform<T>(_ block: @escaping (OpaquePointer?) throws -> T) throws -> T {
-        try sync {
-            try block(db)
-        }
-    }
 }
 
 extension SQLiteDatabase {

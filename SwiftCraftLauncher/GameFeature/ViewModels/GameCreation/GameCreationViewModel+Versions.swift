@@ -14,10 +14,18 @@ extension GameCreationViewModel {
         updateParentState()
 
         let includeSnapshots = DIContainer.shared.ui.gameSettingsManager.includeSnapshotsForGameVersions
-        let compatibleVersions = await CommonService.compatibleVersions(
-            for: selectedModLoader,
-            includeSnapshots: includeSnapshots,
-        )
+        let compatibleVersions: [String]
+        do {
+            compatibleVersions = try await CommonService.compatibleVersionsThrowing(
+                for: selectedModLoader,
+                includeSnapshots: includeSnapshots,
+            )
+        } catch {
+            let globalError = GlobalError.from(error)
+            AppLog.game.error("Failed to get \(selectedModLoader) version: \(globalError.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(globalError)
+            compatibleVersions = []
+        }
         await updateAvailableVersions(compatibleVersions)
 
         isLoadingLoaderVersions = false
@@ -50,10 +58,18 @@ extension GameCreationViewModel {
             updateParentState()
 
             let includeSnapshots = DIContainer.shared.ui.gameSettingsManager.includeSnapshotsForGameVersions
-            let compatibleVersions = await CommonService.compatibleVersions(
-                for: newLoader,
-                includeSnapshots: includeSnapshots,
-            )
+            let compatibleVersions: [String]
+            do {
+                compatibleVersions = try await CommonService.compatibleVersionsThrowing(
+                    for: newLoader,
+                    includeSnapshots: includeSnapshots,
+                )
+            } catch {
+                let globalError = GlobalError.from(error)
+                AppLog.game.error("Failed to get \(newLoader) version: \(globalError.localizedDescription)")
+                DIContainer.shared.core.errorHandler.handle(globalError)
+                compatibleVersions = []
+            }
             await updateAvailableVersions(compatibleVersions)
 
             if newLoader != GameLoader.vanilla.displayName, !selectedGameVersion.isEmpty {

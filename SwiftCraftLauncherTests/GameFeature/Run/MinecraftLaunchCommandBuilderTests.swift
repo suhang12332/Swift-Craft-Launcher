@@ -40,56 +40,6 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         )
     }
 
-    private func makeLibrary(
-        name: String = "test:lib:1.0",
-        artifactPath: String? = "org/example/lib-1.0.jar",
-        downloadable: Bool = true,
-        includeInClasspath: Bool = true,
-        rules: [Rule]? = nil,
-    ) throws -> Library {
-        var artifactJson: [String: Any] = [
-            "sha1": "abc",
-            "size": 100,
-            "url": "https://example.com/lib.jar",
-        ]
-        if let path = artifactPath {
-            artifactJson["path"] = path
-        }
-
-        var json: [String: Any] = [
-            "downloads": ["artifact": artifactJson],
-            "name": name,
-            "include_in_classpath": includeInClasspath,
-            "downloadable": downloadable,
-        ]
-        if let rules {
-            let ruleData = try JSONEncoder().encode(rules)
-            let ruleObj = try JSONSerialization.jsonObject(with: ruleData)
-            json["rules"] = ruleObj
-        }
-
-        let jsonData = try JSONSerialization.data(withJSONObject: json)
-        return try JSONDecoder().decode(Library.self, from: jsonData)
-    }
-
-    func testLibraryFiltering_nonDownloadableExcluded() throws {
-        let library = try makeLibrary(downloadable: false, includeInClasspath: true)
-        XCTAssertFalse(LibraryFilter.shouldDownloadLibrary(library))
-        XCTAssertFalse(LibraryFilter.shouldIncludeInClasspath(library))
-    }
-
-    func testLibraryFiltering_notInClasspathExcluded() throws {
-        let library = try makeLibrary(downloadable: true, includeInClasspath: false)
-        XCTAssertTrue(LibraryFilter.shouldDownloadLibrary(library))
-        XCTAssertFalse(LibraryFilter.shouldIncludeInClasspath(library))
-    }
-
-    func testLibraryFiltering_bothTrueIncluded() throws {
-        let library = try makeLibrary(downloadable: true, includeInClasspath: true)
-        XCTAssertTrue(LibraryFilter.shouldDownloadLibrary(library))
-        XCTAssertTrue(LibraryFilter.shouldIncludeInClasspath(library))
-    }
-
     func testRemoveDuplicatePaths_removesExactDuplicates() {
         let paths = ["/a/b.jar", "/a/b.jar", "/c/d.jar"]
         let unique = Array(Set(paths))

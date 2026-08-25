@@ -16,12 +16,6 @@ final class AIChatScrollCoordinatorViewModel {
     private var scrollTask: Task<Void, Never>?
     private var periodicScrollTask: Task<Void, Never>?
 
-    /// Handles changes to the last message content length.
-    func onLastMessageChanged(contentLength: Int, scrollToBottom: @escaping @MainActor () -> Void) {
-        lastContentLength = contentLength
-        scheduleScroll(scrollToBottom: scrollToBottom)
-    }
-
     /// Handles changes to the message count.
     func onMessagesCountChanged(hasLastMessage: Bool, scrollToBottom: @escaping @MainActor () -> Void) {
         guard hasLastMessage else { return }

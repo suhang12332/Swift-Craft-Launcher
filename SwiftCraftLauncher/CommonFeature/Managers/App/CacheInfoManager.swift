@@ -15,17 +15,6 @@ final class CacheInfoManager {
 
     init() { }
 
-    /// Calculates cache size for application data.
-    func calculateDataCacheInfo() {
-        do {
-            cacheInfo = try DIContainer.shared.core.cacheCalculator.calculateCacheInfo()
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to calculate data cache info: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-        }
-    }
-
     /// Calculates cache size for a specific game's profile data.
     /// - Parameter game: The game name to calculate cache for.
     func calculateGameCacheInfo(_ game: String) {

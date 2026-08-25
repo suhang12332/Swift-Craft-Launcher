@@ -53,10 +53,6 @@ extension ModScanner {
             cache[gameName] ?? Set<String>()
         }
 
-        func hasCache(for gameName: String) -> Bool {
-            cache[gameName] != nil
-        }
-
         func setAllModsInstalled(for gameName: String, hashes: Set<String>) {
             cache[gameName] = hashes
         }

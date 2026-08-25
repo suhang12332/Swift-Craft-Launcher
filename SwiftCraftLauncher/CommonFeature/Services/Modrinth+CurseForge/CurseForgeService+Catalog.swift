@@ -9,12 +9,6 @@ import Foundation
 
 /// Provides catalog operations for CurseForge categories and game versions.
 extension CurseForgeService {
-    static func fetchCategories() async -> [CurseForgeCategory] {
-        await withServiceErrorHandling(context: "fetch CurseForge category list", fallback: []) {
-            try await fetchCategoriesThrowing()
-        }
-    }
-
     /// Fetches the list of CurseForge categories, throwing on failure.
     /// - Returns: An array of categories.
     /// - Throws: A `GlobalError` if the request fails.
@@ -23,12 +17,6 @@ extension CurseForgeService {
         let data = try await APIClient.get(url: URLConfig.API.CurseForge.categories, headers: headers)
         let result = try JSONDecoder().decode(CurseForgeCategoriesResponse.self, from: data)
         return result.data
-    }
-
-    static func fetchGameVersions() async -> [CurseForgeGameVersion] {
-        await withServiceErrorHandling(context: "fetch CurseForge game version list", fallback: []) {
-            try await fetchGameVersionsThrowing()
-        }
     }
 
     /// Fetches the list of supported game versions from CurseForge, throwing on failure.

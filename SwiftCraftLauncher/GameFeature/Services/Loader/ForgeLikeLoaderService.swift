@@ -17,42 +17,29 @@ enum ForgeLikeLoaderService {
     }
 
     static func fetchAllVersions(config: Config, for minecraftVersion: String) async throws -> LoaderVersion {
-        guard let result = await CommonService.fetchAllLoaderVersions(type: config.gameLoader.modrinthLoaderId, minecraftVersion: minecraftVersion) else {
+        do {
+            return try await CommonService.fetchAllLoaderVersionsThrowing(
+                type: config.gameLoader.modrinthLoaderId,
+                minecraftVersion: minecraftVersion,
+            )
+        } catch {
             throw GlobalError.resource(
                 i18nKey: config.versionNotFoundErrorKey,
                 level: .notification,
                 message: "\(config.labelName) loader version not found for Minecraft \(minecraftVersion)",
             )
         }
-        return result
     }
 
     static func fetchSpecificProfile(config: Config, for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
         let namespace = "\(config.gameLoader.displayName)-\(minecraftVersion)-\(loaderVersion)"
 
-        if let cached = DIContainer.shared.core.appCacheManager.get(
+        return try await CommonService.fetchLoaderProfile(
+            loaderId: config.gameLoader.modrinthLoaderId,
+            loaderVersion: loaderVersion,
             namespace: namespace,
-            key: "profile",
-            as: ModrinthLoader.self,
-            directory: AppPaths.loaderCache,
-        ) {
-            return cached
-        }
-
-        let url = URLConfig.API.Modrinth.loaderProfile(loader: config.gameLoader.modrinthLoaderId, version: loaderVersion)
-        let data = try await APIClient.get(url: url)
-
-        var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
-        result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
-        result.version = loaderVersion
-        DIContainer.shared.core.appCacheManager.setSilently(
-            namespace: namespace,
-            key: "profile",
-            value: result,
-            directory: AppPaths.loaderCache,
+            gameVersion: minecraftVersion,
         )
-
-        return result
     }
 
     static func setupWithSpecificVersion(
@@ -101,7 +88,7 @@ enum ForgeLikeLoaderService {
 
         fileManager.onProgressUpdate = { name, completed, _ in onProgressUpdate(name, completed, totalTasks) }
 
-        await fileManager.downloadForgeJars(libraries: profile.libraries)
+        try await fileManager.downloadForgeJarsThrowing(libraries: profile.libraries)
 
         if let processors = profile.processors, totalProcessors > 0 {
             try await fileManager.executeProcessors(

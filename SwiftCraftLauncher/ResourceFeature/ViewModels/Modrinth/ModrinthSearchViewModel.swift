@@ -64,8 +64,9 @@ final class ModrinthSearchViewModel {
 
                 let result: ModrinthResult
                 if dataSource == .modrinth {
-                    result = await ModrinthService.searchProjects(
+                    result = try await ModrinthService.searchProjectsThrowing(
                         facets: facets,
+                        index: AppConstants.modrinthIndex,
                         offset: offset,
                         limit: pageSize,
                         query: query,
@@ -79,7 +80,7 @@ final class ModrinthSearchViewModel {
                         loaders: filterOptions.loaders,
                         query: query,
                     )
-                    let cfResult = await CurseForgeService.searchProjects(
+                    let cfResult = try await CurseForgeService.searchProjectsThrowing(
                         gameId: 432, // Minecraft
                         classId: cfParams.classId,
                         categoryId: nil,

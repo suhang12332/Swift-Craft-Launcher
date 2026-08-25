@@ -8,10 +8,14 @@
 // A sheet for changing the loader version on an existing game instance, reusing the
 // installation pipeline and download progress UI. When the game is vanilla, the user
 // can choose a mod loader type to add. The game version is never changed.
+//
+// In ``GameLoaderUpdateMode.repair`` mode it instead repairs the game by re-fetching
+// missing or corrupted files, preserving the current loader type and version.
 import SwiftUI
 
 struct GameLoaderUpdateView: View {
     let gameInfo: GameVersionInfo
+    let mode: GameLoaderUpdateMode
 
     @Environment(GameRepository.self)
     private var gameRepository
@@ -20,9 +24,10 @@ struct GameLoaderUpdateView: View {
 
     @State private var viewModel: GameLoaderUpdateViewModel
 
-    init(gameInfo: GameVersionInfo) {
+    init(gameInfo: GameVersionInfo, mode: GameLoaderUpdateMode = .adjust) {
         self.gameInfo = gameInfo
-        _viewModel = State(initialValue: GameLoaderUpdateViewModel(existingGame: gameInfo))
+        self.mode = mode
+        _viewModel = State(initialValue: GameLoaderUpdateViewModel(existingGame: gameInfo, mode: mode))
     }
 
     var body: some View {
@@ -41,20 +46,26 @@ struct GameLoaderUpdateView: View {
     }
 
     private var headerView: some View {
-        Text("game.loader.update.title".localized())
+        Text((mode == .repair ? "game.repair.title" : "game.loader.update.title").localized())
             .font(.headline)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var bodyView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            currentInfoSection
-                .padding(.bottom, 10)
+            if mode == .repair {
+                repairInfoSection
+            } else {
+                currentInfoSection
+                    .padding(.bottom, 10)
+            }
             if !viewModel.isUpdating {
-                if viewModel.canChangeLoaderType {
-                    loaderTypeSelectionSection
+                if mode == .adjust {
+                    if viewModel.canChangeLoaderType {
+                        loaderTypeSelectionSection
+                    }
+                    versionSelectionSection
                 }
-                versionSelectionSection
             } else {
                 DownloadProgressSection(
                     gameSetupService: viewModel.gameSetupService,
@@ -63,6 +74,26 @@ struct GameLoaderUpdateView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
+
+    private var repairInfoSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("game.repair.rules.header".localized())
+                .font(.headline)
+                .padding(.bottom, 4)
+
+            Text("game.repair.rules.rule.1".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            Text("game.repair.rules.rule.2".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            Text("game.repair.rules.rule.3".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
     }
 
     private var currentInfoSection: some View {

@@ -24,15 +24,6 @@ class MinecraftFileManager: @unchecked Sendable {
 
     init() { }
 
-    /// Cleans up game directories, logging errors instead of throwing.
-    static func cleanupGameDirectoriesSafely(gameName: String) async {
-        do {
-            try MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
-        } catch {
-            AppLog.modPack.error("Failed to clean up game directories: \(error.localizedDescription)")
-        }
-    }
-
     /// Creates the profile directory structure for a game.
     static func createProfileDirectories(for gameName: String) async -> Bool {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
@@ -80,26 +71,6 @@ class MinecraftFileManager: @unchecked Sendable {
                 level: .notification,
                 message: "Failed to remove profile directory \(profileDirectory.path) for gameName=\(gameName): \(error.localizedDescription)",
             )
-        }
-    }
-
-    func downloadVersionFiles(
-        manifest: MinecraftVersionManifest,
-        gameName: String,
-    ) async -> Bool {
-        do {
-            try await downloadVersionFilesThrowing(
-                manifest: manifest,
-                gameName: gameName,
-            )
-            return true
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error(
-                "Failed to download Minecraft version files: \(globalError.localizedDescription)",
-            )
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return false
         }
     }
 
@@ -152,8 +123,8 @@ class MinecraftFileManager: @unchecked Sendable {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
         let directoriesToCreate =
             MinecraftFileManagerConstants.metaSubdirectories + [
-                AppPaths.metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.versions)
-                    .appendingPathComponent(manifestId),
+                AppPaths.versionsDirectory.appendingPathComponent(manifestId),
+                AppPaths.nativesDirectory.appendingPathComponent(manifestId),
                 profileDirectory,
             ]
         let profileSubfolders = AppPaths.profileSubdirectories.map {
@@ -194,18 +165,6 @@ class MinecraftFileManager: @unchecked Sendable {
         }
 
         onProgressUpdate?(fileName, currentCount, total, type)
-    }
-
-    func verifyExistingFile(
-        at url: URL,
-        expectedSha1: String,
-    ) async throws -> Bool {
-        let fileSha1 = try await calculateFileSHA1(at: url)
-        return fileSha1 == expectedSha1
-    }
-
-    func calculateFileSHA1(at url: URL) async throws -> String {
-        try SHA1Calculator.sha1(ofFileAt: url)
     }
 
     /// Downloads a file, verifies its SHA1, and increments the progress counter.
@@ -250,10 +209,5 @@ class MinecraftFileManager: @unchecked Sendable {
 
     func shouldDownloadLibrary(_ library: Library, minecraftVersion: String? = nil) -> Bool {
         LibraryFilter.shouldDownloadLibrary(library, minecraftVersion: minecraftVersion)
-    }
-
-    func isLibraryAllowedOnOSX(_ rules: [Rule]?) -> Bool {
-        guard let rules, !rules.isEmpty else { return true }
-        return MacRuleEvaluator.isAllowed(rules)
     }
 }

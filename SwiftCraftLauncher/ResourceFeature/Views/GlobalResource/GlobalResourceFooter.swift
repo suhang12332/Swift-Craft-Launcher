@@ -17,8 +17,6 @@ struct GlobalResourceFooter: View {
     let selectedVersion: ModrinthProjectDetailVersion?
     let dependencyState: DependencyState
     @Binding var isDownloadingAll: Bool
-    @Binding var isDownloadingMainOnly: Bool
-    let gameRepository: GameRepository
     let loadDependencies:
         (ModrinthProjectDetailVersion, GameVersionInfo) -> Void
     @Binding var mainVersionId: String
@@ -35,8 +33,6 @@ struct GlobalResourceFooter: View {
         selectedVersion: ModrinthProjectDetailVersion?,
         dependencyState: DependencyState,
         isDownloadingAll: Binding<Bool>,
-        isDownloadingMainOnly: Binding<Bool>,
-        gameRepository: GameRepository,
         loadDependencies: @escaping (ModrinthProjectDetailVersion, GameVersionInfo) -> Void,
         mainVersionId: Binding<String>,
         compatibleGames: [GameVersionInfo],
@@ -49,8 +45,6 @@ struct GlobalResourceFooter: View {
         self.selectedVersion = selectedVersion
         self.dependencyState = dependencyState
         _isDownloadingAll = isDownloadingAll
-        _isDownloadingMainOnly = isDownloadingMainOnly
-        self.gameRepository = gameRepository
         self.loadDependencies = loadDependencies
         _mainVersionId = mainVersionId
         self.compatibleGames = compatibleGames
@@ -61,8 +55,6 @@ struct GlobalResourceFooter: View {
                 resourceType: resourceType,
                 isPresented: isPresented,
                 isDownloadingAll: isDownloadingAll,
-                isDownloadingMainOnly: isDownloadingMainOnly,
-                gameRepository: gameRepository,
             ),
         )
     }
@@ -92,7 +84,7 @@ struct GlobalResourceFooter: View {
                                         ProgressView().controlSize(.small)
                                     } else {
                                         Text(
-                                            "global_resource.download_all"
+                                            "global_resource.download"
                                                 .localized(),
                                         )
                                     }

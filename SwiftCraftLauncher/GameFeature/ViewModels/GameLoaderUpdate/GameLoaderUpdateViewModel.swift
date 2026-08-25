@@ -8,6 +8,15 @@
 import Foundation
 import SwiftUI
 
+/// The mode in which the loader adjustment sheet is presented.
+enum GameLoaderUpdateMode {
+    /// Change the loader type or loader version of an existing game.
+    case adjust
+    /// Repair the game by re-fetching missing or corrupted files, preserving the
+    /// current loader type and version. No selections are offered.
+    case repair
+}
+
 /// View model for changing the loader version on an existing game instance.
 ///
 /// When the existing game already has a mod loader, only the loader version can be
@@ -23,6 +32,9 @@ import SwiftUI
 final class GameLoaderUpdateViewModel {
     /// The existing game instance being updated.
     let existingGame: GameVersionInfo
+
+    /// The presentation mode of the sheet.
+    let mode: GameLoaderUpdateMode
 
     /// The installation pipeline reused for loader version changes.
     let gameSetupService = GameSetupUtil()
@@ -55,8 +67,9 @@ final class GameLoaderUpdateViewModel {
     /// Invoked on the main actor once the updated record has been persisted.
     var onSuccess: (() -> Void)?
 
-    init(existingGame: GameVersionInfo) {
+    init(existingGame: GameVersionInfo, mode: GameLoaderUpdateMode = .adjust) {
         self.existingGame = existingGame
+        self.mode = mode
         selectedModLoader = existingGame.modLoader
         selectedLoaderVersion = existingGame.modLoader == GameLoader.vanilla.displayName ? "" : existingGame.modVersion
     }
@@ -66,6 +79,7 @@ final class GameLoaderUpdateViewModel {
         self.gameRepository = gameRepository
         if !didInit {
             didInit = true
+            guard mode == .adjust else { return }
             Task {
                 await refreshAvailableLoaderTypes()
                 await refreshLoaderVersions()
@@ -75,6 +89,9 @@ final class GameLoaderUpdateViewModel {
 
     /// Whether the form is ready to submit.
     var isFormValid: Bool {
+        if mode == .repair {
+            return !isUpdating
+        }
         guard !isLoadingLoaderVersions, !isUpdating else { return false }
         if canChangeLoaderType {
             return !selectedLoaderVersion.isEmpty
@@ -106,7 +123,7 @@ final class GameLoaderUpdateViewModel {
         await withTaskGroup(of: GameLoader?.self) { group in
             for loader in GameLoader.allCases where loader != .vanilla {
                 group.addTask {
-                    let result = await CommonService.fetchAllLoaderVersionsSilently(
+                    let result = try? await CommonService.fetchAllLoaderVersionsThrowing(
                         type: loader.modrinthLoaderId,
                         minecraftVersion: gameVersion,
                     )
@@ -158,10 +175,10 @@ final class GameLoaderUpdateViewModel {
         Task { await refreshLoaderVersions() }
     }
 
-    /// Starts the loader update through the installation pipeline.
+    /// Starts the loader update or repair through the installation pipeline.
     func confirm() {
         updateTask?.cancel()
-        updateTask = Task { await updateLoader() }
+        updateTask = Task { await run() }
     }
 
     /// Cancels an in-progress loader update. The existing game is left intact.
@@ -178,18 +195,29 @@ final class GameLoaderUpdateViewModel {
         }
     }
 
-    /// Runs the loader update and persists the result.
-    private func updateLoader() async {
+    /// Runs the loader update or repair and persists the result.
+    private func run() async {
         guard let gameRepository else {
             AppLog.game.error("GameRepository not set for loader update")
             return
         }
 
-        await gameSetupService.updateGameLoader(
-            input: .init(
+        let input: GameSetupUtil.GameLoaderUpdateInput
+        switch mode {
+        case .adjust:
+            input = .init(
                 selectedModLoader: selectedModLoader,
                 specifiedLoaderVersion: selectedLoaderVersion,
-            ),
+            )
+        case .repair:
+            input = .init(
+                selectedModLoader: existingGame.modLoader,
+                specifiedLoaderVersion: existingGame.modLoader == GameLoader.vanilla.displayName ? existingGame.modLoader : existingGame.modVersion,
+            )
+        }
+
+        await gameSetupService.updateGameLoader(
+            input: input,
             existingGame: existingGame,
             gameRepository: gameRepository,
         ) { [weak self] in

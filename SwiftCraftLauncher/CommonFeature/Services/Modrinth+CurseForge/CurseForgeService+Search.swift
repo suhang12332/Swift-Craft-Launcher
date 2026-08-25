@@ -27,50 +27,6 @@ extension CurseForgeService {
         return URLQueryItem(name: name, value: jsonString)
     }
 
-    /// Searches CurseForge projects.
-    /// - Parameters:
-    ///   - gameId: The game identifier (432 for Minecraft).
-    ///   - classId: An optional content type identifier.
-    ///   - categoryId: An optional category identifier (overridden by `categoryIds`).
-    ///   - categoryIds: An optional array of category identifiers (overrides `categoryId`, max 10).
-    ///   - gameVersion: An optional game version (overridden by `gameVersions`).
-    ///   - gameVersions: An optional array of game versions (overrides `gameVersion`, max 4).
-    ///   - searchFilter: An optional search keyword.
-    ///   - modLoaderType: An optional mod loader type (overridden by `modLoaderTypes`).
-    ///   - modLoaderTypes: An optional array of mod loader types (overrides `modLoaderType`, max 5).
-    ///   - index: The page index.
-    ///   - pageSize: The number of results per page.
-    /// - Returns: The search results, or empty results on failure.
-    static func searchProjects(
-        gameId: Int = 432,
-        classId: Int? = nil,
-        categoryId: Int? = nil,
-        categoryIds: [Int]? = nil,
-        gameVersion: String? = nil,
-        gameVersions: [String]? = nil,
-        searchFilter: String? = nil,
-        modLoaderType: Int? = nil,
-        modLoaderTypes: [Int]? = nil,
-        index: Int = 0,
-        pageSize: Int = 20,
-    ) async -> CurseForgeSearchResult {
-        await withServiceErrorHandling(context: "search CurseForge projects", fallback: CurseForgeSearchResult(data: [], pagination: nil)) {
-            try await searchProjectsThrowing(
-                gameId: gameId,
-                classId: classId,
-                categoryId: categoryId,
-                categoryIds: categoryIds,
-                gameVersion: gameVersion,
-                gameVersions: gameVersions,
-                searchFilter: searchFilter,
-                modLoaderType: modLoaderType,
-                modLoaderTypes: modLoaderTypes,
-                index: index,
-                pageSize: pageSize,
-            )
-        }
-    }
-
     /// Searches CurseForge projects, throwing on failure.
     /// - Parameters:
     ///   - gameId: The game identifier (432 for Minecraft).

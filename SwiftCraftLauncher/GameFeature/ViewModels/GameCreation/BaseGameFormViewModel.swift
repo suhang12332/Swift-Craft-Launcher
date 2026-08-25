@@ -26,7 +26,7 @@ class BaseGameFormViewModel {
 
     init(configuration: GameFormConfiguration) {
         self.configuration = configuration
-        gameNameValidator = GameNameValidator(gameSetupService: gameSetupService)
+        gameNameValidator = GameNameValidator()
 
         setupObservers()
     }

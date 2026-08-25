@@ -113,7 +113,6 @@ struct GameActionButtons: View {
                     alertType.alert
                 }
         }
-        .gameCrashAlert()
         .onAppear {
             container.core.gameStatusManager.refreshGameStatus(gameId: game.id, userId: currentUserId)
         }

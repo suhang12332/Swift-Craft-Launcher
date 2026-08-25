@@ -11,17 +11,6 @@ import Foundation
 enum FabricLoaderService {
     private static let config = FabricLikeLoaderService.Config(gameLoader: .fabric)
 
-    static func fetchAllLoaderVersions(for minecraftVersion: String) async -> [FabricLoader] {
-        do {
-            return try await fetchAllLoaderVersionsThrowing(for: minecraftVersion)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error("Failed to get Fabric loader version: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
-        }
-    }
-
     static func fetchAllLoaderVersionsThrowing(for minecraftVersion: String) async throws -> [FabricLoader] {
         let url = URLConfig.API.Fabric.loader.appendingPathComponent(minecraftVersion)
         let data = try await APIClient.get(url: url)
@@ -85,7 +74,7 @@ enum FabricLoaderService {
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
         fileManager.onProgressUpdate = onProgressUpdate
 
-        await fileManager.downloadFabricJars(libraries: fabricProfile.libraries)
+        try await fileManager.downloadFabricJarsThrowing(libraries: fabricProfile.libraries)
 
         let classpathString = CommonService.generateFabricClasspath(from: fabricProfile, librariesDir: librariesDirectory)
         let mainClass = fabricProfile.mainClass

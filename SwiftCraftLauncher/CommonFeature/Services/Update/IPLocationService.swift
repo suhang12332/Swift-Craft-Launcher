@@ -15,10 +15,11 @@ class IPLocationService {
 
     init() { }
 
-    /// Checks whether the user's IP is outside the current region.
+    /// Checks whether the user's IP is outside the current region, throwing on failure.
     /// Uses timezone detection as a fast local check, falls back to IP API if timezone is uncertain.
-    /// - Returns: `true` if the IP is foreign, `false` if detection fails or the IP is domestic.
-    func isForeignIP() async -> Bool {
+    /// - Returns: `true` if the IP is foreign.
+    /// - Throws: A `GlobalError` if detection fails.
+    func isForeignIPThrowing() async throws -> Bool {
         // Fast local check: if timezone is clearly Chinese, return false immediately.
         let timezone = TimeZone.current.identifier
         AppLog.common.debug("Current timezone: \(timezone)")
@@ -28,20 +29,6 @@ class IPLocationService {
         }
 
         // Timezone is non-Chinese or unknown — fall back to IP API for accurate detection.
-        do {
-            return try await isForeignIPThrowing()
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.common.error("Failed to detect IP geolocation: \(globalError.localizedDescription)")
-            // If both timezone and IP detection fail, assume foreign as a conservative default.
-            return true
-        }
-    }
-
-    /// Checks whether the user's IP is outside the current region, throwing on failure.
-    /// - Returns: `true` if the IP is foreign.
-    /// - Throws: A `GlobalError` if detection fails.
-    func isForeignIPThrowing() async throws -> Bool {
         let (data, statusCode) = try await APIClient.getUnchecked(url: URLConfig.API.IPLocation.currentLocation)
 
         // Some APIs return non-200 status codes while still including data in the response body.

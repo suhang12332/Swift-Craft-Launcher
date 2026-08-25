@@ -29,8 +29,8 @@ final class ContentToolbarViewModel {
         defer { isLoadingSkin = false }
 
         if !player.isOnlineAccount {
-            async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: player)
-            async let profile = PlayerSkinService.fetchPlayerProfile(player: player)
+            async let skinInfo = fetchSkinInfoSafely(player: player)
+            async let profile = fetchPlayerProfileSafely(player: player)
             let (loadedSkinInfo, loadedProfile) = await (skinInfo, profile)
             preloadedSkinInfo = loadedSkinInfo
             preloadedProfile = loadedProfile
@@ -54,14 +54,17 @@ final class ContentToolbarViewModel {
             if validatedPlayer.authAccessToken != player.authAccessToken {
                 AppLog.main.info("Token updated for player \(player.name), saving to data manager")
                 let dataManager = DIContainer.shared.ui.playerDataManager
-                let success = dataManager.updatePlayerSilently(validatedPlayer)
-                if success {
+                do {
+                    try dataManager.updatePlayer(validatedPlayer)
                     AppLog.main.debug("Token info updated in player data manager")
                     NotificationCenter.default.post(
                         name: .playerUpdated,
                         object: nil,
                         userInfo: ["updatedPlayer": validatedPlayer],
                     )
+                } catch {
+                    AppLog.main.error("Failed to save updated token: \(error.localizedDescription)")
+                    DIContainer.shared.core.errorHandler.handle(error)
                 }
             }
         } catch {
@@ -69,8 +72,8 @@ final class ContentToolbarViewModel {
             validatedPlayer = playerWithCredential
         }
 
-        async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: validatedPlayer)
-        async let profile = PlayerSkinService.fetchPlayerProfile(player: validatedPlayer)
+        async let skinInfo = fetchSkinInfoSafely(player: validatedPlayer)
+        async let profile = fetchPlayerProfileSafely(player: validatedPlayer)
         let (loadedSkinInfo, loadedProfile) = await (skinInfo, profile)
         preloadedSkinInfo = loadedSkinInfo
         preloadedProfile = loadedProfile
@@ -80,5 +83,25 @@ final class ContentToolbarViewModel {
     func clearPreloadedSkinData() {
         preloadedSkinInfo = nil
         preloadedProfile = nil
+    }
+
+    private func fetchSkinInfoSafely(player: Player) async -> PlayerSkinService.PublicSkinInfo? {
+        do {
+            return try await PlayerSkinService.fetchCurrentPlayerSkinFromServicesThrowing(player: player)
+        } catch {
+            AppLog.player.error("Failed to fetch skin info from Minecraft Services API: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    private func fetchPlayerProfileSafely(player: Player) async -> MinecraftProfileResponse? {
+        do {
+            return try await PlayerSkinService.fetchPlayerProfileThrowing(player: player)
+        } catch {
+            let globalError = GlobalError.from(error)
+            AppLog.player.error("Fetch player profile failed: \(globalError.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(globalError)
+            return nil
+        }
     }
 }

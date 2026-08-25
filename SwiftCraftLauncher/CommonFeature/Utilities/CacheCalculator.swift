@@ -31,13 +31,6 @@ struct CacheInfo: Equatable {
 class CacheCalculator {
     init() { }
 
-    /// Calculates cache information for the application cache directory.
-    /// - Throws: A ``GlobalError`` if the operation fails.
-    func calculateCacheInfo() throws -> CacheInfo {
-        let (fileCount, size) = try calculateDirectorySize(AppPaths.appCache)
-        return CacheInfo(fileCount: fileCount, totalSize: size)
-    }
-
     /// Returns the file count and total size of a directory.
     /// - Parameter directory: The directory to measure.
     /// - Returns: A tuple containing the file count and total size in bytes.

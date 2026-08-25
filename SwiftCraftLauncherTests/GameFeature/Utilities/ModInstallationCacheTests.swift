@@ -51,15 +51,6 @@ final class ModInstallationCacheTests: XCTestCase {
         XCTAssertTrue(hashes.isEmpty)
     }
 
-    func testHasCache() async {
-        let cache = ModScanner.ModInstallationCache()
-        let before = await cache.hasCache(for: "newGame")
-        XCTAssertFalse(before)
-        await cache.addHash("hash1", to: "newGame")
-        let after = await cache.hasCache(for: "newGame")
-        XCTAssertTrue(after)
-    }
-
     func testSetAllModsInstalled() async {
         let cache = ModScanner.ModInstallationCache()
         let hashes: Set = ["h1", "h2", "h3"]

@@ -10,23 +10,28 @@ import Foundation
 /// Provides access to the Modrinth API for Minecraft mod information and versions.
 enum ModrinthService {
     static func fetchVersionInfo(from version: String) async throws -> MinecraftVersionManifest {
-        if let cachedVersionInfo: MinecraftVersionManifest = DIContainer.shared.core.appCacheManager.get(
+        if let cachedData: Data = DIContainer.shared.core.appCacheManager.get(
             namespace: version,
             key: "manifest",
-            as: MinecraftVersionManifest.self,
+            as: Data.self,
             directory: AppPaths.versionCache,
         ) {
-            return cachedVersionInfo
+            return try decodeVersionInfo(from: cachedData, version: version)
         }
 
-        let versionInfo = try await fetchVersionInfoThrowing(from: version)
+        let data = try await fetchVersionInfoDataThrowing(from: version)
+        let versionInfo = try decodeVersionInfo(from: data, version: version)
 
-        DIContainer.shared.core.appCacheManager.setSilently(
-            namespace: version,
-            key: "manifest",
-            value: versionInfo,
-            directory: AppPaths.versionCache,
-        )
+        do {
+            try DIContainer.shared.core.appCacheManager.set(
+                namespace: version,
+                key: "manifest",
+                value: data,
+                directory: AppPaths.versionCache,
+            )
+        } catch {
+            DIContainer.shared.core.errorHandler.handle(error)
+        }
 
         return versionInfo
     }
@@ -46,21 +51,29 @@ enum ModrinthService {
             let versionInfo = try await Self.fetchVersionInfo(from: version)
             let formattedTime = CommonUtil.formatRelativeTime(versionInfo.releaseTime)
 
-            DIContainer.shared.core.appCacheManager.setSilently(
-                namespace: "version_time",
-                key: cacheKey,
-                value: formattedTime,
-            )
+            do {
+                try DIContainer.shared.core.appCacheManager.set(
+                    namespace: "version_time",
+                    key: cacheKey,
+                    value: formattedTime,
+                )
+            } catch {
+                DIContainer.shared.core.errorHandler.handle(error)
+            }
             return formattedTime
         } catch {
             return ""
         }
     }
 
-    static func fetchVersionInfoThrowing(from version: String) async throws -> MinecraftVersionManifest {
+    /// Fetches the raw Modrinth version manifest JSON data.
+    private static func fetchVersionInfoDataThrowing(from version: String) async throws -> Data {
         let url = URLConfig.API.Modrinth.versionInfo(version: version)
-        let data = try await APIClient.get(url: url)
+        return try await APIClient.get(url: url)
+    }
 
+    /// Decodes a Minecraft version manifest from its raw JSON data.
+    private static func decodeVersionInfo(from data: Data, version: String) throws -> MinecraftVersionManifest {
         do {
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
@@ -80,22 +93,6 @@ enum ModrinthService {
 
     static func filterPrimaryFiles(from files: [ModrinthVersionFile]?) -> ModrinthVersionFile? {
         files?.first { $0.primary == true }
-    }
-
-    static func fetchModrinthDetail(
-        by hash: String,
-        completion: @escaping @MainActor @Sendable (ModrinthProjectDetail?) -> Void,
-    ) {
-        Task {
-            do {
-                let detail = try await fetchModrinthDetailThrowing(by: hash)
-                await completion(detail)
-            } catch {
-                let globalError = GlobalError.from(error)
-                AppLog.common.error("Failed to fetch project details by hash (Hash: \(hash)): \(globalError.localizedDescription)")
-                await completion(nil)
-            }
-        }
     }
 
     static func fetchModrinthDetailThrowing(by hash: String) async throws -> ModrinthProjectDetail {

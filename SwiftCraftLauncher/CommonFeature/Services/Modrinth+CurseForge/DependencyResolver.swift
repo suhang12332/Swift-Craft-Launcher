@@ -27,15 +27,6 @@ enum DependencyResolver {
     }
 
     /// Resolves missing dependencies for a project.
-    static func resolve(_ context: Context) async -> ModrinthProjectDependency {
-        await withServiceErrorHandling(
-            context: "resolve dependencies (ID: \(context.id))",
-            fallback: ModrinthProjectDependency(projects: []),
-        ) {
-            try await resolveThrowing(context)
-        }
-    }
-
     static func resolveThrowing(_ context: Context) async throws -> ModrinthProjectDependency {
         let versions = try await context.fetchVersions(context.id)
         guard let firstVersion = versions.first else {

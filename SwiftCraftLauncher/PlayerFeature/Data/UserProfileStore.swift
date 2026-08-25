@@ -11,23 +11,6 @@ import Foundation
 class UserProfileStore {
     init() { }
 
-    /// Loads all stored user profiles.
-    ///
-    /// - Returns: An array of user profiles, or an empty array if none exist.
-    func loadProfiles() -> [UserProfile] {
-        guard let profilesData = UserDefaults.standard.data(forKey: AppConstants.UserDefaultsKeys.userProfiles) else {
-            return []
-        }
-
-        do {
-            let decoder = JSONDecoder()
-            return try decoder.decode([UserProfile].self, from: profilesData)
-        } catch {
-            AppLog.player.error("Failed to load user profile: \(error.localizedDescription)")
-            return []
-        }
-    }
-
     /// Loads all stored user profiles, throwing on failure.
     ///
     /// - Returns: An array of user profiles.
@@ -46,19 +29,6 @@ class UserProfileStore {
                 level: .notification,
                 message: "Failed to decode user profiles from UserDefaults: \(error.localizedDescription)",
             )
-        }
-    }
-
-    /// Saves an array of user profiles.
-    ///
-    /// - Parameter profiles: The profiles to save.
-    func saveProfiles(_ profiles: [UserProfile]) {
-        do {
-            try saveProfilesThrowing(profiles)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to save user profile: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
         }
     }
 
@@ -157,20 +127,6 @@ class UserProfileStore {
                 level: .notification,
                 message: "Profile with ID \"\(id)\" not found for deletion",
             )
-        }
-    }
-
-    /// Checks whether a profile with the given identifier exists.
-    ///
-    /// - Parameter id: The identifier to check.
-    /// - Returns: `true` if a matching profile exists.
-    func profileExists(id: String) -> Bool {
-        do {
-            let profiles = try loadProfilesThrowing()
-            return profiles.contains { $0.id == id }
-        } catch {
-            AppLog.player.error("Failed to check user existence: \(error.localizedDescription)")
-            return false
         }
     }
 }

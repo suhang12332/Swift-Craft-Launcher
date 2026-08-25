@@ -118,24 +118,6 @@ extension ModScanner {
         return try await rebuildDirectoryHashes(dir: standardizedDirectory)
     }
 
-    /// Scans the directory for all detail IDs, returning the result via a completion handler.
-    public func scanAllDetailIds(
-        in dir: URL,
-        completion: @escaping @Sendable (Set<String>) -> Void,
-    ) {
-        Task {
-            do {
-                let detailIds = try await scanAllDetailIdsThrowing(in: dir)
-                completion(detailIds)
-            } catch {
-                let globalError = GlobalError.from(error)
-                AppLog.game.error("Failed to scan all detailIds: \(globalError.localizedDescription)")
-                DIContainer.shared.core.errorHandler.handle(globalError)
-                completion(Set<String>())
-            }
-        }
-    }
-
     /// Scans the directory for all detail IDs, returning a set for O(1) lookups.
     public func scanAllDetailIdsThrowing(in dir: URL) async throws -> Set<String> {
         let standardizedDir = dir.standardizedFileURL
@@ -172,36 +154,6 @@ extension ModScanner {
             let globalError = GlobalError.from(error)
             AppLog.game.error("Failed to scan game \(game.gameName) mods directory: \(globalError.localizedDescription)")
         }
-    }
-
-    /// Synchronously scans the mods directory for the given game, blocking until complete.
-    public func scanGameModsDirectorySync(game: GameVersionInfo) {
-        let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
-
-        guard FileManager.default.fileExists(atPath: modsDir.path) else {
-            AppLog.game.debug("Game \(game.gameName) mods directory does not exist, skipping scan")
-            return
-        }
-
-        let standardizedModsDir = modsDir.standardizedFileURL
-        let semaphore = DispatchSemaphore(value: 0)
-        Task {
-            defer { semaphore.signal() }
-            await self.ensureFSEventsWatcherRegistered(
-                standardizedDirectory: standardizedModsDir,
-                gameNameHint: game.gameName,
-            )
-            do {
-                let detailIds = try await self.scanAllDetailIdsAfterWatcherRegisteredThrowing(
-                    standardizedDirectory: standardizedModsDir,
-                )
-                AppLog.game.debug("Game \(game.gameName) scan completed, found \(detailIds.count) mods")
-            } catch {
-                let globalError = GlobalError.from(error)
-                AppLog.game.error("Failed to scan game \(game.gameName) mods directory: \(globalError.localizedDescription)")
-            }
-        }
-        semaphore.wait()
     }
 
     /// Returns `true` if the directory is a mods directory.

@@ -19,13 +19,11 @@ class GameVersionDatabase {
 
     private let upsertSQL: String
     private let selectByPathSQL: String
-    private let selectAllSQL: String
     private let countByPathSQL: String
     private let selectByIdSQL: String
     private let deleteByIdSQL: String
     private let deleteByPathSQL: String
     private let deleteByPathAndNameSQL: String
-    private let updateLastPlayedSQL: String
 
     init(dbPath: String) {
         db = SQLiteDatabase.database(at: dbPath)
@@ -41,10 +39,6 @@ class GameVersionDatabase {
         WHERE working_path = ?
         ORDER BY last_played DESC
         """
-        selectAllSQL = """
-        SELECT working_path, data_json FROM \(tableName)
-        ORDER BY working_path, last_played DESC
-        """
         countByPathSQL = """
         SELECT working_path, COUNT(*) FROM \(tableName)
         GROUP BY working_path
@@ -54,13 +48,6 @@ class GameVersionDatabase {
         deleteByIdSQL = "DELETE FROM \(tableName) WHERE id = ?"
         deleteByPathSQL = "DELETE FROM \(tableName) WHERE working_path = ?"
         deleteByPathAndNameSQL = "DELETE FROM \(tableName) WHERE working_path = ? AND game_name = ?"
-        updateLastPlayedSQL = """
-        UPDATE \(tableName)
-        SET data_json = json_set(data_json, '$.lastPlayed', ?),
-            last_played = ?,
-            updated_at = ?
-        WHERE id = ?
-        """
     }
 
     /// Opens the database and creates the table schema if needed.
@@ -116,43 +103,6 @@ class GameVersionDatabase {
         }
     }
 
-    /// Saves multiple game versions to the database within a single transaction.
-    ///
-    /// - Parameters:
-    ///   - games: The game versions to save.
-    ///   - workingPath: The working path associated with the games.
-    func saveGames(_ games: [GameVersionInfo], workingPath: String) throws {
-        try db.transaction {
-            let now = Date()
-            try withPreparedStatement(upsertSQL) { statement in
-                for game in games {
-                    guard let jsonString = try? encodeGame(game) else { continue }
-                    sqlite3_reset(statement)
-                    bindGameStatement(statement, game: game, workingPath: workingPath, jsonString: jsonString, now: now)
-                    try stepStatement(statement)
-                }
-            }
-        }
-    }
-
-    /// Updates the last played date for a game.
-    ///
-    /// - Parameters:
-    ///   - id: The unique identifier of the game.
-    ///   - lastPlayed: The new last played date.
-    func updateLastPlayed(id: String, lastPlayed: Date) throws {
-        try db.transaction {
-            try withPreparedStatement(updateLastPlayedSQL) { statement in
-                let timestamp = lastPlayed.timeIntervalSince1970
-                SQLiteDatabase.bind(statement, index: 1, value: String(timestamp))
-                SQLiteDatabase.bind(statement, index: 2, value: lastPlayed)
-                SQLiteDatabase.bind(statement, index: 3, value: Date())
-                SQLiteDatabase.bind(statement, index: 4, value: id)
-                try stepStatement(statement)
-            }
-        }
-    }
-
     /// Loads all games for the specified working path.
     ///
     /// - Parameter workingPath: The working path to load games for.
@@ -168,23 +118,6 @@ class GameVersionDatabase {
             }
         }
         return games
-    }
-
-    /// Loads all games grouped by working path.
-    ///
-    /// - Returns: A dictionary of working paths to their associated game arrays.
-    func loadAllGames() throws -> [String: [GameVersionInfo]] {
-        var gamesByPath: [String: [GameVersionInfo]] = [:]
-        try withPreparedStatement(selectAllSQL) { statement in
-            while sqlite3_step(statement) == SQLITE_ROW {
-                guard let workingPath = SQLiteDatabase.stringColumn(statement, index: 0),
-                      let game = decodeGameFromStatement(statement, columnIndex: 1) else {
-                    continue
-                }
-                gamesByPath[workingPath, default: []].append(game)
-            }
-        }
-        return gamesByPath
     }
 
     /// Returns all working paths with their game counts.

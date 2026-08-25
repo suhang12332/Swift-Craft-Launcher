@@ -115,27 +115,23 @@ extension SkinToolDetailViewModel {
             if selectedCapeId != currentActiveCapeId {
                 try Task.checkCancellation()
                 if let capeId = selectedCapeId {
-                    let result = await PlayerSkinService.showCape(capeId: capeId, player: player)
+                    try await PlayerSkinService.showCapeThrowing(capeId: capeId, player: player)
                     try Task.checkCancellation()
-                    if result {
-                        if let newProfile = await PlayerSkinService.fetchPlayerProfile(player: player) {
-                            playerProfile = newProfile
-                            selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
-                            updateHasChanges()
-                        }
+                    if let newProfile = try? await PlayerSkinService.fetchPlayerProfileThrowing(player: player) {
+                        playerProfile = newProfile
+                        selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
+                        updateHasChanges()
                     }
-                    return result
+                    return true
                 } else {
-                    let result = await PlayerSkinService.hideCape(player: player)
+                    try await PlayerSkinService.hideCapeThrowing(player: player)
                     try Task.checkCancellation()
-                    if result {
-                        if let newProfile = await PlayerSkinService.fetchPlayerProfile(player: player) {
-                            playerProfile = newProfile
-                            selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
-                            updateHasChanges()
-                        }
+                    if let newProfile = try? await PlayerSkinService.fetchPlayerProfileThrowing(player: player) {
+                        playerProfile = newProfile
+                        selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
+                        updateHasChanges()
                     }
-                    return result
+                    return true
                 }
             }
             return true
@@ -166,13 +162,13 @@ extension SkinToolDetailViewModel {
             let data = try await APIClient.get(url: url, headers: headers)
             try Task.checkCancellation()
 
-            let result = await PlayerSkinService.uploadSkin(
+            try await PlayerSkinService.uploadSkinThrowing(
                 imageData: data,
                 model: currentModel,
                 player: p,
             )
             try Task.checkCancellation()
-            return result
+            return true
         } catch is CancellationError {
             return false
         } catch {

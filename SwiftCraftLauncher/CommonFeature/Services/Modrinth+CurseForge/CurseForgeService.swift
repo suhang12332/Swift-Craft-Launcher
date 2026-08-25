@@ -17,20 +17,6 @@ enum CurseForgeService {
         return headers
     }
 
-    /// Fetches file details for a CurseForge project file.
-    /// - Parameters:
-    ///   - projectId: The CurseForge project identifier.
-    ///   - fileId: The file identifier.
-    /// - Returns: The file details, or `nil` if the request fails.
-    static func fetchFileDetail(projectId: Int, fileId: Int) async -> CurseForgeModFileDetail? {
-        do {
-            return try await fetchFileDetailThrowing(projectId: projectId, fileId: fileId)
-        } catch {
-            AppLog.common.error("Failed to fetch CurseForge file details: \(error.localizedDescription)")
-            return nil
-        }
-    }
-
     /// Fetches file details for a CurseForge project file, throwing on failure.
     /// - Parameters:
     ///   - projectId: The CurseForge project identifier.

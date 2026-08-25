@@ -30,7 +30,7 @@ struct SwiftCraftLauncherAppCommands: Commands {
         CommandGroup(after: .newItem) {
             Button("settings.game.clear_cache.label".localized()) {
                 Task.detached(priority: .utility) {
-                    DIContainer.shared.core.modCacheManager.clearLocalSilently()
+                    try? DIContainer.shared.core.modCacheManager.clearLocal()
                 }
             }
         }

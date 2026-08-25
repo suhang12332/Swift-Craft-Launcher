@@ -41,7 +41,7 @@ struct MainViewPresentationModifier: ViewModifier {
                 ModPackExportSheet(gameInfo: game)
             }
             .sheet(item: $gameDialogsPresenter.gamePendingLoaderUpdate) { game in
-                GameLoaderUpdateView(gameInfo: game)
+                GameLoaderUpdateView(gameInfo: game, mode: gameDialogsPresenter.pendingLoaderUpdateMode)
                     .presentationBackgroundInteraction(.automatic)
             }
             .task {

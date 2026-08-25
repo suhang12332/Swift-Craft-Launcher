@@ -24,13 +24,6 @@ enum JWTDecoder {
         return expirationDate
     }
 
-    /// Extracts all claims from a JWT token payload.
-    /// - Parameter jwt: A JWT token string.
-    /// - Returns: A dictionary of claims, or `nil` if parsing fails.
-    static func extractAllInfo(from jwt: String) -> [String: Any]? {
-        decodePayload(from: jwt)
-    }
-
     /// Decodes the payload section of a JWT token into a dictionary.
     private static func decodePayload(from jwt: String) -> [String: Any]? {
         let components = jwt.components(separatedBy: ".")

@@ -61,6 +61,7 @@ struct MainView: View {
             await loadInitialAppData()
         }
         .mainViewPresentations(container: container, detailState: detailState)
+        .gameCrashAlert()
         .frame(minWidth: 900, minHeight: 500)
         .touchBarSupport(
             TouchBarSupportConfiguration.make(

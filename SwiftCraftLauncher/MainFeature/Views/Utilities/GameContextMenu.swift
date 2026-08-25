@@ -88,7 +88,14 @@ struct GameContextMenu: View {
             }, label: {
                 Label("game.loader.update.title".localized(), systemImage: "arrow.triangle.2.circlepath")
             })
+            .disabled(isRunning)
         }
+        Button {
+            container.ui.gameDialogsPresenter.presentLoaderUpdate(for: game, mode: .repair)
+        } label: {
+            Label("game.repair.title".localized(), systemImage: "wrench.and.screwdriver")
+        }
+        .disabled(isRunning)
 
         Divider()
 

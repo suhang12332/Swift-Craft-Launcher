@@ -349,7 +349,7 @@ final class GlobalErrorHandler: @unchecked Sendable {
 
         case .notification:
             Task {
-                await NotificationManager.sendSilently(
+                try? await NotificationManager.send(
                     title: error.notificationTitle,
                     body: error.localizedDescription,
                 )
@@ -365,10 +365,6 @@ final class GlobalErrorHandler: @unchecked Sendable {
 
     func clearCurrentError() {
         currentError = nil
-    }
-
-    func clearHistory() {
-        errorHistory.removeAll()
     }
 
     private func addToHistory(_ error: GlobalError) {

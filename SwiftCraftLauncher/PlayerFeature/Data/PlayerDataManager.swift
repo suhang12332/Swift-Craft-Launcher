@@ -40,7 +40,7 @@ class PlayerDataManager {
     ) throws {
         let players = try loadPlayersThrowing()
 
-        if playerExists(name: name) {
+        if try playerExistsThrowing(name: name) {
             throw GlobalError.player(
                 i18nKey: "error.player.already_exists",
                 level: .notification,
@@ -98,59 +98,6 @@ class PlayerDataManager {
         }
     }
 
-    /// Adds a new player without propagating errors.
-    ///
-    /// - Parameters:
-    ///   - name: The player's display name.
-    ///   - uuid: A unique identifier.
-    ///   - isOnline: A Boolean value indicating whether this is an online account.
-    ///   - avatarName: The avatar image name or URL.
-    ///   - accToken: The access token.
-    ///   - refreshToken: The refresh token.
-    ///   - xuid: The Xbox user identifier.
-    /// - Returns: `true` if the player was added successfully.
-    func addPlayerSilently(
-        name: String,
-        uuid: String? = nil,
-        isOnline: Bool,
-        avatarName: String,
-        accToken: String = "",
-        refreshToken: String = "",
-        xuid: String = "",
-    ) -> Bool {
-        do {
-            try addPlayer(
-                name: name,
-                uuid: uuid,
-                isOnline: isOnline,
-                avatarName: avatarName,
-                accToken: accToken,
-                refreshToken: refreshToken,
-                xuid: xuid,
-            )
-            return true
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to add player: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return false
-        }
-    }
-
-    /// Loads all saved players, returning an empty array on failure.
-    ///
-    /// - Returns: An array of players.
-    func loadPlayers() -> [Player] {
-        do {
-            return try loadPlayersThrowing()
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to load player data: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return []
-        }
-    }
-
     /// Loads all saved players, throwing on failure.
     ///
     /// - Returns: An array of players.
@@ -175,16 +122,10 @@ class PlayerDataManager {
     ///
     /// - Parameter name: The name to check.
     /// - Returns: `true` if a matching player exists.
-    func playerExists(name: String) -> Bool {
-        do {
-            let players = try loadPlayersThrowing()
-            return players.contains { $0.name.lowercased() == name.lowercased() }
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to check player existence: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return false
-        }
+    /// - Throws: A `GlobalError` if the player list cannot be loaded.
+    func playerExistsThrowing(name: String) throws -> Bool {
+        let players = try loadPlayersThrowing()
+        return players.contains { $0.name.lowercased() == name.lowercased() }
     }
 
     /// Deletes a player by identifier, including their credential and server mappings.
@@ -213,35 +154,6 @@ class PlayerDataManager {
                 }
             }
             AppLog.player.debug("Player deleted (ID: \(id))")
-        }
-    }
-
-    /// Deletes a player without propagating errors.
-    ///
-    /// - Parameter id: The identifier of the player to delete.
-    /// - Returns: `true` if the player was deleted successfully.
-    func deletePlayerSilently(byID id: String) -> Bool {
-        do {
-            try deletePlayer(byID: id)
-            return true
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to delete player: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return false
-        }
-    }
-
-    /// Saves an array of players without propagating errors.
-    ///
-    /// - Parameter players: The players to save.
-    func savePlayers(_ players: [Player]) {
-        do {
-            try savePlayersThrowing(players)
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to save player data: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
         }
     }
 
@@ -302,21 +214,5 @@ class PlayerDataManager {
         }
 
         AppLog.player.debug("Player info updated: \(updatedPlayer.name)")
-    }
-
-    /// Updates an existing player without propagating errors.
-    ///
-    /// - Parameter updatedPlayer: The player with updated values.
-    /// - Returns: `true` if the update was successful.
-    func updatePlayerSilently(_ updatedPlayer: Player) -> Bool {
-        do {
-            try updatePlayer(updatedPlayer)
-            return true
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.player.error("Failed to update player info: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return false
-        }
     }
 }

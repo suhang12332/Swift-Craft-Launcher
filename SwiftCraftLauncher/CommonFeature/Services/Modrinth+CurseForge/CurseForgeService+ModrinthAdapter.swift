@@ -9,15 +9,6 @@ import Foundation
 
 /// Provides CurseForge project operations with Modrinth-compatible data formats.
 extension CurseForgeService {
-    /// Fetches project details and converts them to Modrinth format.
-    /// - Parameter id: The CurseForge project identifier (may include "cf-" prefix).
-    /// - Returns: The project details in Modrinth format, or `nil` on failure.
-    static func fetchProjectDetailsAsModrinth(id: String) async -> ModrinthProjectDetail? {
-        await withServiceErrorHandling(context: "fetch project details (ID: \(id))", fallback: nil) {
-            try await fetchProjectDetailsAsModrinthThrowing(id: id)
-        }
-    }
-
     /// Fetches project details and converts them to Modrinth format, throwing on failure.
     /// - Parameter id: The CurseForge project identifier (may include "cf-" prefix).
     /// - Returns: The project details in Modrinth format.
@@ -49,19 +40,7 @@ extension CurseForgeService {
 
     /// Fetches project details by file fingerprint in Modrinth format.
     /// - Parameter fingerprint: The CurseForge file fingerprint (UInt32).
-    /// - Returns: The project details in Modrinth format, or `nil` if no match or on failure.
-    static func fetchProjectDetailsAsModrinthByFingerprint(fingerprint: UInt32) async -> ModrinthProjectDetail? {
-        do {
-            return try await fetchProjectDetailsAsModrinthByFingerprintThrowing(fingerprint: fingerprint)
-        } catch {
-            AppLog.common.error("Failed to fetch CurseForge project details by fingerprint: \(error.localizedDescription)")
-            return nil
-        }
-    }
-
-    /// Fetches project details by file fingerprint in Modrinth format.
-    /// - Parameter fingerprint: The CurseForge file fingerprint (UInt32).
-    /// - Returns: The project details in Modrinth format.
+    /// - Returns: The project details in Modrinth format, or `nil` if no match.
     static func fetchProjectDetailsAsModrinthByFingerprintThrowing(fingerprint: UInt32) async throws -> ModrinthProjectDetail? {
         let matches = try await fetchFingerprintMatchesThrowing(fingerprint: fingerprint)
         let modId = matches
@@ -77,31 +56,15 @@ extension CurseForgeService {
     /// Fetches the CurseForge project and file identifiers for a file fingerprint.
     /// - Parameter fingerprint: The CurseForge file fingerprint (UInt32).
     /// - Returns: A tuple of (projectId, fileId), or `nil` if no exact match.
-    static func fetchProjectAndFileByFingerprint(fingerprint: UInt32) async -> (projectId: Int, fileId: Int)? {
-        do {
-            let matches = try await fetchFingerprintMatchesThrowing(fingerprint: fingerprint)
-            guard let match = matches.data.exactMatches?.first,
-                  let projectId = match.file?.modId,
-                  let fileId = match.file?.id else {
-                return nil
-            }
-            return (projectId, fileId)
-        } catch {
-            if error is CancellationError {
-                return nil
-            }
-            AppLog.common.error("Failed to fetch CurseForge file info by fingerprint: \(error.localizedDescription)")
+    /// - Throws: A `GlobalError` if the request fails.
+    static func fetchProjectAndFileByFingerprintThrowing(fingerprint: UInt32) async throws -> (projectId: Int, fileId: Int)? {
+        let matches = try await fetchFingerprintMatchesThrowing(fingerprint: fingerprint)
+        guard let match = matches.data.exactMatches?.first,
+              let projectId = match.file?.modId,
+              let fileId = match.file?.id else {
             return nil
         }
-    }
-
-    /// Fetches the version list for a CurseForge project in Modrinth format.
-    /// - Parameter id: The CurseForge project identifier.
-    /// - Returns: An array of versions in Modrinth format, or an empty array on failure.
-    static func fetchProjectVersionsAsModrinth(id: String) async -> [ModrinthProjectDetailVersion] {
-        await withServiceErrorHandling(context: "fetch project version list (ID: \(id))", fallback: []) {
-            try await fetchProjectVersionsAsModrinthThrowing(id: id)
-        }
+        return (projectId, fileId)
     }
 
     /// Fetches the version list for a CurseForge project in Modrinth format, throwing on failure.
