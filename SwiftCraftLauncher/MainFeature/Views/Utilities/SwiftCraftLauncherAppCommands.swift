@@ -38,6 +38,18 @@ struct SwiftCraftLauncherAppCommands: Commands {
         CommandGroup(after: .help) {
             Divider()
 
+            Button("about.contributors".localized()) {
+                DIContainer.shared.ui.windowManager.openWindow(id: .contributors)
+            }
+            .keyboardShortcut("c", modifiers: [.command, .shift])
+
+            Button("about.acknowledgements".localized()) {
+                DIContainer.shared.ui.windowManager.openWindow(id: .acknowledgements)
+            }
+            .keyboardShortcut("a", modifiers: [.command, .shift])
+
+            Divider()
+
             Link("GitHub", destination: URLConfig.API.GitHub.repositoryURL())
             Link("menu.community.website".localized(), destination: URLConfig.API.Community.website())
 
@@ -48,16 +60,6 @@ struct SwiftCraftLauncherAppCommands: Commands {
             }
 
             Link("menu.community.report.issue".localized(), destination: URLConfig.API.Community.issues())
-
-            Button("about.contributors".localized()) {
-                DIContainer.shared.ui.windowManager.openWindow(id: .contributors)
-            }
-            .keyboardShortcut("c", modifiers: [.command, .shift])
-
-            Button("about.acknowledgements".localized()) {
-                DIContainer.shared.ui.windowManager.openWindow(id: .acknowledgements)
-            }
-            .keyboardShortcut("a", modifiers: [.command, .shift])
 
             Link("license.view".localized(), destination: URLConfig.API.GitHub.license())
                 .keyboardShortcut("l", modifiers: [.command, .option])
