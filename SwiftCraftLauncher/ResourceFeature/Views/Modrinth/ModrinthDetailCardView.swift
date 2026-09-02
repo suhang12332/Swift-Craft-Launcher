@@ -37,13 +37,24 @@ struct ModrinthDetailCardLayout<Icon: View, Title: View, Description: View, Tags
 
 /// A placeholder icon used when the project icon is not available.
 struct ModrinthDetailCardPlaceholderIcon: View {
+    var sfSymbol: String?
     var body: some View {
-        Color.gray.opacity(0.2)
-            .frame(
-                width: ModrinthConstants.UIConstants.iconSize,
-                height: ModrinthConstants.UIConstants.iconSize,
-            )
-            .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
+        ZStack {
+            Color.gray.opacity(0.2)
+            if let sfSymbol {
+                Image(systemName: sfSymbol)
+                    .font(.system(size: ModrinthConstants.UIConstants.iconSize * 0.4))
+                    .foregroundStyle(.secondary)
+            } else {
+                ProgressView()
+                    .controlSize(.small)
+            }
+        }
+        .frame(
+            width: ModrinthConstants.UIConstants.iconSize,
+            height: ModrinthConstants.UIConstants.iconSize,
+        )
+        .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
     }
 }
 
@@ -94,7 +105,7 @@ struct ModrinthDetailCardView: View {
 
     @ViewBuilder private var iconView: some View {
         if project.projectId.hasPrefix("local_") || project.projectId.hasPrefix("file_") {
-            ModrinthDetailCardPlaceholderIcon()
+            ModrinthDetailCardPlaceholderIcon(sfSymbol: "questionmark.circle")
         } else if let iconURL = CommonUtil.iconURL(from: project.iconUrl) {
             AsyncImage(url: iconURL) { phase in
                 switch phase {
