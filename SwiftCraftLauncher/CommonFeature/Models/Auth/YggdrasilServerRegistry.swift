@@ -17,9 +17,11 @@ enum YggdrasilServerRegistry {
         YggdrasilServerPresets.servers
     }
 
-    /// 用户添加的自定义服务器(密码登录)。
+    /// 用户添加的自定义服务器(密码登录)。读取自可观察存储,
+    /// 增删后引用该列表的视图会自动刷新。
     static var custom: [YggdrasilServerConfig] {
-        CustomYggdrasilServerStore.load().map(CustomYggdrasilServerStore.toConfig)
+        DIContainer.shared.system.customYggdrasilServerStore.servers
+            .map(CustomYggdrasilServerStore.toConfig)
     }
 
     /// 全部可用服务器(预设在前,自定义在后)。

@@ -10,18 +10,24 @@ import SwiftUI
 /// 自定义 Yggdrasil 皮肤站管理面板:展示已添加列表(可删除)并提供添加表单。
 ///
 /// 添加流程:输入 authlib-injector API 根地址 → 验证(拉取元数据)→
-/// 自动填充站点名称 → 保存。被玩家档案引用的服务器会被阻止删除。
+/// 显示站点名称 → 保存。被玩家档案引用的服务器会被阻止删除。
+/// 列表数据来自可观察的 `CustomYggdrasilServerStore`,增删即时同步所有视图。
 struct CustomYggdrasilServerSheet: View {
+    @Environment(DIContainer.self)
+    private var container
     @Environment(\.dismiss)
     private var dismiss
 
-    @State private var servers: [CustomYggdrasilServer] = []
     @State private var apiRootText = ""
     @State private var serverName = ""
     @State private var nonEmailLogin = false
     @State private var isVerifying = false
     @State private var verifiedAPIRoot: String?
     @State private var errorMessage: String?
+
+    private var servers: [CustomYggdrasilServer] {
+        container.system.customYggdrasilServerStore.servers
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -52,9 +58,6 @@ struct CustomYggdrasilServerSheet: View {
         }
         .padding(20)
         .frame(width: 460)
-        .onAppear {
-            reloadServers()
-        }
     }
 
     // MARK: - 已有服务器列表
@@ -139,10 +142,6 @@ struct CustomYggdrasilServerSheet: View {
 
     // MARK: - 动作
 
-    private func reloadServers() {
-        servers = CustomYggdrasilServerStore.load()
-    }
-
     private func verifyAPIRoot() {
         errorMessage = nil
         isVerifying = true
@@ -169,12 +168,11 @@ struct CustomYggdrasilServerSheet: View {
     private func saveServer() {
         errorMessage = nil
         do {
-            _ = try CustomYggdrasilServerStore.add(
+            _ = try container.system.customYggdrasilServerStore.add(
                 name: serverName,
                 apiRoot: verifiedAPIRoot ?? apiRootText,
                 nonEmailLogin: nonEmailLogin,
             )
-            reloadServers()
             apiRootText = ""
             serverName = ""
             nonEmailLogin = false
@@ -187,11 +185,10 @@ struct CustomYggdrasilServerSheet: View {
     private func removeServer(_ server: CustomYggdrasilServer) {
         errorMessage = nil
         do {
-            try CustomYggdrasilServerStore.remove(
+            try container.system.customYggdrasilServerStore.remove(
                 id: server.id,
                 referencedBaseURLs: YggdrasilServerRegistry.referencedYggdrasilBaseURLs,
             )
-            reloadServers()
         } catch {
             errorMessage = GlobalError.from(error).localizedDescription
         }

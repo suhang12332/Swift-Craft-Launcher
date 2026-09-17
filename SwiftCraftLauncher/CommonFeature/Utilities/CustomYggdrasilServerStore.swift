@@ -20,36 +20,32 @@ struct CustomYggdrasilServer: Codable, Identifiable, Equatable {
     let dateAdded: Date
 }
 
-/// 自定义 Yggdrasil 服务器的持久化与元数据获取。
+/// 自定义 Yggdrasil 服务器的可观察存储。
 ///
-/// 列表与元数据缓存存 UserDefaults:服务器地址与名称并非敏感信息;
-/// 该类服务器的敏感凭据(密码/令牌)仍统一走 `AccountCredentialStore`。
-enum CustomYggdrasilServerStore {
-    /// 软上限,防止列表失控;与规范"每用户令牌上限"的精神一致。
+/// `servers` 是 SwiftUI 可观察的唯一事实来源:增删会立即刷新所有引用
+/// 该列表的视图(如添加账户标题栏的服务器菜单)。持久化走 UserDefaults
+/// (地址与名称并非敏感信息;此类服务器的凭据仍统一走 `AccountCredentialStore`)。
+@Observable
+final class CustomYggdrasilServerStore {
+    /// 与规范"每用户令牌上限"精神一致的软上限,防止列表失控。
     static let maxServers = 10
 
-    // MARK: - 列表读写
+    /// 当前自定义服务器列表(按添加时间有序)。
+    private(set) var servers: [CustomYggdrasilServer]
 
-    static func load() -> [CustomYggdrasilServer] {
-        guard let data = UserDefaults.standard.data(forKey: AppConstants.UserDefaultsKeys.customYggdrasilServers),
-              let servers = try? JSONDecoder().decode([CustomYggdrasilServer].self, from: data) else {
-            return []
-        }
-        return servers
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        servers = Self.loadPersistedServers(from: defaults)
     }
 
-    static func save(_ servers: [CustomYggdrasilServer]) {
-        guard let data = try? JSONEncoder().encode(servers) else {
-            AppLog.common.error("Failed to encode custom Yggdrasil servers")
-            return
-        }
-        UserDefaults.standard.set(data, forKey: AppConstants.UserDefaultsKeys.customYggdrasilServers)
-    }
+    // MARK: - 增删(同时写盘并更新可观察列表)
 
-    /// 添加服务器;API 根重复时抛错。
-    static func add(name: String, apiRoot: String, nonEmailLogin: Bool) throws -> CustomYggdrasilServer {
-        var servers = load()
-        let normalized = normalizeAPIRoot(apiRoot)
+    /// 添加服务器;API 根重复或超出上限时抛错。
+    @discardableResult
+    func add(name: String, apiRoot: String, nonEmailLogin: Bool) throws -> CustomYggdrasilServer {
+        let normalized = Self.normalizeAPIRoot(apiRoot)
         guard !servers.contains(where: { $0.apiRoot == normalized }) else {
             throw GlobalError.validation(
                 i18nKey: "yggdrasil.custom.error.duplicated",
@@ -57,11 +53,11 @@ enum CustomYggdrasilServerStore {
                 message: "Custom Yggdrasil server already exists: \(normalized)",
             )
         }
-        guard servers.count < maxServers else {
+        guard servers.count < Self.maxServers else {
             throw GlobalError.validation(
                 i18nKey: "yggdrasil.custom.error.limit_reached",
                 level: .notification,
-                message: "Custom Yggdrasil server limit reached (\(maxServers))",
+                message: "Custom Yggdrasil server limit reached (\(Self.maxServers))",
             )
         }
 
@@ -73,17 +69,16 @@ enum CustomYggdrasilServerStore {
             dateAdded: Date(),
         )
         servers.append(server)
-        save(servers)
+        persist()
         return server
     }
 
     /// 移除服务器;`referencedBaseURLs` 为仍在使用该服务器的玩家档案地址,
     /// 命中时拒绝删除(需先移除对应玩家)。
-    static func remove(id: String, referencedBaseURLs: Set<String>) throws {
-        var servers = load()
+    func remove(id: String, referencedBaseURLs: Set<String>) throws {
         guard let index = servers.firstIndex(where: { $0.id == id }) else { return }
         let server = servers[index]
-        let baseURL = configBaseURL(for: server)
+        let baseURL = Self.configBaseURL(for: server)
         guard !referencedBaseURLs.contains(baseURL) else {
             throw GlobalError.validation(
                 i18nKey: "yggdrasil.custom.error.in_use",
@@ -92,36 +87,10 @@ enum CustomYggdrasilServerStore {
             )
         }
         servers.remove(at: index)
-        save(servers)
+        persist()
     }
 
-    // MARK: - 转换与元数据
-
-    /// 转为统一的服务器配置(密码登录形态)。
-    static func toConfig(_ server: CustomYggdrasilServer) -> YggdrasilServerConfig {
-        YggdrasilServerConfig(
-            name: server.serverName,
-            baseURL: URL(string: server.apiRoot) ?? URL(fileURLWithPath: "/"),
-            redirectURI: "swift-craft-launcher://auth",
-            authorizePath: "",
-            tokenPath: "",
-            profilePath: "",
-            scope: "",
-            parserId: .custom,
-            token: "",
-            loginMethod: .password,
-            apiRoot: URL(string: server.apiRoot),
-        )
-    }
-
-    /// 规范化 API 根:去首尾空白与尾斜杠,并强制 HTTPS(localhost 除外)。
-    static func normalizeAPIRoot(_ raw: String) -> String {
-        var trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-        while trimmed.hasSuffix("/") {
-            trimmed.removeLast()
-        }
-        return trimmed
-    }
+    // MARK: - 静态无状态工具
 
     /// 拉取服务器元数据:`GET {apiRoot}` 返回
     /// `{meta: {serverName, feature: {non_email_login}}}`。
@@ -161,8 +130,52 @@ enum CustomYggdrasilServerStore {
         return (serverName, nonEmailLogin)
     }
 
+    /// 转为统一的服务器配置(密码登录形态)。
+    static func toConfig(_ server: CustomYggdrasilServer) -> YggdrasilServerConfig {
+        YggdrasilServerConfig(
+            name: server.serverName,
+            baseURL: URL(string: server.apiRoot) ?? URL(fileURLWithPath: "/"),
+            redirectURI: "swift-craft-launcher://auth",
+            authorizePath: "",
+            tokenPath: "",
+            profilePath: "",
+            scope: "",
+            parserId: .custom,
+            token: "",
+            loginMethod: .password,
+            apiRoot: URL(string: server.apiRoot),
+        )
+    }
+
+    /// 规范化 API 根:去首尾空白与尾斜杠。
+    static func normalizeAPIRoot(_ raw: String) -> String {
+        var trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        while trimmed.hasSuffix("/") {
+            trimmed.removeLast()
+        }
+        return trimmed
+    }
+
     /// 统一配置视角下的 baseURL 字符串(与凭据/档案关联键一致)。
     static func configBaseURL(for server: CustomYggdrasilServer) -> String {
         server.apiRoot
+    }
+
+    // MARK: - 持久化
+
+    private static func loadPersistedServers(from defaults: UserDefaults) -> [CustomYggdrasilServer] {
+        guard let data = defaults.data(forKey: AppConstants.UserDefaultsKeys.customYggdrasilServers),
+              let servers = try? JSONDecoder().decode([CustomYggdrasilServer].self, from: data) else {
+            return []
+        }
+        return servers
+    }
+
+    private func persist() {
+        guard let data = try? JSONEncoder().encode(servers) else {
+            AppLog.common.error("Failed to encode custom Yggdrasil servers")
+            return
+        }
+        defaults.set(data, forKey: AppConstants.UserDefaultsKeys.customYggdrasilServers)
     }
 }

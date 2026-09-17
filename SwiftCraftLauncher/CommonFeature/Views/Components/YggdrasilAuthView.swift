@@ -274,7 +274,7 @@ struct YggdrasilAuthView: View {
 private extension YggdrasilServerConfig {
     var nonEmailLoginHintAvailable: Bool {
         guard let apiRootString = apiRoot?.absoluteString else { return false }
-        return CustomYggdrasilServerStore.load()
+        return DIContainer.shared.system.customYggdrasilServerStore.servers
             .first { $0.apiRoot == apiRootString }?
             .nonEmailLogin ?? false
     }
