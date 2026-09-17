@@ -73,8 +73,6 @@ struct YggdrasilAuthView: View {
         }
     }
 
-    // MARK: - 认证状态
-
     @ViewBuilder private var authStateSection: some View {
         switch container.system.yggdrasilAuthService.authState {
         case .idle:
@@ -93,8 +91,6 @@ struct YggdrasilAuthView: View {
             failedView(message: message)
         }
     }
-
-    // MARK: - 密码登录表单
 
     /// 登录按钮位于面板底部右下角(由添加账户面板 footer 渲染)。
     private var passwordLoginForm: some View {

@@ -40,8 +40,6 @@ final class CustomYggdrasilServerStore {
         servers = Self.loadPersistedServers(from: defaults)
     }
 
-    // MARK: - 增删(同时写盘并更新可观察列表)
-
     /// 添加服务器;API 根重复或超出上限时抛错。
     @discardableResult
     func add(name: String, apiRoot: String, nonEmailLogin: Bool) throws -> CustomYggdrasilServer {
@@ -89,8 +87,6 @@ final class CustomYggdrasilServerStore {
         servers.remove(at: index)
         persist()
     }
-
-    // MARK: - 静态无状态工具
 
     /// 拉取服务器元数据:`GET {apiRoot}` 返回
     /// `{meta: {serverName, feature: {non_email_login}}}`。
@@ -160,8 +156,6 @@ final class CustomYggdrasilServerStore {
     static func configBaseURL(for server: CustomYggdrasilServer) -> String {
         server.apiRoot
     }
-
-    // MARK: - 持久化
 
     private static func loadPersistedServers(from defaults: UserDefaults) -> [CustomYggdrasilServer] {
         guard let data = defaults.data(forKey: AppConstants.UserDefaultsKeys.customYggdrasilServers),

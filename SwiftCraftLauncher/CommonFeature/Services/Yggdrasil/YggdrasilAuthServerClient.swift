@@ -160,8 +160,6 @@ struct YggdrasilAuthServerClient: YggdrasilAuthServerClientProtocol {
         return skin["url"] as? String
     }
 
-    // MARK: - 私有
-
     private func endpoint(_ apiRoot: URL, action: String) -> URL {
         apiRoot.appendingPathComponent("authserver/\(action)")
     }

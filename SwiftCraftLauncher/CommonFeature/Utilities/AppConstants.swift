@@ -30,8 +30,6 @@ enum AppConstants {
         static let hasAddedPremiumAccount = "hasAddedPremiumAccount"
         static let offlineUserServerMap = "offlineUserServerMap"
 
-        // MARK: 统一账号凭据存储
-
         /// 旧版离线服务器映射迁移标记(值:迁移版本号),防止重复迁移。
         static let accountCredentialMigrationVersion = "accountCredentialMigrationVersion"
         /// 用户添加的自定义 Yggdrasil 认证服务器列表(非敏感,存 UserDefaults)。

@@ -60,8 +60,6 @@ struct CustomYggdrasilServerSheet: View {
         .frame(width: 460)
     }
 
-    // MARK: - 已有服务器列表
-
     private var serverListSection: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("yggdrasil.custom.existing".localized())
@@ -92,8 +90,6 @@ struct CustomYggdrasilServerSheet: View {
             }
         }
     }
-
-    // MARK: - 添加表单
 
     private var addFormSection: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -139,8 +135,6 @@ struct CustomYggdrasilServerSheet: View {
             }
         }
     }
-
-    // MARK: - 动作
 
     private func verifyAPIRoot() {
         errorMessage = nil

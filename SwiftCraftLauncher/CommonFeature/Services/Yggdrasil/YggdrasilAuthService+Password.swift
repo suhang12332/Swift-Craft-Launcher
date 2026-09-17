@@ -33,8 +33,6 @@ extension YggdrasilAuthService {
     /// 并发重复触发会导致刚拿到的新令牌立即被下一次刷新吊销。
     private static let renewalTasksLock = OSAllocatedUnfairLock<[String: Task<YggdrasilRenewalOutcome, Error>]>(initialState: [:])
 
-    // MARK: - 登录
-
     /// 用户名密码登录(自定义 Yggdrasil 服务器)。
     @MainActor
     func startPasswordAuthentication(username: String, password: String, rememberPassword: Bool) async {
@@ -128,8 +126,6 @@ extension YggdrasilAuthService {
             return GlobalError.from(error).localizedDescription
         }
     }
-
-    // MARK: - 启动前续期状态机
 
     /// 确保启动游戏前凭据可用,必要时刷新或静默重登。
     ///

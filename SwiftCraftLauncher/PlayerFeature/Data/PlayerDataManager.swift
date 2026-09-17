@@ -290,8 +290,6 @@ class PlayerDataManager {
         AppLog.player.debug("Player info updated: \(updatedPlayer.name)")
     }
 
-    // MARK: - 旧存储一次性迁移
-
     /// 旧版钥匙串凭据结构,仅用于迁移解码。
     private struct LegacyAuthCredential: Codable {
         let userId: String

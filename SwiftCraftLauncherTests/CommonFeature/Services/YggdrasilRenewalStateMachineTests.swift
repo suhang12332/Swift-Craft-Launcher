@@ -54,8 +54,6 @@ final class YggdrasilRenewalStateMachineTests: XCTestCase {
         )
     }
 
-    // MARK: - ① validate 有效:直接使用,零写入请求
-
     func testRenewal_validateValid_returnsCredentialWithoutSideEffects() async throws {
         let mock = MockAuthServerClient()
         mock.validateResult = true
@@ -70,8 +68,6 @@ final class YggdrasilRenewalStateMachineTests: XCTestCase {
         XCTAssertEqual(mock.refreshCalls, 0, "令牌有效时不应触发有吊销副作用的刷新")
         XCTAssertEqual(mock.authenticateCalls, 0)
     }
-
-    // MARK: - ② refresh 成功
 
     func testRenewal_refreshSuccess_updatesAccessToken() async throws {
         let mock = MockAuthServerClient()
@@ -103,8 +99,6 @@ final class YggdrasilRenewalStateMachineTests: XCTestCase {
 
         XCTAssertEqual(outcome.updatedName, "RenamedPlayer")
     }
-
-    // MARK: - ③ refresh 失败 → 静默重登
 
     func testRenewal_refreshFails_reloginsWithSavedPassword() async throws {
         let mock = MockAuthServerClient()

@@ -9,8 +9,6 @@
 import XCTest
 
 final class PlayerAuthTests: XCTestCase {
-    // MARK: - AccountCredential Codable
-
     func testAccountCredential_codable_roundtrip() throws {
         let credential = AccountCredential(
             userId: "u1",
@@ -58,8 +56,6 @@ final class PlayerAuthTests: XCTestCase {
         XCTAssertEqual(decoded.oauthRefreshToken, "rt&with%special")
     }
 
-    // MARK: - AccountCredential 错形访问防护
-
     func testAccountCredential_oauthRefreshToken_shapeGuard() {
         let ms = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "a", renewalSecret: "r")
         let yggOAuth = AccountCredential(userId: "u", authMethod: .yggdrasilOAuth, accessToken: "a", renewalSecret: "r")
@@ -82,8 +78,6 @@ final class PlayerAuthTests: XCTestCase {
         XCTAssertEqual(ygg.microsoftXuid, "")
     }
 
-    // MARK: - AccountCredential 钥匙串复合索引
-
     func testAccountCredential_keychainAccount_namespacesByAuthMethod() {
         let ms = AccountCredential.keychainAccount(userId: "uuid-1", authMethod: .microsoft)
         let ygg = AccountCredential.keychainAccount(userId: "uuid-1", authMethod: .yggdrasilOAuth)
@@ -92,8 +86,6 @@ final class PlayerAuthTests: XCTestCase {
         XCTAssertEqual(ygg, "yggdrasilOAuth.uuid-1")
         XCTAssertNotEqual(ms, ygg)
     }
-
-    // MARK: - AccountCredential 相等性
 
     func testAccountCredential_notEqual_differentUserId() {
         let a = AccountCredential(userId: "a", authMethod: .microsoft, accessToken: "t", renewalSecret: "r")
@@ -118,8 +110,6 @@ final class PlayerAuthTests: XCTestCase {
         let b = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "t", renewalSecret: "r", xuid: "x2")
         XCTAssertNotEqual(a, b)
     }
-
-    // MARK: - Player 认证语义
 
     func testPlayer_microsoftAccount_isOnline() {
         let profile = UserProfile(id: "uuid-1", name: "OnlinePlayer", avatar: "https://example.com/skin.png", authMethod: .microsoft)

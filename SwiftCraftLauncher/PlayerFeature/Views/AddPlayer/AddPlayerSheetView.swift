@@ -242,8 +242,6 @@ struct AddPlayerSheetView: View {
         .fixedSize()
     }
 
-    // MARK: - 三方皮肤站选择(标题栏全局入口)
-
     /// 浏览器授权 / 令牌交换进行中不允许切换,避免悬空的 OAuth 回调。
     private var yggdrasilAuthInFlight: Bool {
         switch container.system.yggdrasilAuthService.authState {
