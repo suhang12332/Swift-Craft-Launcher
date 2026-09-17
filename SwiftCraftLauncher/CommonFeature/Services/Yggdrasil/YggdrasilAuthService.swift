@@ -24,12 +24,23 @@ final class YggdrasilAuthService: @unchecked Sendable {
     /// The list of player profiles returned after authentication.
     var authenticatedProfiles: [YggdrasilProfile] = []
 
+    /// 密码登录时令牌尚未绑定角色(多角色服务器需用户选择后绑定)。
+    var passwordTokenNeedsBinding = false
+
     private let webAuthenticator = WebAuthenticator()
+
+    /// classic authserver 客户端(协议缝,测试可注入)。
+    let authServerClient: YggdrasilAuthServerClientProtocol
+
+    init(authServerClient: YggdrasilAuthServerClientProtocol = YggdrasilAuthServerClient()) {
+        self.authServerClient = authServerClient
+    }
 
     /// Sets the Yggdrasil server to use for authentication.
     func setServer(_ config: YggdrasilServerConfig) {
         currentServer = config
         authenticatedProfiles = []
+        passwordTokenNeedsBinding = false
         if case .authenticated = authState {
             authState = .idle
         }
@@ -40,6 +51,13 @@ final class YggdrasilAuthService: @unchecked Sendable {
     func selectAuthenticatedProfile(id: String) {
         guard let profile = authenticatedProfiles.first(where: { $0.id == id }) else { return }
         authState = .authenticated(profile: profile)
+        // 密码登录 + 令牌未绑定角色:选择角色后立即通过 refresh 完成绑定
+        if passwordTokenNeedsBinding, profile.authMethod == .yggdrasilPassword,
+           let server = currentServer, let apiRoot = server.passwordAPIRoot {
+            Task { @MainActor in
+                await bindPasswordProfile(profile, apiRoot: apiRoot)
+            }
+        }
     }
 
     /// Starts the Yggdrasil OAuth2 authorization code login flow.
@@ -132,6 +150,34 @@ final class YggdrasilAuthService: @unchecked Sendable {
         webAuthenticator.cancel()
         currentServer = nil
         authenticatedProfiles = []
+        passwordTokenNeedsBinding = false
+    }
+
+    /// 通过 refresh(selectedProfile) 将密码登录令牌绑定到所选角色。
+    ///
+    /// 绑定失败不阻塞账号添加(部分服务器在 authenticate 时已自动绑定),
+    /// 令牌有效性会在启动前由续期状态机再次校验。
+    @MainActor
+    private func bindPasswordProfile(_ profile: YggdrasilProfile, apiRoot: URL) async {
+        authState = .processing
+        do {
+            let response = try await authServerClient.refresh(
+                accessToken: profile.accessToken,
+                clientToken: profile.clientToken ?? YggdrasilClientTokenProvider.currentToken(),
+                selectedProfileId: profile.id,
+                apiRoot: apiRoot,
+            )
+            passwordTokenNeedsBinding = false
+            if let index = authenticatedProfiles.firstIndex(where: { $0.id == profile.id }) {
+                authenticatedProfiles[index].accessToken = response.accessToken
+                authenticatedProfiles[index].clientToken = response.clientToken
+            }
+            let bound = authenticatedProfiles.first(where: { $0.id == profile.id }) ?? profile
+            authState = .authenticated(profile: bound)
+        } catch {
+            AppLog.common.error("Yggdrasil profile binding failed: \(error)")
+            authState = .authenticated(profile: profile)
+        }
     }
 }
 

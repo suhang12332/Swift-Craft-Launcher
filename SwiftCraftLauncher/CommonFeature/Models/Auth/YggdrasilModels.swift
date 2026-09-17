@@ -12,8 +12,18 @@ enum YggdrasilProfileParserID: String, Codable, CaseIterable, Identifiable {
     case littleskin
     case mua
     case ely
+    /// 自定义密码登录服务器:角色列表直接来自 authenticate 响应,无需专用解析器。
+    case custom
 
     var id: String { rawValue }
+}
+
+/// Yggdrasil 服务器的登录方式。
+enum YggdrasilLoginMethod: String, Codable {
+    /// OAuth2 授权码流程(内置三个预设)。
+    case oauth
+    /// classic authserver 用户名密码流程(自定义皮肤站)。
+    case password
 }
 
 struct YggdrasilServerConfig: Codable, Equatable, Hashable {
@@ -29,6 +39,10 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
     var scope: String
     var parserId: YggdrasilProfileParserID
     var token: String
+    /// 登录方式;默认 OAuth(内置预设)。
+    var loginMethod: YggdrasilLoginMethod
+    /// 密码型服务器的 authlib-injector API 根地址(authserver 端点由它派生)。
+    var apiRoot: URL?
 
     init(
         name: String,
@@ -42,6 +56,8 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
         scope: String,
         parserId: YggdrasilProfileParserID,
         token: String,
+        loginMethod: YggdrasilLoginMethod = .oauth,
+        apiRoot: URL? = nil,
     ) {
         self.name = name
         self.baseURL = baseURL
@@ -54,6 +70,8 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
         self.scope = scope.trimmingCharacters(in: .whitespacesAndNewlines)
         self.parserId = parserId
         self.token = token
+        self.loginMethod = loginMethod
+        self.apiRoot = apiRoot
     }
 
     /// The full authorize URL derived from the base URL and authorize path.
@@ -74,6 +92,15 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
     var minecraftTokenURL: URL {
         baseURL.appendingPathComponent(token)
     }
+
+    /// 密码登录的 authserver API 根;密码型服务器必须提供。
+    var passwordAPIRoot: URL? {
+        guard loginMethod == .password else { return nil }
+        return apiRoot ?? baseURL
+    }
+
+    /// 是否使用用户名密码登录。
+    var isPasswordLogin: Bool { loginMethod == .password }
 }
 
 struct YggdrasilProfile: Codable, Equatable {
@@ -82,9 +109,44 @@ struct YggdrasilProfile: Codable, Equatable {
     let skins: [Skin]
     let capes: [Cape]?
 
-    let accessToken: String
+    var accessToken: String
     let refreshToken: String
     let serverBaseURL: String
+
+    /// 认证方式(OAuth 登录为 .yggdrasilOAuth,密码登录为 .yggdrasilPassword)。
+    var authMethod: AccountAuthMethod
+    /// classic 协议 clientToken(密码登录使用)。
+    var clientToken: String?
+    /// 密码登录的登录名(自动重登时使用)。
+    var loginUsername: String?
+    /// 登录时暂存的密码,仅当用户勾选记住时非 nil;落库后由统一凭据存储接管。
+    var savedPassword: String?
+
+    init(
+        id: String,
+        name: String,
+        skins: [Skin],
+        capes: [Cape]?,
+        accessToken: String,
+        refreshToken: String,
+        serverBaseURL: String,
+        authMethod: AccountAuthMethod = .yggdrasilOAuth,
+        clientToken: String? = nil,
+        loginUsername: String? = nil,
+        savedPassword: String? = nil,
+    ) {
+        self.id = id
+        self.name = name
+        self.skins = skins
+        self.capes = capes
+        self.accessToken = accessToken
+        self.refreshToken = refreshToken
+        self.serverBaseURL = serverBaseURL
+        self.authMethod = authMethod
+        self.clientToken = clientToken
+        self.loginUsername = loginUsername
+        self.savedPassword = savedPassword
+    }
 }
 
 struct YggdrasilProfileCandidate: Codable, Equatable {

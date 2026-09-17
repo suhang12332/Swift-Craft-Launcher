@@ -12,8 +12,8 @@ struct UserProfile: Identifiable, Codable, Equatable {
     /// The unique user identifier.
     let id: String
 
-    /// The display name.
-    let name: String
+    /// The display name.(可变:支持认证服务器侧的角色改名同步)
+    var name: String
 
     /// The avatar image name or path.
     let avatar: String

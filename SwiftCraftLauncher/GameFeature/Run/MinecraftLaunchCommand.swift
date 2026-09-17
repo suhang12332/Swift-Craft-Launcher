@@ -70,38 +70,44 @@ struct MinecraftLaunchCommand {
         return validatedPlayer
     }
 
-    /// 启动前刷新 Yggdrasil 账号的 OAuth 令牌(预设服务器)。
+    /// 启动前刷新 Yggdrasil 账号的令牌。
     ///
-    /// 刷新失败时静默降级沿用旧令牌,与历史行为保持一致。
+    /// OAuth 预设沿用"刷新失败静默降级"策略;密码登录(自定义服务器)则由
+    /// 续期状态机保证令牌可用,无法恢复时中止启动并给出明确错误。
     private func refreshYggdrasilCredentialBeforeLaunch() async throws -> Player {
-        guard let serverURL = player.yggdrasilServerBaseURL,
-              let server = YggdrasilServerPresets.server(for: serverURL) else {
-            return player
-        }
-
         let dataManager = DIContainer.shared.ui.playerDataManager
-        guard var credential = player.credential
+        guard let credential = player.credential
             ?? dataManager.loadCredential(userId: player.id, authMethod: player.authMethod),
-            credential.authMethod == .yggdrasilOAuth else {
+            let serverBaseURL = player.yggdrasilServerBaseURL else {
             return player
         }
 
         do {
-            let tokenResponse = try await DIContainer.shared.system.yggdrasilAuthService.refreshOAuthToken(
-                refreshToken: credential.oauthRefreshToken ?? "",
-                server: server,
+            let outcome = try await DIContainer.shared.system.yggdrasilAuthService.ensureFreshYggdrasilCredential(
+                credential,
+                serverBaseURL: serverBaseURL,
             )
-            credential.accessToken = tokenResponse.accessToken
-            credential.renewalSecret = tokenResponse.refreshToken ?? credential.renewalSecret
 
             var updated = player
-            updated.credential = credential
-            await updatePlayerInDataManager(updated)
+            updated.credential = outcome.credential
+            if let newName = outcome.updatedName, !newName.isEmpty, newName != player.name {
+                updated.profile.name = newName
+                AppLog.game.info("Yggdrasil player renamed on server: \(player.name) -> \(newName)")
+            }
+
+            if updated != player {
+                await updatePlayerInDataManager(updated)
+            }
             return updated
         } catch {
-            AppLog.game.error("Yggdrasil token refresh failed, keeping existing token: \(error.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
-            return player
+            if credential.authMethod == .yggdrasilOAuth {
+                // OAuth 预设:刷新失败沿用旧令牌(与历史行为一致)
+                AppLog.game.error("Yggdrasil OAuth token refresh failed, keeping existing token: \(error.localizedDescription)")
+                DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+                return player
+            }
+            // 密码登录:令牌已失效且无法静默恢复,必须中止
+            throw error
         }
     }
 
