@@ -234,7 +234,7 @@ extension YggdrasilAuthService {
 
             // 确认原角色仍然属于该账号(可能被删除或换绑)
             let profiles = response.availableProfiles ?? []
-            let boundProfile = response.selectedProfile ?? profiles.first(where: { $0.id == credential.userId })
+            let boundProfile = response.selectedProfile ?? profiles.first { $0.id == credential.userId }
             guard boundProfile != nil || profiles.isEmpty else {
                 throw GlobalError.authentication(
                     i18nKey: "yggdrasil.error.profile_missing",

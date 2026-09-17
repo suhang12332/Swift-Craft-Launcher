@@ -143,15 +143,20 @@ struct AddPlayerSheetView: View {
                     } else if viewModel.selectedAuthType == .yggdrasil {
                         switch container.system.yggdrasilAuthService.authState {
                         case .idle, .error:
-                            Button("addplayer.auth.start_login".localized()) {
-                                Task {
-                                    await viewModel.startYggdrasilAuthentication(
-                                        yggdrasilAuthService: container.system.yggdrasilAuthService,
-                                    )
+                            // 密码型自定义服务器在表单内完成登录,不提供 OAuth 按钮
+                            if container.system.yggdrasilAuthService.currentServer?.isPasswordLogin == true {
+                                EmptyView()
+                            } else {
+                                Button("addplayer.auth.start_login".localized()) {
+                                    Task {
+                                        await viewModel.startYggdrasilAuthentication(
+                                            yggdrasilAuthService: container.system.yggdrasilAuthService,
+                                        )
+                                    }
                                 }
+                                .keyboardShortcut(.defaultAction)
+                                .disabled(container.system.yggdrasilAuthService.currentServer == nil)
                             }
-                            .keyboardShortcut(.defaultAction)
-                            .disabled(container.system.yggdrasilAuthService.currentServer == nil)
                         case let .authenticated(profile):
                             Button("addplayer.auth.add".localized()) {
                                 onYggdrasilLogin?(profile)

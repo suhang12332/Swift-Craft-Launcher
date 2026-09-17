@@ -20,7 +20,7 @@ final class CommonFeatureModelsTests: XCTestCase {
         XCTAssertEqual(credential.userId, "user-1")
         XCTAssertEqual(credential.accessToken, "at")
         XCTAssertEqual(credential.oauthRefreshToken, "rt")
-        XCTAssertEqual(credential.xuid, nil)
+        XCTAssertNil(credential.xuid)
     }
 
     func testAuthCredential_init_allParams() {

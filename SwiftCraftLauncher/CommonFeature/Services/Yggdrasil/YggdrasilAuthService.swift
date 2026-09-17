@@ -172,7 +172,7 @@ final class YggdrasilAuthService: @unchecked Sendable {
                 authenticatedProfiles[index].accessToken = response.accessToken
                 authenticatedProfiles[index].clientToken = response.clientToken
             }
-            let bound = authenticatedProfiles.first(where: { $0.id == profile.id }) ?? profile
+            let bound = authenticatedProfiles.first { $0.id == profile.id } ?? profile
             authState = .authenticated(profile: bound)
         } catch {
             AppLog.common.error("Yggdrasil profile binding failed: \(error)")

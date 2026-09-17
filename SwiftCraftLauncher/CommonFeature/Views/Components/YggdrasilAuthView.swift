@@ -8,19 +8,35 @@
 import SwiftUI
 
 /// A view for authenticating with Yggdrasil-compatible Minecraft servers.
+///
+/// 内置预设走 OAuth 浏览器授权;用户添加的自定义皮肤站使用
+/// 用户名密码(classic authserver)登录。
 struct YggdrasilAuthView: View {
     @Environment(DIContainer.self)
     private var container
     @State private var viewModel = YggdrasilAuthViewModel()
     var onLoginSuccess: ((YggdrasilProfile) -> Void)?
 
-    private let servers = YggdrasilServerPresets.servers
+    /// 密码登录表单状态(视图本地,不落盘;记住的密码由统一凭据存储接管)。
+    @State private var loginUsername = ""
+    @State private var loginPassword = ""
+    @State private var rememberPassword = false
+    @State private var showCustomServerSheet = false
 
     init(
         onLoginSuccess: ((YggdrasilProfile) -> Void)? = nil,
     ) {
         CommonYggdrasilProfileParsersConfigurator.bootstrap()
         self.onLoginSuccess = onLoginSuccess
+    }
+
+    /// 服务器列表来自统一注册表(预设 ∪ 自定义),sheet 关闭后自动刷新。
+    private var servers: [YggdrasilServerConfig] {
+        YggdrasilServerRegistry.allServers
+    }
+
+    private var selectedServerIsPassword: Bool {
+        container.system.yggdrasilAuthService.currentServer?.isPasswordLogin == true
     }
 
     var body: some View {
@@ -34,6 +50,9 @@ struct YggdrasilAuthView: View {
             }
         }
         .onChange(of: viewModel.selectedOption) { _, newValue in
+            loginUsername = ""
+            loginPassword = ""
+            rememberPassword = false
             viewModel.onSelectedOptionChanged(newValue, authService: container.system.yggdrasilAuthService)
         }
         .onAppear {
@@ -47,7 +66,12 @@ struct YggdrasilAuthView: View {
         .onDisappear {
             viewModel.onDisappear(authService: container.system.yggdrasilAuthService)
         }
+        .sheet(isPresented: $showCustomServerSheet) {
+            CustomYggdrasilServerSheet()
+        }
     }
+
+    // MARK: - 服务器选择
 
     private var serverPickerSection: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -69,13 +93,28 @@ struct YggdrasilAuthView: View {
                 }
             }
             .pickerStyle(.menu)
+
+            Button {
+                showCustomServerSheet = true
+            } label: {
+                Label("yggdrasil.custom.add".localized(), systemImage: "plus.circle")
+                    .font(.subheadline)
+            }
+            .buttonStyle(.link)
+            .padding(.top, 6)
         }
     }
+
+    // MARK: - 认证状态
 
     @ViewBuilder private var authStateSection: some View {
         switch container.system.yggdrasilAuthService.authState {
         case .idle:
-            notAuthenticatedView
+            if selectedServerIsPassword {
+                passwordLoginForm
+            } else {
+                notAuthenticatedView
+            }
         case .waitingForBrowser:
             waitingForBrowserView
         case .processing:
@@ -85,6 +124,48 @@ struct YggdrasilAuthView: View {
         case let .error(message):
             failedView(message: message)
         }
+    }
+
+    // MARK: - 密码登录表单
+
+    private var passwordLoginForm: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            let server = container.system.yggdrasilAuthService.currentServer
+            let usernameKey = server?.nonEmailLoginHintAvailable == true
+                ? "yggdrasil.password.username_non_email" : "yggdrasil.password.username"
+
+            TextField(usernameKey.localized(), text: $loginUsername)
+                .textFieldStyle(.roundedBorder)
+                .textContentType(.username)
+
+            SecureField("yggdrasil.password.password".localized(), text: $loginPassword)
+                .textFieldStyle(.roundedBorder)
+                .textContentType(.password)
+
+            Toggle("yggdrasil.password.remember".localized(), isOn: $rememberPassword)
+
+            Text("yggdrasil.password.remember.hint".localized())
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Button {
+                let username = loginUsername
+                let password = loginPassword
+                let remember = rememberPassword
+                Task {
+                    await container.system.yggdrasilAuthService.startPasswordAuthentication(
+                        username: username,
+                        password: password,
+                        rememberPassword: remember,
+                    )
+                }
+            } label: {
+                Text("yggdrasil.password.login".localized())
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(loginUsername.isEmpty || loginPassword.isEmpty)
+        }
+        .padding(.horizontal, 8)
     }
 
     private var notAuthenticatedView: some View {
@@ -220,5 +301,15 @@ struct YggdrasilAuthView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
+    }
+}
+
+/// 是否展示"支持角色名登录"提示(自定义服务器元数据)。
+private extension YggdrasilServerConfig {
+    var nonEmailLoginHintAvailable: Bool {
+        guard let apiRootString = apiRoot?.absoluteString else { return false }
+        return CustomYggdrasilServerStore.load()
+            .first { $0.apiRoot == apiRootString }?
+            .nonEmailLogin ?? false
     }
 }

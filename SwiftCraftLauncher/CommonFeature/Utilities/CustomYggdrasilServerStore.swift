@@ -145,28 +145,20 @@ enum CustomYggdrasilServerStore {
             )
         }
 
-        struct Metadata: Codable {
-            struct Meta: Codable {
-                let serverName: String?
-                let feature: Feature?
-            }
-
-            struct Feature: Codable {
-                let nonEmailLogin: Bool?
-            }
-
-            let meta: Meta?
-        }
-
-        guard let metadata = try? JSONDecoder().decode(Metadata.self, from: data),
-              let serverName = metadata.meta?.serverName, !serverName.isEmpty else {
+        // 规范元数据结构:{meta: {serverName, feature: {non_email_login}}};
+        // 用 JSONSerialization 手工解析,避免可选布尔类型的解析样板。
+        guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let meta = object["meta"] as? [String: Any],
+              let serverName = meta["serverName"] as? String, !serverName.isEmpty else {
             throw GlobalError.validation(
                 i18nKey: "yggdrasil.custom.error.metadata_invalid",
                 level: .notification,
                 message: "Invalid Yggdrasil server metadata from \(normalized)",
             )
         }
-        return (serverName, metadata.meta?.feature?.nonEmailLogin ?? false)
+        let feature = meta["feature"] as? [String: Any]
+        let nonEmailLogin = feature?["non_email_login"] as? Bool ?? false
+        return (serverName, nonEmailLogin)
     }
 
     /// 统一配置视角下的 baseURL 字符串(与凭据/档案关联键一致)。
