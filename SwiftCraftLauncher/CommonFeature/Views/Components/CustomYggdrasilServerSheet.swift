@@ -62,7 +62,7 @@ struct CustomYggdrasilServerSheet: View {
 
     // MARK: - 已有服务器列表
 
-    @ViewBuilder private var serverListSection: some View {
+    private var serverListSection: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("yggdrasil.custom.existing".localized())
                 .font(.subheadline)

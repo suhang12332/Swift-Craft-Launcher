@@ -197,7 +197,7 @@ struct YggdrasilAuthServerClient: YggdrasilAuthServerClientProtocol {
     }
 
     /// 非 2xx 响应按协议错误体细分(均为 UTF-8 JSON:`error` / `errorMessage`)。
-    private func rejectIfDenied(data: Data, statusCode: Int, url: URL) throws {
+    private func rejectIfDenied(data: Data, statusCode: Int, url _: URL) throws {
         guard !(200 ..< 300).contains(statusCode) else { return }
 
         let message = (try? JSONSerialization.jsonObject(with: data) as? [String: Any])

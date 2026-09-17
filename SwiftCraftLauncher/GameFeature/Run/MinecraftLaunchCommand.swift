@@ -99,7 +99,7 @@ struct MinecraftLaunchCommand {
                 await updatePlayerInDataManager(updated)
             }
             return updated
-        } catch YggdrasilAuthService.YggdrasilRenewalError.passwordRejected(let cleared) {
+        } catch let YggdrasilAuthService.YggdrasilRenewalError.passwordRejected(cleared) {
             // 记住的密码已被修改:写回清除后的凭据,并要求用户重新登录
             _ = dataManager.saveCredential(cleared)
             throw GlobalError.authentication(

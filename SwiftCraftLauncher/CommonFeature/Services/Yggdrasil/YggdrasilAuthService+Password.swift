@@ -152,7 +152,7 @@ extension YggdrasilAuthService {
                 guard let self else {
                     throw YggdrasilAuthServerError.rejected("Service released")
                 }
-                return try await self.doEnsureFreshYggdrasilCredential(credential, serverBaseURL: serverBaseURL)
+                return try await doEnsureFreshYggdrasilCredential(credential, serverBaseURL: serverBaseURL)
             }
             tasks[key] = task
             return (task, true)

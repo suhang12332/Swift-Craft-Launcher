@@ -40,7 +40,7 @@ final class CustomYggdrasilServerStoreTests: XCTestCase {
         _ = try store.add(name: "A", apiRoot: "https://example.com/api/yggdrasil", nonEmailLogin: false)
 
         XCTAssertThrowsError(
-            try store.add(name: "B", apiRoot: "https://example.com/api/yggdrasil", nonEmailLogin: false)
+            try store.add(name: "B", apiRoot: "https://example.com/api/yggdrasil", nonEmailLogin: false),
         ) { error in
             let globalError = GlobalError.from(error)
             XCTAssertEqual(globalError.i18nKey, "yggdrasil.custom.error.duplicated")
@@ -53,7 +53,7 @@ final class CustomYggdrasilServerStoreTests: XCTestCase {
         }
 
         XCTAssertThrowsError(
-            try store.add(name: "Extra", apiRoot: "https://extra.example.com/api/yggdrasil", nonEmailLogin: false)
+            try store.add(name: "Extra", apiRoot: "https://extra.example.com/api/yggdrasil", nonEmailLogin: false),
         ) { error in
             let globalError = GlobalError.from(error)
             XCTAssertEqual(globalError.i18nKey, "yggdrasil.custom.error.limit_reached")
@@ -75,7 +75,7 @@ final class CustomYggdrasilServerStoreTests: XCTestCase {
             try store.remove(
                 id: server.id,
                 referencedBaseURLs: [CustomYggdrasilServerStore.configBaseURL(for: server)],
-            )
+            ),
         ) { error in
             let globalError = GlobalError.from(error)
             XCTAssertEqual(globalError.i18nKey, "yggdrasil.custom.error.in_use")

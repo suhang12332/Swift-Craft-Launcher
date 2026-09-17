@@ -187,31 +187,31 @@ private final class MockAuthServerClient: YggdrasilAuthServerClientProtocol, @un
     private(set) var authenticateCalls = 0
 
     func authenticate(
-        username: String,
-        password: String,
-        clientToken: String,
-        apiRoot: URL,
+        username _: String,
+        password _: String,
+        clientToken _: String,
+        apiRoot _: URL,
     ) async throws -> YggdrasilAuthenticateResponse {
         authenticateCalls += 1
         return try authenticateResult.get()
     }
 
     func refresh(
-        accessToken: String,
-        clientToken: String,
-        selectedProfileId: String?,
-        apiRoot: URL,
+        accessToken _: String,
+        clientToken _: String,
+        selectedProfileId _: String?,
+        apiRoot _: URL,
     ) async throws -> YggdrasilAuthenticateResponse {
         refreshCalls += 1
         return try refreshResult.get()
     }
 
-    func validate(accessToken: String, clientToken: String, apiRoot: URL) async -> Bool {
+    func validate(accessToken _: String, clientToken _: String, apiRoot _: URL) async -> Bool {
         validateCalls += 1
         return validateResult
     }
 
-    func fetchSessionProfile(uuid: String, apiRoot: URL) async throws -> YggdrasilSessionProfile {
+    func fetchSessionProfile(uuid: String, apiRoot _: URL) async throws -> YggdrasilSessionProfile {
         YggdrasilSessionProfile(id: uuid, name: uuid, skinURL: nil)
     }
 }

@@ -151,7 +151,9 @@ struct YggdrasilProfile: Codable, Equatable {
     /// 返回补拉了皮肤贴图的新档案(用于密码登录后的头像展示;无效地址保持原样)。
     func withSkinURL(_ url: String?) -> Self {
         guard let url, !url.isEmpty else { return self }
-        if skins.contains(where: { $0.url == url }) { return self }
+        if skins.contains(where: { $0.url == url }) {
+            return self
+        }
         var updatedSkins = skins
         updatedSkins.insert(Skin(state: "ACTIVE", url: url, variant: nil), at: 0)
         return Self(
