@@ -33,6 +33,10 @@ struct AddPlayerSheetView: View {
     @State private var showErrorPopover: Bool = false
     @State private var showCustomServerSheet: Bool = false
 
+    /// 标题栏选择器的固定文本宽度:认证方式 40,皮肤站 80(超长尾部省略)。
+    private let authTypePickerTextWidth: CGFloat = 40
+    private let serverPickerTextWidth: CGFloat = 80
+
     init(
         playerName: Binding<String>,
         isPlayerNameValid: Binding<Bool>,
@@ -209,6 +213,9 @@ struct AddPlayerSheetView: View {
             }
         } label: {
             Text(viewModel.selectedAuthType.displayName)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .frame(width: authTypePickerTextWidth)
         }
         .fixedSize()
     }
@@ -239,12 +246,15 @@ struct AddPlayerSheetView: View {
                 }
             }
         } label: {
-            // 系统会自动渲染下拉指示箭头,标签只放站点名
+            // 宽度与认证方式选择器的文本同宽(两侧菜单外观一致,控件即等宽),
+            // 超长站点名尾部省略;框架打在标签文本上,Menu 控件会贴合标签尺寸
             Text(container.system.yggdrasilAuthService.currentServer?.name
                 ?? "yggdrasil.server.please_select".localized())
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(width: serverPickerTextWidth, alignment: .leading)
         }
         .disabled(yggdrasilAuthInFlight)
-        .fixedSize()
     }
 
     /// 纯图标添加入口,悬停显示说明。
