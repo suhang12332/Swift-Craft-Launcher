@@ -22,6 +22,13 @@ extension YggdrasilAuthService {
         let updatedName: String?
     }
 
+    /// 密码登录续期的可恢复失败,携带调用方需要的善后数据。
+    enum YggdrasilRenewalError: Error {
+        /// 服务器拒绝了记住的密码(密码已被修改):`clearedCredential` 为
+        /// 清除记住值后的凭据,由调用方负责写回存储。
+        case passwordRejected(clearedCredential: AccountCredential)
+    }
+
     /// 按玩家维度单飞:authenticate/refresh 均有吊销旧令牌的副作用,
     /// 并发重复触发会导致刚拿到的新令牌立即被下一次刷新吊销。
     private static let renewalTasksLock = OSAllocatedUnfairLock<[String: Task<YggdrasilRenewalOutcome, Error>]>(initialState: [:])
@@ -192,8 +199,8 @@ extension YggdrasilAuthService {
         }
     }
 
-    /// 密码登录续期状态机。
-    private func ensureFreshPasswordCredential(
+    /// 密码登录续期状态机(internal 便于单元测试注入桩客户端)。
+    func ensureFreshPasswordCredential(
         _ credential: AccountCredential,
         server: YggdrasilServerConfig,
     ) async throws -> YggdrasilRenewalOutcome {
@@ -261,15 +268,11 @@ extension YggdrasilAuthService {
             AppLog.common.info("Yggdrasil password auto re-login succeeded for user \(credential.userId)")
             return YggdrasilRenewalOutcome(credential: updated, updatedName: boundProfile?.name)
         } catch YggdrasilAuthServerError.invalidCredentials {
-            // 密码已改:记住的密码不再有价值,清除后要求用户重新登录
+            // 密码已改:记住的密码不再有价值。清除记住值并交由调用方写回
+            // 存储(服务层不直接落盘,保持状态机纯净可测)。
             var cleared = credential
             cleared.renewalSecret = nil
-            _ = DIContainer.shared.ui.playerDataManager.saveCredential(cleared)
-            throw GlobalError.authentication(
-                i18nKey: "yggdrasil.error.password_changed",
-                level: .popup,
-                message: "Saved password rejected for user \(credential.userId)",
-            )
+            throw YggdrasilRenewalError.passwordRejected(clearedCredential: cleared)
         }
     }
 }

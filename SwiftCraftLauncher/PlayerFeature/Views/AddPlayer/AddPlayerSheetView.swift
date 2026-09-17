@@ -313,6 +313,10 @@ struct AddPlayerSheetView: View {
         container.system.minecraftAuthService.isLoading = false
         showErrorPopover = false
         container.system.yggdrasilAuthService.logout()
+        // 密码登录表单同步清空:取消/关闭面板即视为放弃凭据输入
+        yggLoginUsername = ""
+        yggLoginPassword = ""
+        yggRememberPassword = false
         viewModel.reset()
     }
 

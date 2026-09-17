@@ -99,6 +99,14 @@ struct MinecraftLaunchCommand {
                 await updatePlayerInDataManager(updated)
             }
             return updated
+        } catch YggdrasilAuthService.YggdrasilRenewalError.passwordRejected(let cleared) {
+            // 记住的密码已被修改:写回清除后的凭据,并要求用户重新登录
+            _ = dataManager.saveCredential(cleared)
+            throw GlobalError.authentication(
+                i18nKey: "yggdrasil.error.password_changed",
+                level: .popup,
+                message: "Saved password rejected for user \(cleared.userId)",
+            )
         } catch {
             if credential.authMethod == .yggdrasilOAuth {
                 // OAuth 预设:刷新失败沿用旧令牌(与历史行为一致)
