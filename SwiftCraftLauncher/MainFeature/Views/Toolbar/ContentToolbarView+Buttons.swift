@@ -85,7 +85,6 @@ struct AddPlayerToolbarButton: View {
                 },
                 onYggdrasilLogin: { profile in
                     AppLog.main.debug("Yggdrasil login successful, user: \(profile.name)")
-                    OfflineUserServerMap.setServer(profile)
                     _ = playerListViewModel.addOnlinePlayer(profile: profile)
                     delayedDismiss($showSheet) {
                         container.system.yggdrasilAuthService.logout()

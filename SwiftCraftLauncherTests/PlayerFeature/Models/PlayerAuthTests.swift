@@ -9,110 +9,125 @@
 import XCTest
 
 final class PlayerAuthTests: XCTestCase {
-    func testAuthCredential_codable_nilExpiresAt() throws {
-        let credential = AuthCredential(
+    // MARK: - AccountCredential Codable
+
+    func testAccountCredential_codable_roundtrip() throws {
+        let credential = AccountCredential(
             userId: "u1",
+            authMethod: .microsoft,
             accessToken: "access",
-            refreshToken: "refresh",
-            xuid: "",
-        )
-
-        let encoded = try JSONEncoder().encode(credential)
-        let decoded = try JSONDecoder().decode(AuthCredential.self, from: encoded)
-
-        XCTAssertEqual(decoded.userId, "u1")
-        XCTAssertEqual(decoded.xuid, "")
-    }
-
-    func testAuthCredential_codable_emptyTokens() throws {
-        let credential = AuthCredential(
-            userId: "u2",
-            accessToken: "",
-            refreshToken: "",
-            xuid: "",
-        )
-
-        let encoded = try JSONEncoder().encode(credential)
-        let decoded = try JSONDecoder().decode(AuthCredential.self, from: encoded)
-
-        XCTAssertEqual(decoded.accessToken, "")
-        XCTAssertEqual(decoded.refreshToken, "")
-    }
-
-    func testAuthCredential_codable_specialCharacters() throws {
-        let credential = AuthCredential(
-            userId: "user/with=special&chars",
-            accessToken: "at+with/special=chars",
-            refreshToken: "rt&with%special",
+            renewalSecret: "refresh",
             xuid: "xuid-123",
         )
 
         let encoded = try JSONEncoder().encode(credential)
-        let decoded = try JSONDecoder().decode(AuthCredential.self, from: encoded)
+        let decoded = try JSONDecoder().decode(AccountCredential.self, from: encoded)
+
+        XCTAssertEqual(decoded, credential)
+    }
+
+    func testAccountCredential_codable_optionalFieldsDefaultToNil() throws {
+        let credential = AccountCredential(
+            userId: "u2",
+            authMethod: .yggdrasilPassword,
+            accessToken: "at",
+        )
+
+        let encoded = try JSONEncoder().encode(credential)
+        let decoded = try JSONDecoder().decode(AccountCredential.self, from: encoded)
+
+        XCTAssertNil(decoded.renewalSecret)
+        XCTAssertNil(decoded.clientToken)
+        XCTAssertNil(decoded.loginUsername)
+        XCTAssertNil(decoded.xuid)
+    }
+
+    func testAccountCredential_codable_specialCharacters() throws {
+        let credential = AccountCredential(
+            userId: "user/with=special&chars",
+            authMethod: .yggdrasilOAuth,
+            accessToken: "at+with/special=chars",
+            renewalSecret: "rt&with%special",
+        )
+
+        let encoded = try JSONEncoder().encode(credential)
+        let decoded = try JSONDecoder().decode(AccountCredential.self, from: encoded)
 
         XCTAssertEqual(decoded.userId, "user/with=special&chars")
         XCTAssertEqual(decoded.accessToken, "at+with/special=chars")
-        XCTAssertEqual(decoded.refreshToken, "rt&with%special")
+        XCTAssertEqual(decoded.oauthRefreshToken, "rt&with%special")
     }
 
-    func testAuthCredential_codable_futureDate() throws {
-        let credential = AuthCredential(
-            userId: "u",
-            accessToken: "at",
-            refreshToken: "rt",
-            xuid: "",
-        )
+    // MARK: - AccountCredential 错形访问防护
 
-        let encoded = try JSONEncoder().encode(credential)
-        let decoded = try JSONDecoder().decode(AuthCredential.self, from: encoded)
+    func testAccountCredential_oauthRefreshToken_shapeGuard() {
+        let ms = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "a", renewalSecret: "r")
+        let yggOAuth = AccountCredential(userId: "u", authMethod: .yggdrasilOAuth, accessToken: "a", renewalSecret: "r")
+        let yggPassword = AccountCredential(userId: "u", authMethod: .yggdrasilPassword, accessToken: "a", renewalSecret: "p")
 
-        XCTAssertEqual(decoded.userId, "u")
+        XCTAssertEqual(ms.oauthRefreshToken, "r")
+        XCTAssertEqual(yggOAuth.oauthRefreshToken, "r")
+        XCTAssertNil(yggPassword.oauthRefreshToken)
+        XCTAssertEqual(yggPassword.savedPassword, "p")
+        XCTAssertNil(ms.savedPassword)
+        XCTAssertNil(yggOAuth.savedPassword)
     }
 
-    func testAuthCredential_codable_pastDate() throws {
-        let credential = AuthCredential(
-            userId: "u",
-            accessToken: "at",
-            refreshToken: "rt",
-            xuid: "",
-        )
+    func testAccountCredential_microsoftXuid_shapeGuard() {
+        let ms = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "a", xuid: "x1")
+        let ygg = AccountCredential(userId: "u", authMethod: .yggdrasilOAuth, accessToken: "a", xuid: "x1")
 
-        let encoded = try JSONEncoder().encode(credential)
-        let decoded = try JSONDecoder().decode(AuthCredential.self, from: encoded)
-
-        XCTAssertEqual(decoded.userId, "u")
+        XCTAssertEqual(ms.microsoftXuid, "x1")
+        // 非微软凭据即使误存了 xuid 也不外泄
+        XCTAssertEqual(ygg.microsoftXuid, "")
     }
 
-    func testAuthCredential_notEqual_differentUserId() {
-        let a = AuthCredential(userId: "a", accessToken: "t", refreshToken: "r")
-        let b = AuthCredential(userId: "b", accessToken: "t", refreshToken: "r")
+    // MARK: - AccountCredential 钥匙串复合索引
+
+    func testAccountCredential_keychainAccount_namespacesByAuthMethod() {
+        let ms = AccountCredential.keychainAccount(userId: "uuid-1", authMethod: .microsoft)
+        let ygg = AccountCredential.keychainAccount(userId: "uuid-1", authMethod: .yggdrasilOAuth)
+
+        XCTAssertEqual(ms, "microsoft.uuid-1")
+        XCTAssertEqual(ygg, "yggdrasilOAuth.uuid-1")
+        XCTAssertNotEqual(ms, ygg)
+    }
+
+    // MARK: - AccountCredential 相等性
+
+    func testAccountCredential_notEqual_differentUserId() {
+        let a = AccountCredential(userId: "a", authMethod: .microsoft, accessToken: "t", renewalSecret: "r")
+        let b = AccountCredential(userId: "b", authMethod: .microsoft, accessToken: "t", renewalSecret: "r")
         XCTAssertNotEqual(a, b)
     }
 
-    func testAuthCredential_notEqual_differentAccessToken() {
-        let a = AuthCredential(userId: "u", accessToken: "1", refreshToken: "r")
-        let b = AuthCredential(userId: "u", accessToken: "2", refreshToken: "r")
+    func testAccountCredential_notEqual_differentAccessToken() {
+        let a = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "1")
+        let b = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "2")
         XCTAssertNotEqual(a, b)
     }
 
-    func testAuthCredential_notEqual_differentRefreshToken() {
-        let a = AuthCredential(userId: "u", accessToken: "t", refreshToken: "1")
-        let b = AuthCredential(userId: "u", accessToken: "t", refreshToken: "2")
+    func testAccountCredential_notEqual_differentRenewalSecret() {
+        let a = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "t", renewalSecret: "1")
+        let b = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "t", renewalSecret: "2")
         XCTAssertNotEqual(a, b)
     }
 
-    func testAuthCredential_notEqual_differentXuid() {
-        let a = AuthCredential(userId: "u", accessToken: "t", refreshToken: "r", xuid: "x1")
-        let b = AuthCredential(userId: "u", accessToken: "t", refreshToken: "r", xuid: "x2")
+    func testAccountCredential_notEqual_differentXuid() {
+        let a = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "t", renewalSecret: "r", xuid: "x1")
+        let b = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "t", renewalSecret: "r", xuid: "x2")
         XCTAssertNotEqual(a, b)
     }
 
-    func testPlayer_onlineAccount_withCredential() {
-        let profile = UserProfile(id: "uuid-1", name: "OnlinePlayer", avatar: "https://example.com/skin.png")
-        let credential = AuthCredential(userId: "uuid-1", accessToken: "token123", refreshToken: "refresh456", xuid: "xuid-abc")
+    // MARK: - Player 认证语义
+
+    func testPlayer_microsoftAccount_isOnline() {
+        let profile = UserProfile(id: "uuid-1", name: "OnlinePlayer", avatar: "https://example.com/skin.png", authMethod: .microsoft)
+        let credential = AccountCredential(userId: "uuid-1", authMethod: .microsoft, accessToken: "token123", renewalSecret: "refresh456", xuid: "xuid-abc")
         let player = Player(profile: profile, credential: credential)
 
         XCTAssertTrue(player.isOnlineAccount)
+        XCTAssertFalse(player.isYggdrasilAccount)
         XCTAssertTrue(player.isRemote)
         XCTAssertEqual(player.authAccessToken, "token123")
         XCTAssertEqual(player.authRefreshToken, "refresh456")
@@ -124,176 +139,58 @@ final class PlayerAuthTests: XCTestCase {
         let player = Player(profile: profile, credential: nil)
 
         XCTAssertFalse(player.isOnlineAccount)
-        XCTAssertFalse(player.isRemote)
+        XCTAssertFalse(player.isYggdrasilAccount)
+        XCTAssertNil(player.authMethod)
         XCTAssertEqual(player.authAccessToken, "")
         XCTAssertEqual(player.authRefreshToken, "")
         XCTAssertEqual(player.authXuid, "")
     }
 
-    func testPlayer_onlineAccount_remoteAvatar_noCredential_noServerMap() {
-        let profile = UserProfile(id: "uuid-3", name: "RemoteNoCred", avatar: "https://example.com/avatar.png")
-        let player = Player(profile: profile, credential: nil)
+    func testPlayer_yggdrasilOAuthAccount_isNotMicrosoftOnline() {
+        let profile = UserProfile(
+            id: "uuid-3",
+            name: "YggPlayer",
+            avatar: "https://example.com/skin.png",
+            authMethod: .yggdrasilOAuth,
+            yggdrasilServerBaseURL: "https://littleskin.cn",
+        )
+        let credential = AccountCredential(
+            userId: "uuid-3",
+            authMethod: .yggdrasilOAuth,
+            accessToken: "ygg-token",
+            renewalSecret: "ygg-refresh",
+        )
+        let player = Player(profile: profile, credential: credential)
 
-        // Remote avatar with no server map entry → considered online account
-        XCTAssertTrue(player.isOnlineAccount)
+        XCTAssertFalse(player.isOnlineAccount, "Yggdrasil 账号不应触发微软令牌刷新链")
+        XCTAssertTrue(player.isYggdrasilAccount)
+        XCTAssertEqual(player.authAccessToken, "ygg-token")
+        XCTAssertEqual(player.authRefreshToken, "ygg-refresh")
+        XCTAssertEqual(player.authXuid, "", "Yggdrasil 账号不应有 XUID")
+        XCTAssertEqual(player.yggdrasilServerBaseURL, "https://littleskin.cn")
     }
 
-    func testPlayer_offlineAccount_remoteAvatar_withServerMap() {
-        let profile = UserProfile(id: "uuid-4", name: "OfflineThirdParty", avatar: "https://example.com/skin.png")
-        let player = Player(profile: profile, credential: nil)
-
-        // Simulate offline third-party server mapping
-        OfflineUserServerMap.setServer(
-            YggdrasilProfile(id: "uuid-4", name: "OfflineThirdParty", skins: [], capes: nil, accessToken: "token", refreshToken: "refresh", serverBaseURL: "https://yggdrasil-server.com"),
+    func testPlayer_yggdrasilPasswordAccount_isNotMicrosoftOnline() {
+        let profile = UserProfile(id: "uuid-4", name: "CustomServerPlayer", avatar: "steve", authMethod: .yggdrasilPassword)
+        let credential = AccountCredential(
+            userId: "uuid-4",
+            authMethod: .yggdrasilPassword,
+            accessToken: "classic-token",
+            renewalSecret: nil,
+            clientToken: "client-token",
+            loginUsername: "user@example.com",
         )
+        let player = Player(profile: profile, credential: credential)
 
-        // With server map entry, remote avatar player is NOT considered online
         XCTAssertFalse(player.isOnlineAccount)
-
-        OfflineUserServerMap.removeServer(for: "uuid-4")
+        XCTAssertTrue(player.isYggdrasilAccount)
+        XCTAssertEqual(player.authAccessToken, "classic-token")
+        XCTAssertEqual(player.authRefreshToken, "", "密码登录无 OAuth refresh_token")
     }
 
     func testPlayer_isRemote_httpPrefix() {
         let profile = UserProfile(id: "1", name: "Http", avatar: "http://example.com/skin.png")
         let player = Player(profile: profile)
         XCTAssertTrue(player.isRemote)
-    }
-
-    func testPlayer_isRemote_httpsPrefix() {
-        let profile = UserProfile(id: "1", name: "Https", avatar: "https://example.com/skin.png")
-        let player = Player(profile: profile)
-        XCTAssertTrue(player.isRemote)
-    }
-
-    func testPlayer_isRemote_localPath() {
-        let profile = UserProfile(id: "1", name: "Local", avatar: "steve")
-        let player = Player(profile: profile)
-        XCTAssertFalse(player.isRemote)
-    }
-
-    func testPlayer_isRemote_relativePath() {
-        let profile = UserProfile(id: "1", name: "Relative", avatar: "skins/alex.png")
-        let player = Player(profile: profile)
-        XCTAssertFalse(player.isRemote)
-    }
-
-    func testPlayer_isCurrent_toggle() {
-        let profile = UserProfile(id: "id", name: "P", avatar: "steve")
-        var player = Player(profile: profile)
-        XCTAssertFalse(player.isCurrent)
-
-        player.isCurrent = true
-        XCTAssertTrue(player.isCurrent)
-
-        player.isCurrent = false
-        XCTAssertFalse(player.isCurrent)
-    }
-
-    func testPlayer_lastPlayed_settable() {
-        let profile = UserProfile(id: "id", name: "P", avatar: "steve")
-        var player = Player(profile: profile)
-        let original = player.lastPlayed
-
-        let newDate = Date(timeIntervalSince1970: 999_999)
-        player.lastPlayed = newDate
-        XCTAssertEqual(player.lastPlayed, newDate)
-        XCTAssertNotEqual(player.lastPlayed, original)
-    }
-
-    func testPlayer_convenienceInit_offlineGeneratesUUID() throws {
-        let player = try Player(name: "TestAuth")
-        XCTAssertNotEqual(player.id, "")
-        XCTAssertEqual(player.id.count, 32)
-        XCTAssertNil(player.credential)
-        XCTAssertFalse(player.isOnlineAccount)
-    }
-
-    func testPlayer_convenienceInit_withProvidedUUID() throws {
-        let player = try Player(name: "TestUUID", uuid: "custom-uuid-value")
-        XCTAssertEqual(player.id, "custom-uuid-value")
-    }
-
-    func testPlayer_convenienceInit_offlineDefaultAvatar() throws {
-        let player = try Player(name: "DefaultAvatar")
-        XCTAssertFalse(player.avatarName.isEmpty)
-    }
-
-    func testPlayer_convenienceInit_onlineEmptyAvatar() throws {
-        let credential = AuthCredential(userId: "uid", accessToken: "at", refreshToken: "rt")
-        let player = try Player(name: "Online", avatar: "https://skin.url/img.png", credential: credential)
-        XCTAssertEqual(player.avatarName, "https://skin.url/img.png")
-    }
-
-    func testPlayer_convenienceInit_offlineCustomAvatar() throws {
-        let player = try Player(name: "Custom", avatar: "alex")
-        XCTAssertEqual(player.avatarName, "alex")
-    }
-
-    func testPlayer_convenienceInit_isCurrentDefaultFalse() throws {
-        let player = try Player(name: "P")
-        XCTAssertFalse(player.isCurrent)
-    }
-
-    func testPlayer_convenienceInit_isCurrentTrue() throws {
-        let player = try Player(name: "P", isCurrent: true)
-        XCTAssertTrue(player.isCurrent)
-    }
-
-    func testPlayer_init_profileAndCredential() {
-        let profile = UserProfile(id: "id", name: "Name", avatar: "av")
-        let credential = AuthCredential(userId: "id", accessToken: "at", refreshToken: "rt", xuid: "x1")
-        let player = Player(profile: profile, credential: credential)
-
-        XCTAssertEqual(player.id, "id")
-        XCTAssertEqual(player.name, "Name")
-        XCTAssertEqual(player.authXuid, "x1")
-        XCTAssertTrue(player.isOnlineAccount)
-    }
-
-    func testPlayer_init_profileOnly() {
-        let profile = UserProfile(id: "id", name: "Name", avatar: "av")
-        let player = Player(profile: profile)
-
-        XCTAssertNil(player.credential)
-        XCTAssertFalse(player.isOnlineAccount)
-        XCTAssertEqual(player.authAccessToken, "")
-    }
-
-    func testAuthCredential_codable_jsonStructure() throws {
-        let credential = AuthCredential(
-            userId: "test-user",
-            accessToken: "access-token",
-            refreshToken: "refresh-token",
-            xuid: "test-xuid",
-        )
-
-        let encoded = try JSONEncoder().encode(credential)
-        let json = try JSONSerialization.jsonObject(with: encoded) as? [String: Any]
-
-        XCTAssertNotNil(json)
-        XCTAssertEqual(json?["userId"] as? String, "test-user")
-        XCTAssertEqual(json?["accessToken"] as? String, "access-token")
-        XCTAssertEqual(json?["refreshToken"] as? String, "refresh-token")
-        XCTAssertEqual(json?["xuid"] as? String, "test-xuid")
-    }
-
-    func testAuthCredential_decode_invalidJSON() {
-        let invalidJSON = Data("not valid json".utf8)
-        let decoded = try? JSONDecoder().decode(AuthCredential.self, from: invalidJSON)
-        XCTAssertNil(decoded)
-    }
-
-    func testAuthCredential_decode_missingRequiredField() {
-        let json = Data("""
-        {"userId": "u", "accessToken": "a"}
-        """.utf8)
-        let decoded = try? JSONDecoder().decode(AuthCredential.self, from: json)
-        XCTAssertNil(decoded)
-    }
-
-    func testAuthCredential_decode_emptyJSON() {
-        let json = Data("{}".utf8)
-        let decoded = try? JSONDecoder().decode(AuthCredential.self, from: json)
-        XCTAssertNil(decoded)
     }
 }

@@ -10,55 +10,58 @@ import XCTest
 
 final class CommonFeatureModelsTests: XCTestCase {
     func testAuthCredential_init_defaults() {
-        let credential = AuthCredential(
+        let credential = AccountCredential(
             userId: "user-1",
+            authMethod: .microsoft,
             accessToken: "at",
-            refreshToken: "rt",
+            renewalSecret: "rt",
         )
 
         XCTAssertEqual(credential.userId, "user-1")
         XCTAssertEqual(credential.accessToken, "at")
-        XCTAssertEqual(credential.refreshToken, "rt")
-        XCTAssertEqual(credential.xuid, "")
+        XCTAssertEqual(credential.oauthRefreshToken, "rt")
+        XCTAssertEqual(credential.xuid, nil)
     }
 
     func testAuthCredential_init_allParams() {
-        let credential = AuthCredential(
+        let credential = AccountCredential(
             userId: "user-2",
+            authMethod: .microsoft,
             accessToken: "token",
-            refreshToken: "refresh",
+            renewalSecret: "refresh",
             xuid: "xbox-id",
         )
 
         XCTAssertEqual(credential.userId, "user-2")
         XCTAssertEqual(credential.accessToken, "token")
-        XCTAssertEqual(credential.refreshToken, "refresh")
+        XCTAssertEqual(credential.renewalSecret, "refresh")
         XCTAssertEqual(credential.xuid, "xbox-id")
     }
 
     func testAuthCredential_equatable() {
-        let a = AuthCredential(userId: "u", accessToken: "a", refreshToken: "r")
-        let b = AuthCredential(userId: "u", accessToken: "a", refreshToken: "r")
-        let c = AuthCredential(userId: "u", accessToken: "different", refreshToken: "r")
+        let a = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "a", renewalSecret: "r")
+        let b = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "a", renewalSecret: "r")
+        let c = AccountCredential(userId: "u", authMethod: .microsoft, accessToken: "different", renewalSecret: "r")
 
         XCTAssertEqual(a, b)
         XCTAssertNotEqual(a, c)
     }
 
     func testAuthCredential_codable_roundTrip() throws {
-        let original = AuthCredential(
+        let original = AccountCredential(
             userId: "uid",
+            authMethod: .microsoft,
             accessToken: "at123",
-            refreshToken: "rt456",
+            renewalSecret: "rt456",
             xuid: "xuid789",
         )
 
         let encoded = try JSONEncoder().encode(original)
-        let decoded = try JSONDecoder().decode(AuthCredential.self, from: encoded)
+        let decoded = try JSONDecoder().decode(AccountCredential.self, from: encoded)
 
         XCTAssertEqual(decoded.userId, original.userId)
         XCTAssertEqual(decoded.accessToken, original.accessToken)
-        XCTAssertEqual(decoded.refreshToken, original.refreshToken)
+        XCTAssertEqual(decoded.renewalSecret, original.renewalSecret)
         XCTAssertEqual(decoded.xuid, original.xuid)
     }
 

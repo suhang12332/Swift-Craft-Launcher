@@ -43,12 +43,8 @@ struct MinecraftLaunchCommand {
     }
 
     private func validatePlayerTokenBeforeLaunch() async throws -> Player {
-        if let profile = OfflineUserServerMap.serverKey(for: player.id),
-           let server = YggdrasilServerPresets.server(for: profile.serverBaseURL) {
-            await DIContainer.shared.system.yggdrasilAuthService.refreshThirdPartyToken(
-                profile: profile,
-                server: server,
-            )
+        if player.isYggdrasilAccount {
+            return try await refreshYggdrasilCredentialBeforeLaunch()
         }
         guard player.isOnlineAccount else {
             return player
@@ -59,7 +55,7 @@ struct MinecraftLaunchCommand {
         var playerWithCredential = player
         if playerWithCredential.credential == nil {
             let dataManager = DIContainer.shared.ui.playerDataManager
-            if let credential = dataManager.loadCredential(userId: playerWithCredential.id) {
+            if let credential = dataManager.loadCredential(userId: playerWithCredential.id, authMethod: playerWithCredential.authMethod) {
                 playerWithCredential.credential = credential
             }
         }
@@ -72,6 +68,41 @@ struct MinecraftLaunchCommand {
         }
 
         return validatedPlayer
+    }
+
+    /// 启动前刷新 Yggdrasil 账号的 OAuth 令牌(预设服务器)。
+    ///
+    /// 刷新失败时静默降级沿用旧令牌,与历史行为保持一致。
+    private func refreshYggdrasilCredentialBeforeLaunch() async throws -> Player {
+        guard let serverURL = player.yggdrasilServerBaseURL,
+              let server = YggdrasilServerPresets.server(for: serverURL) else {
+            return player
+        }
+
+        let dataManager = DIContainer.shared.ui.playerDataManager
+        guard var credential = player.credential
+            ?? dataManager.loadCredential(userId: player.id, authMethod: player.authMethod),
+            credential.authMethod == .yggdrasilOAuth else {
+            return player
+        }
+
+        do {
+            let tokenResponse = try await DIContainer.shared.system.yggdrasilAuthService.refreshOAuthToken(
+                refreshToken: credential.oauthRefreshToken ?? "",
+                server: server,
+            )
+            credential.accessToken = tokenResponse.accessToken
+            credential.renewalSecret = tokenResponse.refreshToken ?? credential.renewalSecret
+
+            var updated = player
+            updated.credential = credential
+            await updatePlayerInDataManager(updated)
+            return updated
+        } catch {
+            AppLog.game.error("Yggdrasil token refresh failed, keeping existing token: \(error.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+            return player
+        }
     }
 
     private func updatePlayerInDataManager(_ updatedPlayer: Player) async {
@@ -101,18 +132,16 @@ struct MinecraftLaunchCommand {
     }
 
     private func replaceAuthParameters(command: [String], with validatedPlayer: Player) async throws -> [String] {
-        let yggdrasilProfile = OfflineUserServerMap.serverKey(for: validatedPlayer.id)
-
         let accessToken: String
         let commandWithAgent: [String]
-        if let profile = yggdrasilProfile {
+        if validatedPlayer.isYggdrasilAccount, let serverBaseURL = validatedPlayer.yggdrasilServerBaseURL {
             (accessToken, commandWithAgent) = try await handleThirdPartyAuth(
                 command: command,
                 player: validatedPlayer,
-                profile: profile,
+                serverBaseURL: serverBaseURL,
             )
         } else {
-            accessToken = player.authAccessToken
+            accessToken = validatedPlayer.authAccessToken
             commandWithAgent = command
         }
 
@@ -133,21 +162,24 @@ struct MinecraftLaunchCommand {
 
     private func getThirdPartyMcToken(
         player: Player,
-        profile: YggdrasilProfile?,
+        serverBaseURL: String,
     ) async throws -> String {
-        guard let profile,
-              let server = YggdrasilServerPresets.server(for: profile.serverBaseURL) else {
+        guard let server = YggdrasilServerPresets.server(for: serverBaseURL) else {
             return player.authAccessToken
         }
 
         let accessToken: String
         do {
-            accessToken = try await DIContainer.shared.system.yggdrasilAuthService.getMinecraftToken(profile: profile, server: server)
+            accessToken = try await DIContainer.shared.system.yggdrasilAuthService.getMinecraftToken(
+                profileId: player.id,
+                accessToken: player.authAccessToken,
+                server: server,
+            )
         } catch {
             throw GlobalError.authentication(
                 i18nKey: "error.authentication.token_fetch_failed",
                 level: .popup,
-                message: "Failed to fetch Minecraft token for profile=\(profile.serverBaseURL): \(error.localizedDescription)",
+                message: "Failed to fetch Minecraft token for profile=\(serverBaseURL): \(error.localizedDescription)",
             )
         }
         return accessToken
@@ -156,16 +188,16 @@ struct MinecraftLaunchCommand {
     private func handleThirdPartyAuth(
         command: [String],
         player: Player,
-        profile: YggdrasilProfile,
+        serverBaseURL: String,
     ) async throws -> (accessToken: String, command: [String]) {
         let accessToken: String
         do {
-            accessToken = try await getThirdPartyMcToken(player: player, profile: profile)
+            accessToken = try await getThirdPartyMcToken(player: player, serverBaseURL: serverBaseURL)
         } catch {
             throw GlobalError.authentication(
                 i18nKey: "error.authentication.token_fetch_failed",
                 level: .popup,
-                message: "Failed to fetch Minecraft token for profile=\(profile.serverBaseURL): \(error.localizedDescription)",
+                message: "Failed to fetch Minecraft token for profile=\(serverBaseURL): \(error.localizedDescription)",
             )
         }
 
@@ -181,7 +213,7 @@ struct MinecraftLaunchCommand {
             }
         }
 
-        let serverApiRoot = URLConfig.API.AuthlibInjector.serverApiRoot(for: profile.serverBaseURL)
+        let serverApiRoot = URLConfig.API.AuthlibInjector.serverApiRoot(for: serverBaseURL)
         let agentArg = AppConstants.AuthlibInjector.agentArgument(serverApiRoot: serverApiRoot)
         var newCommand = command
         newCommand.insert(agentArg, at: 0)
