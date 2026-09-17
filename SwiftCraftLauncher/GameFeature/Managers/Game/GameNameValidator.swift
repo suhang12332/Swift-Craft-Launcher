@@ -30,7 +30,11 @@ class GameNameValidator {
     }
 
     /// A Boolean value indicating whether the form input is valid.
+    ///
+    /// The profile directory is created from the trimmed name, so this must trim as well.
+    /// Testing the raw input would accept a name made of whitespace only, which then installs
+    /// into a directory that duplicate detection never inspected.
     var isFormValid: Bool {
-        !gameName.isEmpty && !isGameNameDuplicate
+        !gameName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isGameNameDuplicate
     }
 }
