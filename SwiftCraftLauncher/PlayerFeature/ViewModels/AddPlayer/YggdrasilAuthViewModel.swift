@@ -8,23 +8,12 @@
 import Foundation
 
 /// Manages Yggdrasil authentication server selection and profile dispatch.
+///
+/// 服务器选择的真源在 `YggdrasilAuthService.currentServer`(选择器全局可见,
+/// 任意阶段可切换);本视图模型只负责角色选择与视图消失时的清理。
 @MainActor
 @Observable
 final class YggdrasilAuthViewModel {
-    /// The currently selected Yggdrasil server configuration.
-    var selectedOption: YggdrasilServerConfig?
-
-    /// Handles a change in server selection and updates the auth service.
-    ///
-    /// - Parameters:
-    ///   - option: The newly selected server configuration.
-    ///   - authService: The Yggdrasil authentication service.
-    func onSelectedOptionChanged(_ option: YggdrasilServerConfig?, authService: YggdrasilAuthService) {
-        if let option {
-            authService.setServer(option)
-        }
-    }
-
     /// Cleans up the auth service state when the view disappears.
     ///
     /// - Parameter authService: The Yggdrasil authentication service.

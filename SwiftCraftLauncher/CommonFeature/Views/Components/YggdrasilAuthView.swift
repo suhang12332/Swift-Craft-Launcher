@@ -40,27 +40,18 @@ struct YggdrasilAuthView: View {
     }
 
     var body: some View {
-        @Bindable var viewModel = viewModel
-        VStack {
-            if container.system.yggdrasilAuthService.currentServer == nil {
-                serverPickerSection
-            } else {
-                authStateSection
-                    .padding(.vertical, 20)
-            }
-        }
-        .onChange(of: viewModel.selectedOption) { _, newValue in
-            loginUsername = ""
-            loginPassword = ""
-            rememberPassword = false
-            viewModel.onSelectedOptionChanged(newValue, authService: container.system.yggdrasilAuthService)
+        VStack(spacing: 10) {
+            serverMenuBar
+            authStateSection
+                .padding(.vertical, 8)
         }
         .onAppear {
-            guard viewModel.selectedOption == nil else { return }
+            // 默认皮肤站预选(设置中指定时)
+            guard container.system.yggdrasilAuthService.currentServer == nil else { return }
             let presetBaseURL = container.ui.playerSettingsManager.defaultYggdrasilServerBaseURL
             guard !presetBaseURL.isEmpty else { return }
             if let preset = servers.first(where: { $0.baseURL.absoluteString == presetBaseURL }) {
-                viewModel.selectedOption = preset
+                container.system.yggdrasilAuthService.setServer(preset)
             }
         }
         .onDisappear {
@@ -71,28 +62,44 @@ struct YggdrasilAuthView: View {
         }
     }
 
-    // MARK: - 服务器选择
+    // MARK: - 服务器切换(全局,任何阶段可返回重选)
 
-    private var serverPickerSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("yggdrasil.server.select".localized())
-                .font(.headline)
-                .padding(.bottom, 4)
+    /// 浏览器授权 / 令牌交换进行中不允许切换,避免悬空的 OAuth 回调。
+    private var isLoginInFlight: Bool {
+        switch container.system.yggdrasilAuthService.authState {
+        case .waitingForBrowser, .processing:
+            return true
+        default:
+            return false
+        }
+    }
 
-            Text("yggdrasil.server.select.description".localized())
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.bottom, 10)
-
-            Picker("yggdrasil.server.picker".localized(), selection: $viewModel.selectedOption) {
-                Text("yggdrasil.server.please_select".localized())
-                    .tag(nil as YggdrasilServerConfig?)
-
+    private var serverMenuBar: some View {
+        HStack(spacing: 8) {
+            Menu {
                 ForEach(servers, id: \.self) { server in
-                    Text(server.name).tag(server as YggdrasilServerConfig?)
+                    Button {
+                        selectServer(server)
+                    } label: {
+                        if container.system.yggdrasilAuthService.currentServer == server {
+                            Label(server.name, systemImage: "checkmark")
+                        } else {
+                            Text(server.name)
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Text(container.system.yggdrasilAuthService.currentServer?.name
+                        ?? "yggdrasil.server.please_select".localized())
+                        .font(.subheadline)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                 }
             }
-            .pickerStyle(.menu)
+            .disabled(isLoginInFlight)
+            .fixedSize()
 
             Button {
                 showCustomServerSheet = true
@@ -101,8 +108,23 @@ struct YggdrasilAuthView: View {
                     .font(.subheadline)
             }
             .buttonStyle(.link)
-            .padding(.top, 6)
+            .disabled(isLoginInFlight)
+            .help("yggdrasil.custom.add".localized())
+
+            Spacer()
         }
+    }
+
+    /// 切换服务器:清空进行中的登录状态(令牌绑定在旧服务器上,不可复用)。
+    private func selectServer(_ server: YggdrasilServerConfig) {
+        let authService = container.system.yggdrasilAuthService
+        guard authService.currentServer != server else { return }
+
+        authService.logout()
+        authService.setServer(server)
+        loginUsername = ""
+        loginPassword = ""
+        rememberPassword = false
     }
 
     // MARK: - 认证状态

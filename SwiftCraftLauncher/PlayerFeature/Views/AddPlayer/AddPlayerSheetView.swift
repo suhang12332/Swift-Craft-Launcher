@@ -61,12 +61,6 @@ struct AddPlayerSheetView: View {
                         .foregroundStyle(.secondary)
                         .symbolRenderingMode(viewModel.selectedAuthType.symbol.mode)
                         .symbolVariant(.none)
-                    if viewModel.selectedAuthType == .yggdrasil,
-                       let serverName = container.system.yggdrasilAuthService.currentServer?.name {
-                        Text(serverName)
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
                     Spacer()
                     if viewModel.isCheckingFlag {
                         ProgressView()
