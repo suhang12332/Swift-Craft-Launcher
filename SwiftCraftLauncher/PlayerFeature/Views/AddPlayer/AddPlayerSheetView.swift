@@ -239,13 +239,9 @@ struct AddPlayerSheetView: View {
                 }
             }
         } label: {
-            HStack(spacing: 4) {
-                Text(container.system.yggdrasilAuthService.currentServer?.name
-                    ?? "yggdrasil.server.please_select".localized())
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
+            // 系统会自动渲染下拉指示箭头,标签只放站点名
+            Text(container.system.yggdrasilAuthService.currentServer?.name
+                ?? "yggdrasil.server.please_select".localized())
         }
         .disabled(yggdrasilAuthInFlight)
         .fixedSize()
