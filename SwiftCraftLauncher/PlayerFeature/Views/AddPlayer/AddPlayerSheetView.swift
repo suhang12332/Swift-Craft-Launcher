@@ -32,6 +32,10 @@ struct AddPlayerSheetView: View {
     private var openURL
     @State private var showErrorPopover: Bool = false
     @State private var showCustomServerSheet: Bool = false
+    /// 三方密码登录表单状态(登录按钮在 footer,状态提升至此共享)
+    @State private var yggLoginUsername = ""
+    @State private var yggLoginPassword = ""
+    @State private var yggRememberPassword = false
 
     /// 标题栏选择器的固定文本宽度:认证方式 40,皮肤站 80(超长尾部省略)。
     private let authTypePickerTextWidth: CGFloat = 40
@@ -91,7 +95,12 @@ struct AddPlayerSheetView: View {
                 case .premium:
                     MinecraftAuthView(onLoginSuccess: onLogin)
                 case .yggdrasil:
-                    YggdrasilAuthView(onLoginSuccess: onYggdrasilLogin)
+                    YggdrasilAuthView(
+                        onLoginSuccess: onYggdrasilLogin,
+                        loginUsername: $yggLoginUsername,
+                        loginPassword: $yggLoginPassword,
+                        rememberPassword: $yggRememberPassword,
+                    )
                 case .offline:
                     VStack(alignment: .leading) {
                         playerInfoSection
@@ -150,9 +159,22 @@ struct AddPlayerSheetView: View {
                     } else if viewModel.selectedAuthType == .yggdrasil {
                         switch container.system.yggdrasilAuthService.authState {
                         case .idle, .error:
-                            // 密码型自定义服务器在表单内完成登录,不提供 OAuth 按钮
+                            // 密码型自定义服务器:登录按钮与 OAuth「开始登录」同位
                             if container.system.yggdrasilAuthService.currentServer?.isPasswordLogin == true {
-                                EmptyView()
+                                Button("yggdrasil.password.login".localized()) {
+                                    let username = yggLoginUsername
+                                    let password = yggLoginPassword
+                                    let remember = yggRememberPassword
+                                    Task {
+                                        await container.system.yggdrasilAuthService.startPasswordAuthentication(
+                                            username: username,
+                                            password: password,
+                                            rememberPassword: remember,
+                                        )
+                                    }
+                                }
+                                .keyboardShortcut(.defaultAction)
+                                .disabled(yggLoginUsername.isEmpty || yggLoginPassword.isEmpty)
                             } else {
                                 Button("addplayer.auth.start_login".localized()) {
                                     Task {
@@ -277,6 +299,9 @@ struct AddPlayerSheetView: View {
 
         authService.logout()
         authService.setServer(server)
+        yggLoginUsername = ""
+        yggLoginPassword = ""
+        yggRememberPassword = false
     }
 
     /// Clears all data and resets authentication state when the sheet is dismissed.

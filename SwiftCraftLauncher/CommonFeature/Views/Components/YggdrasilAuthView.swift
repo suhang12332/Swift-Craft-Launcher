@@ -17,16 +17,23 @@ struct YggdrasilAuthView: View {
     @State private var viewModel = YggdrasilAuthViewModel()
     var onLoginSuccess: ((YggdrasilProfile) -> Void)?
 
-    /// 密码登录表单状态(视图本地,不落盘;记住的密码由统一凭据存储接管)。
-    @State private var loginUsername = ""
-    @State private var loginPassword = ""
-    @State private var rememberPassword = false
+    /// 密码登录表单状态由父视图(添加账户面板)持有:登录按钮位于面板底部
+    /// 右下角,需要跨组件读取这些值;内容不落盘,记住的密码由统一凭据存储接管。
+    @Binding private var loginUsername: String
+    @Binding private var loginPassword: String
+    @Binding private var rememberPassword: Bool
 
     init(
         onLoginSuccess: ((YggdrasilProfile) -> Void)? = nil,
+        loginUsername: Binding<String>,
+        loginPassword: Binding<String>,
+        rememberPassword: Binding<Bool>,
     ) {
         CommonYggdrasilProfileParsersConfigurator.bootstrap()
         self.onLoginSuccess = onLoginSuccess
+        _loginUsername = loginUsername
+        _loginPassword = loginPassword
+        _rememberPassword = rememberPassword
     }
 
     /// 服务器列表来自统一注册表(预设 ∪ 自定义)。
@@ -51,11 +58,6 @@ struct YggdrasilAuthView: View {
                 authStateSection
                     .padding(.vertical, 8)
             }
-        }
-        .onChange(of: container.system.yggdrasilAuthService.currentServer) { _, _ in
-            loginUsername = ""
-            loginPassword = ""
-            rememberPassword = false
         }
         .onAppear {
             // 默认皮肤站预选(设置中指定时)
@@ -94,6 +96,7 @@ struct YggdrasilAuthView: View {
 
     // MARK: - 密码登录表单
 
+    /// 登录按钮位于面板底部右下角(由添加账户面板 footer 渲染)。
     private var passwordLoginForm: some View {
         VStack(alignment: .leading, spacing: 12) {
             let server = container.system.yggdrasilAuthService.currentServer
@@ -113,23 +116,6 @@ struct YggdrasilAuthView: View {
             Text("yggdrasil.password.remember.hint".localized())
                 .font(.caption)
                 .foregroundColor(.secondary)
-
-            Button {
-                let username = loginUsername
-                let password = loginPassword
-                let remember = rememberPassword
-                Task {
-                    await container.system.yggdrasilAuthService.startPasswordAuthentication(
-                        username: username,
-                        password: password,
-                        rememberPassword: remember,
-                    )
-                }
-            } label: {
-                Text("yggdrasil.password.login".localized())
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(loginUsername.isEmpty || loginPassword.isEmpty)
         }
         .padding(.horizontal, 8)
     }
