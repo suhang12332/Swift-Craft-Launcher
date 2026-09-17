@@ -21,7 +21,6 @@ struct YggdrasilAuthView: View {
     @State private var loginUsername = ""
     @State private var loginPassword = ""
     @State private var rememberPassword = false
-    @State private var showCustomServerSheet = false
 
     init(
         onLoginSuccess: ((YggdrasilProfile) -> Void)? = nil,
@@ -30,7 +29,7 @@ struct YggdrasilAuthView: View {
         self.onLoginSuccess = onLoginSuccess
     }
 
-    /// 服务器列表来自统一注册表(预设 ∪ 自定义),sheet 关闭后自动刷新。
+    /// 服务器列表来自统一注册表(预设 ∪ 自定义)。
     private var servers: [YggdrasilServerConfig] {
         YggdrasilServerRegistry.allServers
     }
@@ -39,11 +38,24 @@ struct YggdrasilAuthView: View {
         container.system.yggdrasilAuthService.currentServer?.isPasswordLogin == true
     }
 
+    /// 服务器选择器位于添加账户标题栏(三方类型下与认证方式选择器并排)。
     var body: some View {
-        VStack(spacing: 10) {
-            serverMenuBar
-            authStateSection
-                .padding(.vertical, 8)
+        VStack {
+            if container.system.yggdrasilAuthService.currentServer == nil {
+                Text("yggdrasil.server.please_select".localized())
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+            } else {
+                authStateSection
+                    .padding(.vertical, 8)
+            }
+        }
+        .onChange(of: container.system.yggdrasilAuthService.currentServer) { _, _ in
+            loginUsername = ""
+            loginPassword = ""
+            rememberPassword = false
         }
         .onAppear {
             // 默认皮肤站预选(设置中指定时)
@@ -57,74 +69,6 @@ struct YggdrasilAuthView: View {
         .onDisappear {
             viewModel.onDisappear(authService: container.system.yggdrasilAuthService)
         }
-        .sheet(isPresented: $showCustomServerSheet) {
-            CustomYggdrasilServerSheet()
-        }
-    }
-
-    // MARK: - 服务器切换(全局,任何阶段可返回重选)
-
-    /// 浏览器授权 / 令牌交换进行中不允许切换,避免悬空的 OAuth 回调。
-    private var isLoginInFlight: Bool {
-        switch container.system.yggdrasilAuthService.authState {
-        case .waitingForBrowser, .processing:
-            return true
-        default:
-            return false
-        }
-    }
-
-    private var serverMenuBar: some View {
-        HStack(spacing: 8) {
-            Menu {
-                ForEach(servers, id: \.self) { server in
-                    Button {
-                        selectServer(server)
-                    } label: {
-                        if container.system.yggdrasilAuthService.currentServer == server {
-                            Label(server.name, systemImage: "checkmark")
-                        } else {
-                            Text(server.name)
-                        }
-                    }
-                }
-            } label: {
-                HStack(spacing: 4) {
-                    Text(container.system.yggdrasilAuthService.currentServer?.name
-                        ?? "yggdrasil.server.please_select".localized())
-                        .font(.subheadline)
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .disabled(isLoginInFlight)
-            .fixedSize()
-
-            Button {
-                showCustomServerSheet = true
-            } label: {
-                Label("yggdrasil.custom.add".localized(), systemImage: "plus.circle")
-                    .font(.subheadline)
-            }
-            .buttonStyle(.link)
-            .disabled(isLoginInFlight)
-            .help("yggdrasil.custom.add".localized())
-
-            Spacer()
-        }
-    }
-
-    /// 切换服务器:清空进行中的登录状态(令牌绑定在旧服务器上,不可复用)。
-    private func selectServer(_ server: YggdrasilServerConfig) {
-        let authService = container.system.yggdrasilAuthService
-        guard authService.currentServer != server else { return }
-
-        authService.logout()
-        authService.setServer(server)
-        loginUsername = ""
-        loginPassword = ""
-        rememberPassword = false
     }
 
     // MARK: - 认证状态

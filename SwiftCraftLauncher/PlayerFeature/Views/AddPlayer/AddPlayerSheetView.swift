@@ -31,6 +31,7 @@ struct AddPlayerSheetView: View {
     @Environment(\.openURL)
     private var openURL
     @State private var showErrorPopover: Bool = false
+    @State private var showCustomServerSheet: Bool = false
 
     init(
         playerName: Binding<String>,
@@ -67,6 +68,14 @@ struct AddPlayerSheetView: View {
                             .controlSize(.small)
                             .frame(height: 20.5)
                             .padding(.trailing, 10)
+                    } else if viewModel.selectedAuthType == .yggdrasil {
+                        // 三方:认证方式选择器右侧依次为皮肤站选择器与添加入口
+                        HStack(spacing: 6) {
+                            authTypePicker
+                            yggdrasilServerMenu
+                            addCustomServerButton
+                        }
+                        .padding(.trailing, 10)
                     } else {
                         authTypePicker
                     }
@@ -183,6 +192,9 @@ struct AddPlayerSheetView: View {
         .task {
             await viewModel.checkPremiumAccountFlag()
         }
+        .sheet(isPresented: $showCustomServerSheet) {
+            CustomYggdrasilServerSheet()
+        }
         .onDisappear {
             clearAllData()
         }
@@ -199,6 +211,66 @@ struct AddPlayerSheetView: View {
             Text(viewModel.selectedAuthType.displayName)
         }
         .fixedSize()
+    }
+
+    // MARK: - 三方皮肤站选择(标题栏全局入口)
+
+    /// 浏览器授权 / 令牌交换进行中不允许切换,避免悬空的 OAuth 回调。
+    private var yggdrasilAuthInFlight: Bool {
+        switch container.system.yggdrasilAuthService.authState {
+        case .waitingForBrowser, .processing:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private var yggdrasilServerMenu: some View {
+        Menu {
+            ForEach(YggdrasilServerRegistry.allServers, id: \.self) { server in
+                Button {
+                    selectYggdrasilServer(server)
+                } label: {
+                    if container.system.yggdrasilAuthService.currentServer == server {
+                        Label(server.name, systemImage: "checkmark")
+                    } else {
+                        Text(server.name)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Text(container.system.yggdrasilAuthService.currentServer?.name
+                    ?? "yggdrasil.server.please_select".localized())
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .disabled(yggdrasilAuthInFlight)
+        .fixedSize()
+    }
+
+    /// 纯图标添加入口,悬停显示说明。
+    private var addCustomServerButton: some View {
+        Button {
+            showCustomServerSheet = true
+        } label: {
+            Image(systemName: "plus.circle")
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .disabled(yggdrasilAuthInFlight)
+        .help("yggdrasil.custom.add".localized())
+    }
+
+    /// 切换皮肤站:清空进行中的登录状态(令牌绑定在旧服务器上,不可复用)。
+    private func selectYggdrasilServer(_ server: YggdrasilServerConfig) {
+        let authService = container.system.yggdrasilAuthService
+        guard authService.currentServer != server else { return }
+
+        authService.logout()
+        authService.setServer(server)
     }
 
     /// Clears all data and resets authentication state when the sheet is dismissed.
