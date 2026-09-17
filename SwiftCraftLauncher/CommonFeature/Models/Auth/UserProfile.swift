@@ -15,8 +15,8 @@ struct UserProfile: Identifiable, Codable, Equatable {
     /// The display name.(可变:支持认证服务器侧的角色改名同步)
     var name: String
 
-    /// The avatar image name or path.
-    let avatar: String
+    /// The avatar image name or path.(可变:支持登录后补拉皮肤地址刷新)
+    var avatar: String
 
     /// The last time the user played.
     var lastPlayed: Date

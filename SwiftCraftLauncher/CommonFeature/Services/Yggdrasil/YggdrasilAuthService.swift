@@ -172,7 +172,14 @@ final class YggdrasilAuthService: @unchecked Sendable {
                 authenticatedProfiles[index].accessToken = response.accessToken
                 authenticatedProfiles[index].clientToken = response.clientToken
             }
-            let bound = authenticatedProfiles.first { $0.id == profile.id } ?? profile
+            var bound = authenticatedProfiles.first { $0.id == profile.id } ?? profile
+            // 绑定完成后补拉皮肤(与登录路径一致,尽力而为)
+            if let detail = try? await authServerClient.fetchSessionProfile(uuid: bound.id, apiRoot: apiRoot) {
+                bound = bound.withSkinURL(detail.skinURL)
+                if let index = authenticatedProfiles.firstIndex(where: { $0.id == bound.id }) {
+                    authenticatedProfiles[index] = bound
+                }
+            }
             authState = .authenticated(profile: bound)
         } catch {
             AppLog.common.error("Yggdrasil profile binding failed: \(error)")

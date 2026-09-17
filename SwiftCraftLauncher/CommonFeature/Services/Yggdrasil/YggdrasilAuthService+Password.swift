@@ -68,9 +68,18 @@ extension YggdrasilAuthService {
                 )
             }
 
+            // authenticate 响应不含皮肤信息,尽力从 sessionserver 补拉用于头像展示
+            let hydrateSkin: (YggdrasilProfile) async -> YggdrasilProfile = { [authServerClient] profile in
+                guard let detail = try? await authServerClient.fetchSessionProfile(uuid: profile.id, apiRoot: apiRoot) else {
+                    return profile
+                }
+                return profile.withSkinURL(detail.skinURL)
+            }
+
             // 服务器已自动绑定角色(单角色服务器常见行为)
             if let selected = response.selectedProfile {
-                let profile = makeProfile(selected.id, selected.name)
+                var profile = makeProfile(selected.id, selected.name)
+                profile = await hydrateSkin(profile)
                 authenticatedProfiles = [profile]
                 isLoading = false
                 authState = .authenticated(profile: profile)
@@ -78,7 +87,10 @@ extension YggdrasilAuthService {
             }
 
             // 多角色:展示列表供用户选择,选择后绑定
-            let candidates = (response.availableProfiles ?? []).map { makeProfile($0.id, $0.name) }
+            var candidates = (response.availableProfiles ?? []).map { makeProfile($0.id, $0.name) }
+            for index in candidates.indices {
+                candidates[index] = await hydrateSkin(candidates[index])
+            }
             guard !candidates.isEmpty else {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.yggdrasil_no_profiles",

@@ -147,6 +147,27 @@ struct YggdrasilProfile: Codable, Equatable {
         self.loginUsername = loginUsername
         self.savedPassword = savedPassword
     }
+
+    /// 返回补拉了皮肤贴图的新档案(用于密码登录后的头像展示;无效地址保持原样)。
+    func withSkinURL(_ url: String?) -> Self {
+        guard let url, !url.isEmpty else { return self }
+        if skins.contains(where: { $0.url == url }) { return self }
+        var updatedSkins = skins
+        updatedSkins.insert(Skin(state: "ACTIVE", url: url, variant: nil), at: 0)
+        return Self(
+            id: id,
+            name: name,
+            skins: updatedSkins,
+            capes: capes,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            serverBaseURL: serverBaseURL,
+            authMethod: authMethod,
+            clientToken: clientToken,
+            loginUsername: loginUsername,
+            savedPassword: savedPassword,
+        )
+    }
 }
 
 struct YggdrasilProfileCandidate: Codable, Equatable {

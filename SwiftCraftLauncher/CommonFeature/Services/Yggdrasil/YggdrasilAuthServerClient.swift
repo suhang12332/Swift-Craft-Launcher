@@ -34,6 +34,14 @@ enum YggdrasilAuthServerError: Error {
     case rejected(String)
 }
 
+/// sessionserver 角色档案(用于头像展示)。
+struct YggdrasilSessionProfile: Codable, Equatable {
+    let id: String
+    let name: String
+    /// 角色皮肤贴图地址;角色未设置皮肤时为 `nil`。
+    let skinURL: String?
+}
+
 /// Yggdrasil classic authserver API 客户端抽象(协议缝,便于单元测试)。
 protocol YggdrasilAuthServerClientProtocol: Sendable {
     /// 用户名密码登录。
@@ -54,6 +62,9 @@ protocol YggdrasilAuthServerClientProtocol: Sendable {
 
     /// 校验令牌是否有效(204 即有效)。
     func validate(accessToken: String, clientToken: String, apiRoot: URL) async -> Bool
+
+    /// 拉取角色档案(含皮肤贴图地址),用于密码登录后的头像展示。
+    func fetchSessionProfile(uuid: String, apiRoot: URL) async throws -> YggdrasilSessionProfile
 }
 
 /// 默认实现,基于共享 `APIClient`。
@@ -110,6 +121,43 @@ struct YggdrasilAuthServerClient: YggdrasilAuthServerClientProtocol {
         } catch {
             return false
         }
+    }
+
+    func fetchSessionProfile(uuid: String, apiRoot: URL) async throws -> YggdrasilSessionProfile {
+        let url = apiRoot.appendingPathComponent("sessionserver/session/minecraft/profile/\(uuid)")
+        let data = try await APIClient.get(url: url, headers: [:])
+
+        struct RawProfile: Codable {
+            struct Property: Codable {
+                let name: String
+                let value: String
+            }
+
+            let id: String
+            let name: String
+            let properties: [Property]
+        }
+
+        let raw = try JSONDecoder().decode(RawProfile.self, from: data)
+        let textureValue = raw.properties.first { $0.name == "textures" }?.value
+        return YggdrasilSessionProfile(id: raw.id, name: raw.name, skinURL: textureValue.flatMap(Self.skinURL(fromTextureValue:)))
+    }
+
+    /// 解码 textures 属性(base64url 的 JSON)中的 SKIN 贴图地址。
+    static func skinURL(fromTextureValue base64: String) -> String? {
+        var padded = base64
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        while !padded.count.isMultiple(of: 4) {
+            padded += "="
+        }
+        guard let data = Data(base64Encoded: padded),
+              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let textures = object["textures"] as? [String: Any],
+              let skin = textures["SKIN"] as? [String: Any] else {
+            return nil
+        }
+        return skin["url"] as? String
     }
 
     // MARK: - 私有

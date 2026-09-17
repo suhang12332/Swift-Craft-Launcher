@@ -84,6 +84,31 @@ class PlayerDataManager {
     ) throws {
         let players = try loadPlayersThrowing()
 
+        // 同一角色(相同 UUID)再次添加:视为切换登录方式/刷新凭据,原位更新
+        // 而不是按重名拒绝(例如同一皮肤站角色从 OAuth 切换到密码登录)。
+        if let credential,
+           let existing = players.first(where: { $0.id == credential.userId }) {
+            var profile = existing.profile
+            profile.name = name
+            if !avatarName.isEmpty {
+                profile.avatar = avatarName
+            }
+            profile.authMethod = credential.authMethod
+            if let yggdrasilServerBaseURL {
+                profile.yggdrasilServerBaseURL = yggdrasilServerBaseURL
+            }
+
+            let updated = Player(profile: profile, credential: credential)
+            try updatePlayer(updated)
+            NotificationCenter.default.post(
+                name: .playerUpdated,
+                object: nil,
+                userInfo: ["updatedPlayer": updated],
+            )
+            AppLog.player.debug("Existing player updated with new credential: \(name)")
+            return
+        }
+
         if try playerExistsThrowing(name: name) {
             throw GlobalError.player(
                 i18nKey: "error.player.already_exists",
