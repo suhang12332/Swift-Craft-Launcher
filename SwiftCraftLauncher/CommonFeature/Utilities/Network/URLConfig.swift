@@ -18,6 +18,8 @@ enum URLConfig {
     }
 
     enum API {
+        static let apiBaseURL = URLConfig.url("https://swift-craft-launcher-api.pages.dev/api")
+
         enum Authentication {
             static let authorize = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize")
             static let token = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/token")
@@ -119,7 +121,8 @@ enum URLConfig {
             }
 
             static func contributors() -> URL {
-                URLConfig.url("https://swift-craft-launcher-contributors.suhang12332.workers.dev/contributors")
+                apiBaseURL
+                    .appendingPathComponent("contributors")
             }
 
             static func releaseTag(version: String) -> URL {
@@ -161,7 +164,8 @@ enum URLConfig {
 
         enum Sparkle {
             /// The base URL for application update downloads.
-            static let downloadBaseURL = URLConfig.url("https://swift-craft-launcher-download.suhang12332.workers.dev")
+            static let downloadBaseURL = apiBaseURL
+                .appendingPathComponent("download")
 
             /// Returns the Sparkle appcast feed URL for the given architecture.
             ///
@@ -169,7 +173,8 @@ enum URLConfig {
             /// - Returns: The appcast XML download URL.
             static func appcastURL(architecture: String) -> URL {
                 let appcastFileName = "appcast-\(architecture).xml"
-                return URLConfig.url("https://swift-craft-launcher-update.suhang12332.workers.dev")
+                return apiBaseURL
+                    .appendingPathComponent("update")
                     .appendingPathComponent(appcastFileName)
             }
         }
