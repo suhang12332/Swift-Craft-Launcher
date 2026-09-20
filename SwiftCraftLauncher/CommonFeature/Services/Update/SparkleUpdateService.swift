@@ -14,17 +14,55 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
     private var updater: SPUUpdater?
     private var hasStartedUpdater = false
     private var hasScheduledStartupCheck = false
+    private var periodicCheckTimer: Timer?
+    private let sourceSelector: UpdateSourceSelector
+    private let selectedSourceLock = NSLock()
+    private var selectedSourceStorage: UpdateSource
+    private var activeSessionSourceStorage: UpdateSource
 
     var updateAvailable = false
     var versionString = ""
 
     private let startupCheckDelay: TimeInterval = 2.0
+    private let periodicCheckInterval: TimeInterval = 24 * 60 * 60
 
-    override init() {
+    override convenience init() {
+        let fallbackSource = URLConfig.API.Sparkle.defaultSource
+        self.init(
+            sourceSelector: UpdateSourceSelector(
+                sources: URLConfig.API.Sparkle.updateSources,
+                fallbackSource: fallbackSource,
+            ),
+            initialSource: fallbackSource,
+        )
+    }
+
+    init(sourceSelector: UpdateSourceSelector, initialSource: UpdateSource) {
+        self.sourceSelector = sourceSelector
+        selectedSourceStorage = initialSource
+        activeSessionSourceStorage = initialSource
         super.init()
     }
 
+    private var selectedSource: UpdateSource {
+        selectedSourceLock.withLock { selectedSourceStorage }
+    }
+
+    private var activeSessionSource: UpdateSource {
+        selectedSourceLock.withLock { activeSessionSourceStorage }
+    }
+
+    private func selectUpdateSource() async {
+        let architecture = getSystemArchitecture()
+        let source = await sourceSelector.selectSource(architecture: architecture)
+        selectedSourceLock.withLock {
+            selectedSourceStorage = source
+        }
+        AppLog.common.info("Selected update source: \(source.name) (\(source.appcastURL(architecture: architecture).absoluteString))")
+    }
+
     /// Configures and starts the Sparkle updater.
+    @MainActor
     private func setupUpdater() {
         let hostBundle = Bundle.main
         let driver = SPUStandardUserDriver(hostBundle: hostBundle, delegate: nil)
@@ -34,23 +72,34 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
 
             try updater?.start()
 
-            updater?.automaticallyChecksForUpdates = true
-            updater?.updateCheckInterval = 24 * 60 * 60
+            // Schedule checks here so every automatic check refreshes the source asynchronously first.
+            updater?.automaticallyChecksForUpdates = false
             updater?.sendsSystemProfile = false
+            schedulePeriodicChecks()
         } catch {
             AppLog.common.error("Failed to initialize updater: \(error.localizedDescription)")
         }
     }
 
+    @MainActor
     private func ensureUpdaterStarted() {
         guard !hasStartedUpdater else { return }
         hasStartedUpdater = true
         setupUpdater()
     }
 
+    @MainActor
+    private func schedulePeriodicChecks() {
+        guard periodicCheckTimer == nil else { return }
+        periodicCheckTimer = Timer.scheduledTimer(withTimeInterval: periodicCheckInterval, repeats: true) { [weak self] _ in
+            self?.checkForUpdatesSilently()
+        }
+        periodicCheckTimer?.tolerance = 60
+    }
+
     func feedURLString(for _: SPUUpdater) -> String? {
         let architecture = getSystemArchitecture()
-        let appcastURL = URLConfig.API.Sparkle.appcastURL(architecture: architecture)
+        let appcastURL = activeSessionSource.appcastURL(architecture: architecture)
         return appcastURL.absoluteString
     }
 
@@ -92,22 +141,24 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
 
     /// Checks for updates and displays the standard Sparkle UI.
     func checkForUpdatesWithUI() {
-        ensureUpdaterStarted()
-        guard let updater else {
-            AppLog.common.error("Updater not yet initialized")
-            return
+        Task { [weak self] in
+            guard let self else { return }
+            await selectUpdateSource()
+            await performUpdateCheck(displaysUI: true)
         }
-
-        if updater.sessionInProgress {
-            AppLog.common.error("Update session in progress, skipping duplicate update check")
-            return
-        }
-
-        updater.checkForUpdates()
     }
 
     /// Checks for updates silently without showing any UI.
     func checkForUpdatesSilently() {
+        Task { [weak self] in
+            guard let self else { return }
+            await selectUpdateSource()
+            await performUpdateCheck(displaysUI: false)
+        }
+    }
+
+    @MainActor
+    private func performUpdateCheck(displaysUI: Bool) {
         ensureUpdaterStarted()
         guard let updater else {
             AppLog.common.error("Updater not yet initialized")
@@ -119,7 +170,16 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
             return
         }
 
-        updater.checkForUpdatesInBackground()
+        let source = selectedSource
+        selectedSourceLock.withLock {
+            activeSessionSourceStorage = source
+        }
+
+        if displaysUI {
+            updater.checkForUpdates()
+        } else {
+            updater.checkForUpdatesInBackground()
+        }
     }
 }
 
@@ -135,11 +195,10 @@ extension SparkleUpdateService {
         }
 
         let fileName = originalURL.lastPathComponent
-        let mirroredURL = URLConfig.API.Sparkle.downloadBaseURL
-            .appendingPathComponent(version)
-            .appendingPathComponent(fileName)
+        let source = activeSessionSource
+        let mirroredURL = source.downloadURL(version: version, fileName: fileName)
 
-        AppLog.common.info("Update download URL rewritten: \(originalURL.absoluteString) -> \(mirroredURL.absoluteString)")
+        AppLog.common.info("Update download URL rewritten via \(source.name): \(originalURL.absoluteString) -> \(mirroredURL.absoluteString)")
         request.url = mirroredURL
     }
 }

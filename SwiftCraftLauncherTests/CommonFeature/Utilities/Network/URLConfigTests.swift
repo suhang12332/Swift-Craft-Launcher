@@ -126,4 +126,14 @@ final class URLConfigTests: XCTestCase {
         let qq = URLConfig.API.Community.qq()
         XCTAssertTrue(qq.absoluteString.contains("qm.qq.com"))
     }
+
+    func testSparkleUpdateSources() {
+        XCTAssertEqual(URLConfig.API.Sparkle.defaultSource.id, "default")
+        XCTAssertEqual(URLConfig.API.Sparkle.mainlandMirror.id, "rmcserver-cn")
+        XCTAssertEqual(URLConfig.API.Sparkle.updateSources.count, 2)
+        XCTAssertEqual(
+            URLConfig.API.Sparkle.mainlandMirror.appcastURL(architecture: "arm64").absoluteString,
+            "https://scl.rmcserver.cn/appcast-arm64.xml",
+        )
+    }
 }
