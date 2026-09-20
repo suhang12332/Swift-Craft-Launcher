@@ -89,8 +89,15 @@ final class UpdateSourceSelectorTests: XCTestCase {
         let validAppcast = Data(
             """
             <rss xmlns:sparkle="https://sparkle-project.org/xml-namespaces/sparkle">
-              <sparkle:shortVersionString>1.3.3</sparkle:shortVersionString>
-              <enclosure url="Swift-Craft-Launcher-arm64-1.3.3.dmg" sparkle:edSignature="signature" />
+              <channel>
+                <item>
+                  <sparkle:version>87</sparkle:version>
+                  <sparkle:shortVersionString>1.3.3</sparkle:shortVersionString>
+                  <enclosure url="https://example.com/Swift-Craft-Launcher-arm64-1.3.3.dmg"
+                             length="5082257"
+                             sparkle:edSignature="signature" />
+                </item>
+              </channel>
             </rss>
             """.utf8,
         )
@@ -98,6 +105,51 @@ final class UpdateSourceSelectorTests: XCTestCase {
         XCTAssertTrue(UpdateSourceSelector.isValidAppcast(validAppcast, architecture: "arm64"))
         XCTAssertFalse(UpdateSourceSelector.isValidAppcast(validAppcast, architecture: "x86_64"))
         XCTAssertFalse(UpdateSourceSelector.isValidAppcast(Data("not xml".utf8), architecture: "arm64"))
+    }
+
+    func testRejectsMalformedOrIncompleteAppcast() {
+        let tokenOnlyText = Data(
+            """
+            <rss><channel><item>
+              &lt;sparkle:version&gt;87&lt;/sparkle:version&gt;
+              Swift-Craft-Launcher-arm64-1.3.3.dmg sparkle:edSignature=signature
+            </item></channel></rss>
+            """.utf8,
+        )
+        let emptySignature = Data(
+            """
+            <rss xmlns:sparkle="https://sparkle-project.org/xml-namespaces/sparkle">
+              <channel><item>
+                <sparkle:version>87</sparkle:version>
+                <sparkle:shortVersionString>1.3.3</sparkle:shortVersionString>
+                <enclosure url="https://example.com/Swift-Craft-Launcher-arm64-1.3.3.dmg"
+                           length="5082257"
+                           sparkle:edSignature="" />
+              </item></channel>
+            </rss>
+            """.utf8,
+        )
+        let fieldsSplitAcrossItems = Data(
+            """
+            <rss xmlns:sparkle="https://sparkle-project.org/xml-namespaces/sparkle">
+              <channel>
+                <item>
+                  <sparkle:version>87</sparkle:version>
+                  <sparkle:shortVersionString>1.3.3</sparkle:shortVersionString>
+                </item>
+                <item>
+                  <enclosure url="https://example.com/Swift-Craft-Launcher-arm64-1.3.3.dmg"
+                             length="5082257"
+                             sparkle:edSignature="signature" />
+                </item>
+              </channel>
+            </rss>
+            """.utf8,
+        )
+
+        XCTAssertFalse(UpdateSourceSelector.isValidAppcast(tokenOnlyText, architecture: "arm64"))
+        XCTAssertFalse(UpdateSourceSelector.isValidAppcast(emptySignature, architecture: "arm64"))
+        XCTAssertFalse(UpdateSourceSelector.isValidAppcast(fieldsSplitAcrossItems, architecture: "arm64"))
     }
 
     private func makeSelector(probe: @escaping UpdateSourceSelector.Probe) -> UpdateSourceSelector {

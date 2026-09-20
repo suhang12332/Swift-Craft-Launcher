@@ -123,15 +123,122 @@ actor UpdateSourceSelector {
 
     static func isValidAppcast(_ data: Data, architecture: String) -> Bool {
         guard !data.isEmpty,
-              data.count <= 1024 * 1024,
-              let appcast = String(data: data, encoding: .utf8)
+              data.count <= 1024 * 1024
         else {
             return false
         }
 
-        return appcast.contains("<rss")
-            && appcast.contains("<sparkle:shortVersionString>")
-            && appcast.contains("Swift-Craft-Launcher-\(architecture)-")
-            && appcast.contains("sparkle:edSignature=")
+        let validationDelegate = AppcastValidationDelegate(architecture: architecture)
+        let parser = XMLParser(data: data)
+        parser.delegate = validationDelegate
+        parser.shouldProcessNamespaces = false
+        parser.shouldResolveExternalEntities = false
+        return parser.parse() && validationDelegate.isValid
+    }
+}
+
+private final class AppcastValidationDelegate: NSObject, XMLParserDelegate {
+    private let expectedFileNameFragment: String
+    private var rootElementName: String?
+    private var isInsideItem = false
+    private var collectedElementName: String?
+    private var collectedText = ""
+    private var version = ""
+    private var shortVersion = ""
+    private var hasSignedEnclosure = false
+
+    private(set) var hasValidItem = false
+
+    var isValid: Bool {
+        rootElementName == "rss" && hasValidItem
+    }
+
+    init(architecture: String) {
+        expectedFileNameFragment = "Swift-Craft-Launcher-\(architecture)-"
+    }
+
+    func parser(
+        _: XMLParser,
+        didStartElement elementName: String,
+        namespaceURI _: String?,
+        qualifiedName _: String?,
+        attributes attributeDict: [String: String],
+    ) {
+        let name = localName(elementName)
+        if rootElementName == nil {
+            rootElementName = name
+        }
+
+        if name == "item" {
+            isInsideItem = true
+            version = ""
+            shortVersion = ""
+            hasSignedEnclosure = false
+            return
+        }
+
+        guard isInsideItem else { return }
+        if name == "version" || name == "shortVersionString" {
+            collectedElementName = name
+            collectedText = ""
+        } else if name == "enclosure" {
+            validateEnclosureAttributes(attributeDict)
+        }
+    }
+
+    func parser(_: XMLParser, foundCharacters string: String) {
+        guard collectedElementName != nil else { return }
+        collectedText += string
+    }
+
+    func parser(
+        _: XMLParser,
+        didEndElement elementName: String,
+        namespaceURI _: String?,
+        qualifiedName _: String?,
+    ) {
+        let name = localName(elementName)
+        if name == collectedElementName {
+            let value = collectedText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if name == "version" {
+                version = value
+            } else if name == "shortVersionString" {
+                shortVersion = value
+            }
+            collectedElementName = nil
+            collectedText = ""
+        }
+
+        if name == "item" {
+            if !version.isEmpty, !shortVersion.isEmpty, hasSignedEnclosure {
+                hasValidItem = true
+            }
+            isInsideItem = false
+        }
+    }
+
+    private func validateEnclosureAttributes(_ attributes: [String: String]) {
+        guard let urlString = attribute(named: "url", in: attributes),
+              let signature = attribute(named: "edSignature", in: attributes),
+              let lengthString = attribute(named: "length", in: attributes),
+              let length = Int64(lengthString),
+              length > 0,
+              !signature.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        else {
+            return
+        }
+
+        let fileName = URL(string: urlString)?.lastPathComponent ?? ""
+        if fileName.contains(expectedFileNameFragment) {
+            hasSignedEnclosure = true
+        }
+    }
+
+    private func attribute(named name: String, in attributes: [String: String]) -> String? {
+        attributes.first { localName($0.key) == name }?.value
+    }
+
+    private func localName(_ qualifiedName: String) -> String {
+        String(qualifiedName.split(separator: ":").last ?? Substring(qualifiedName))
     }
 }
