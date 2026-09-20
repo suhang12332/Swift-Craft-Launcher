@@ -160,18 +160,24 @@ enum URLConfig {
         }
 
         enum Sparkle {
-            /// The base URL for application update downloads.
-            static let downloadBaseURL = URLConfig.url("https://swift-craft-launcher-download.suhang12332.workers.dev")
+            /// The existing update service, retained as the fallback source.
+            static let defaultSource = UpdateSource(
+                id: "default",
+                name: "Default",
+                appcastBaseURL: URLConfig.url("https://swift-craft-launcher-update.suhang12332.workers.dev"),
+                downloadBaseURL: URLConfig.url("https://swift-craft-launcher-download.suhang12332.workers.dev"),
+            )
 
-            /// Returns the Sparkle appcast feed URL for the given architecture.
-            ///
-            /// - Parameter architecture: The target architecture identifier (e.g. "arm64", "x86_64").
-            /// - Returns: The appcast XML download URL.
-            static func appcastURL(architecture: String) -> URL {
-                let appcastFileName = "appcast-\(architecture).xml"
-                return URLConfig.url("https://swift-craft-launcher-update.suhang12332.workers.dev")
-                    .appendingPathComponent(appcastFileName)
-            }
+            /// Mainland-friendly mirror. Sparkle still verifies every downloaded update signature.
+            static let mainlandMirror = UpdateSource(
+                id: "rmcserver-cn",
+                name: "RMCServer CN",
+                appcastBaseURL: URLConfig.url("https://scl.rmcserver.cn"),
+                downloadBaseURL: URLConfig.url("https://scl.rmcserver.cn"),
+            )
+
+            /// Sources measured concurrently before an update check starts.
+            static let updateSources = [defaultSource, mainlandMirror]
         }
 
         enum Community {

@@ -14,14 +14,43 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
     private var updater: SPUUpdater?
     private var hasStartedUpdater = false
     private var hasScheduledStartupCheck = false
+    private let sourceSelector: UpdateSourceSelector
+    private let selectedSourceLock = NSLock()
+    private var selectedSourceStorage: UpdateSource
 
     var updateAvailable = false
     var versionString = ""
 
     private let startupCheckDelay: TimeInterval = 2.0
 
-    override init() {
+    override convenience init() {
+        let fallbackSource = URLConfig.API.Sparkle.defaultSource
+        self.init(
+            sourceSelector: UpdateSourceSelector(
+                sources: URLConfig.API.Sparkle.updateSources,
+                fallbackSource: fallbackSource,
+            ),
+            initialSource: fallbackSource,
+        )
+    }
+
+    init(sourceSelector: UpdateSourceSelector, initialSource: UpdateSource) {
+        self.sourceSelector = sourceSelector
+        selectedSourceStorage = initialSource
         super.init()
+    }
+
+    private var selectedSource: UpdateSource {
+        selectedSourceLock.withLock { selectedSourceStorage }
+    }
+
+    private func selectUpdateSource() async {
+        let architecture = getSystemArchitecture()
+        let source = await sourceSelector.selectSource(architecture: architecture)
+        selectedSourceLock.withLock {
+            selectedSourceStorage = source
+        }
+        AppLog.common.info("Selected update source: \(source.name) (\(source.appcastURL(architecture: architecture).absoluteString))")
     }
 
     /// Configures and starts the Sparkle updater.
@@ -50,7 +79,7 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
 
     func feedURLString(for _: SPUUpdater) -> String? {
         let architecture = getSystemArchitecture()
-        let appcastURL = URLConfig.API.Sparkle.appcastURL(architecture: architecture)
+        let appcastURL = selectedSource.appcastURL(architecture: architecture)
         return appcastURL.absoluteString
     }
 
@@ -92,22 +121,24 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
 
     /// Checks for updates and displays the standard Sparkle UI.
     func checkForUpdatesWithUI() {
-        ensureUpdaterStarted()
-        guard let updater else {
-            AppLog.common.error("Updater not yet initialized")
-            return
+        Task { [weak self] in
+            guard let self else { return }
+            await selectUpdateSource()
+            await performUpdateCheck(displaysUI: true)
         }
-
-        if updater.sessionInProgress {
-            AppLog.common.error("Update session in progress, skipping duplicate update check")
-            return
-        }
-
-        updater.checkForUpdates()
     }
 
     /// Checks for updates silently without showing any UI.
     func checkForUpdatesSilently() {
+        Task { [weak self] in
+            guard let self else { return }
+            await selectUpdateSource()
+            await performUpdateCheck(displaysUI: false)
+        }
+    }
+
+    @MainActor
+    private func performUpdateCheck(displaysUI: Bool) {
         ensureUpdaterStarted()
         guard let updater else {
             AppLog.common.error("Updater not yet initialized")
@@ -119,7 +150,11 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
             return
         }
 
-        updater.checkForUpdatesInBackground()
+        if displaysUI {
+            updater.checkForUpdates()
+        } else {
+            updater.checkForUpdatesInBackground()
+        }
     }
 }
 
@@ -135,11 +170,10 @@ extension SparkleUpdateService {
         }
 
         let fileName = originalURL.lastPathComponent
-        let mirroredURL = URLConfig.API.Sparkle.downloadBaseURL
-            .appendingPathComponent(version)
-            .appendingPathComponent(fileName)
+        let source = selectedSource
+        let mirroredURL = source.downloadURL(version: version, fileName: fileName)
 
-        AppLog.common.info("Update download URL rewritten: \(originalURL.absoluteString) -> \(mirroredURL.absoluteString)")
+        AppLog.common.info("Update download URL rewritten via \(source.name): \(originalURL.absoluteString) -> \(mirroredURL.absoluteString)")
         request.url = mirroredURL
     }
 }
