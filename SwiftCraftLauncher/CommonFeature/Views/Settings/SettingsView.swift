@@ -204,8 +204,13 @@ public struct SettingsView: View {
         .onChange(of: selectedPage) { _, page in
             if page == .advanced, container.core.selectedGameManager.selectedGameId == nil {
                 selectedPage = lastAvailablePage
-            } else if let page {
+            } else if let page, page != .advanced {
                 lastAvailablePage = page
+            }
+        }
+        .onChange(of: container.core.selectedGameManager.selectedGameId) { _, gameID in
+            if gameID == nil, selectedPage == .advanced {
+                selectedPage = lastAvailablePage
             }
         }
         .onAppear {
@@ -234,7 +239,11 @@ public struct SettingsView: View {
                 .environment(container.ui.aiSettingsManager)
                 .environment(container.ui.gameSettingsManager)
         case .advanced:
-            GameAdvancedSettingsView()
+            if container.core.selectedGameManager.selectedGameId != nil {
+                GameAdvancedSettingsView()
+            } else {
+                GeneralSettingsView(page: .general)
+            }
         }
     }
 

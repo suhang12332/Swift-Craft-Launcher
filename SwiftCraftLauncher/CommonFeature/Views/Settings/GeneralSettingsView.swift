@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// A view for configuring general launcher settings.
+/// Renders the general, appearance, files, or network settings for the selected page.
 public struct GeneralSettingsView: View {
     let page: SettingsPage
     @Environment(DIContainer.self)
