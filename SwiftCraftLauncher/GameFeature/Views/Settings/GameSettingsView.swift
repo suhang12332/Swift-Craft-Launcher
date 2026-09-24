@@ -10,6 +10,7 @@ import Foundation
 import SwiftUI
 
 public struct GameSettingsView: View {
+    let page: SettingsPage
     @Environment(GameSettingsManager.self)
     private var gameSettingsManager
     @Environment(DIContainer.self)
@@ -21,28 +22,43 @@ public struct GameSettingsView: View {
 
     @State private var concurrentDownloadsDraft: Double = 64
 
-    public init() {
+    init(page: SettingsPage) {
+        self.page = page
         _viewModel = State(initialValue: GameSettingsJavaRuntimeViewModel())
     }
 
     public var body: some View {
         Form {
-            GameSettingsAPISourceRow()
-            GameSettingsModPackExportFormatRow()
-            spacerView()
-            GameSettingsConcurrentDownloadsRow(draft: $concurrentDownloadsDraft)
-            GameSettingsIncludeSnapshotsRow()
-            GameSettingsAICrashAnalysisRow()
-            GameSettingsMemoryPressureWarningRow()
-            GameSettingsSyncLanguageRow()
-            spacerView()
-            GameSettingsMemoryAllocationSection(range: $globalMemoryRange)
-            spacerView()
-            GameSettingsJavaRuntimeRow(viewModel: viewModel)
+            if page == .downloads {
+                Section {
+                    GameSettingsModPackExportFormatRow()
+                        .id("settings.modpack.export.format.label")
+                    GameSettingsConcurrentDownloadsRow(draft: $concurrentDownloadsDraft)
+                        .id("settings.concurrent_downloads.label")
+                    GameSettingsIncludeSnapshotsRow()
+                        .id("settings.game_versions.label")
+                    GameSettingsSyncLanguageRow()
+                        .id("settings.game.language.label")
+                }
+            } else {
+                Section {
+                    GameSettingsMemoryPressureWarningRow()
+                        .id("settings.memory_pressure_warning.label")
+                    GameSettingsMemoryAllocationSection(range: $globalMemoryRange)
+                        .id("settings.default_memory_allocation.label")
+                }
+                Section {
+                    GameSettingsJavaRuntimeRow(viewModel: viewModel)
+                        .id("settings.game.java.runtimes.section")
+                }
+            }
         }
+        .formStyle(.grouped)
         .environment(gameSettingsManager)
         .onAppear {
-            viewModel.refreshInstalledRuntimes(showScanningIndicator: true)
+            if page == .java {
+                viewModel.refreshInstalledRuntimes(showScanningIndicator: true)
+            }
         }
         .onChange(of: container.system.javaDownloadManager.isWindowVisible) { _, isVisible in
             if !isVisible {

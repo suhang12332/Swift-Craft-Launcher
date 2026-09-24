@@ -85,6 +85,9 @@ struct SwiftCraftLauncherApp: App {
                 .preferredColorScheme(container.ui.themeManager.preferredColorScheme)
                 .errorAlert(container.core.errorHandler, source: .settings)
         }
+        .defaultSize(width: 715, height: 580)
+        .windowResizability(.contentMinSize)
+        .windowToolbarStyle(.unified)
 
         auxiliaryWindowGroup()
             .windowStyle(.titleBar)
