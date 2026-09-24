@@ -112,7 +112,7 @@ struct MinecraftLaunchCommand {
                 profile: profile,
             )
         } else {
-            accessToken = player.authAccessToken
+            accessToken = validatedPlayer.authAccessToken
             commandWithAgent = command
         }
 
