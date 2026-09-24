@@ -63,7 +63,7 @@ public struct SettingsView: View {
     @State private var lastAvailablePage: SettingsPage = .general
 
     public var body: some View {
-        HStack(spacing: 0) {
+        NavigationSplitView {
             List(selection: $selectedPage) {
                 ForEach(SettingsPage.allCases) { page in
                     Label {
@@ -81,10 +81,9 @@ public struct SettingsView: View {
                 }
             }
             .listStyle(.sidebar)
-            .frame(width: 215)
-
-            Divider()
-
+            .toolbar(removing: .sidebarToggle)
+            .navigationSplitViewColumnWidth(215)
+        } detail: {
             VStack(spacing: 0) {
                 Text(selectedPage?.title ?? "settings.general.tab".localized())
                     .font(.headline)
@@ -92,7 +91,6 @@ public struct SettingsView: View {
                     .padding(.vertical, 10)
                 Divider()
                 detail
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .toggleStyle(.switch)

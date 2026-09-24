@@ -65,10 +65,7 @@ struct DirectorySettingRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                Text(path)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-                    .textSelection(.enabled)
+                PathBreadcrumbView(path: path)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .help(path)
 
