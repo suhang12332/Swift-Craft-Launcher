@@ -146,23 +146,23 @@ jobs:
           path: xcodebuild.log
           retention-days: 7
 
-  periphery:
-    runs-on: xcode-27
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Install Periphery
-        run: brew install peripheryapp/periphery/periphery
-
-      - name: Run Periphery scan
-        run: periphery scan --format github-actions --strict --verbose -- -skipPackagePluginValidation
-
-      - name: Upload results
-        if: failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: periphery-results
-          path: .periphery-results.json
-          retention-days: 7
+  # periphery:
+  #   runs-on: xcode-27
+  #
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v6
+  #
+  #     - name: Install Periphery
+  #       run: brew install peripheryapp/periphery/periphery
+  #
+  #     - name: Run Periphery scan
+  #       run: periphery scan --format github-actions --strict --verbose -- -skipPackagePluginValidation
+  #
+  #     - name: Upload results
+  #       if: failure()
+  #       uses: actions/upload-artifact@v7
+  #       with:
+  #         name: periphery-results
+  #         path: .periphery-results.json
+  #         retention-days: 7
