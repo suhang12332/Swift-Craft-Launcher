@@ -63,7 +63,7 @@ public struct SettingsView: View {
     @State private var lastAvailablePage: SettingsPage = .general
 
     public var body: some View {
-        NavigationSplitView {
+        HStack(spacing: 0) {
             List(selection: $selectedPage) {
                 ForEach(SettingsPage.allCases) { page in
                     Label {
@@ -81,11 +81,21 @@ public struct SettingsView: View {
                 }
             }
             .listStyle(.sidebar)
-            .navigationSplitViewColumnWidth(min: 200, ideal: 215, max: 260)
-        } detail: {
-            detail
-                .navigationTitle(selectedPage?.title ?? "settings.general.tab".localized())
+            .frame(width: 215)
+
+            Divider()
+
+            VStack(spacing: 0) {
+                Text(selectedPage?.title ?? "settings.general.tab".localized())
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                Divider()
+                detail
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
+        .toggleStyle(.switch)
         .frame(minWidth: 715, minHeight: 500)
         .onChange(of: container.core.selectedGameManager.shouldOpenAdvancedSettings) { _, shouldOpen in
             if shouldOpen {

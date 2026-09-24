@@ -45,7 +45,7 @@ struct AISettingsAPIKeyRow: View {
                             .textFieldStyle(.roundedBorder).labelsHidden()
                     }
                 }
-                .frame(width: 300)
+                .frame(maxWidth: .infinity)
                 Button(action: {
                     showApiKey.toggle()
                 }, label: {
@@ -54,6 +54,7 @@ struct AISettingsAPIKeyRow: View {
                 .buttonStyle(.plain)
                 .applyReplaceTransition()
             }
+            .frame(width: 300)
         }
         .settingsDescription("settings.ai.api_key.description".localized())
     }
@@ -70,8 +71,7 @@ struct AISettingsOllamaURLRow: View {
             TextField(URLConfig.API.AIService.ollamaDefaultBaseURL, text: $aiSettingsManager.ollamaBaseURL)
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .frame(maxWidth: 300)
-                .fixedSize()
+                .frame(width: 300)
         }
     }
 }
@@ -88,7 +88,6 @@ struct AISettingsAPIURLRow: View {
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
                 .frame(width: 300)
-                .fixedSize()
         }
     }
 }
@@ -121,8 +120,7 @@ struct AISettingsModelRow: View {
             TextField("settings.ai.model.placeholder".localized(), text: $aiSettingsManager.modelOverride)
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .frame(width: 180)
-                .fixedSize()
+                .frame(width: 300)
                 .focusable(false)
         }
     }
@@ -146,8 +144,9 @@ struct AISettingsAvatarRow: View {
                     TextField("settings.ai.avatar.placeholder".localized(), text: $aiSettingsManager.aiAvatarURL)
                         .textFieldStyle(.roundedBorder)
                         .labelsHidden()
-                        .frame(maxWidth: 300)
+                        .frame(maxWidth: .infinity)
                 }
+                .frame(width: 300)
             }
             CommonDescriptionText(text: "settings.ai.avatar.description".localized())
         }

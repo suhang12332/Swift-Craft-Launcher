@@ -47,6 +47,7 @@ public struct PlayerSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .contentMargins(.top, 0, for: .scrollContent)
         .environment(playerSettingsManager)
         .task(id: currentPlayer?.id) {
             viewModel.refreshAuthlibInjectorExists()

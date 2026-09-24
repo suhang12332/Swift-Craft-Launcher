@@ -95,7 +95,6 @@ struct GeneralSettingsWorkingDirectoryRow: View {
                 }
             }
             DirectorySettingRow(
-                title: "settings.launcher_working_directory".localized(),
                 path: generalSettings.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : generalSettings.launcherWorkingDirectory,
                 description: "settings.working_directory.description".localized(),
                 onChoose: { viewModel.showDirectoryPicker = true },
@@ -133,11 +132,7 @@ struct GeneralSettingsCommonSheetHeightLimitRow: View {
 
     var body: some View {
         @Bindable var generalSettings = generalSettings
-        LabeledContent("settings.common_sheet_height_limit.label".localized()) {
-            Toggle(
-                "settings.common_sheet_height_limit.enable".localized(),
-                isOn: $generalSettings.limitCommonSheetHeight,
-            )
-        }
+        Toggle("settings.common_sheet_height_limit.label".localized(), isOn: $generalSettings.limitCommonSheetHeight)
+            .settingsDescription("settings.common_sheet_height_limit.enable".localized())
     }
 }

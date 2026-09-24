@@ -23,7 +23,6 @@ struct GameAdvancedSettingsJavaPathSection: View {
                 )
             }
             DirectorySettingRow(
-                title: "settings.game.java.path".localized(),
                 path: viewModel.effectiveJavaPath,
                 description: "settings.game.java.path.description".localized(),
                 onChoose: { showJavaPathPicker = true },

@@ -57,26 +57,22 @@ extension View {
 
 /// A row for configuring a directory path with choose and reset actions.
 struct DirectorySettingRow: View {
-    let title: String
     let path: String
     let description: String
     let onChoose: () -> Void
     let onReset: () -> Void
 
-    @State private var showPopover = false
-
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                Button(action: onChoose) {
-                    PathBreadcrumbView(path: path)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.primary)
-                .applyPointerHandIfAvailable()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .help(path)
+                Text(path)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .help(path)
 
+                Button("common.browse".localized(), action: onChoose)
                 Button("common.reset".localized(), action: onReset)
             }
             Text(description)

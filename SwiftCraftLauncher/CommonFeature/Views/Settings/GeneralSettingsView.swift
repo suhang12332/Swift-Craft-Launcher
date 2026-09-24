@@ -56,6 +56,7 @@ public struct GeneralSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .contentMargins(.top, 0, for: .scrollContent)
         .errorHandler(container.core.errorHandler)
         .onAppear {
             viewModel.configure(gameRepository: gameRepository)

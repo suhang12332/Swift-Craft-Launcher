@@ -28,6 +28,7 @@ struct GameAdvancedSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .contentMargins(.top, 0, for: .scrollContent)
         .onAppear {
             viewModel.setRepository(gameRepository)
             viewModel.onAppearOrGameChanged()

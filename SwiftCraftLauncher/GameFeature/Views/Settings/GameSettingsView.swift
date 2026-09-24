@@ -47,6 +47,7 @@ public struct GameSettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .contentMargins(.top, 0, for: .scrollContent)
         .environment(gameSettingsManager)
         .onAppear {
             if page == .java {

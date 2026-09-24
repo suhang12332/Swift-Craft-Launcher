@@ -21,5 +21,6 @@ public struct AISettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .contentMargins(.top, 0, for: .scrollContent)
     }
 }
