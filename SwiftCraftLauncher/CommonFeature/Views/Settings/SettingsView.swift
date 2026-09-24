@@ -84,14 +84,8 @@ public struct SettingsView: View {
             .toolbar(removing: .sidebarToggle)
             .navigationSplitViewColumnWidth(215)
         } detail: {
-            VStack(spacing: 0) {
-                Text(selectedPage?.title ?? "settings.general.tab".localized())
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
-                Divider()
-                detail
-            }
+            detail
+                .navigationTitle(selectedPage?.title ?? "settings.general.tab".localized())
         }
         .toggleStyle(.switch)
         .frame(minWidth: 715, minHeight: 500)
