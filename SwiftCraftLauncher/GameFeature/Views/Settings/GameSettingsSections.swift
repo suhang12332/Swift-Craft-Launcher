@@ -165,43 +165,40 @@ struct GameSettingsMemoryAllocationSection: View {
 
     var body: some View {
         @Bindable var gameSettingsManager = gameSettingsManager
-        LabeledContent("settings.default_memory_allocation.label".localized()) {
-            HStack {
-                MiniRangeSlider(
-                    range: $range,
-                    bounds:
-                    Double(AppConstants.MemoryDefaults.xms) ... Double(gameSettingsManager.maximumMemoryAllocation),
-                )
-                .frame(width: 200)
-                .controlSize(.mini)
-                .onChange(of: range) { _, newValue in
-                    gameSettingsManager.globalXms = Int(newValue.lowerBound)
-                    gameSettingsManager.globalXmx = Int(newValue.upperBound)
+        VStack(alignment: .leading, spacing: 8) {
+            LabeledContent("settings.default_memory_allocation.label".localized()) {
+                HStack {
+                    MiniRangeSlider(
+                        range: $range,
+                        bounds:
+                        Double(AppConstants.MemoryDefaults.xms) ... Double(gameSettingsManager.maximumMemoryAllocation),
+                    )
+                    .frame(width: 200)
+                    .controlSize(.mini)
+                    .onChange(of: range) { _, newValue in
+                        gameSettingsManager.globalXms = Int(newValue.lowerBound)
+                        gameSettingsManager.globalXmx = Int(newValue.upperBound)
+                    }
+                    .onAppear {
+                        range =
+                            Double(
+                                gameSettingsManager.globalXms,
+                            ) ... Double(gameSettingsManager.globalXmx)
+                    }
+                    Button("common.reset".localized()) {
+                        gameSettingsManager.globalXms = AppConstants.MemoryDefaults.xms
+                        gameSettingsManager.globalXmx = AppConstants.MemoryDefaults.xmx
+                        range = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
+                    }
+                    .padding(.leading, 8)
                 }
-                .onAppear {
-                    range =
-                        Double(
-                            gameSettingsManager.globalXms,
-                        ) ... Double(gameSettingsManager.globalXmx)
-                }
-                Button("common.reset".localized()) {
-                    gameSettingsManager.globalXms = AppConstants.MemoryDefaults.xms
-                    gameSettingsManager.globalXmx = AppConstants.MemoryDefaults.xmx
-                    range = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
-                }
-                .padding(.leading, 8)
             }
+            Text("\(Int(range.lowerBound)) MB-\(Int(range.upperBound)) MB")
+                .font(.subheadline.monospacedDigit())
+                .lineLimit(1)
+            CommonDescriptionText(text: "settings.default_memory_allocation.description".localized())
         }
-        Text(
-            "\(Int(range.lowerBound)) MB-\(Int(range.upperBound)) MB",
-        )
-        .font(.subheadline.monospacedDigit())
-        .lineLimit(1)
-        .truncationMode(.tail)
-        .padding(.bottom, 4)
-        CommonDescriptionText(
-            text: "settings.default_memory_allocation.description".localized(),
-        )
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

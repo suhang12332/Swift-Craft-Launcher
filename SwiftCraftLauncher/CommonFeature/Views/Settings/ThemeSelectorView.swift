@@ -26,26 +26,13 @@ struct ThemeSelectorView: View {
     }
 }
 
-struct ThemeSelectorLabel: View {
-    var body: some View {
-        HStack(spacing: 16) {
-            ForEach(ThemeMode.allCases, id: \.self) { theme in
-                Text(theme.localizedName)
-                    .font(.callout)
-                    .foregroundColor(.primary)
-                    .frame(minWidth: 60, alignment: .center)
-            }
-        }
-    }
-}
-
 private struct ThemeOptionView: View {
     let theme: ThemeMode
     let isSelected: Bool
     let onTap: () -> Void
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 8) {
             ZStack {
                 RoundedRectangle(cornerRadius: 6)
                     .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: isSelected ? 3 : 0)
@@ -54,6 +41,10 @@ private struct ThemeOptionView: View {
                 ThemeWindowIcon(theme: theme)
                     .frame(width: 60, height: 40)
             }
+            Text(theme.localizedName)
+                .font(.callout)
+                .foregroundStyle(.primary)
+                .frame(minWidth: 60)
         }
         .onTapGesture { onTap() }
         .animation(.easeInOut(duration: 0.2), value: isSelected)

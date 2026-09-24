@@ -55,7 +55,7 @@ struct AISettingsAPIKeyRow: View {
                 .applyReplaceTransition()
             }
         }
-        CommonDescriptionText(text: "settings.ai.api_key.description".localized())
+        .settingsDescription("settings.ai.api_key.description".localized())
     }
 }
 
@@ -135,22 +135,22 @@ struct AISettingsAvatarRow: View {
 
     var body: some View {
         @Bindable var aiSettingsManager = aiSettingsManager
-        MinecraftSkinUtils(
-            type: .url,
-            src: aiSettingsManager.aiAvatarURL,
-            size: 42,
-        )
-        .padding(.leading, 2)
-        Group {
+        VStack(alignment: .leading, spacing: 8) {
             LabeledContent("settings.ai.avatar.label".localized()) {
-                TextField("settings.ai.avatar.placeholder".localized(), text: $aiSettingsManager.aiAvatarURL)
-                    .textFieldStyle(.roundedBorder)
-                    .labelsHidden()
-                    .frame(maxWidth: 300)
-                    .fixedSize()
+                HStack(spacing: 8) {
+                    MinecraftSkinUtils(
+                        type: .url,
+                        src: aiSettingsManager.aiAvatarURL,
+                        size: 42,
+                    )
+                    TextField("settings.ai.avatar.placeholder".localized(), text: $aiSettingsManager.aiAvatarURL)
+                        .textFieldStyle(.roundedBorder)
+                        .labelsHidden()
+                        .frame(maxWidth: 300)
+                }
             }
             CommonDescriptionText(text: "settings.ai.avatar.description".localized())
         }
-        .padding(.leading, 2)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

@@ -24,7 +24,7 @@ struct GeneralSettingsLanguageRow: View {
             }
             .help("settings.language.picker".localized())
         }
-        CommonDescriptionText(text: "settings.language.translation.notice".localized())
+        .settingsDescription("settings.language.translation.notice".localized())
     }
 }
 
@@ -35,12 +35,9 @@ struct GeneralSettingsThemeRow: View {
 
     var body: some View {
         @Bindable var themeManager = themeManager
-        Group {
-            LabeledContent("settings.theme.picker".localized()) {
-                ThemeSelectorView(selectedTheme: $themeManager.themeMode)
-                    .fixedSize()
-            }
-            ThemeSelectorLabel()
+        LabeledContent("settings.theme.picker".localized()) {
+            ThemeSelectorView(selectedTheme: $themeManager.themeMode)
+                .fixedSize()
         }
     }
 }
@@ -72,8 +69,10 @@ struct GeneralSettingsWorkingDirectoryRow: View {
     var gameRepository: GameRepository
 
     var body: some View {
-        LabeledContent("settings.launcher_working_directory".localized()) {
-            VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 12) {
+                Text("settings.launcher_working_directory".localized())
+                Spacer(minLength: 0)
                 if !gameRepository.workingPathOptions.isEmpty {
                     Picker("", selection: Binding(
                         get: {
@@ -92,21 +91,21 @@ struct GeneralSettingsWorkingDirectoryRow: View {
                         }
                     }
                     .labelsHidden()
-                    .fixedSize()
-                }
-                DirectorySettingRow(
-                    title: "settings.launcher_working_directory".localized(),
-                    path: generalSettings.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : generalSettings.launcherWorkingDirectory,
-                    description: "settings.working_directory.description".localized(),
-                    onChoose: { viewModel.showDirectoryPicker = true },
-                    onReset: { viewModel.resetWorkingDirectorySafely() },
-                )
-                .fixedSize()
-                .fileImporter(isPresented: $viewModel.showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
-                    viewModel.handleDirectoryImport(result)
+                    .frame(maxWidth: 220)
                 }
             }
+            DirectorySettingRow(
+                title: "settings.launcher_working_directory".localized(),
+                path: generalSettings.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : generalSettings.launcherWorkingDirectory,
+                description: "settings.working_directory.description".localized(),
+                onChoose: { viewModel.showDirectoryPicker = true },
+                onReset: { viewModel.resetWorkingDirectorySafely() },
+            )
+            .fileImporter(isPresented: $viewModel.showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
+                viewModel.handleDirectoryImport(result)
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .onAppear {
             Task { await gameRepository.refreshWorkingPathOptions() }
         }

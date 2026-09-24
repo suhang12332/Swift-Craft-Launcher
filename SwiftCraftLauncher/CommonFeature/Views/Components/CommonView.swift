@@ -35,14 +35,23 @@ func spacerView() -> some View {
 /// A view that displays descriptive text in a standard secondary style.
 struct CommonDescriptionText: View {
     let text: String
-    var width: CGFloat = 320
 
     var body: some View {
         Text(text)
             .foregroundStyle(.secondary)
             .font(.subheadline)
-            .frame(width: width, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+extension View {
+    func settingsDescription(_ text: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            self
+            CommonDescriptionText(text: text)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -57,29 +66,32 @@ struct DirectorySettingRow: View {
     @State private var showPopover = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
                 Button(action: onChoose) {
                     PathBreadcrumbView(path: path)
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.primary)
                 .applyPointerHandIfAvailable()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .help(path)
 
                 Button("common.reset".localized(), action: onReset)
-                    .padding(.leading, 8)
             }
             Text(description)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
 /// A breadcrumb-style path display with Finder-like icons.
 struct PathBreadcrumbView: View {
     let path: String
-    let maxVisible: Int = 3
 
     var body: some View {
         let components = path.split(separator: "/").map(String.init)
@@ -93,12 +105,6 @@ struct PathBreadcrumbView: View {
             }
             return result
         }()
-
-        let count = components.count
-        let showEllipsis = count > maxVisible
-        let headCount = showEllipsis ? 1 : max(0, count - maxVisible)
-        let tailCount = showEllipsis ? maxVisible - 1 : count
-        let startTail = max(count - tailCount, headCount)
 
         func segmentView(idx: Int) -> some View {
             let icon: NSImage = {
@@ -117,40 +123,39 @@ struct PathBreadcrumbView: View {
             }
         }
 
-        return HStack(spacing: 0) {
-            ForEach(0 ..< headCount, id: \.self) { idx in
-                if idx > 0 {
+        func breadcrumb(startIndex: Int) -> some View {
+            HStack(spacing: 0) {
+                if startIndex > 0 {
+                    Text("…")
+                        .font(.body)
                     Image(systemName: "chevron.right")
                         .font(.caption)
                         .bold()
-                        .foregroundColor(.primary)
                         .padding(.horizontal, 6)
                 }
-                segmentView(idx: idx)
-            }
-            if showEllipsis {
-                if headCount > 0 {
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .bold()
-                        .foregroundColor(.primary)
-                        .padding(.horizontal, 6)
+                ForEach(startIndex ..< components.count, id: \.self) { idx in
+                    if idx > startIndex {
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .bold()
+                            .padding(.horizontal, 6)
+                    }
+                    segmentView(idx: idx)
                 }
-                Text("…")
-                    .font(.body)
-                    .foregroundColor(.primary)
             }
-            ForEach(startTail ..< count, id: \.self) { idx in
-                if idx > headCount || (showEllipsis && idx == startTail) {
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .bold()
-                        .foregroundColor(.primary)
-                        .padding(.horizontal, 6)
-                }
-                segmentView(idx: idx)
-            }
+            .fixedSize(horizontal: true, vertical: false)
         }
+
+        return ViewThatFits(in: .horizontal) {
+            breadcrumb(startIndex: 0)
+            breadcrumb(startIndex: max(0, components.count - 2))
+            breadcrumb(startIndex: max(0, components.count - 1))
+            Text(components.last ?? "/")
+                .lineLimit(1)
+                .truncationMode(.middle)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(path)
     }
 }
 

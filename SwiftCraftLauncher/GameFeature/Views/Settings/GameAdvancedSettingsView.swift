@@ -19,18 +19,12 @@ struct GameAdvancedSettingsView: View {
         @Bindable var viewModel = viewModel
         Form {
             GameAdvancedSettingsGarbageCollectorSection(viewModel: viewModel)
-                .id("settings.game.java.garbage_collector")
             GameAdvancedSettingsJavaPathSection(viewModel: viewModel)
-                .id("settings.game.java.path")
             GameAdvancedSettingsPerformanceOptimizationSection(viewModel: viewModel)
-                .id("settings.game.java.performance_optimization")
             GameAdvancedSettingsMemorySection(viewModel: viewModel)
-                .id("settings.game.java.memory")
             Section {
                 GameAdvancedSettingsCustomParametersSection(viewModel: viewModel)
-                    .id("settings.game.java.custom_parameters")
                 GameAdvancedSettingsEnvironmentVariablesSection(viewModel: viewModel)
-                    .id("settings.game.java.environment_variables")
             }
         }
         .formStyle(.grouped)

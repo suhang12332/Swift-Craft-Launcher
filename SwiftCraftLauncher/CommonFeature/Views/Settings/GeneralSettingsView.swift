@@ -28,19 +28,15 @@ public struct GeneralSettingsView: View {
             case .general:
                 Section {
                     GeneralSettingsLanguageRow(languageManager: container.ui.languageManager)
-                        .id("settings.language.picker")
                     GeneralSettingsCommonSheetHeightLimitRow()
                         .environment(container.ui.generalSettingsManager)
-                        .id("settings.common_sheet_height_limit.label")
                 }
             case .appearance:
                 Section {
                     GeneralSettingsThemeRow()
                         .environment(container.ui.themeManager)
-                        .id("settings.theme.picker")
                     GeneralSettingsInterfaceLayoutRow()
                         .environment(container.ui.generalSettingsManager)
-                        .id("settings.interface_style.label")
                 }
             case .files:
                 Section {
@@ -49,14 +45,11 @@ public struct GeneralSettingsView: View {
                         gameRepository: gameRepository,
                     )
                     .environment(container.ui.generalSettingsManager)
-                    .id("settings.launcher_working_directory")
                 }
             case .network:
                 Section {
                     GeneralSettingsSystemProxyRow()
-                        .id("settings.system_proxy.label")
                     GameSettingsAPISourceRow()
-                        .id("settings.default_api_source.label")
                 }
             default:
                 EmptyView()

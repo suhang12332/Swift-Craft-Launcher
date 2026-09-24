@@ -20,7 +20,7 @@ struct PlayerSettingsEphemeralLoginRow: View {
                 isOn: $playerSettingsManager.enableEphemeralWebLogin,
             )
         }
-        CommonDescriptionText(text: "settings.player.ephemeral_login.description".localized())
+        .settingsDescription("settings.player.ephemeral_login.description".localized())
     }
 }
 
@@ -81,7 +81,7 @@ struct PlayerSettingsHistorySkinLibraryRow: View {
                 isOn: $playerSettingsManager.enableHistorySkinLibrary,
             )
         }
-        CommonDescriptionText(text: "settings.player.history_skin_library.description".localized())
+        .settingsDescription("settings.player.history_skin_library.description".localized())
     }
 }
 
@@ -98,9 +98,7 @@ struct PlayerSettingsFriendsPresenceNotificationsRow: View {
                 isOn: $playerSettingsManager.enableMinecraftFriendsPresenceNotifications,
             )
         }
-        CommonDescriptionText(
-            text: "settings.player.minecraft_friends_presence_notifications.description".localized(),
-        )
+        .settingsDescription("settings.player.minecraft_friends_presence_notifications.description".localized())
     }
 }
 
@@ -138,7 +136,7 @@ struct PlayerSettingsMinecraftFriendsAccountSection: View {
                 .disabled(viewModel.isSavingMinecraftFriendAccountPreferences)
             }
         }
-        CommonDescriptionText(text: "settings.player.minecraft_friends_account.description".localized())
+        .settingsDescription("settings.player.minecraft_friends_account.description".localized())
         LabeledContent("") {
             Toggle(
                 "settings.player.minecraft_friends_account.enable_friend_list".localized(),

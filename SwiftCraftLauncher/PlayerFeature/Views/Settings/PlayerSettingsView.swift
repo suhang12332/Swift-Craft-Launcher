@@ -31,26 +31,19 @@ public struct PlayerSettingsView: View {
     public var body: some View {
         Form {
             PlayerSettingsEphemeralLoginRow()
-                .id("settings.player.ephemeral_login")
             if canAddOffline {
                 PlayerSettingsOfflineLoginRow()
-                    .id("settings.player.offline_login")
             }
             PlayerSettingsDefaultSkinServerRow()
-                .id("settings.player.default_skin_server")
             if isMinecraftAccount {
                 Section {
                     PlayerSettingsHistorySkinLibraryRow()
-                        .id("settings.player.history_skin_library")
                     PlayerSettingsFriendsPresenceNotificationsRow()
-                        .id("settings.player.minecraft_friends_presence_notifications")
                     PlayerSettingsMinecraftFriendsAccountSection(viewModel: viewModel)
-                        .id("settings.player.minecraft_friends_account.section")
                 }
             }
             Section {
                 PlayerSettingsAuthlibInjectorRow(viewModel: viewModel)
-                    .id("settings.player.authlib_injector")
             }
         }
         .formStyle(.grouped)

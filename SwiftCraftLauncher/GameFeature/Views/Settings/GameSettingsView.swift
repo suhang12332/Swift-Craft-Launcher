@@ -32,24 +32,17 @@ public struct GameSettingsView: View {
             if page == .downloads {
                 Section {
                     GameSettingsModPackExportFormatRow()
-                        .id("settings.modpack.export.format.label")
                     GameSettingsConcurrentDownloadsRow(draft: $concurrentDownloadsDraft)
-                        .id("settings.concurrent_downloads.label")
                     GameSettingsIncludeSnapshotsRow()
-                        .id("settings.game_versions.label")
                     GameSettingsSyncLanguageRow()
-                        .id("settings.game.language.label")
                 }
             } else {
                 Section {
                     GameSettingsMemoryPressureWarningRow()
-                        .id("settings.memory_pressure_warning.label")
                     GameSettingsMemoryAllocationSection(range: $globalMemoryRange)
-                        .id("settings.default_memory_allocation.label")
                 }
                 Section {
                     GameSettingsJavaRuntimeRow(viewModel: viewModel)
-                        .id("settings.game.java.runtimes.section")
                 }
             }
         }
