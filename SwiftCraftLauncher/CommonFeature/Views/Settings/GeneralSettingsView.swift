@@ -24,13 +24,13 @@ public struct GeneralSettingsView: View {
         Form {
             Section {
                 GeneralSettingsLanguageRow(languageManager: container.ui.languageManager)
-                GeneralSettingsThemeRow()
+                SettingsThemeRow()
                     .environment(container.ui.themeManager)
                 GeneralSettingsInterfaceLayoutRow()
                     .environment(container.ui.generalSettingsManager)
             }
             Section {
-                GeneralSettingsWorkingDirectoryRow(
+                SettingsWorkingDirectoryRow(
                     viewModel: viewModel,
                     gameRepository: gameRepository,
                 )

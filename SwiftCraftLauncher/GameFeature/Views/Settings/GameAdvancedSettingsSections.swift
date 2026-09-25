@@ -22,7 +22,7 @@ struct GameAdvancedSettingsJavaPathSection: View {
                     text: viewModel.javaDetailsDescription,
                 )
             }
-            DirectorySettingRow(
+            SettingsDirectorySettingRow(
                 path: viewModel.effectiveJavaPath,
                 description: "settings.game.java.path.description".localized(),
                 onChoose: { showJavaPathPicker = true },
