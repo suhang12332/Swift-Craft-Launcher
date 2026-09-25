@@ -10,7 +10,6 @@ import Foundation
 import SwiftUI
 
 public struct GameSettingsView: View {
-    let page: SettingsPage
     @Environment(GameSettingsManager.self)
     private var gameSettingsManager
     @Environment(DIContainer.self)
@@ -22,37 +21,33 @@ public struct GameSettingsView: View {
 
     @State private var concurrentDownloadsDraft: Double = 64
 
-    init(page: SettingsPage) {
-        self.page = page
+    public init() {
         _viewModel = State(initialValue: GameSettingsJavaRuntimeViewModel())
     }
 
     public var body: some View {
         Form {
-            if page == .downloads {
-                Section {
-                    GameSettingsModPackExportFormatRow()
-                    GameSettingsConcurrentDownloadsRow(draft: $concurrentDownloadsDraft)
-                    GameSettingsIncludeSnapshotsRow()
-                    GameSettingsSyncLanguageRow()
-                }
-            } else {
-                Section {
-                    GameSettingsMemoryPressureWarningRow()
-                    GameSettingsMemoryAllocationSection(range: $globalMemoryRange)
-                }
-                Section {
-                    GameSettingsJavaRuntimeRow(viewModel: viewModel)
-                }
+            Section {
+                GameSettingsAPISourceRow()
+                GameSettingsModPackExportFormatRow()
+                GameSettingsConcurrentDownloadsRow(draft: $concurrentDownloadsDraft)
+                GameSettingsIncludeSnapshotsRow()
+                GameSettingsAICrashAnalysisRow()
+                GameSettingsMemoryPressureWarningRow()
+                GameSettingsSyncLanguageRow()
+            }
+            Section {
+                GameSettingsMemoryAllocationSection(range: $globalMemoryRange)
+            }
+            Section {
+                GameSettingsJavaRuntimeRow(viewModel: viewModel)
             }
         }
         .formStyle(.grouped)
         .contentMargins(.top, 0, for: .scrollContent)
         .environment(gameSettingsManager)
         .onAppear {
-            if page == .java {
-                viewModel.refreshInstalledRuntimes(showScanningIndicator: true)
-            }
+            viewModel.refreshInstalledRuntimes(showScanningIndicator: true)
         }
         .onChange(of: container.system.javaDownloadManager.isWindowVisible) { _, isVisible in
             if !isVisible {

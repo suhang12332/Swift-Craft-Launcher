@@ -101,13 +101,13 @@ struct GameAdvancedSettingsMemorySection: View {
                         bounds:
                         Double(AppConstants.MemoryDefaults.xms) ... Double(container.ui.gameSettingsManager.maximumMemoryAllocation),
                     )
-                    .frame(width: 200)
+                    .frame(maxWidth: 145)
                     .controlSize(.mini)
                     .onChange(of: viewModel.memoryRange) { _, _ in viewModel.didChangeMemoryRange() }
                     Button("common.reset".localized()) {
                         viewModel.resetGameXms()
                     }
-                    .padding(.leading, 8)
+                    .padding(.leading, 4)
                 }
             }
             Text("\(Int(viewModel.memoryRange.lowerBound)) MB-\(Int(viewModel.memoryRange.upperBound)) MB")
@@ -129,7 +129,7 @@ struct GameAdvancedSettingsCustomParametersSection: View {
                 .labelsHidden()
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(2 ... 4)
-                .frame(width: 300)
+                .frame(maxWidth: 220)
                 .onChange(of: viewModel.customJvmArguments) { _, _ in viewModel.didChangeCustomJvmArguments() }
         }
         .settingsDescription("settings.game.java.custom_parameters.note".localized())
@@ -147,7 +147,7 @@ struct GameAdvancedSettingsEnvironmentVariablesSection: View {
                 .labelsHidden()
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(2 ... 4)
-                .frame(width: 300)
+                .frame(maxWidth: 220)
                 .onChange(of: viewModel.environmentVariables) { _, _ in viewModel.didChangeEnvironmentVariables() }
         }
         .settingsDescription("settings.game.java.environment_variables.description".localized())

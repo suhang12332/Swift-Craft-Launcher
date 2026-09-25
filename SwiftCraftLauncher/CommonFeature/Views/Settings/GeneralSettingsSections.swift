@@ -18,7 +18,6 @@ struct GeneralSettingsLanguageRow: View {
                 SystemSettings.open(AppConstants.SystemSettingsDeepLinks.localizationApps)
             } label: {
                 Text(languageManager.selectedLanguageDisplayName)
-                    .foregroundColor(.primary)
                     .lineLimit(1)
                     .foregroundColor(.primary)
             }
@@ -70,9 +69,7 @@ struct GeneralSettingsWorkingDirectoryRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 12) {
-                Text("settings.launcher_working_directory".localized())
-                Spacer(minLength: 0)
+            LabeledContent("settings.launcher_working_directory".localized()) {
                 if !gameRepository.workingPathOptions.isEmpty {
                     Picker("", selection: Binding(
                         get: {
@@ -91,7 +88,7 @@ struct GeneralSettingsWorkingDirectoryRow: View {
                         }
                     }
                     .labelsHidden()
-                    .frame(maxWidth: 220)
+                    .frame(maxWidth: 250)
                 }
             }
             DirectorySettingRow(

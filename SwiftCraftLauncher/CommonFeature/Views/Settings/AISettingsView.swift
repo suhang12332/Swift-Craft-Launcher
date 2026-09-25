@@ -17,7 +17,6 @@ public struct AISettingsView: View {
             AISettingsModelRow()
             Section {
                 AISettingsAvatarRow()
-                GameSettingsAICrashAnalysisRow()
             }
         }
         .formStyle(.grouped)

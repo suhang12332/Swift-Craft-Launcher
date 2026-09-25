@@ -119,7 +119,7 @@ struct GameSettingsConcurrentDownloadsRow: View {
                     .foregroundColor(.secondary)
                     .fixedSize()
             }
-            .frame(width: 200)
+            .frame(maxWidth: 170)
             .gridColumnAlignment(.leading)
             .labelsHidden()
         }
@@ -143,7 +143,7 @@ struct GameSettingsMemoryAllocationSection: View {
                         bounds:
                         Double(AppConstants.MemoryDefaults.xms) ... Double(gameSettingsManager.maximumMemoryAllocation),
                     )
-                    .frame(width: 200)
+                    .frame(maxWidth: 145)
                     .controlSize(.mini)
                     .onChange(of: range) { _, newValue in
                         gameSettingsManager.globalXms = Int(newValue.lowerBound)
@@ -160,7 +160,7 @@ struct GameSettingsMemoryAllocationSection: View {
                         gameSettingsManager.globalXmx = AppConstants.MemoryDefaults.xmx
                         range = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
                     }
-                    .padding(.leading, 8)
+                    .padding(.leading, 4)
                 }
             }
             Text("\(Int(range.lowerBound)) MB-\(Int(range.upperBound)) MB")

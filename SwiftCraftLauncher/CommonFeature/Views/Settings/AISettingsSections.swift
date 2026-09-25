@@ -54,7 +54,7 @@ struct AISettingsAPIKeyRow: View {
                 .buttonStyle(.plain)
                 .applyReplaceTransition()
             }
-            .frame(width: 300)
+            .frame(maxWidth: 220)
         }
         .settingsDescription("settings.ai.api_key.description".localized())
     }
@@ -71,7 +71,7 @@ struct AISettingsOllamaURLRow: View {
             TextField(URLConfig.API.AIService.ollamaDefaultBaseURL, text: $aiSettingsManager.ollamaBaseURL)
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .frame(width: 300)
+                .frame(maxWidth: 220)
         }
     }
 }
@@ -87,7 +87,7 @@ struct AISettingsAPIURLRow: View {
             TextField(aiSettingsManager.selectedProvider.baseURL, text: $aiSettingsManager.openAIBaseURL)
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .frame(width: 300)
+                .frame(maxWidth: 220)
         }
     }
 }
@@ -120,7 +120,7 @@ struct AISettingsModelRow: View {
             TextField("settings.ai.model.placeholder".localized(), text: $aiSettingsManager.modelOverride)
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .frame(width: 300)
+                .frame(maxWidth: 220)
                 .focusable(false)
         }
     }
@@ -146,7 +146,7 @@ struct AISettingsAvatarRow: View {
                         .labelsHidden()
                         .frame(maxWidth: .infinity)
                 }
-                .frame(width: 300)
+                .frame(maxWidth: 220)
             }
             CommonDescriptionText(text: "settings.ai.avatar.description".localized())
         }

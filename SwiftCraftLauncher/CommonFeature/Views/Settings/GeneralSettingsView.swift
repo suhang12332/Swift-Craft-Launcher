@@ -7,9 +7,8 @@
 
 import SwiftUI
 
-/// Renders the general, appearance, files, or network settings for the selected page.
+/// Renders the launcher's general settings.
 public struct GeneralSettingsView: View {
-    let page: SettingsPage
     @Environment(DIContainer.self)
     private var container
     @State private var viewModel: GeneralSettingsViewModel
@@ -17,42 +16,30 @@ public struct GeneralSettingsView: View {
     private var gameRepository
 
     @MainActor
-    init(page: SettingsPage) {
-        self.page = page
+    public init() {
         _viewModel = State(wrappedValue: GeneralSettingsViewModel())
     }
 
     public var body: some View {
         Form {
-            switch page {
-            case .general:
-                Section {
-                    GeneralSettingsLanguageRow(languageManager: container.ui.languageManager)
-                    GeneralSettingsCommonSheetHeightLimitRow()
-                        .environment(container.ui.generalSettingsManager)
-                }
-            case .appearance:
-                Section {
-                    GeneralSettingsThemeRow()
-                        .environment(container.ui.themeManager)
-                    GeneralSettingsInterfaceLayoutRow()
-                        .environment(container.ui.generalSettingsManager)
-                }
-            case .files:
-                Section {
-                    GeneralSettingsWorkingDirectoryRow(
-                        viewModel: viewModel,
-                        gameRepository: gameRepository,
-                    )
+            Section {
+                GeneralSettingsLanguageRow(languageManager: container.ui.languageManager)
+                GeneralSettingsThemeRow()
+                    .environment(container.ui.themeManager)
+                GeneralSettingsInterfaceLayoutRow()
                     .environment(container.ui.generalSettingsManager)
-                }
-            case .network:
-                Section {
-                    GeneralSettingsSystemProxyRow()
-                    GameSettingsAPISourceRow()
-                }
-            default:
-                EmptyView()
+            }
+            Section {
+                GeneralSettingsWorkingDirectoryRow(
+                    viewModel: viewModel,
+                    gameRepository: gameRepository,
+                )
+                .environment(container.ui.generalSettingsManager)
+            }
+            Section {
+                GeneralSettingsSystemProxyRow()
+                GeneralSettingsCommonSheetHeightLimitRow()
+                    .environment(container.ui.generalSettingsManager)
             }
         }
         .formStyle(.grouped)

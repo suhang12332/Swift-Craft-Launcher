@@ -8,19 +8,15 @@
 import SwiftUI
 
 enum SettingsPage: String, CaseIterable, Identifiable {
-    case general, appearance, files, network, player, downloads, java, ai, advanced
+    case general, game, player, ai, advanced
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .general: "settings.general.tab".localized()
-        case .appearance: "settings.category.appearance".localized()
-        case .files: "settings.category.files".localized()
-        case .network: "settings.category.network".localized()
+        case .game: "settings.game.tab".localized()
         case .player: "settings.player.tab".localized()
-        case .downloads: "settings.category.downloads".localized()
-        case .java: "settings.category.java".localized()
         case .ai: "settings.ai.tab".localized()
         case .advanced: "settings.game.advanced.tab".localized()
         }
@@ -29,12 +25,8 @@ enum SettingsPage: String, CaseIterable, Identifiable {
     var symbol: String {
         switch self {
         case .general: "gearshape"
-        case .appearance: "paintbrush"
-        case .files: "folder"
-        case .network: "network"
+        case .game: "gamecontroller"
         case .player: "person.crop.circle"
-        case .downloads: "arrow.down.circle"
-        case .java: "cpu"
         case .ai: "sparkles"
         case .advanced: "slider.horizontal.3"
         }
@@ -43,12 +35,8 @@ enum SettingsPage: String, CaseIterable, Identifiable {
     var color: Color {
         switch self {
         case .general: .gray
-        case .appearance: .blue
-        case .files: .orange
-        case .network: .purple
+        case .game: .blue
         case .player: .green
-        case .downloads: .blue
-        case .java: .orange
         case .ai: .purple
         case .advanced: .gray
         }
@@ -76,6 +64,7 @@ public struct SettingsView: View {
                             .background(page.color.gradient, in: RoundedRectangle(cornerRadius: 6))
                     }
                     .tag(page)
+                    .opacity(page == .advanced && container.core.selectedGameManager.selectedGameId == nil ? 0.5 : 1)
                     .disabled(page == .advanced && container.core.selectedGameManager.selectedGameId == nil)
                     .allowsHitTesting(page != .advanced || container.core.selectedGameManager.selectedGameId != nil)
                 }
@@ -113,15 +102,15 @@ public struct SettingsView: View {
 
     @ViewBuilder private var detail: some View {
         switch selectedPage ?? .general {
-        case .general, .appearance, .files, .network:
-            GeneralSettingsView(page: selectedPage ?? .general)
+        case .general:
+            GeneralSettingsView()
+                .environment(container.ui.gameSettingsManager)
+        case .game:
+            GameSettingsView()
                 .environment(container.ui.gameSettingsManager)
         case .player:
             PlayerSettingsView()
                 .environment(container.ui.playerSettingsManager)
-        case .downloads, .java:
-            GameSettingsView(page: selectedPage ?? .downloads)
-                .environment(container.ui.gameSettingsManager)
         case .ai:
             AISettingsView()
                 .environment(container.ui.aiSettingsManager)
@@ -130,7 +119,7 @@ public struct SettingsView: View {
             if container.core.selectedGameManager.selectedGameId != nil {
                 GameAdvancedSettingsView()
             } else {
-                GeneralSettingsView(page: .general)
+                GeneralSettingsView()
             }
         }
     }

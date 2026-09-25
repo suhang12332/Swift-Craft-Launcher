@@ -52,7 +52,7 @@ struct PlayerSettingsDefaultSkinServerRow: View {
                 }
             }
             .labelsHidden()
-            .frame(width: 300)
+            .frame(maxWidth: 220)
             .disabled(!playerSettingsManager.enableOfflineLogin)
         }
     }
