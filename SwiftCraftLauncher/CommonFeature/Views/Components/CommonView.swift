@@ -35,14 +35,23 @@ func spacerView() -> some View {
 /// A view that displays descriptive text in a standard secondary style.
 struct CommonDescriptionText: View {
     let text: String
-    var width: CGFloat = 320
 
     var body: some View {
         Text(text)
             .foregroundStyle(.secondary)
             .font(.subheadline)
-            .frame(width: width, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+extension View {
+    func settingsDescription(_ text: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            self
+            CommonDescriptionText(text: text)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

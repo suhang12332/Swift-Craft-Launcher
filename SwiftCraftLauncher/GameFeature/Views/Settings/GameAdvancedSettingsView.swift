@@ -22,10 +22,13 @@ struct GameAdvancedSettingsView: View {
             GameAdvancedSettingsJavaPathSection(viewModel: viewModel)
             GameAdvancedSettingsPerformanceOptimizationSection(viewModel: viewModel)
             GameAdvancedSettingsMemorySection(viewModel: viewModel)
-            spacerView()
-            GameAdvancedSettingsCustomParametersSection(viewModel: viewModel)
-            GameAdvancedSettingsEnvironmentVariablesSection(viewModel: viewModel)
+            Section {
+                GameAdvancedSettingsCustomParametersSection(viewModel: viewModel)
+                GameAdvancedSettingsEnvironmentVariablesSection(viewModel: viewModel)
+            }
         }
+        .formStyle(.grouped)
+        .contentMargins(.top, 0, for: .scrollContent)
         .onAppear {
             viewModel.setRepository(gameRepository)
             viewModel.onAppearOrGameChanged()

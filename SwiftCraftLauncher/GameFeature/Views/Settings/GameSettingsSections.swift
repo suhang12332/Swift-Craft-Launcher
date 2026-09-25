@@ -53,16 +53,8 @@ struct GameSettingsIncludeSnapshotsRow: View {
 
     var body: some View {
         @Bindable var gameSettingsManager = gameSettingsManager
-        LabeledContent("settings.game_versions.label".localized()) {
-            HStack {
-                Toggle(
-                    "",
-                    isOn: $gameSettingsManager.includeSnapshotsForGameVersions,
-                )
-                .labelsHidden()
-                Text("settings.game_versions.include_snapshots.label".localized())
-            }
-        }
+        Toggle("settings.game_versions.label".localized(), isOn: $gameSettingsManager.includeSnapshotsForGameVersions)
+            .settingsDescription("settings.game_versions.include_snapshots.label".localized())
     }
 }
 
@@ -73,15 +65,8 @@ struct GameSettingsAICrashAnalysisRow: View {
 
     var body: some View {
         @Bindable var gameSettingsManager = gameSettingsManager
-        LabeledContent("settings.ai_crash_analysis".localized()) {
-            HStack {
-                Toggle(
-                    "",
-                    isOn: $gameSettingsManager.enableAICrashAnalysis,
-                ).labelsHidden()
-                Text("settings.ai_crash_analysis.description".localized())
-            }
-        }
+        Toggle("settings.ai_crash_analysis".localized(), isOn: $gameSettingsManager.enableAICrashAnalysis)
+            .settingsDescription("settings.ai_crash_analysis.description".localized())
     }
 }
 
@@ -92,15 +77,8 @@ struct GameSettingsMemoryPressureWarningRow: View {
 
     var body: some View {
         @Bindable var gameSettingsManager = gameSettingsManager
-        LabeledContent("settings.memory_pressure_warning.label".localized()) {
-            HStack {
-                Toggle(
-                    "",
-                    isOn: $gameSettingsManager.enableMemoryPressureWarning,
-                ).labelsHidden()
-                Text("settings.memory_pressure_warning.description".localized())
-            }
-        }
+        Toggle("settings.memory_pressure_warning.label".localized(), isOn: $gameSettingsManager.enableMemoryPressureWarning)
+            .settingsDescription("settings.memory_pressure_warning.description".localized())
     }
 }
 
@@ -111,16 +89,8 @@ struct GameSettingsSyncLanguageRow: View {
 
     var body: some View {
         @Bindable var gameSettingsManager = gameSettingsManager
-        LabeledContent("settings.game.language.label".localized()) {
-            HStack {
-                Toggle(
-                    "",
-                    isOn: $gameSettingsManager.syncLanguageForNewGames,
-                )
-                .labelsHidden()
-                Text("settings.game.language.sync_with_launcher".localized())
-            }
-        }
+        Toggle("settings.game.language.label".localized(), isOn: $gameSettingsManager.syncLanguageForNewGames)
+            .settingsDescription("settings.game.language.sync_with_launcher".localized())
     }
 }
 
@@ -149,7 +119,7 @@ struct GameSettingsConcurrentDownloadsRow: View {
                     .foregroundColor(.secondary)
                     .fixedSize()
             }
-            .frame(width: 200)
+            .frame(maxWidth: 170)
             .gridColumnAlignment(.leading)
             .labelsHidden()
         }
@@ -165,43 +135,40 @@ struct GameSettingsMemoryAllocationSection: View {
 
     var body: some View {
         @Bindable var gameSettingsManager = gameSettingsManager
-        LabeledContent("settings.default_memory_allocation.label".localized()) {
-            HStack {
-                MiniRangeSlider(
-                    range: $range,
-                    bounds:
-                    Double(AppConstants.MemoryDefaults.xms) ... Double(gameSettingsManager.maximumMemoryAllocation),
-                )
-                .frame(width: 200)
-                .controlSize(.mini)
-                .onChange(of: range) { _, newValue in
-                    gameSettingsManager.globalXms = Int(newValue.lowerBound)
-                    gameSettingsManager.globalXmx = Int(newValue.upperBound)
+        VStack(alignment: .leading, spacing: 8) {
+            LabeledContent("settings.default_memory_allocation.label".localized()) {
+                HStack {
+                    MiniRangeSlider(
+                        range: $range,
+                        bounds:
+                        Double(AppConstants.MemoryDefaults.xms) ... Double(gameSettingsManager.maximumMemoryAllocation),
+                    )
+                    .frame(maxWidth: 145)
+                    .controlSize(.mini)
+                    .onChange(of: range) { _, newValue in
+                        gameSettingsManager.globalXms = Int(newValue.lowerBound)
+                        gameSettingsManager.globalXmx = Int(newValue.upperBound)
+                    }
+                    .onAppear {
+                        range =
+                            Double(
+                                gameSettingsManager.globalXms,
+                            ) ... Double(gameSettingsManager.globalXmx)
+                    }
+                    Button("common.reset".localized()) {
+                        gameSettingsManager.globalXms = AppConstants.MemoryDefaults.xms
+                        gameSettingsManager.globalXmx = AppConstants.MemoryDefaults.xmx
+                        range = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
+                    }
+                    .padding(.leading, 4)
                 }
-                .onAppear {
-                    range =
-                        Double(
-                            gameSettingsManager.globalXms,
-                        ) ... Double(gameSettingsManager.globalXmx)
-                }
-                Button("common.reset".localized()) {
-                    gameSettingsManager.globalXms = AppConstants.MemoryDefaults.xms
-                    gameSettingsManager.globalXmx = AppConstants.MemoryDefaults.xmx
-                    range = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
-                }
-                .padding(.leading, 8)
             }
+            Text("\(Int(range.lowerBound)) MB-\(Int(range.upperBound)) MB")
+                .font(.subheadline.monospacedDigit())
+                .lineLimit(1)
+            CommonDescriptionText(text: "settings.default_memory_allocation.description".localized())
         }
-        Text(
-            "\(Int(range.lowerBound)) MB-\(Int(range.upperBound)) MB",
-        )
-        .font(.subheadline.monospacedDigit())
-        .lineLimit(1)
-        .truncationMode(.tail)
-        .padding(.bottom, 4)
-        CommonDescriptionText(
-            text: "settings.default_memory_allocation.description".localized(),
-        )
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

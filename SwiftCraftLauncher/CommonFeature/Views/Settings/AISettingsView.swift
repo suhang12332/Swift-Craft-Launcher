@@ -15,8 +15,11 @@ public struct AISettingsView: View {
             AISettingsAPIKeyRow()
             AISettingsURLSection()
             AISettingsModelRow()
-            spacerView()
-            AISettingsAvatarRow()
+            Section {
+                AISettingsAvatarRow()
+            }
         }
+        .formStyle(.grouped)
+        .contentMargins(.top, 0, for: .scrollContent)
     }
 }

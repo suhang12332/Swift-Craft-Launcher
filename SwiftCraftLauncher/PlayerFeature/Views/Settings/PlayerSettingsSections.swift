@@ -14,13 +14,8 @@ struct PlayerSettingsEphemeralLoginRow: View {
 
     var body: some View {
         @Bindable var playerSettingsManager = playerSettingsManager
-        LabeledContent("settings.player.ephemeral_login".localized()) {
-            Toggle(
-                "settings.player.ephemeral_login.toggle".localized(),
-                isOn: $playerSettingsManager.enableEphemeralWebLogin,
-            )
-        }
-        CommonDescriptionText(text: "settings.player.ephemeral_login.description".localized())
+        Toggle("settings.player.ephemeral_login".localized(), isOn: $playerSettingsManager.enableEphemeralWebLogin)
+            .settingsDescription("settings.player.ephemeral_login.description".localized())
     }
 }
 
@@ -31,12 +26,7 @@ struct PlayerSettingsOfflineLoginRow: View {
 
     var body: some View {
         @Bindable var playerSettingsManager = playerSettingsManager
-        LabeledContent("settings.player.offline_login".localized()) {
-            Toggle(
-                "settings.player.offline_login.toggle".localized(),
-                isOn: $playerSettingsManager.enableOfflineLogin,
-            )
-        }
+        Toggle("settings.player.offline_login".localized(), isOn: $playerSettingsManager.enableOfflineLogin)
     }
 }
 
@@ -62,7 +52,7 @@ struct PlayerSettingsDefaultSkinServerRow: View {
                 }
             }
             .labelsHidden()
-            .fixedSize()
+            .frame(maxWidth: 220)
             .disabled(!playerSettingsManager.enableOfflineLogin)
         }
     }
@@ -75,13 +65,8 @@ struct PlayerSettingsHistorySkinLibraryRow: View {
 
     var body: some View {
         @Bindable var playerSettingsManager = playerSettingsManager
-        LabeledContent("settings.player.history_skin_library".localized()) {
-            Toggle(
-                "settings.player.history_skin_library.toggle".localized(),
-                isOn: $playerSettingsManager.enableHistorySkinLibrary,
-            )
-        }
-        CommonDescriptionText(text: "settings.player.history_skin_library.description".localized())
+        Toggle("settings.player.history_skin_library".localized(), isOn: $playerSettingsManager.enableHistorySkinLibrary)
+            .settingsDescription("settings.player.history_skin_library.description".localized())
     }
 }
 
@@ -92,15 +77,11 @@ struct PlayerSettingsFriendsPresenceNotificationsRow: View {
 
     var body: some View {
         @Bindable var playerSettingsManager = playerSettingsManager
-        LabeledContent("settings.player.minecraft_friends_presence_notifications".localized()) {
-            Toggle(
-                "settings.player.minecraft_friends_presence_notifications.toggle".localized(),
-                isOn: $playerSettingsManager.enableMinecraftFriendsPresenceNotifications,
-            )
-        }
-        CommonDescriptionText(
-            text: "settings.player.minecraft_friends_presence_notifications.description".localized(),
+        Toggle(
+            "settings.player.minecraft_friends_presence_notifications".localized(),
+            isOn: $playerSettingsManager.enableMinecraftFriendsPresenceNotifications,
         )
+        .settingsDescription("settings.player.minecraft_friends_presence_notifications.description".localized())
     }
 }
 
@@ -138,32 +119,27 @@ struct PlayerSettingsMinecraftFriendsAccountSection: View {
                 .disabled(viewModel.isSavingMinecraftFriendAccountPreferences)
             }
         }
-        CommonDescriptionText(text: "settings.player.minecraft_friends_account.description".localized())
-        LabeledContent("") {
-            Toggle(
-                "settings.player.minecraft_friends_account.enable_friend_list".localized(),
-                isOn: Binding(
-                    get: { viewModel.minecraftFriendAccountPreferences?.friends == .enabled },
-                    set: { on in
-                        Task { await viewModel.setMinecraftFriendListEnabled(on, currentPlayer: currentPlayer) }
-                    },
-                ),
-            )
-            .disabled(minecraftFriendAccountToggleDisabled)
-        }
-        .padding(.bottom, 4)
-        LabeledContent("") {
-            Toggle(
-                "settings.player.minecraft_friends_account.enable_accept_invites".localized(),
-                isOn: Binding(
-                    get: { viewModel.minecraftFriendAccountPreferences?.acceptInvites == .enabled },
-                    set: { on in
-                        Task { await viewModel.setMinecraftFriendAcceptInvitesEnabled(on, currentPlayer: currentPlayer) }
-                    },
-                ),
-            )
-            .disabled(minecraftFriendAccountToggleDisabled)
-        }
+        .settingsDescription("settings.player.minecraft_friends_account.description".localized())
+        Toggle(
+            "settings.player.minecraft_friends_account.enable_friend_list".localized(),
+            isOn: Binding(
+                get: { viewModel.minecraftFriendAccountPreferences?.friends == .enabled },
+                set: { on in
+                    Task { await viewModel.setMinecraftFriendListEnabled(on, currentPlayer: currentPlayer) }
+                },
+            ),
+        )
+        .disabled(minecraftFriendAccountToggleDisabled)
+        Toggle(
+            "settings.player.minecraft_friends_account.enable_accept_invites".localized(),
+            isOn: Binding(
+                get: { viewModel.minecraftFriendAccountPreferences?.acceptInvites == .enabled },
+                set: { on in
+                    Task { await viewModel.setMinecraftFriendAcceptInvitesEnabled(on, currentPlayer: currentPlayer) }
+                },
+            ),
+        )
+        .disabled(minecraftFriendAccountToggleDisabled)
     }
 }
 

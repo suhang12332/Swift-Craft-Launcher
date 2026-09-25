@@ -35,15 +35,19 @@ public struct PlayerSettingsView: View {
                 PlayerSettingsOfflineLoginRow()
             }
             PlayerSettingsDefaultSkinServerRow()
-            spacerView()
             if isMinecraftAccount {
-                PlayerSettingsHistorySkinLibraryRow()
-                PlayerSettingsFriendsPresenceNotificationsRow()
-                PlayerSettingsMinecraftFriendsAccountSection(viewModel: viewModel)
-                spacerView()
+                Section {
+                    PlayerSettingsHistorySkinLibraryRow()
+                    PlayerSettingsFriendsPresenceNotificationsRow()
+                    PlayerSettingsMinecraftFriendsAccountSection(viewModel: viewModel)
+                }
             }
-            PlayerSettingsAuthlibInjectorRow(viewModel: viewModel)
+            Section {
+                PlayerSettingsAuthlibInjectorRow(viewModel: viewModel)
+            }
         }
+        .formStyle(.grouped)
+        .contentMargins(.top, 0, for: .scrollContent)
         .environment(playerSettingsManager)
         .task(id: currentPlayer?.id) {
             viewModel.refreshAuthlibInjectorExists()

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// A view for configuring general launcher settings.
+/// Renders the launcher's general settings.
 public struct GeneralSettingsView: View {
     @Environment(DIContainer.self)
     private var container
@@ -22,22 +22,28 @@ public struct GeneralSettingsView: View {
 
     public var body: some View {
         Form {
-            GeneralSettingsLanguageRow(languageManager: container.ui.languageManager)
-            GeneralSettingsThemeRow()
-                .environment(container.ui.themeManager)
-            GeneralSettingsInterfaceLayoutRow()
+            Section {
+                GeneralSettingsLanguageRow(languageManager: container.ui.languageManager)
+                SettingsThemeRow()
+                    .environment(container.ui.themeManager)
+                GeneralSettingsInterfaceLayoutRow()
+                    .environment(container.ui.generalSettingsManager)
+            }
+            Section {
+                SettingsWorkingDirectoryRow(
+                    viewModel: viewModel,
+                    gameRepository: gameRepository,
+                )
                 .environment(container.ui.generalSettingsManager)
-            spacerView()
-            GeneralSettingsWorkingDirectoryRow(
-                viewModel: viewModel,
-                gameRepository: gameRepository,
-            )
-            .environment(container.ui.generalSettingsManager)
-            spacerView()
-            GeneralSettingsSystemProxyRow()
-            GeneralSettingsCommonSheetHeightLimitRow()
-                .environment(container.ui.generalSettingsManager)
+            }
+            Section {
+                GeneralSettingsSystemProxyRow()
+                GeneralSettingsCommonSheetHeightLimitRow()
+                    .environment(container.ui.generalSettingsManager)
+            }
         }
+        .formStyle(.grouped)
+        .contentMargins(.top, 0, for: .scrollContent)
         .errorHandler(container.core.errorHandler)
         .onAppear {
             viewModel.configure(gameRepository: gameRepository)

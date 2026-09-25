@@ -18,13 +18,12 @@ struct GeneralSettingsLanguageRow: View {
                 SystemSettings.open(AppConstants.SystemSettingsDeepLinks.localizationApps)
             } label: {
                 Text(languageManager.selectedLanguageDisplayName)
-                    .foregroundColor(.primary)
                     .lineLimit(1)
                     .foregroundColor(.primary)
             }
             .help("settings.language.picker".localized())
         }
-        CommonDescriptionText(text: "settings.language.translation.notice".localized())
+        .settingsDescription("settings.language.translation.notice".localized())
     }
 }
 
@@ -134,11 +133,7 @@ struct GeneralSettingsCommonSheetHeightLimitRow: View {
 
     var body: some View {
         @Bindable var generalSettings = generalSettings
-        LabeledContent("settings.common_sheet_height_limit.label".localized()) {
-            Toggle(
-                "settings.common_sheet_height_limit.enable".localized(),
-                isOn: $generalSettings.limitCommonSheetHeight,
-            )
-        }
+        Toggle("settings.common_sheet_height_limit.label".localized(), isOn: $generalSettings.limitCommonSheetHeight)
+            .settingsDescription("settings.common_sheet_height_limit.enable".localized())
     }
 }

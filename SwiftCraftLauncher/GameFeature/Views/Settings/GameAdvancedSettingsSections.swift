@@ -14,29 +14,29 @@ struct GameAdvancedSettingsJavaPathSection: View {
     @State private var showJavaPathPicker = false
 
     var body: some View {
-        LabeledContent("settings.game.java.path".localized()) {
-            HStack(alignment: .top, spacing: 8) {
-                DirectorySettingRow(
-                    title: "settings.game.java.path".localized(),
-                    path: viewModel.effectiveJavaPath,
-                    description: "settings.game.java.path.description".localized(),
-                    onChoose: { showJavaPathPicker = true },
-                    onReset: {
-                        viewModel.resetJavaPathSafely()
-                    },
-                ).fixedSize()
-                    .fileImporter(
-                        isPresented: $showJavaPathPicker,
-                        allowedContentTypes: [.item],
-                        allowsMultipleSelection: false,
-                    ) { result in
-                        viewModel.handleJavaPathSelection(result)
-                    }
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Text("settings.game.java.path".localized())
+                Spacer()
                 InfoIconWithPopover(
                     text: viewModel.javaDetailsDescription,
                 )
             }
+            SettingsDirectorySettingRow(
+                path: viewModel.effectiveJavaPath,
+                description: "settings.game.java.path.description".localized(),
+                onChoose: { showJavaPathPicker = true },
+                onReset: { viewModel.resetJavaPathSafely() },
+            )
+            .fileImporter(
+                isPresented: $showJavaPathPicker,
+                allowedContentTypes: [.item],
+                allowsMultipleSelection: false,
+            ) { result in
+                viewModel.handleJavaPathSelection(result)
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -59,7 +59,7 @@ struct GameAdvancedSettingsGarbageCollectorSection: View {
             }
         }
         .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)
-        CommonDescriptionText(text: viewModel.selectedGarbageCollector.description)
+        .settingsDescription(viewModel.selectedGarbageCollector.description)
     }
 }
 
@@ -82,7 +82,7 @@ struct GameAdvancedSettingsPerformanceOptimizationSection: View {
             }
         }
         .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)
-        CommonDescriptionText(text: viewModel.optimizationPreset.description)
+        .settingsDescription(viewModel.optimizationPreset.description)
     }
 }
 
@@ -93,27 +93,28 @@ struct GameAdvancedSettingsMemorySection: View {
     @Bindable var viewModel: GameAdvancedSettingsViewModel
 
     var body: some View {
-        LabeledContent("settings.game.java.memory".localized()) {
-            HStack {
-                MiniRangeSlider(
-                    range: $viewModel.memoryRange,
-                    bounds:
-                    Double(AppConstants.MemoryDefaults.xms) ... Double(container.ui.gameSettingsManager.maximumMemoryAllocation),
-                )
-                .frame(width: 200)
-                .controlSize(.mini)
-                .onChange(of: viewModel.memoryRange) { _, _ in viewModel.didChangeMemoryRange() }
-                Button("common.reset".localized()) {
-                    viewModel.resetGameXms()
+        VStack(alignment: .leading, spacing: 8) {
+            LabeledContent("settings.game.java.memory".localized()) {
+                HStack {
+                    MiniRangeSlider(
+                        range: $viewModel.memoryRange,
+                        bounds:
+                        Double(AppConstants.MemoryDefaults.xms) ... Double(container.ui.gameSettingsManager.maximumMemoryAllocation),
+                    )
+                    .frame(maxWidth: 145)
+                    .controlSize(.mini)
+                    .onChange(of: viewModel.memoryRange) { _, _ in viewModel.didChangeMemoryRange() }
+                    Button("common.reset".localized()) {
+                        viewModel.resetGameXms()
+                    }
+                    .padding(.leading, 4)
                 }
-                .padding(.leading, 8)
             }
+            Text("\(Int(viewModel.memoryRange.lowerBound)) MB-\(Int(viewModel.memoryRange.upperBound)) MB")
+                .font(.subheadline.monospacedDigit())
+                .lineLimit(1)
         }
-        Text("\(Int(viewModel.memoryRange.lowerBound)) MB-\(Int(viewModel.memoryRange.upperBound)) MB")
-            .font(.subheadline.monospacedDigit())
-            .lineLimit(1)
-            .truncationMode(.tail)
-            .padding(.bottom, 4)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -128,10 +129,10 @@ struct GameAdvancedSettingsCustomParametersSection: View {
                 .labelsHidden()
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(2 ... 4)
-                .frame(width: 300)
+                .frame(maxWidth: 220)
                 .onChange(of: viewModel.customJvmArguments) { _, _ in viewModel.didChangeCustomJvmArguments() }
         }
-        CommonDescriptionText(text: "settings.game.java.custom_parameters.note".localized())
+        .settingsDescription("settings.game.java.custom_parameters.note".localized())
     }
 }
 
@@ -146,9 +147,9 @@ struct GameAdvancedSettingsEnvironmentVariablesSection: View {
                 .labelsHidden()
                 .textFieldStyle(.roundedBorder)
                 .lineLimit(2 ... 4)
-                .frame(width: 300)
+                .frame(maxWidth: 220)
                 .onChange(of: viewModel.environmentVariables) { _, _ in viewModel.didChangeEnvironmentVariables() }
         }
-        CommonDescriptionText(text: "settings.game.java.environment_variables.description".localized())
+        .settingsDescription("settings.game.java.environment_variables.description".localized())
     }
 }

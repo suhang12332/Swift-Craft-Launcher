@@ -31,4 +31,8 @@ final class APIKeyObfuscatorTests: XCTestCase {
         let input = String(repeating: "A", count: 64)
         _ = Obfuscator.decryptAPIKey(input)
     }
+
+    func testDecryptAPIKey_incompleteLastPartDoesNotCrash() {
+        XCTAssertEqual(Obfuscator.decryptAPIKey("$(LITTLESKIN_CLIENT_SECRET)"), "")
+    }
 }

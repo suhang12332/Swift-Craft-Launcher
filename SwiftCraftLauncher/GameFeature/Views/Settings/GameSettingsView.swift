@@ -27,19 +27,24 @@ public struct GameSettingsView: View {
 
     public var body: some View {
         Form {
-            GameSettingsAPISourceRow()
-            GameSettingsModPackExportFormatRow()
-            spacerView()
-            GameSettingsConcurrentDownloadsRow(draft: $concurrentDownloadsDraft)
-            GameSettingsIncludeSnapshotsRow()
-            GameSettingsAICrashAnalysisRow()
-            GameSettingsMemoryPressureWarningRow()
-            GameSettingsSyncLanguageRow()
-            spacerView()
-            GameSettingsMemoryAllocationSection(range: $globalMemoryRange)
-            spacerView()
-            GameSettingsJavaRuntimeRow(viewModel: viewModel)
+            Section {
+                GameSettingsAPISourceRow()
+                GameSettingsModPackExportFormatRow()
+                GameSettingsConcurrentDownloadsRow(draft: $concurrentDownloadsDraft)
+                GameSettingsIncludeSnapshotsRow()
+                GameSettingsAICrashAnalysisRow()
+                GameSettingsMemoryPressureWarningRow()
+                GameSettingsSyncLanguageRow()
+            }
+            Section {
+                GameSettingsMemoryAllocationSection(range: $globalMemoryRange)
+            }
+            Section {
+                GameSettingsJavaRuntimeRow(viewModel: viewModel)
+            }
         }
+        .formStyle(.grouped)
+        .contentMargins(.top, 0, for: .scrollContent)
         .environment(gameSettingsManager)
         .onAppear {
             viewModel.refreshInstalledRuntimes(showScanningIndicator: true)

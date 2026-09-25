@@ -45,7 +45,7 @@ struct AISettingsAPIKeyRow: View {
                             .textFieldStyle(.roundedBorder).labelsHidden()
                     }
                 }
-                .frame(width: 300)
+                .frame(maxWidth: .infinity)
                 Button(action: {
                     showApiKey.toggle()
                 }, label: {
@@ -54,8 +54,9 @@ struct AISettingsAPIKeyRow: View {
                 .buttonStyle(.plain)
                 .applyReplaceTransition()
             }
+            .frame(maxWidth: 220)
         }
-        CommonDescriptionText(text: "settings.ai.api_key.description".localized())
+        .settingsDescription("settings.ai.api_key.description".localized())
     }
 }
 
@@ -70,8 +71,7 @@ struct AISettingsOllamaURLRow: View {
             TextField(URLConfig.API.AIService.ollamaDefaultBaseURL, text: $aiSettingsManager.ollamaBaseURL)
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .frame(maxWidth: 300)
-                .fixedSize()
+                .frame(maxWidth: 220)
         }
     }
 }
@@ -87,8 +87,7 @@ struct AISettingsAPIURLRow: View {
             TextField(aiSettingsManager.selectedProvider.baseURL, text: $aiSettingsManager.openAIBaseURL)
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .frame(width: 300)
-                .fixedSize()
+                .frame(maxWidth: 220)
         }
     }
 }
@@ -121,8 +120,7 @@ struct AISettingsModelRow: View {
             TextField("settings.ai.model.placeholder".localized(), text: $aiSettingsManager.modelOverride)
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .frame(width: 180)
-                .fixedSize()
+                .frame(maxWidth: 220)
                 .focusable(false)
         }
     }
@@ -135,22 +133,23 @@ struct AISettingsAvatarRow: View {
 
     var body: some View {
         @Bindable var aiSettingsManager = aiSettingsManager
-        MinecraftSkinUtils(
-            type: .url,
-            src: aiSettingsManager.aiAvatarURL,
-            size: 42,
-        )
-        .padding(.leading, 2)
-        Group {
+        VStack(alignment: .leading, spacing: 8) {
             LabeledContent("settings.ai.avatar.label".localized()) {
-                TextField("settings.ai.avatar.placeholder".localized(), text: $aiSettingsManager.aiAvatarURL)
-                    .textFieldStyle(.roundedBorder)
-                    .labelsHidden()
-                    .frame(maxWidth: 300)
-                    .fixedSize()
+                HStack(spacing: 8) {
+                    MinecraftSkinUtils(
+                        type: .url,
+                        src: aiSettingsManager.aiAvatarURL,
+                        size: 42,
+                    )
+                    TextField("settings.ai.avatar.placeholder".localized(), text: $aiSettingsManager.aiAvatarURL)
+                        .textFieldStyle(.roundedBorder)
+                        .labelsHidden()
+                        .frame(maxWidth: .infinity)
+                }
+                .frame(maxWidth: 220)
             }
             CommonDescriptionText(text: "settings.ai.avatar.description".localized())
         }
-        .padding(.leading, 2)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
