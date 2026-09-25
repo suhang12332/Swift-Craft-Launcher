@@ -48,12 +48,13 @@ public struct SettingsView: View {
     @Environment(DIContainer.self)
     private var container
     @State private var selectedPage: SettingsPage? = .general
-    @State private var lastAvailablePage: SettingsPage = .general
 
     public var body: some View {
         NavigationSplitView {
             List(selection: $selectedPage) {
-                ForEach(SettingsPage.allCases) { page in
+                ForEach(SettingsPage.allCases.filter { page in
+                    page != .advanced || container.core.selectedGameManager.selectedGameId != nil
+                }) { page in
                     Label {
                         Text(page.title)
                     } icon: {
@@ -64,9 +65,6 @@ public struct SettingsView: View {
                             .background(page.color.gradient, in: RoundedRectangle(cornerRadius: 6))
                     }
                     .tag(page)
-                    .opacity(page == .advanced && container.core.selectedGameManager.selectedGameId == nil ? 0.5 : 1)
-                    .disabled(page == .advanced && container.core.selectedGameManager.selectedGameId == nil)
-                    .allowsHitTesting(page != .advanced || container.core.selectedGameManager.selectedGameId != nil)
                 }
             }
             .listStyle(.sidebar)
@@ -74,7 +72,7 @@ public struct SettingsView: View {
             .navigationSplitViewColumnWidth(215)
         } detail: {
             detail
-                .navigationTitle(selectedPage?.title ?? "settings.general.tab".localized())
+                .navigationTitle(visiblePage.title)
         }
         .toggleStyle(.switch)
         .frame(minWidth: 715, minHeight: 500)
@@ -83,25 +81,28 @@ public struct SettingsView: View {
                 checkAndOpenAdvancedSettings()
             }
         }
-        .onChange(of: selectedPage) { _, page in
-            if page == .advanced, container.core.selectedGameManager.selectedGameId == nil {
-                selectedPage = lastAvailablePage
-            } else if let page, page != .advanced {
-                lastAvailablePage = page
-            }
-        }
         .onChange(of: container.core.selectedGameManager.selectedGameId) { _, gameID in
             if gameID == nil, selectedPage == .advanced {
-                selectedPage = lastAvailablePage
+                selectedPage = .general
             }
         }
         .onAppear {
+            if container.core.selectedGameManager.selectedGameId == nil, selectedPage == .advanced {
+                selectedPage = .general
+            }
             checkAndOpenAdvancedSettings()
         }
     }
 
+    private var visiblePage: SettingsPage {
+        if selectedPage == .advanced, container.core.selectedGameManager.selectedGameId == nil {
+            return .general
+        }
+        return selectedPage ?? .general
+    }
+
     @ViewBuilder private var detail: some View {
-        switch selectedPage ?? .general {
+        switch visiblePage {
         case .general:
             GeneralSettingsView()
                 .environment(container.ui.gameSettingsManager)
@@ -116,11 +117,7 @@ public struct SettingsView: View {
                 .environment(container.ui.aiSettingsManager)
                 .environment(container.ui.gameSettingsManager)
         case .advanced:
-            if container.core.selectedGameManager.selectedGameId != nil {
-                GameAdvancedSettingsView()
-            } else {
-                GeneralSettingsView()
-            }
+            GameAdvancedSettingsView()
         }
     }
 
