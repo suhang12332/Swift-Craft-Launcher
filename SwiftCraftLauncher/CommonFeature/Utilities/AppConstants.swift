@@ -30,6 +30,13 @@ enum AppConstants {
         static let hasAddedPremiumAccount = "hasAddedPremiumAccount"
         static let offlineUserServerMap = "offlineUserServerMap"
 
+        /// 旧版离线服务器映射迁移标记(值:迁移版本号),防止重复迁移。
+        static let accountCredentialMigrationVersion = "accountCredentialMigrationVersion"
+        /// 用户添加的自定义 Yggdrasil 认证服务器列表(非敏感,存 UserDefaults)。
+        static let customYggdrasilServers = "customYggdrasilServers"
+        /// 安装级 Yggdrasil classic clientToken,首次使用时生成并保持一致。
+        static let yggdrasilClientToken = "yggdrasilClientToken"
+
         static let aiProvider = "aiProvider"
         static let aiOllamaBaseURL = "aiOllamaBaseURL"
         static let aiOpenAIBaseURL = "aiOpenAIBaseURL"
@@ -61,6 +68,8 @@ enum AppConstants {
     enum KeychainKeys {
         static let apiKey = "apiKey"
         static let authCredential = "authCredential"
+        /// 统一账号凭据(`AccountCredential`)的钥匙串键名。
+        static let accountCredential = "accountCredential"
     }
 
     /// The Minecraft client ID, decrypted at launch.

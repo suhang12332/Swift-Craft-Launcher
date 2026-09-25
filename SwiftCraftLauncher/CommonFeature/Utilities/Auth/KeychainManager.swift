@@ -17,18 +17,25 @@ enum KeychainManager {
     ///   - data: The data to store.
     ///   - account: The account identifier.
     ///   - key: The key name.
+    ///   - accessible: Optional `kSecAttrAccessible` value; when `nil` the system
+    ///     default is used. New callers handling secrets should pass
+    ///     `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`.
     /// - Returns: `true` if the operation succeeded.
-    static func save(data: Data, account: String, key: String) -> Bool {
+    static func save(data: Data, account: String, key: String, accessible: CFString? = nil) -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: "\(account).\(key)",
             kSecValueData as String: data,
         ]
+        var addQuery = query
+        if let accessible {
+            addQuery[kSecAttrAccessible as String] = accessible
+        }
 
         SecItemDelete(query as CFDictionary)
 
-        let status = SecItemAdd(query as CFDictionary, nil)
+        let status = SecItemAdd(addQuery as CFDictionary, nil)
 
         if status == errSecSuccess {
             AppLog.common.debug("Keychain save succeeded - account: \(account), key: \(key)")

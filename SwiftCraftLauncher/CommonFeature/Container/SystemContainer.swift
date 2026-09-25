@@ -14,6 +14,7 @@ final class SystemContainer: @unchecked Sendable {
     @Lazy var gitHubService: GitHubService = .init()
     @Lazy var minecraftAuthService: MinecraftAuthService = .init()
     @Lazy var yggdrasilAuthService: YggdrasilAuthService = .init()
+    @Lazy var customYggdrasilServerStore: CustomYggdrasilServerStore = .init()
     @Lazy var ipLocationService: IPLocationService = .init()
 
     // Java

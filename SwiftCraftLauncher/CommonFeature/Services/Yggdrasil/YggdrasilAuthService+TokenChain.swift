@@ -33,8 +33,10 @@ extension YggdrasilAuthService {
         )
     }
 
-    private func refreshToken(refreshToken: String, server: YggdrasilServerConfig) async throws -> TokenResponse {
-        guard let refreshTokenURL = server.tokenURL else {
+    /// 使用 OAuth refresh_token 刷新 Yggdrasil 预设服务器的令牌。
+    /// - Throws: 令牌端点不可用或刷新被拒绝时抛出认证/校验错误。
+    func refreshOAuthToken(refreshToken: String, server: YggdrasilServerConfig) async throws -> TokenResponse {
+        guard let tokenURL = server.tokenURL else {
             throw GlobalError.validation(
                 i18nKey: "error.validation.yggdrasil_refresh_token_url_invalid",
                 level: .notification,
@@ -51,7 +53,7 @@ extension YggdrasilAuthService {
 
         let result = try await OAuth2TokenOperations.refreshToken(
             refreshToken: refreshToken,
-            tokenURL: refreshTokenURL,
+            tokenURL: tokenURL,
             clientId: server.clientId ?? "",
             additionalParameters: additionalParams,
         )
@@ -93,39 +95,20 @@ extension YggdrasilAuthService {
         )
     }
 
-    func refreshThirdPartyToken(profile: YggdrasilProfile, server: YggdrasilServerConfig) async {
-        var updatedProfile = profile
-        do {
-            let tokenResponse = try await refreshToken(
-                refreshToken: profile.refreshToken,
-                server: server,
-            )
-            updatedProfile = YggdrasilProfile(
-                id: profile.id,
-                name: profile.name,
-                skins: profile.skins,
-                capes: profile.capes,
-                accessToken: tokenResponse.accessToken,
-                refreshToken: tokenResponse.refreshToken ?? profile.refreshToken,
-                serverBaseURL: profile.serverBaseURL,
-            )
-        } catch {
-            DIContainer.shared.core.errorHandler.handle(error)
-        }
-
-        OfflineUserServerMap.setServer(updatedProfile)
-    }
-
-    func getMinecraftToken(profile: YggdrasilProfile, server: YggdrasilServerConfig) async throws -> String {
+    func getMinecraftToken(
+        profileId: String,
+        accessToken: String,
+        server: YggdrasilServerConfig,
+    ) async throws -> String {
         guard let parser = YggdrasilMinecraftTokenParsers.make(for: server.parserId) else {
-            AppLog.common.error("Minecraft token fetch not yet implemented for this server (\(server.name)), falling back to OAuth2 token")
-            return profile.accessToken
+            AppLog.common.debug("No dedicated Minecraft token endpoint for server \(server.name), using accessToken directly")
+            return accessToken
         }
 
         return try await parser.fetchMinecraftToken(
-            profileId: profile.id,
+            profileId: profileId,
             minecraftTokenURL: server.minecraftTokenURL,
-            oauthToken: profile.accessToken,
+            oauthToken: accessToken,
         )
     }
 }
