@@ -25,7 +25,7 @@ extension ModPackImportViewModel {
         var input: ModPackInstallCoordinator.RunInput = .init(
             archivePath: archiveURL,
             projectDetailForIcon: nil,
-            gameName: gameNameValidator.gameName,
+            gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
             selectedGameVersion: indexInfo.gameVersion,
             gameSetupService: gameSetupService,
             gameRepository: gameRepository,
@@ -45,7 +45,10 @@ extension ModPackImportViewModel {
         }
         let success = await coordinator.run(input)
 
-        handleModPackInstallationResult(success: success, gameName: gameNameValidator.gameName)
+        handleModPackInstallationResult(
+            success: success,
+            gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
+        )
     }
 
     /// Handles the final result of a modpack installation.

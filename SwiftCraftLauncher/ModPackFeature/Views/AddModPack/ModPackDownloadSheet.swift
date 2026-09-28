@@ -195,7 +195,9 @@ struct ModPackDownloadSheet: View {
         if isDownloading {
             Task {
                 viewModel.cancelDownloadAndResetStates(gameSetupService: gameSetupService)
-                await viewModel.cleanupGameDirectoriesForCancel(gameName: gameNameValidator.gameName)
+                await viewModel.cleanupGameDirectoriesForCancel(
+                    gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
+                )
             }
             dismiss()
         } else {
@@ -212,7 +214,7 @@ struct ModPackDownloadSheet: View {
         viewModel.beginDownloadAndInstall(
             selectedVersion: selectedVersion,
             projectDetail: projectDetail,
-            gameName: gameNameValidator.gameName,
+            gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
             selectedGameVersion: selectedGameVersion,
             gameSetupService: gameSetupService,
         ) { success in

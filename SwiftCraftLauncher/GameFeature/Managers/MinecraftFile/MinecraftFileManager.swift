@@ -7,15 +7,36 @@
 
 import CommonCrypto
 import Foundation
+import os
 
 /// Manages Minecraft version file downloads, verification, and directory setup.
 class MinecraftFileManager: @unchecked Sendable {
     private let fileManager = FileManager.default
     let coreFilesCount = AtomicCounter()
     let resourceFilesCount = AtomicCounter()
-    var coreTotalFiles = 0
-    var resourceTotalFiles = 0
-    var onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)?
+
+    private struct ProgressState {
+        var coreTotalFiles = 0
+        var resourceTotalFiles = 0
+        var onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)?
+    }
+
+    private let progressState = OSAllocatedUnfairLock(initialState: ProgressState())
+
+    var coreTotalFiles: Int {
+        get { progressState.withLock { $0.coreTotalFiles } }
+        set { progressState.withLock { $0.coreTotalFiles = newValue } }
+    }
+
+    var resourceTotalFiles: Int {
+        get { progressState.withLock { $0.resourceTotalFiles } }
+        set { progressState.withLock { $0.resourceTotalFiles = newValue } }
+    }
+
+    var onProgressUpdate: (@Sendable (String, Int, Int, DownloadType) -> Void)? {
+        get { progressState.withLock { $0.onProgressUpdate } }
+        set { progressState.withLock { $0.onProgressUpdate = newValue } }
+    }
 
     enum DownloadType {
         case core
@@ -153,18 +174,23 @@ class MinecraftFileManager: @unchecked Sendable {
         type: DownloadType,
     ) async {
         let currentCount: Int
-        let total: Int
-
         switch type {
         case .core:
             currentCount = await coreFilesCount.increment()
-            total = coreTotalFiles
         case .resources:
             currentCount = await resourceFilesCount.increment()
-            total = resourceTotalFiles
         }
 
-        onProgressUpdate?(fileName, currentCount, total, type)
+        let (total, progressHandler) = progressState.withLock { state -> (Int, (@Sendable (String, Int, Int, DownloadType) -> Void)?) in
+            switch type {
+            case .core:
+                return (state.coreTotalFiles, state.onProgressUpdate)
+            case .resources:
+                return (state.resourceTotalFiles, state.onProgressUpdate)
+            }
+        }
+
+        progressHandler?(fileName, currentCount, total, type)
     }
 
     /// Downloads a file, verifies its SHA1, and increments the progress counter.

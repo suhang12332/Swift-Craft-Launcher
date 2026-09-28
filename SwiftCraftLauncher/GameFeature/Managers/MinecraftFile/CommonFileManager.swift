@@ -6,12 +6,19 @@
 //
 
 import Foundation
+import os
 
 /// Manages common file operations for mod loader installations, including
 /// Forge and Fabric JAR downloads and processor execution.
 class CommonFileManager: @unchecked Sendable {
     let librariesDir: URL
-    var onProgressUpdate: (@Sendable (String, Int, Int) -> Void)?
+
+    private let progressState = OSAllocatedUnfairLock<(@Sendable (String, Int, Int) -> Void)?>(initialState: nil)
+
+    var onProgressUpdate: (@Sendable (String, Int, Int) -> Void)? {
+        get { progressState.withLock { $0 } }
+        set { progressState.withLock { $0 = newValue } }
+    }
 
     init(librariesDir: URL) {
         self.librariesDir = librariesDir

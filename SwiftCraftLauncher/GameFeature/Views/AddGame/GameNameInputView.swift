@@ -37,7 +37,11 @@ struct GameNameInputView: View {
             }
             .onChange(of: gameName) { _, newName in
                 Task {
-                    let isDuplicate = await gameSetupService.checkGameNameDuplicate(newName)
+                    // Trim first: the installation creates profiles/<trimmed name>, so checking
+                    // the raw input would miss an existing instance and let it be overwritten.
+                    let isDuplicate = await gameSetupService.checkGameNameDuplicate(
+                        newName.trimmingCharacters(in: .whitespacesAndNewlines),
+                    )
                     await MainActor.run {
                         if isDuplicate != isGameNameDuplicate {
                             isGameNameDuplicate = isDuplicate

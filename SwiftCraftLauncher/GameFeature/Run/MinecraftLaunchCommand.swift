@@ -112,15 +112,15 @@ struct MinecraftLaunchCommand {
                 profile: profile,
             )
         } else {
-            accessToken = player.authAccessToken
+            accessToken = validatedPlayer.authAccessToken
             commandWithAgent = command
         }
 
         let replacements: [String: String] = [
-            "${auth_player_name}": player.name,
-            "${auth_uuid}": player.id,
+            "${auth_player_name}": validatedPlayer.name,
+            "${auth_uuid}": validatedPlayer.id,
             "${auth_access_token}": accessToken,
-            "${auth_xuid}": player.authXuid,
+            "${auth_xuid}": validatedPlayer.authXuid,
         ]
         let authReplacedCommand = commandWithAgent.map { arg in
             replacements.reduce(into: arg) { result, pair in

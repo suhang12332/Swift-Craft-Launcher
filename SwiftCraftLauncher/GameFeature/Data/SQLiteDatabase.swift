@@ -11,7 +11,9 @@ import SQLite3
 /// A thread-safe wrapper around the SQLite C API.
 ///
 /// Manages a single database connection with WAL journal mode and memory-mapped I/O.
-/// All operations are serialized on a dedicated dispatch queue.
+/// All operations are serialized on a dedicated dispatch queue: transactions via
+/// ``transaction(_:)``, plain SQL via ``execute(_:)`` and statements via
+/// ``withStatement(_:_:)``, which keeps prepare/bind/step/finalize inside the queue as well.
 ///
 /// Instances are shared by path: calling ``database(at:)`` with the same path
 /// returns the same connection, avoiding redundant opens and file descriptors.
@@ -35,7 +37,7 @@ class SQLiteDatabase {
     private var db: OpaquePointer?
     private let dbPath: String
     private let queue: DispatchQueue
-    private static let queueKey = DispatchSpecificKey<Bool>()
+    private let queueKey = DispatchSpecificKey<Bool>()
 
     private static let instanceRegistry = InstanceRegistry()
 
@@ -53,11 +55,15 @@ class SQLiteDatabase {
     private init(path: String) {
         dbPath = path
         queue = DispatchQueue(label: "com.swiftcraftlauncher.sqlite", qos: .utility)
-        queue.setSpecific(key: Self.queueKey, value: true)
+        queue.setSpecific(key: queueKey, value: true)
     }
 
+    /// A Boolean value indicating whether the current thread runs on this database's queue.
+    ///
+    /// The key is per instance, so a thread sitting on the queue of another database does not
+    /// count as being on this one and cannot bypass this instance's serialization.
     private var isOnQueue: Bool {
-        DispatchQueue.getSpecific(key: Self.queueKey) != nil
+        DispatchQueue.getSpecific(key: queueKey) != nil
     }
 
     private func sync<T>(_ block: () throws -> T) rethrows -> T {
@@ -218,36 +224,49 @@ class SQLiteDatabase {
         }
     }
 
-    /// Prepares a SQL statement for execution.
+    /// Runs `body` with a prepared statement, entirely on the database queue.
     ///
-    /// The caller is responsible for calling `sqlite3_finalize` on the returned pointer.
+    /// Preparing, binding, stepping and finalizing happen inside a single queue hop, so a
+    /// statement can never run between the `BEGIN` and the `COMMIT` of a transaction that is
+    /// executing on the queue, and two callers can never step statements concurrently.
+    /// Calling this from within ``transaction(_:)`` re-enters the queue instead of deadlocking,
+    /// which keeps the statement inside the surrounding transaction.
     ///
-    /// - Parameter sql: The SQL statement to prepare.
-    /// - Returns: A pointer to the prepared statement.
-    func prepare(_ sql: String) throws -> OpaquePointer {
+    /// - Parameters:
+    ///   - sql: The SQL statement to prepare.
+    ///   - body: The work to perform with the prepared statement.
+    /// - Returns: The value produced by `body`.
+    func withStatement<T>(_ sql: String, _ body: (OpaquePointer) throws -> T) throws -> T {
         try sync {
-            guard let db else {
-                throw GlobalError.validation(
-                    i18nKey: "error.validation.database_not_open",
-                    level: .notification,
-                    message: "Database not open when preparing SQL on \(dbPath)",
-                )
-            }
-
-            var statement: OpaquePointer?
-            let result = sqlite3_prepare_v2(db, sql, -1, &statement, nil)
-
-            guard result == SQLITE_OK, let stmt = statement else {
-                let errorMessage = String(cString: sqlite3_errmsg(db))
-                throw GlobalError.validation(
-                    i18nKey: "error.validation.sql_prepare_failed",
-                    level: .notification,
-                    message: "Failed to prepare SQL on \(dbPath): \(errorMessage)",
-                )
-            }
-
-            return stmt
+            let statement = try prepareOnQueue(sql)
+            defer { sqlite3_finalize(statement) }
+            return try body(statement)
         }
+    }
+
+    /// Prepares a SQL statement. Must be called on the queue; use ``withStatement(_:_:)``.
+    private func prepareOnQueue(_ sql: String) throws -> OpaquePointer {
+        guard let db else {
+            throw GlobalError.validation(
+                i18nKey: "error.validation.database_not_open",
+                level: .notification,
+                message: "Database not open when preparing SQL on \(dbPath)",
+            )
+        }
+
+        var statement: OpaquePointer?
+        let result = sqlite3_prepare_v2(db, sql, -1, &statement, nil)
+
+        guard result == SQLITE_OK, let stmt = statement else {
+            let errorMessage = String(cString: sqlite3_errmsg(db))
+            throw GlobalError.validation(
+                i18nKey: "error.validation.sql_prepare_failed",
+                level: .notification,
+                message: "Failed to prepare SQL on \(dbPath): \(errorMessage)",
+            )
+        }
+
+        return stmt
     }
 
     /// The underlying database pointer.

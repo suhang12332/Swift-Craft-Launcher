@@ -151,9 +151,7 @@ final class FavoriteStore: @unchecked Sendable {
         _ sql: String,
         _ body: (OpaquePointer) throws -> T,
     ) throws -> T {
-        let statement = try db.prepare(sql)
-        defer { sqlite3_finalize(statement) }
-        return try body(statement)
+        try db.withStatement(sql, body)
     }
 
     private func stepStatement(_ statement: OpaquePointer) throws {
