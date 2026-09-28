@@ -114,6 +114,8 @@ struct ModrinthDetailCardView: View {
                         .resizable()
                         .scaledToFill()
                         .transition(.opacity)
+                case .failure:
+                    ModrinthDetailCardPlaceholderIcon(sfSymbol: "questionmark.circle")
                 default:
                     ModrinthDetailCardPlaceholderIcon()
                 }
