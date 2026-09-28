@@ -74,18 +74,22 @@ extension MinecraftAuthService {
         var updatedProfile = player.profile
         updatedProfile.lastPlayed = player.lastPlayed
         updatedProfile.isCurrent = player.isCurrent
+        if updatedProfile.authMethod == nil {
+            updatedProfile.authMethod = .microsoft
+        }
 
-        var updatedCredential = player.credential
-        if var credential = updatedCredential {
+        let updatedCredential: AccountCredential
+        if var credential = player.credential {
             credential.accessToken = minecraftToken
-            credential.refreshToken = refreshedTokens.refreshToken ?? player.authRefreshToken
+            credential.renewalSecret = refreshedTokens.refreshToken ?? player.authRefreshToken
             credential.xuid = xboxToken.displayClaims.xui.first?.uhs ?? player.authXuid
             updatedCredential = credential
         } else {
-            updatedCredential = AuthCredential(
+            updatedCredential = AccountCredential(
                 userId: player.id,
+                authMethod: .microsoft,
                 accessToken: minecraftToken,
-                refreshToken: refreshedTokens.refreshToken ?? "",
+                renewalSecret: refreshedTokens.refreshToken ?? "",
                 xuid: xboxToken.displayClaims.xui.first?.uhs ?? "",
             )
         }

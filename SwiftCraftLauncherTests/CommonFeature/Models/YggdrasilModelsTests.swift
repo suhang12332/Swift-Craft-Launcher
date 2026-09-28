@@ -16,7 +16,7 @@ final class YggdrasilModelsTests: XCTestCase {
     }
 
     func testParserID_allCases() {
-        XCTAssertEqual(YggdrasilProfileParserID.allCases.count, 3)
+        XCTAssertEqual(YggdrasilProfileParserID.allCases.count, 4)
     }
 
     func testParserID_id() {

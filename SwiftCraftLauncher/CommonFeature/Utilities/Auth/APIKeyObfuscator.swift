@@ -46,6 +46,9 @@ enum Obfuscator {
     }
 
     /// Decrypts an obfuscated API key string.
+    ///
+    /// 切分使用 `limitedBy` 钳制:输入长度不是 8 的倍数(如 CI 密钥未注入时
+    /// 残留的占位符)时截断最后一节,而不是索引越界崩溃。
     static func decryptAPIKey(_ encryptedString: String) -> String {
         let partLength = 8
         let totalLength = encryptedString.count
@@ -54,7 +57,8 @@ enum Obfuscator {
         var parts: [String] = []
         for i in 0 ..< numParts {
             let startIndex = encryptedString.index(encryptedString.startIndex, offsetBy: i * partLength)
-            let endIndex = min(encryptedString.index(startIndex, offsetBy: partLength), encryptedString.endIndex)
+            let endIndex = encryptedString.index(startIndex, offsetBy: partLength, limitedBy: encryptedString.endIndex)
+                ?? encryptedString.endIndex
             let part = String(encryptedString[startIndex ..< endIndex])
             parts.append(part)
         }

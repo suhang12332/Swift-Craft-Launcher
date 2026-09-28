@@ -31,6 +31,15 @@ struct AddPlayerSheetView: View {
     @Environment(\.openURL)
     private var openURL
     @State private var showErrorPopover: Bool = false
+    @State private var showCustomServerSheet: Bool = false
+    /// 三方密码登录表单状态(登录按钮在 footer,状态提升至此共享)
+    @State private var yggLoginUsername = ""
+    @State private var yggLoginPassword = ""
+    @State private var yggRememberPassword = false
+
+    /// 标题栏选择器的固定文本宽度:认证方式 40,皮肤站 80(超长尾部省略)。
+    private let authTypePickerTextWidth: CGFloat = 40
+    private let serverPickerTextWidth: CGFloat = 80
 
     init(
         playerName: Binding<String>,
@@ -61,18 +70,20 @@ struct AddPlayerSheetView: View {
                         .foregroundStyle(.secondary)
                         .symbolRenderingMode(viewModel.selectedAuthType.symbol.mode)
                         .symbolVariant(.none)
-                    if viewModel.selectedAuthType == .yggdrasil,
-                       let serverName = container.system.yggdrasilAuthService.currentServer?.name {
-                        Text(serverName)
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
                     Spacer()
                     if viewModel.isCheckingFlag {
                         ProgressView()
                             .controlSize(.small)
                             .frame(height: 20.5)
                             .padding(.trailing, 10)
+                    } else if viewModel.selectedAuthType == .yggdrasil {
+                        // 三方:认证方式选择器右侧依次为皮肤站选择器与添加入口
+                        HStack(spacing: 6) {
+                            authTypePicker
+                            yggdrasilServerMenu
+                            addCustomServerButton
+                        }
+                        .padding(.trailing, 10)
                     } else {
                         authTypePicker
                     }
@@ -84,7 +95,12 @@ struct AddPlayerSheetView: View {
                 case .premium:
                     MinecraftAuthView(onLoginSuccess: onLogin)
                 case .yggdrasil:
-                    YggdrasilAuthView(onLoginSuccess: onYggdrasilLogin)
+                    YggdrasilAuthView(
+                        onLoginSuccess: onYggdrasilLogin,
+                        loginUsername: $yggLoginUsername,
+                        loginPassword: $yggLoginPassword,
+                        rememberPassword: $yggRememberPassword,
+                    )
                 case .offline:
                     VStack(alignment: .leading) {
                         playerInfoSection
@@ -143,15 +159,33 @@ struct AddPlayerSheetView: View {
                     } else if viewModel.selectedAuthType == .yggdrasil {
                         switch container.system.yggdrasilAuthService.authState {
                         case .idle, .error:
-                            Button("addplayer.auth.start_login".localized()) {
-                                Task {
-                                    await viewModel.startYggdrasilAuthentication(
-                                        yggdrasilAuthService: container.system.yggdrasilAuthService,
-                                    )
+                            // 密码型自定义服务器:登录按钮与 OAuth「开始登录」同位
+                            if container.system.yggdrasilAuthService.currentServer?.isPasswordLogin == true {
+                                Button("yggdrasil.password.login".localized()) {
+                                    let username = yggLoginUsername
+                                    let password = yggLoginPassword
+                                    let remember = yggRememberPassword
+                                    Task {
+                                        await container.system.yggdrasilAuthService.startPasswordAuthentication(
+                                            username: username,
+                                            password: password,
+                                            rememberPassword: remember,
+                                        )
+                                    }
                                 }
+                                .keyboardShortcut(.defaultAction)
+                                .disabled(yggLoginUsername.isEmpty || yggLoginPassword.isEmpty)
+                            } else {
+                                Button("addplayer.auth.start_login".localized()) {
+                                    Task {
+                                        await viewModel.startYggdrasilAuthentication(
+                                            yggdrasilAuthService: container.system.yggdrasilAuthService,
+                                        )
+                                    }
+                                }
+                                .keyboardShortcut(.defaultAction)
+                                .disabled(container.system.yggdrasilAuthService.currentServer == nil)
                             }
-                            .keyboardShortcut(.defaultAction)
-                            .disabled(container.system.yggdrasilAuthService.currentServer == nil)
                         case let .authenticated(profile):
                             Button("addplayer.auth.add".localized()) {
                                 onYggdrasilLogin?(profile)
@@ -184,6 +218,9 @@ struct AddPlayerSheetView: View {
         .task {
             await viewModel.checkPremiumAccountFlag()
         }
+        .sheet(isPresented: $showCustomServerSheet) {
+            CustomYggdrasilServerSheet()
+        }
         .onDisappear {
             clearAllData()
         }
@@ -198,8 +235,71 @@ struct AddPlayerSheetView: View {
             }
         } label: {
             Text(viewModel.selectedAuthType.displayName)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .frame(width: authTypePickerTextWidth)
         }
         .fixedSize()
+    }
+
+    /// 浏览器授权 / 令牌交换进行中不允许切换,避免悬空的 OAuth 回调。
+    private var yggdrasilAuthInFlight: Bool {
+        switch container.system.yggdrasilAuthService.authState {
+        case .waitingForBrowser, .processing:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private var yggdrasilServerMenu: some View {
+        Menu {
+            ForEach(YggdrasilServerRegistry.allServers, id: \.self) { server in
+                Button {
+                    selectYggdrasilServer(server)
+                } label: {
+                    if container.system.yggdrasilAuthService.currentServer == server {
+                        Label(server.name, systemImage: "checkmark")
+                    } else {
+                        Text(server.name)
+                    }
+                }
+            }
+        } label: {
+            // 宽度与认证方式选择器的文本同宽(两侧菜单外观一致,控件即等宽),
+            // 超长站点名尾部省略;框架打在标签文本上,Menu 控件会贴合标签尺寸
+            Text(container.system.yggdrasilAuthService.currentServer?.name
+                ?? "yggdrasil.server.please_select".localized())
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(width: serverPickerTextWidth, alignment: .leading)
+        }
+        .disabled(yggdrasilAuthInFlight)
+    }
+
+    /// 纯图标添加入口,悬停显示说明。
+    private var addCustomServerButton: some View {
+        Button {
+            showCustomServerSheet = true
+        } label: {
+            Image(systemName: "plus.circle")
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .disabled(yggdrasilAuthInFlight)
+        .help("yggdrasil.custom.add".localized())
+    }
+
+    /// 切换皮肤站:清空进行中的登录状态(令牌绑定在旧服务器上,不可复用)。
+    private func selectYggdrasilServer(_ server: YggdrasilServerConfig) {
+        let authService = container.system.yggdrasilAuthService
+        guard authService.currentServer != server else { return }
+
+        authService.logout()
+        authService.setServer(server)
+        yggLoginUsername = ""
+        yggLoginPassword = ""
+        yggRememberPassword = false
     }
 
     /// Clears all data and resets authentication state when the sheet is dismissed.
@@ -211,6 +311,10 @@ struct AddPlayerSheetView: View {
         container.system.minecraftAuthService.isLoading = false
         showErrorPopover = false
         container.system.yggdrasilAuthService.logout()
+        // 密码登录表单同步清空:取消/关闭面板即视为放弃凭据输入
+        yggLoginUsername = ""
+        yggLoginPassword = ""
+        yggRememberPassword = false
         viewModel.reset()
     }
 

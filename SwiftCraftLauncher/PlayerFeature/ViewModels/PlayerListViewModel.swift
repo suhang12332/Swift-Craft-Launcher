@@ -137,18 +137,24 @@ class PlayerListViewModel: @unchecked Sendable {
 
     /// Adds a Yggdrasil-authenticated player from a profile, throwing on failure.
     ///
-    /// - Parameter profile: The Yggdrasil player profile.
+    /// - Parameter profile: The Yggdrasil player profile (OAuth or password login).
     /// - Throws: A `GlobalError` if adding the player fails.
     func addOnlinePlayerThrowing(profile: YggdrasilProfile) throws {
         let avatarUrl = profile.skins.isEmpty ? "" : profile.skins[0].url.httpToHttps()
-        try DIContainer.shared.ui.playerDataManager.addPlayer(
+        let credential = AccountCredential(
+            userId: profile.id,
+            authMethod: profile.authMethod,
+            accessToken: profile.accessToken,
+            renewalSecret: profile.authMethod == .yggdrasilPassword ? profile.savedPassword : profile.refreshToken,
+            clientToken: profile.clientToken,
+            loginUsername: profile.loginUsername,
+        )
+        try DIContainer.shared.ui.playerDataManager.addAuthenticatedPlayer(
             name: profile.name,
             uuid: profile.id,
-            isOnline: false,
             avatarName: avatarUrl,
-            accToken: profile.accessToken,
-            refreshToken: profile.refreshToken,
-            xuid: "",
+            credential: credential,
+            yggdrasilServerBaseURL: profile.serverBaseURL,
         )
         try loadPlayersThrowing()
         AppLog.player.debug("Yggdrasil player \(profile.name) added successfully, list updated.")

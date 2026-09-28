@@ -89,7 +89,7 @@ final class ConstantsAndPresetsTests: XCTestCase {
     }
 
     func testYggdrasilProfileParserID_allCases() {
-        XCTAssertEqual(YggdrasilProfileParserID.allCases.count, 3)
+        XCTAssertEqual(YggdrasilProfileParserID.allCases.count, 4)
     }
 
     func testYggdrasilProfileParserID_rawValues() {

@@ -33,7 +33,7 @@ final class PlayerFeatureExtendedTests: XCTestCase {
 
     func testPlayer_authXuid_withCredential() {
         let profile = UserProfile(id: "uuid", name: "Test", avatar: "steve")
-        let credential = AuthCredential(userId: "uuid", accessToken: "token", refreshToken: "refresh", xuid: "xuid123")
+        let credential = AccountCredential(userId: "uuid", authMethod: .microsoft, accessToken: "token", renewalSecret: "refresh", xuid: "xuid123")
         let player = Player(profile: profile, credential: credential)
         XCTAssertEqual(player.authXuid, "xuid123")
     }

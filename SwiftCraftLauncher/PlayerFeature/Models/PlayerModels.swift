@@ -7,16 +7,16 @@
 
 import Foundation
 
-/// Represents a player by combining a ``UserProfile`` with an optional ``AuthCredential``.
+/// Represents a player by combining a ``UserProfile`` with an optional ``AccountCredential``.
 ///
 /// `Player` values are not stored directly; they are constructed from ``UserProfileStore``
-/// and ``AuthCredentialStore`` at the point of use.
+/// and ``AccountCredentialStore`` at the point of use.
 struct Player: Identifiable, Equatable, Codable {
     /// The player's profile information.
     var profile: UserProfile
 
-    /// The player's authentication credential, or `nil` for offline-only accounts.
-    var credential: AuthCredential?
+    /// The player's unified authentication credential, or `nil` for offline-only accounts.
+    var credential: AccountCredential?
 
     /// The unique identifier for this player.
     var id: String { profile.id }
@@ -39,17 +39,24 @@ struct Player: Identifiable, Equatable, Codable {
         set { profile.isCurrent = newValue }
     }
 
-    /// A Boolean value indicating whether this is an online-authenticated account.
+    /// 账号的认证方式;离线账号为 `nil`。
+    var authMethod: AccountAuthMethod? { profile.authMethod ?? credential?.authMethod }
+
+    /// Yggdrasil 玩家关联的认证服务器地址。
+    var yggdrasilServerBaseURL: String? { profile.yggdrasilServerBaseURL }
+
+    /// A Boolean value indicating whether this is a Microsoft-authenticated account.
     ///
-    /// When an ``AuthCredential`` is available, the account is considered online.
-    /// For players without a credential, this property checks whether the avatar is
-    /// a remote URL and the player is not listed in the offline server map.
+    /// 仅微软账号走启动前的正版令牌刷新链;Yggdrasil 账号(无论 OAuth
+    /// 还是密码登录)由各自的续期流程处理。
     var isOnlineAccount: Bool {
-        if credential != nil {
-            return true
-        }
-        guard isRemote else { return false }
-        return !OfflineUserServerMap.contains(userId: id)
+        authMethod == .microsoft
+    }
+
+    /// A Boolean value indicating whether the account is authenticated against
+    /// a Yggdrasil-compatible server (OAuth or password login).
+    var isYggdrasilAccount: Bool {
+        authMethod == .yggdrasilOAuth || authMethod == .yggdrasilPassword
     }
 
     /// A Boolean value indicating whether the avatar is hosted remotely.
@@ -59,23 +66,23 @@ struct Player: Identifiable, Equatable, Codable {
 
     /// The access token used for authentication.
     var authAccessToken: String {
-        credential?.accessToken ?? OfflineUserServerMap.serverKey(for: id)?.accessToken ?? ""
+        credential?.accessToken ?? ""
     }
 
-    /// The refresh token used to renew authentication.
+    /// The refresh token used to renew authentication (Microsoft / Yggdrasil OAuth).
     var authRefreshToken: String {
-        credential?.refreshToken ?? OfflineUserServerMap.serverKey(for: id)?.refreshToken ?? ""
+        credential?.oauthRefreshToken ?? ""
     }
 
     /// The Xbox user identifier associated with this account.
-    var authXuid: String { credential?.xuid ?? "" }
+    var authXuid: String { credential?.microsoftXuid ?? "" }
 
     /// Creates a player with the given profile and optional credential.
     ///
     /// - Parameters:
     ///   - profile: The player's profile information.
     ///   - credential: The authentication credential. Pass `nil` for offline-only accounts.
-    init(profile: UserProfile, credential: AuthCredential? = nil) {
+    init(profile: UserProfile, credential: AccountCredential? = nil) {
         self.profile = profile
         self.credential = credential
     }
@@ -97,7 +104,7 @@ struct Player: Identifiable, Equatable, Codable {
         name: String,
         uuid: String? = nil,
         avatar: String? = nil,
-        credential: AuthCredential? = nil,
+        credential: AccountCredential? = nil,
         lastPlayed: Date = Date(),
         isCurrent: Bool = false,
     ) throws {
@@ -123,6 +130,7 @@ struct Player: Identifiable, Equatable, Codable {
             avatar: avatarName,
             lastPlayed: lastPlayed,
             isCurrent: isCurrent,
+            authMethod: credential?.authMethod,
         )
 
         self.profile = profile

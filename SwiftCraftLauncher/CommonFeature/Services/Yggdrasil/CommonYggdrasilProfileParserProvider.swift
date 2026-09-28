@@ -20,6 +20,9 @@ struct CommonYggdrasilProfileParserProvider: YggdrasilProfileParserProvider {
             return CommonBlessingSkinStyleProfileListParser(baseURL: baseURL)
         case .ely:
             return ElyflyProfileStyleProfileListParser(baseURL: baseURL)
+        case .custom:
+            // 自定义密码服务器不经 OAuth 角色列表接口,无需解析器。
+            return nil
         }
     }
 }

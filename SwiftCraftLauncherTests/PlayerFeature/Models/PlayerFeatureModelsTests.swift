@@ -21,7 +21,7 @@ final class PlayerFeatureModelsTests: XCTestCase {
 
     func testPlayer_init_withCredential() {
         let profile = UserProfile(id: "id-2", name: "Alex", avatar: "alex")
-        let credential = AuthCredential(userId: "id-2", accessToken: "at", refreshToken: "rt")
+        let credential = AccountCredential(userId: "id-2", authMethod: .microsoft, accessToken: "at", renewalSecret: "rt")
         let player = Player(profile: profile, credential: credential)
 
         XCTAssertEqual(player.authAccessToken, "at")
@@ -62,7 +62,7 @@ final class PlayerFeatureModelsTests: XCTestCase {
     }
 
     func testPlayer_convenienceInit_withCredential() throws {
-        let credential = AuthCredential(userId: "uid", accessToken: "token", refreshToken: "refresh")
+        let credential = AccountCredential(userId: "uid", authMethod: .microsoft, accessToken: "token", renewalSecret: "refresh")
         let player = try Player(name: "Online", avatar: "https://example.com/skin.png", credential: credential)
 
         XCTAssertEqual(player.name, "Online")

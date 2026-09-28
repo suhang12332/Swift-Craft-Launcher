@@ -8,40 +8,64 @@
 import SwiftUI
 
 /// A view for authenticating with Yggdrasil-compatible Minecraft servers.
+///
+/// 内置预设走 OAuth 浏览器授权;用户添加的自定义皮肤站使用
+/// 用户名密码(classic authserver)登录。
 struct YggdrasilAuthView: View {
     @Environment(DIContainer.self)
     private var container
     @State private var viewModel = YggdrasilAuthViewModel()
     var onLoginSuccess: ((YggdrasilProfile) -> Void)?
 
-    private let servers = YggdrasilServerPresets.servers
+    /// 密码登录表单状态由父视图(添加账户面板)持有:登录按钮位于面板底部
+    /// 右下角,需要跨组件读取这些值;内容不落盘,记住的密码由统一凭据存储接管。
+    @Binding private var loginUsername: String
+    @Binding private var loginPassword: String
+    @Binding private var rememberPassword: Bool
 
     init(
         onLoginSuccess: ((YggdrasilProfile) -> Void)? = nil,
+        loginUsername: Binding<String>,
+        loginPassword: Binding<String>,
+        rememberPassword: Binding<Bool>,
     ) {
         CommonYggdrasilProfileParsersConfigurator.bootstrap()
         self.onLoginSuccess = onLoginSuccess
+        _loginUsername = loginUsername
+        _loginPassword = loginPassword
+        _rememberPassword = rememberPassword
     }
 
+    /// 服务器列表来自统一注册表(预设 ∪ 自定义)。
+    private var servers: [YggdrasilServerConfig] {
+        YggdrasilServerRegistry.allServers
+    }
+
+    private var selectedServerIsPassword: Bool {
+        container.system.yggdrasilAuthService.currentServer?.isPasswordLogin == true
+    }
+
+    /// 服务器选择器位于添加账户标题栏(三方类型下与认证方式选择器并排)。
     var body: some View {
-        @Bindable var viewModel = viewModel
         VStack {
             if container.system.yggdrasilAuthService.currentServer == nil {
-                serverPickerSection
+                Text("yggdrasil.server.please_select".localized())
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
             } else {
                 authStateSection
-                    .padding(.vertical, 20)
+                    .padding(.vertical, 8)
             }
         }
-        .onChange(of: viewModel.selectedOption) { _, newValue in
-            viewModel.onSelectedOptionChanged(newValue, authService: container.system.yggdrasilAuthService)
-        }
         .onAppear {
-            guard viewModel.selectedOption == nil else { return }
+            // 默认皮肤站预选(设置中指定时)
+            guard container.system.yggdrasilAuthService.currentServer == nil else { return }
             let presetBaseURL = container.ui.playerSettingsManager.defaultYggdrasilServerBaseURL
             guard !presetBaseURL.isEmpty else { return }
             if let preset = servers.first(where: { $0.baseURL.absoluteString == presetBaseURL }) {
-                viewModel.selectedOption = preset
+                container.system.yggdrasilAuthService.setServer(preset)
             }
         }
         .onDisappear {
@@ -49,33 +73,14 @@ struct YggdrasilAuthView: View {
         }
     }
 
-    private var serverPickerSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("yggdrasil.server.select".localized())
-                .font(.headline)
-                .padding(.bottom, 4)
-
-            Text("yggdrasil.server.select.description".localized())
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.bottom, 10)
-
-            Picker("yggdrasil.server.picker".localized(), selection: $viewModel.selectedOption) {
-                Text("yggdrasil.server.please_select".localized())
-                    .tag(nil as YggdrasilServerConfig?)
-
-                ForEach(servers, id: \.self) { server in
-                    Text(server.name).tag(server as YggdrasilServerConfig?)
-                }
-            }
-            .pickerStyle(.menu)
-        }
-    }
-
     @ViewBuilder private var authStateSection: some View {
         switch container.system.yggdrasilAuthService.authState {
         case .idle:
-            notAuthenticatedView
+            if selectedServerIsPassword {
+                passwordLoginForm
+            } else {
+                notAuthenticatedView
+            }
         case .waitingForBrowser:
             waitingForBrowserView
         case .processing:
@@ -85,6 +90,30 @@ struct YggdrasilAuthView: View {
         case let .error(message):
             failedView(message: message)
         }
+    }
+
+    /// 登录按钮位于面板底部右下角(由添加账户面板 footer 渲染)。
+    private var passwordLoginForm: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            let server = container.system.yggdrasilAuthService.currentServer
+            let usernameKey = server?.nonEmailLoginHintAvailable == true
+                ? "yggdrasil.password.username_non_email" : "yggdrasil.password.username"
+
+            TextField(usernameKey.localized(), text: $loginUsername)
+                .textFieldStyle(.roundedBorder)
+                .textContentType(.username)
+
+            SecureField("yggdrasil.password.password".localized(), text: $loginPassword)
+                .textFieldStyle(.roundedBorder)
+                .textContentType(.password)
+
+            Toggle("yggdrasil.password.remember".localized(), isOn: $rememberPassword)
+
+            Text("yggdrasil.password.remember.hint".localized())
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 8)
     }
 
     private var notAuthenticatedView: some View {
@@ -220,5 +249,15 @@ struct YggdrasilAuthView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
+    }
+}
+
+/// 是否展示"支持角色名登录"提示(自定义服务器元数据)。
+private extension YggdrasilServerConfig {
+    var nonEmailLoginHintAvailable: Bool {
+        guard let apiRootString = apiRoot?.absoluteString else { return false }
+        return DIContainer.shared.system.customYggdrasilServerStore.servers
+            .first { $0.apiRoot == apiRootString }?
+            .nonEmailLogin ?? false
     }
 }

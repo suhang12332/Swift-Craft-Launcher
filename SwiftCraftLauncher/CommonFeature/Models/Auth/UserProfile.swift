@@ -12,11 +12,11 @@ struct UserProfile: Identifiable, Codable, Equatable {
     /// The unique user identifier.
     let id: String
 
-    /// The display name.
-    let name: String
+    /// The display name.(可变:支持认证服务器侧的角色改名同步)
+    var name: String
 
-    /// The avatar image name or path.
-    let avatar: String
+    /// The avatar image name or path.(可变:支持登录后补拉皮肤地址刷新)
+    var avatar: String
 
     /// The last time the user played.
     var lastPlayed: Date
@@ -24,24 +24,39 @@ struct UserProfile: Identifiable, Codable, Equatable {
     /// Whether this is the currently selected user.
     var isCurrent: Bool
 
+    /// 账号认证方式;离线账号与待迁移的旧档案为 `nil`。
+    ///
+    /// 非 `nil` 时,该账号的凭据保存在统一钥匙串存储
+    /// (`AccountCredentialStore`)中,按 `authMethod` 命名空间隔离。
+    var authMethod: AccountAuthMethod?
+
+    /// Yggdrasil 玩家关联的认证服务器地址(预设或自定义服务器的 baseURL)。
+    var yggdrasilServerBaseURL: String?
+
     /// Creates a user profile.
     /// - Parameters:
     ///   - id: The unique user identifier.
     ///   - name: The display name.
-    ///   - avatar: The avatar image name or path.
+    ///   - avatar: The avatar image name or URL.
     ///   - lastPlayed: The last play time. Defaults to the current date.
     ///   - isCurrent: Whether this is the current user. Defaults to `false`.
+    ///   - authMethod: The authentication method. Defaults to `nil` (offline).
+    ///   - yggdrasilServerBaseURL: The associated Yggdrasil server URL. Defaults to `nil`.
     init(
         id: String,
         name: String,
         avatar: String,
         lastPlayed: Date = Date(),
         isCurrent: Bool = false,
+        authMethod: AccountAuthMethod? = nil,
+        yggdrasilServerBaseURL: String? = nil,
     ) {
         self.id = id
         self.name = name
         self.avatar = avatar
         self.lastPlayed = lastPlayed
         self.isCurrent = isCurrent
+        self.authMethod = authMethod
+        self.yggdrasilServerBaseURL = yggdrasilServerBaseURL
     }
 }

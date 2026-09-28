@@ -19,7 +19,8 @@ enum YggdrasilMinecraftTokenParsers {
         switch parserId {
         case .littleskin:
             return LittleSkinMinecraftTokenParser()
-        case .mua, .ely:
+        case .mua, .ely, .custom:
+            // 无专用换取端点的服务器,authserver accessToken 即游戏会话令牌。
             return nil
         }
     }
