@@ -90,7 +90,10 @@ struct GameActionButtons: View {
                     ? "common.stop"
                     : (container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId) ? "" : "play.fill"),
             )
-            .disabled(container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId))
+            .disabled(
+                container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId)
+                    || container.core.gameStatusManager.isModPackUpdating(gameId: game.id),
+            )
 
             if detailState.gameType == false,
                detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue

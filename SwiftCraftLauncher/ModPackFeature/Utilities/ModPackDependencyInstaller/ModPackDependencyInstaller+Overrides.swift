@@ -30,25 +30,19 @@ extension ModPackDependencyInstaller {
 
             if let found = foundPath {
                 overridesPath = found
-            } else {
-                return true
             }
         }
 
         do {
-            let allFiles = try InstanceFileCopier.getAllFiles(in: overridesPath)
-            let totalFiles = allFiles.count
-
-            guard totalFiles > 0 else {
-                return true
-            }
-
-            try await InstanceFileCopier.copyDirectory(
-                from: overridesPath,
-                to: resourceDir,
-                fileFilter: nil,
-            ) { fileName, completed, total in
-                onProgressUpdate?(fileName, completed, total, .overrides)
+            let folders = [overridesPath, extractedPath.appendingPathComponent("client-overrides")]
+            for folder in folders where FileManager.default.fileExists(atPath: folder.path) {
+                try await InstanceFileCopier.copyDirectory(
+                    from: folder,
+                    to: resourceDir,
+                    fileFilter: nil,
+                ) { fileName, completed, total in
+                    onProgressUpdate?(fileName, completed, total, .overrides)
+                }
             }
 
             return true

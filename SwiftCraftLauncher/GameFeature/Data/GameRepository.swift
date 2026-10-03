@@ -144,8 +144,11 @@ class GameRepository: @unchecked Sendable {
         let gameToSave = game
 
         try await Task.detached(priority: .userInitiated) {
-            try? self.database.initialize()
-            try self.database.saveGame(gameToSave, workingPath: workingPath)
+            let profile = Self.profileDirectory(workingPath: workingPath, gameName: gameToSave.gameName)
+            try DIContainer.shared.core.gameStatusManager.withProfileWrite(at: profile) {
+                try? self.database.initialize()
+                try self.database.saveGame(gameToSave, workingPath: workingPath)
+            }
         }.value
 
         await MainActor.run {
@@ -163,6 +166,7 @@ class GameRepository: @unchecked Sendable {
     }
 
     func deleteGame(id: String) async throws {
+        try await requireNoModPackUpdate(id: id)
         let workingPath = currentWorkingPath
         guard let game = getGame(by: id) else {
             throw GlobalError.validation(
@@ -172,8 +176,11 @@ class GameRepository: @unchecked Sendable {
             )
         }
         try await Task.detached(priority: .userInitiated) {
-            try? self.database.initialize()
-            try self.database.deleteGame(id: id)
+            let profile = Self.profileDirectory(workingPath: workingPath, gameName: game.gameName)
+            try DIContainer.shared.core.gameStatusManager.withProfileWrite(at: profile) {
+                try? self.database.initialize()
+                try self.database.deleteGame(id: id)
+            }
         }.value
 
         await MainActor.run {
@@ -187,10 +194,16 @@ class GameRepository: @unchecked Sendable {
     ///
     /// - Parameter gameName: The name of the games to delete.
     func deleteGamesByName(_ gameName: String) async throws {
+        for game in games where game.gameName == gameName {
+            try await requireNoModPackUpdate(id: game.id)
+        }
         let workingPath = currentWorkingPath
         try await Task.detached(priority: .userInitiated) {
-            try? self.database.initialize()
-            try self.database.deleteGames(workingPath: workingPath, gameName: gameName)
+            let profile = Self.profileDirectory(workingPath: workingPath, gameName: gameName)
+            try DIContainer.shared.core.gameStatusManager.withProfileWrite(at: profile) {
+                try? self.database.initialize()
+                try self.database.deleteGames(workingPath: workingPath, gameName: gameName)
+            }
         }.value
 
         await MainActor.run {
@@ -203,6 +216,7 @@ class GameRepository: @unchecked Sendable {
 
     /// Renames a game by updating its profile directory and database record.
     func renameGame(id: String, to newName: String) async throws {
+        try await requireNoModPackUpdate(id: id)
         guard var game = getGame(by: id) else {
             throw GlobalError.validation(
                 i18nKey: "error.validation.game_not_found_status",
@@ -212,6 +226,7 @@ class GameRepository: @unchecked Sendable {
         }
 
         let oldName = game.gameName
+        let workingPath = currentWorkingPath
         guard oldName != newName else { return }
 
         let fm = FileManager.default
@@ -226,10 +241,25 @@ class GameRepository: @unchecked Sendable {
             )
         }
 
-        try fm.moveItem(at: oldDir, to: newDir)
-
         game.gameName = newName
-        try await updateGame(game)
+        let renamedGame = game
+        try await Task.detached(priority: .userInitiated) {
+            try DIContainer.shared.core.gameStatusManager.withProfileWrite(at: oldDir) {
+                try fm.moveItem(at: oldDir, to: newDir)
+                do {
+                    try self.database.initialize()
+                    try self.database.saveGame(renamedGame, workingPath: workingPath)
+                } catch {
+                    try fm.moveItem(at: newDir, to: oldDir)
+                    throw error
+                }
+            }
+        }.value
+        await MainActor.run {
+            if let index = gamesByWorkingPath[workingPath]?.firstIndex(where: { $0.id == renamedGame.id }) {
+                gamesByWorkingPath[workingPath]?[index] = renamedGame
+            }
+        }
         AppLog.game.info("Successfully renamed game from '\(oldName)' to '\(newName)'")
     }
 
@@ -237,13 +267,25 @@ class GameRepository: @unchecked Sendable {
         games.first { $0.id == id }
     }
 
-    func updateGame(_ game: GameVersionInfo) async throws {
-        let workingPath = currentWorkingPath
+    func updateGame(_ game: GameVersionInfo, duringModPackUpdate: Bool = false, workingPath capturedPath: String? = nil) async throws {
+        let workingPath = capturedPath ?? currentWorkingPath
+        if !duringModPackUpdate {
+            try await requireNoModPackUpdate(id: game.id)
+        }
         let gameToSave = game
 
         try await Task.detached(priority: .userInitiated) {
-            try? self.database.initialize()
-            try self.database.saveGame(gameToSave, workingPath: workingPath)
+            let profile = Self.profileDirectory(workingPath: workingPath, gameName: gameToSave.gameName)
+            let save = {
+                try self.database.initialize()
+                try self.database.saveGame(gameToSave, workingPath: workingPath)
+            }
+            let status = DIContainer.shared.core.gameStatusManager
+            if duringModPackUpdate {
+                try status.withModPackCommit(gameId: gameToSave.id, profile: profile, save)
+            } else {
+                try status.withProfileWrite(at: profile, save)
+            }
         }.value
 
         await MainActor.run {
@@ -258,6 +300,21 @@ class GameRepository: @unchecked Sendable {
         }
 
         AppLog.game.info("Successfully updated game: \(game.gameName) (working path: \(workingPath))")
+    }
+
+    private func requireNoModPackUpdate(id: String) async throws {
+        let isUpdating = await MainActor.run {
+            DIContainer.shared.core.gameStatusManager.isModPackUpdating(gameId: id)
+        }
+        if isUpdating {
+            throw ModPackUpdateError.busy
+        }
+    }
+
+    private static func profileDirectory(workingPath: String, gameName: String) -> URL {
+        URL(fileURLWithPath: workingPath)
+            .appendingPathComponent(AppConstants.DirectoryNames.profiles)
+            .appendingPathComponent(gameName)
     }
 
     func loadGames() {

@@ -29,6 +29,16 @@ struct GameMoreMenu: View {
         Menu {
             if game.modLoader != GameLoader.vanilla.displayName {
                 Button {
+                    container.ui.gameDialogsPresenter.gamePendingModPackUpdate = game
+                } label: {
+                    Label("modpack.update.title".localized(), systemImage: "arrow.triangle.2.circlepath")
+                }
+                .disabled(
+                    container.core.gameProcessManager.isGameRunningForAnyUser(gameId: game.id)
+                        || container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId),
+                )
+
+                Button {
                     container.ui.gameDialogsPresenter.presentModPackExport(for: game)
                 } label: {
                     Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
@@ -78,5 +88,6 @@ struct GameMoreMenu: View {
             Label("more".localized(), systemImage: "gearshape")
         }
         .help("more".localized())
+        .disabled(container.core.gameStatusManager.isModPackUpdating(gameId: game.id))
     }
 }

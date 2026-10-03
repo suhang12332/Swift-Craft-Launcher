@@ -213,35 +213,8 @@ class GameSetupUtil {
             }
         }
 
-        let baseGameInfo = GameVersionInfo(
-            id: UUID(uuidString: existingGame.id) ?? UUID(),
-            gameName: existingGame.gameName,
-            gameIcon: existingGame.gameIcon,
-            gameVersion: existingGame.gameVersion,
-            modVersion: "",
-            modJvm: [],
-            modClassPath: "",
-            assetIndex: existingGame.assetIndex,
-            modLoader: input.selectedModLoader,
-            lastPlayed: existingGame.lastPlayed,
-            javaPath: existingGame.javaPath,
-            jvmArguments: existingGame.jvmArguments,
-            launchCommand: existingGame.launchCommand,
-            xms: existingGame.xms,
-            xmx: existingGame.xmx,
-            javaVersion: existingGame.javaVersion,
-            mainClass: existingGame.mainClass,
-            gameArguments: existingGame.gameArguments,
-            environmentVariables: existingGame.environmentVariables,
-        )
-
         do {
-            let finalizedInfo = try await performSetup(
-                baseGameInfo: baseGameInfo,
-                selectedGameVersion: existingGame.gameVersion,
-                selectedModLoader: input.selectedModLoader,
-                specifiedLoaderVersion: input.specifiedLoaderVersion,
-            )
+            let finalizedInfo = try await prepareGameLoaderUpdate(input: input, existingGame: existingGame)
 
             try await gameRepository.updateGame(finalizedInfo)
 
@@ -270,6 +243,41 @@ class GameSetupUtil {
             }
             DIContainer.shared.core.errorHandler.handle(error)
         }
+    }
+
+    /// Prepares launch metadata without publishing it, for transactional pack updates.
+    func prepareGameLoaderUpdate(
+        input: GameLoaderUpdateInput,
+        existingGame: GameVersionInfo,
+    ) async throws -> GameVersionInfo {
+        let baseGameInfo = GameVersionInfo(
+            id: UUID(uuidString: existingGame.id) ?? UUID(),
+            gameName: existingGame.gameName,
+            gameIcon: existingGame.gameIcon,
+            gameVersion: existingGame.gameVersion,
+            modVersion: "",
+            modJvm: [],
+            modClassPath: "",
+            assetIndex: existingGame.assetIndex,
+            modLoader: input.selectedModLoader,
+            lastPlayed: existingGame.lastPlayed,
+            javaPath: existingGame.javaPath,
+            jvmArguments: existingGame.jvmArguments,
+            launchCommand: existingGame.launchCommand,
+            xms: existingGame.xms,
+            xmx: existingGame.xmx,
+            javaVersion: existingGame.javaVersion,
+            mainClass: existingGame.mainClass,
+            gameArguments: existingGame.gameArguments,
+            environmentVariables: existingGame.environmentVariables,
+        )
+
+        return try await performSetup(
+            baseGameInfo: baseGameInfo,
+            selectedGameVersion: existingGame.gameVersion,
+            selectedModLoader: input.selectedModLoader,
+            specifiedLoaderVersion: input.specifiedLoaderVersion,
+        )
     }
 
     /// Removes partial game files after a failed or cancelled download.
