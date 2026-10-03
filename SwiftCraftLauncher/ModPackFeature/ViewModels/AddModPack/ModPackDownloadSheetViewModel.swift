@@ -180,6 +180,7 @@ class ModPackDownloadSheetViewModel {
         input.onShowFailedResources = { [weak self] resources, continuation in
             self?.handleFailedResources(resources, continuation: continuation)
         }
+        input.sourceVersion = selectedVersion
         let success = await installCoordinator.run(input)
 
         if success {

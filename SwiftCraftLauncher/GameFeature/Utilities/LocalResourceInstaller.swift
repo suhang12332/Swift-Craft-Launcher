@@ -33,6 +33,12 @@ enum LocalResourceInstaller {
     ///   - gameRoot: The game root directory (e.g., `.minecraft`).
     /// - Throws: A `GlobalError` if the file type is invalid, the destination is unavailable, or the copy fails.
     static func install(fileURL: URL, resourceType: LocalResourceType, gameRoot: URL) throws {
+        try DIContainer.shared.core.gameStatusManager.withProfileWrite(at: gameRoot) {
+            try installUnlocked(fileURL: fileURL, resourceType: resourceType, gameRoot: gameRoot)
+        }
+    }
+
+    private static func installUnlocked(fileURL: URL, resourceType: LocalResourceType, gameRoot: URL) throws {
         guard let ext = fileURL.pathExtension.lowercased() as String?,
               resourceType.allowedExtensions.contains(ext) else {
             throw GlobalError.resource(

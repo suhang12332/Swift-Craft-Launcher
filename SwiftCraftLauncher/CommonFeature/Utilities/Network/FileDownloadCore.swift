@@ -86,6 +86,16 @@ enum FileDownloadCore {
         to destinationURL: URL,
         fileManager: FileManager = .default,
     ) throws {
+        try DIContainer.shared.core.gameStatusManager.withProfileWrite(at: destinationURL) {
+            try moveUnlockedFile(from: tempURL, to: destinationURL, fileManager: fileManager)
+        }
+    }
+
+    private static func moveUnlockedFile(
+        from tempURL: URL,
+        to destinationURL: URL,
+        fileManager: FileManager,
+    ) throws {
         if fileManager.fileExists(atPath: destinationURL.path) {
             try fileManager.replaceItem(
                 at: destinationURL,

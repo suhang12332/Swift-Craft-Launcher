@@ -14,6 +14,60 @@ final class GameStatusManager: @unchecked Sendable {
     private var gameRunningStates: [String: Bool] = [:]
     /// Launching states keyed by processKey(gameId, userId).
     private var gameLaunchingStates: [String: Bool] = [:]
+    private var modPackUpdates: Set<String> = []
+    @ObservationIgnored private let profileWriteLock = NSLock()
+    @ObservationIgnored private var lockedProfiles: [String: String] = [:]
+
+    /// Serializes local writes with the start of a pack update, including in-flight downloads.
+    func withProfileWrite<T>(at url: URL, _ operation: () throws -> T) throws -> T {
+        profileWriteLock.lock()
+        defer { profileWriteLock.unlock() }
+        let path = url.standardizedFileURL.resolvingSymlinksInPath().path
+        guard !lockedProfiles.values.contains(where: { path == $0 || path.hasPrefix($0 + "/") }) else {
+            throw ModPackUpdateError.busy
+        }
+        return try operation()
+    }
+
+    /// The updater alone may publish metadata for its locked profile.
+    func withModPackCommit<T>(gameId: String, profile: URL, _ operation: () throws -> T) throws -> T {
+        profileWriteLock.lock()
+        defer { profileWriteLock.unlock() }
+        guard lockedProfiles[gameId] == profile.standardizedFileURL.resolvingSymlinksInPath().path else {
+            throw ModPackUpdateError.busy
+        }
+        return try operation()
+    }
+
+    func isModPackUpdating(gameId: String) -> Bool {
+        modPackUpdates.contains(gameId)
+    }
+
+    @MainActor
+    func beginModPackUpdate(gameId: String, profile: URL) throws {
+        let prefix = "\(gameId)_"
+        guard !modPackUpdates.contains(gameId),
+              !gameLaunchingStates.contains(where: { $0.key.hasPrefix(prefix) && $0.value }),
+              !DIContainer.shared.core.gameProcessManager.isGameRunningForAnyUser(gameId: gameId)
+        else { throw ModPackUpdateError.busy }
+        profileWriteLock.lock()
+        let path = profile.standardizedFileURL.resolvingSymlinksInPath().path
+        if lockedProfiles.values.contains(path) {
+            profileWriteLock.unlock()
+            throw ModPackUpdateError.busy
+        }
+        lockedProfiles[gameId] = path
+        profileWriteLock.unlock()
+        modPackUpdates.insert(gameId)
+    }
+
+    @MainActor
+    func endModPackUpdate(gameId: String) {
+        profileWriteLock.lock()
+        lockedProfiles.removeValue(forKey: gameId)
+        profileWriteLock.unlock()
+        modPackUpdates.remove(gameId)
+    }
 
     init() { }
 
