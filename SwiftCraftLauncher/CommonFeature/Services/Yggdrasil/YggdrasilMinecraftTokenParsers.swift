@@ -19,7 +19,7 @@ enum YggdrasilMinecraftTokenParsers {
         switch parserId {
         case .littleskin:
             return LittleSkinMinecraftTokenParser()
-        case .mua, .ely:
+        case .mua, .ely, .custom:
             return nil
         }
     }
