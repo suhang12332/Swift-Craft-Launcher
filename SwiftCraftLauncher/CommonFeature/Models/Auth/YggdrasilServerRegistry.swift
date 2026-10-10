@@ -36,9 +36,11 @@ enum YggdrasilServerRegistry {
     }
 
     /// Base URLs of servers still referenced by existing players (guards server removal).
-    static var referencedServerBaseURLs: Set<String> {
-        let dataManager = DIContainer.shared.ui.playerDataManager
-        guard let players = try? dataManager.loadPlayersThrowing() else { return [] }
+    ///
+    /// Throws when players cannot be loaded, so that removal fails closed instead of
+    /// treating every server as unused.
+    static func referencedServerBaseURLs() throws -> Set<String> {
+        let players = try DIContainer.shared.ui.playerDataManager.loadPlayersThrowing()
         return Set(players.compactMap { OfflineUserServerMap.serverKey(for: $0.id)?.serverBaseURL })
     }
 }

@@ -123,6 +123,8 @@ final class YggdrasilRenewalStateMachineTests: XCTestCase {
         XCTAssertEqual(renewed.accessToken, "relogin-token")
         XCTAssertEqual(renewed.savedPassword, "saved-pass")
         XCTAssertEqual(mock.authenticateCalls, 1)
+        XCTAssertEqual(mock.lastAuthenticateUsername, "user@example.com", "Re-login must use the remembered login name")
+        XCTAssertEqual(mock.lastAuthenticatePassword, "saved-pass", "Re-login must use the remembered password")
     }
 
     func testRenewal_reloginRejected_throwsPasswordRejectedWithClearedPassword() async throws {
@@ -139,6 +141,8 @@ final class YggdrasilRenewalStateMachineTests: XCTestCase {
             guard case let .passwordRejected(cleared) = error else {
                 return XCTFail("Unexpected error: \(error)")
             }
+            XCTAssertEqual(mock.lastAuthenticateUsername, "user@example.com")
+            XCTAssertEqual(mock.lastAuthenticatePassword, "saved-pass", "The rejected password is the remembered one")
             XCTAssertNil(cleared.savedPassword, "A changed password must clear the remembered value")
             XCTAssertEqual(cleared.loginUsername, "user@example.com", "The login name is kept for prefilling")
         }
@@ -196,6 +200,8 @@ final class YggdrasilRenewalStateMachineTests: XCTestCase {
         XCTAssertEqual(ready?.id, "uuid-2")
         XCTAssertEqual(ready?.accessToken, "bound-token")
         XCTAssertEqual(mock.refreshCalls, 1)
+        XCTAssertEqual(mock.lastRefreshSelectedProfileId, "uuid-2", "The token must be bound to the chosen profile")
+        XCTAssertEqual(mock.lastRefreshAccessToken, "old-token", "Binding must refresh the token from the login")
         XCTAssertFalse(service.passwordTokenNeedsBinding)
         XCTAssertEqual(service.authenticatedProfiles.map(\.id), ["uuid-2"], "The token is bound; other candidates are unusable")
     }
@@ -252,24 +258,32 @@ private final class MockAuthServerClient: YggdrasilAuthServerClientProtocol, @un
     private(set) var validateCalls = 0
     private(set) var refreshCalls = 0
     private(set) var authenticateCalls = 0
+    private(set) var lastAuthenticateUsername: String?
+    private(set) var lastAuthenticatePassword: String?
+    private(set) var lastRefreshAccessToken: String?
+    private(set) var lastRefreshSelectedProfileId: String?
 
     func authenticate(
-        username _: String,
-        password _: String,
+        username: String,
+        password: String,
         clientToken _: String,
         apiRoot _: URL,
     ) async throws -> YggdrasilAuthenticateResponse {
         authenticateCalls += 1
+        lastAuthenticateUsername = username
+        lastAuthenticatePassword = password
         return try authenticateResult.get()
     }
 
     func refresh(
-        accessToken _: String,
+        accessToken: String,
         clientToken _: String,
-        selectedProfileId _: String?,
+        selectedProfileId: String?,
         apiRoot _: URL,
     ) async throws -> YggdrasilAuthenticateResponse {
         refreshCalls += 1
+        lastRefreshAccessToken = accessToken
+        lastRefreshSelectedProfileId = selectedProfileId
         return try refreshResult.get()
     }
 

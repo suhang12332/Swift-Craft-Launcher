@@ -102,6 +102,25 @@ final class CustomYggdrasilServerStoreTests: XCTestCase {
         XCTAssertTrue(config.isPasswordLogin)
     }
 
+    func testAdd_rejectsPlainHTTP() {
+        for apiRoot in ["http://example.com/api/yggdrasil", "http://192.168.1.10/api/yggdrasil", "HTTP://skin.local"] {
+            XCTAssertThrowsError(try store.add(name: "Insecure", apiRoot: apiRoot, nonEmailLogin: false), apiRoot) { error in
+                XCTAssertEqual(GlobalError.from(error).i18nKey, "yggdrasil.custom.error.https_required")
+            }
+        }
+        XCTAssertTrue(store.servers.isEmpty, "Servers that would receive passwords over HTTP must not be saved")
+    }
+
+    func testValidatedAPIRoot_rejectsMalformedAndAcceptsHTTPS() throws {
+        for raw in ["", "example.com/api/yggdrasil", "https://"] {
+            XCTAssertThrowsError(try CustomYggdrasilServerStore.validatedAPIRoot(raw), raw) { error in
+                XCTAssertEqual(GlobalError.from(error).i18nKey, "yggdrasil.custom.error.invalid_url")
+            }
+        }
+        let url = try CustomYggdrasilServerStore.validatedAPIRoot(" https://example.com/api/yggdrasil/ ")
+        XCTAssertEqual(url.absoluteString, "https://example.com/api/yggdrasil")
+    }
+
     func testNormalizeAPIRoot_trimsTrailingSlashesAndWhitespace() {
         XCTAssertEqual(
             CustomYggdrasilServerStore.normalizeAPIRoot("  https://example.com/api/yggdrasil//  "),

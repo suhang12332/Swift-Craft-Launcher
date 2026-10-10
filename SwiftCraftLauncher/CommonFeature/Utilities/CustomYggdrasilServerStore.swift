@@ -44,7 +44,7 @@ final class CustomYggdrasilServerStore {
     /// Adds a server; throws when the API root already exists or the limit is reached.
     @discardableResult
     func add(name: String, apiRoot: String, nonEmailLogin: Bool) throws -> CustomYggdrasilServer {
-        let normalized = Self.normalizeAPIRoot(apiRoot)
+        let normalized = try Self.validatedAPIRoot(apiRoot).absoluteString
         guard !servers.contains(where: { $0.apiRoot == normalized }) else {
             throw GlobalError.validation(
                 i18nKey: "yggdrasil.custom.error.duplicated",
@@ -92,14 +92,8 @@ final class CustomYggdrasilServerStore {
     /// Fetches server metadata: `GET {apiRoot}` returns
     /// `{meta: {serverName, feature: {non_email_login}}}`.
     static func fetchMetadata(apiRoot: String) async throws -> (serverName: String, nonEmailLogin: Bool) {
-        let normalized = normalizeAPIRoot(apiRoot)
-        guard let url = URL(string: normalized) else {
-            throw GlobalError.validation(
-                i18nKey: "yggdrasil.custom.error.invalid_url",
-                level: .notification,
-                message: "Invalid Yggdrasil API root: \(normalized)",
-            )
-        }
+        let url = try validatedAPIRoot(apiRoot)
+        let normalized = url.absoluteString
 
         let data: Data
         do {
@@ -142,6 +136,30 @@ final class CustomYggdrasilServerStore {
             loginMethod: .password,
             apiRoot: URL(string: server.apiRoot),
         )
+    }
+
+    /// Normalizes and validates an API root.
+    ///
+    /// Only HTTPS is accepted: passwords are sent to this server, and App Transport
+    /// Security does not block plain HTTP to IP addresses or `.local` hosts.
+    static func validatedAPIRoot(_ raw: String) throws -> URL {
+        let normalized = normalizeAPIRoot(raw)
+        guard let url = URL(string: normalized), let host = url.host, !host.isEmpty,
+              let scheme = url.scheme?.lowercased() else {
+            throw GlobalError.validation(
+                i18nKey: "yggdrasil.custom.error.invalid_url",
+                level: .notification,
+                message: "Invalid Yggdrasil API root: \(normalized)",
+            )
+        }
+        guard scheme == "https" else {
+            throw GlobalError.validation(
+                i18nKey: "yggdrasil.custom.error.https_required",
+                level: .notification,
+                message: "Yggdrasil API root must use HTTPS: \(normalized)",
+            )
+        }
+        return url
     }
 
     /// Normalizes an API root by trimming whitespace and trailing slashes.

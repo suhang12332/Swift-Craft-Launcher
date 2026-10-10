@@ -178,9 +178,13 @@ struct MinecraftLaunchCommand {
         player: Player,
         profile: YggdrasilProfile?,
     ) async throws -> String {
-        guard let profile,
-              let server = YggdrasilServerPresets.server(for: profile.serverBaseURL) else {
+        guard let profile else {
             return player.authAccessToken
+        }
+        // Custom password servers have no token exchange endpoint: the (already renewed)
+        // authserver accessToken stored in the profile is the game session token.
+        guard let server = YggdrasilServerPresets.server(for: profile.serverBaseURL) else {
+            return profile.accessToken
         }
 
         let accessToken: String

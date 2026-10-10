@@ -104,6 +104,14 @@ struct CustomYggdrasilServerSheet: View {
                     .textFieldStyle(.roundedBorder)
                     .textContentType(.URL)
                     .disableAutocorrection(true)
+                    .onChange(of: apiRootText) { _, newValue in
+                        // Editing the address invalidates the previous verification.
+                        if CustomYggdrasilServerStore.normalizeAPIRoot(newValue) != verifiedAPIRoot {
+                            verifiedAPIRoot = nil
+                            serverName = ""
+                            nonEmailLogin = false
+                        }
+                    }
 
                 Button {
                     verifyAPIRoot()
@@ -163,16 +171,17 @@ struct CustomYggdrasilServerSheet: View {
 
     private func saveServer() {
         errorMessage = nil
+        guard let verifiedAPIRoot else { return }
         do {
             _ = try container.system.customYggdrasilServerStore.add(
                 name: serverName,
-                apiRoot: verifiedAPIRoot ?? apiRootText,
+                apiRoot: verifiedAPIRoot,
                 nonEmailLogin: nonEmailLogin,
             )
             apiRootText = ""
             serverName = ""
             nonEmailLogin = false
-            verifiedAPIRoot = nil
+            self.verifiedAPIRoot = nil
         } catch {
             errorMessage = GlobalError.from(error).localizedDescription
         }
@@ -183,8 +192,14 @@ struct CustomYggdrasilServerSheet: View {
         do {
             try container.system.customYggdrasilServerStore.remove(
                 id: server.id,
-                referencedBaseURLs: YggdrasilServerRegistry.referencedServerBaseURLs,
+                referencedBaseURLs: YggdrasilServerRegistry.referencedServerBaseURLs(),
             )
+            // If the removed server is the one selected in the add-account flow, sign out
+            // of it so a profile authenticated against it can no longer be added.
+            let authService = container.system.yggdrasilAuthService
+            if authService.currentServer?.baseURL.absoluteString == CustomYggdrasilServerStore.configBaseURL(for: server) {
+                authService.logout()
+            }
         } catch {
             errorMessage = GlobalError.from(error).localizedDescription
         }

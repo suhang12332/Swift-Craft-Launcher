@@ -695,6 +695,143 @@
         }
       }
     },
+    "yggdrasil.custom.error.https_required" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يجب أن يستخدم عنوان الخادم HTTPS، لأن كلمة المرور تُرسل إليه."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serveradressen skal bruge HTTPS, da adgangskoden sendes til den."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Serveradresse muss HTTPS verwenden, da das Passwort an sie gesendet wird."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The server address must use HTTPS because your password is sent to it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La dirección del servidor debe usar HTTPS, ya que la contraseña se envía a ella."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palvelimen osoitteen on käytettävä HTTPS:ää, koska salasana lähetetään sille."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’adresse du serveur doit utiliser HTTPS, car votre mot de passe y est envoyé."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्वर पता HTTPS का उपयोग करना चाहिए, क्योंकि आपका पासवर्ड उसी पर भेजा जाता है।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’indirizzo del server deve usare HTTPS, perché la password viene inviata a esso."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パスワードが送信されるため、サーバーアドレスは HTTPS である必要があります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "비밀번호가 전송되므로 서버 주소는 HTTPS를 사용해야 합니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serveradressen må bruke HTTPS, siden passordet sendes dit."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het serveradres moet HTTPS gebruiken, omdat je wachtwoord ernaartoe wordt verzonden."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adres serwera musi używać HTTPS, ponieważ wysyłane jest do niego hasło."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O endereço do servidor deve usar HTTPS, pois a senha é enviada para ele."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Адрес сервера должен использовать HTTPS, так как на него отправляется пароль."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serveradressen måste använda HTTPS eftersom lösenordet skickas dit."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ที่อยู่เซิร์ฟเวอร์ต้องใช้ HTTPS เนื่องจากรหัสผ่านจะถูกส่งไปยังเซิร์ฟเวอร์นี้"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parolanız sunucuya gönderildiği için sunucu adresi HTTPS kullanmalıdır."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Địa chỉ máy chủ phải dùng HTTPS vì mật khẩu sẽ được gửi đến đó."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器地址必须使用 HTTPS，因为密码会发送到该服务器。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "伺服器位址必須使用 HTTPS，因為密碼會傳送到該伺服器。"
+          }
+        }
+      }
+    },
     "yggdrasil.custom.error.in_use" : {
       "extractionState" : "manual",
       "localizations" : {
