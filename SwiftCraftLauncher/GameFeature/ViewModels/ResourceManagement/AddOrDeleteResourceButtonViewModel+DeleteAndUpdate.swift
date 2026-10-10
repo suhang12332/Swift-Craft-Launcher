@@ -172,7 +172,9 @@ extension AddOrDeleteResourceButtonViewModel {
         }
 
         do {
-            try FileManager.default.removeItem(at: fileURL)
+            try DIContainer.shared.core.gameStatusManager.withProfileWrite(at: fileURL) {
+                try FileManager.default.removeItem(at: fileURL)
+            }
             if let hash, let gameName {
                 DIContainer.shared.core.modScanner.removeModHash(hash, from: gameName)
             }

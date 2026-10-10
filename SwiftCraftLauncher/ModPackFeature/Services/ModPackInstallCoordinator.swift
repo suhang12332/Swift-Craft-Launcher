@@ -33,6 +33,8 @@ final class ModPackInstallCoordinator {
         /// Invoked when resources fail to download, with the failed resources and a
         /// continuation reporting whether all resources were handled.
         var onShowFailedResources: (([FailedModPackResource], @escaping (Bool) -> Void) -> Void)?
+        /// Present only for installations downloaded from a known Modrinth version.
+        var sourceVersion: ModrinthProjectDetailVersion?
     }
 
     private let downloadService: ModPackDownloadService
@@ -107,14 +109,6 @@ final class ModPackInstallCoordinator {
         input.setProcessing(false)
 
         let resourceDir = AppPaths.profileDirectory(gameName: input.gameName)
-        guard await installOverridesStep(
-            extractedPath: extractedPath,
-            resourceDir: resourceDir,
-            input: input,
-        ) else {
-            return await handleStepFailure(input)
-        }
-
         let tempGameInfo = GameVersionInfo(
             id: UUID(),
             gameName: input.gameName,
@@ -148,6 +142,15 @@ final class ModPackInstallCoordinator {
             return await handleStepFailure(input)
         }
 
+        // Modrinth overrides take precedence over downloaded index files.
+        guard await installOverridesStep(
+            extractedPath: extractedPath,
+            resourceDir: resourceDir,
+            input: input,
+        ) else {
+            return await handleStepFailure(input)
+        }
+
         let gameSuccess = await installGameStep(
             input: input,
             indexInfo: indexInfo,
@@ -159,6 +162,15 @@ final class ModPackInstallCoordinator {
             gameSetupService: input.gameSetupService,
             modPackInstallState: input.modPackInstallState,
         )
+
+        if gameSuccess, let version = input.sourceVersion, indexInfo.source == .modrinth {
+            do {
+                let pack = try ModPackUpdateFiles.manifest(index: indexInfo, extracted: extractedPath, version: version)
+                try pack.save(to: resourceDir)
+            } catch {
+                AppLog.modPack.error("Could not record modpack provenance: \(error.localizedDescription)")
+            }
+        }
 
         downloadService.cleanupTempFiles()
         return gameSuccess

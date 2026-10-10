@@ -16,8 +16,18 @@ final class GameLaunchUseCase: @unchecked Sendable {
     ///   - player: The current player.
     ///   - game: The game version to launch.
     func launchGame(player: Player, game: GameVersionInfo) async {
+        let canLaunch = await MainActor.run {
+            let status = DIContainer.shared.core.gameStatusManager
+            guard !status.isModPackUpdating(gameId: game.id) else { return false }
+            status.setGameLaunching(gameId: game.id, userId: player.id, isLaunching: true)
+            return true
+        }
+        guard canLaunch else { return }
         let command = MinecraftLaunchCommand(player: player, game: game)
         await command.launchGame()
+        await MainActor.run {
+            DIContainer.shared.core.gameStatusManager.setGameLaunching(gameId: game.id, userId: player.id, isLaunching: false)
+        }
     }
 
     /// Stops a running Minecraft game session.

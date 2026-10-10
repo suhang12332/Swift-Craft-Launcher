@@ -44,6 +44,9 @@ struct MainViewPresentationModifier: ViewModifier {
                 GameLoaderUpdateView(gameInfo: game, mode: gameDialogsPresenter.pendingLoaderUpdateMode)
                     .presentationBackgroundInteraction(.automatic)
             }
+            .sheet(item: $gameDialogsPresenter.gamePendingModPackUpdate) { game in
+                ModPackUpdateView(game: game)
+            }
             .task {
                 await startupAnnouncementViewModel.checkAnnouncementIfNeeded()
             }

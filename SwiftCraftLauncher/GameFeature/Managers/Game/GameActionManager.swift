@@ -76,7 +76,9 @@ class GameActionManager: @unchecked Sendable {
 
                 let profileDir = AppPaths.profileDirectory(gameName: gameName)
                 if FileManager.default.fileExists(atPath: profileDir.path) {
-                    try FileManager.default.removeItem(at: profileDir)
+                    try DIContainer.shared.core.gameStatusManager.withProfileWrite(at: profileDir) {
+                        try FileManager.default.removeItem(at: profileDir)
+                    }
                 } else {
                     AppLog.game.error("Game directory not found when deleting game, skipping file deletion: \(profileDir.path)")
                 }
@@ -111,7 +113,9 @@ class GameActionManager: @unchecked Sendable {
 
                 let profileDir = AppPaths.profileDirectory(gameName: name)
                 if FileManager.default.fileExists(atPath: profileDir.path) {
-                    try FileManager.default.removeItem(at: profileDir)
+                    try DIContainer.shared.core.gameStatusManager.withProfileWrite(at: profileDir) {
+                        try FileManager.default.removeItem(at: profileDir)
+                    }
                 }
 
                 await modScanner.clearModCache(for: name)

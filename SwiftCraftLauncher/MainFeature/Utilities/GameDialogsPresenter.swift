@@ -15,6 +15,7 @@ final class GameDialogsPresenter {
     var gameForExport: GameVersionInfo?
     var gamePendingDeletion: GameVersionInfo?
     var gamePendingLoaderUpdate: GameVersionInfo?
+    var gamePendingModPackUpdate: GameVersionInfo?
     var pendingLoaderUpdateMode: GameLoaderUpdateMode = .adjust
 
     init() { }

@@ -197,6 +197,7 @@ final class GameLoaderUpdateViewModel {
 
     /// Runs the loader update or repair and persists the result.
     private func run() async {
+        guard !DIContainer.shared.core.gameStatusManager.isModPackUpdating(gameId: existingGame.id) else { return }
         guard let gameRepository else {
             AppLog.game.error("GameRepository not set for loader update")
             return

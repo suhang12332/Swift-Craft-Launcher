@@ -39,7 +39,9 @@ enum ResourceEnableDisableManager {
         }
 
         let targetURL = resourceDir.appendingPathComponent(targetFileName)
-        try fileManager.moveItem(at: currentURL, to: targetURL)
+        try DIContainer.shared.core.gameStatusManager.withProfileWrite(at: currentURL) {
+            try fileManager.moveItem(at: currentURL, to: targetURL)
+        }
 
         return targetFileName
     }
