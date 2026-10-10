@@ -31,6 +31,15 @@ struct AddPlayerSheetView: View {
     @Environment(\.openURL)
     private var openURL
     @State private var showErrorPopover: Bool = false
+    @State private var showCustomServerSheet: Bool = false
+    /// Third-party password form state, lifted here because the footer hosts the login button.
+    @State private var yggLoginUsername = ""
+    @State private var yggLoginPassword = ""
+    @State private var yggRememberPassword = false
+
+    /// Fixed label widths of the title bar pickers; long server names are truncated.
+    private let authTypePickerTextWidth: CGFloat = 40
+    private let serverPickerTextWidth: CGFloat = 80
 
     init(
         playerName: Binding<String>,
@@ -61,18 +70,20 @@ struct AddPlayerSheetView: View {
                         .foregroundStyle(.secondary)
                         .symbolRenderingMode(viewModel.selectedAuthType.symbol.mode)
                         .symbolVariant(.none)
-                    if viewModel.selectedAuthType == .yggdrasil,
-                       let serverName = container.system.yggdrasilAuthService.currentServer?.name {
-                        Text(serverName)
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
                     Spacer()
                     if viewModel.isCheckingFlag {
                         ProgressView()
                             .controlSize(.small)
                             .frame(height: 20.5)
                             .padding(.trailing, 10)
+                    } else if viewModel.selectedAuthType == .yggdrasil {
+                        // Third-party: auth type picker, then server picker and the add-server button.
+                        HStack(spacing: 6) {
+                            authTypePicker
+                            yggdrasilServerMenu
+                            addCustomServerButton
+                        }
+                        .padding(.trailing, 10)
                     } else {
                         authTypePicker
                     }
@@ -84,7 +95,12 @@ struct AddPlayerSheetView: View {
                 case .premium:
                     MinecraftAuthView(onLoginSuccess: onLogin)
                 case .yggdrasil:
-                    YggdrasilAuthView(onLoginSuccess: onYggdrasilLogin)
+                    YggdrasilAuthView(
+                        onLoginSuccess: onYggdrasilLogin,
+                        loginUsername: $yggLoginUsername,
+                        loginPassword: $yggLoginPassword,
+                        rememberPassword: $yggRememberPassword,
+                    )
                 case .offline:
                     VStack(alignment: .leading) {
                         playerInfoSection
@@ -143,18 +159,41 @@ struct AddPlayerSheetView: View {
                     } else if viewModel.selectedAuthType == .yggdrasil {
                         switch container.system.yggdrasilAuthService.authState {
                         case .idle, .error:
-                            Button("addplayer.auth.start_login".localized()) {
-                                Task {
-                                    await viewModel.startYggdrasilAuthentication(
-                                        yggdrasilAuthService: container.system.yggdrasilAuthService,
-                                    )
+                            // Password servers show their login button where OAuth shows "Start login".
+                            if container.system.yggdrasilAuthService.currentServer?.isPasswordLogin == true {
+                                Button("yggdrasil.password.login".localized()) {
+                                    let username = yggLoginUsername
+                                    let password = yggLoginPassword
+                                    let remember = yggRememberPassword
+                                    Task {
+                                        await container.system.yggdrasilAuthService.startPasswordAuthentication(
+                                            username: username,
+                                            password: password,
+                                            rememberPassword: remember,
+                                        )
+                                    }
                                 }
+                                .keyboardShortcut(.defaultAction)
+                                .disabled(yggLoginUsername.isEmpty || yggLoginPassword.isEmpty)
+                            } else {
+                                Button("addplayer.auth.start_login".localized()) {
+                                    Task {
+                                        await viewModel.startYggdrasilAuthentication(
+                                            yggdrasilAuthService: container.system.yggdrasilAuthService,
+                                        )
+                                    }
+                                }
+                                .keyboardShortcut(.defaultAction)
+                                .disabled(container.system.yggdrasilAuthService.currentServer == nil)
                             }
-                            .keyboardShortcut(.defaultAction)
-                            .disabled(container.system.yggdrasilAuthService.currentServer == nil)
                         case let .authenticated(profile):
                             Button("addplayer.auth.add".localized()) {
-                                onYggdrasilLogin?(profile)
+                                Task {
+                                    let authService = container.system.yggdrasilAuthService
+                                    if let ready = await authService.prepareProfileForAdding(profile) {
+                                        onYggdrasilLogin?(ready)
+                                    }
+                                }
                             }
                             .keyboardShortcut(.defaultAction)
                         case .waitingForBrowser, .processing:
@@ -184,6 +223,9 @@ struct AddPlayerSheetView: View {
         .task {
             await viewModel.checkPremiumAccountFlag()
         }
+        .sheet(isPresented: $showCustomServerSheet) {
+            CustomYggdrasilServerSheet()
+        }
         .onDisappear {
             clearAllData()
         }
@@ -198,8 +240,71 @@ struct AddPlayerSheetView: View {
             }
         } label: {
             Text(viewModel.selectedAuthType.displayName)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .frame(width: authTypePickerTextWidth)
         }
         .fixedSize()
+    }
+
+    /// Switching is blocked during browser authorization or token exchange to avoid dangling callbacks.
+    private var yggdrasilAuthInFlight: Bool {
+        switch container.system.yggdrasilAuthService.authState {
+        case .waitingForBrowser, .processing:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private var yggdrasilServerMenu: some View {
+        Menu {
+            ForEach(YggdrasilServerRegistry.allServers, id: \.self) { server in
+                Button {
+                    selectYggdrasilServer(server)
+                } label: {
+                    if container.system.yggdrasilAuthService.currentServer == server {
+                        Label(server.name, systemImage: "checkmark")
+                    } else {
+                        Text(server.name)
+                    }
+                }
+            }
+        } label: {
+            // Same label width as the auth type picker so both menus look alike; long
+            // names are truncated. The frame is applied to the label so the Menu hugs it.
+            Text(container.system.yggdrasilAuthService.currentServer?.name
+                ?? "yggdrasil.server.please_select".localized())
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(width: serverPickerTextWidth, alignment: .leading)
+        }
+        .disabled(yggdrasilAuthInFlight)
+    }
+
+    /// Icon-only add button with a hover tooltip.
+    private var addCustomServerButton: some View {
+        Button {
+            showCustomServerSheet = true
+        } label: {
+            Image(systemName: "plus.circle")
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .disabled(yggdrasilAuthInFlight)
+        .help("yggdrasil.custom.add".localized())
+    }
+
+    /// Switches the skin site and clears any in-flight login (tokens belong to the old server).
+    private func selectYggdrasilServer(_ server: YggdrasilServerConfig) {
+        let authService = container.system.yggdrasilAuthService
+        guard authService.currentServer != server else { return }
+
+        authService.logout()
+        authService.setServer(server)
+        yggLoginUsername = ""
+        yggLoginPassword = ""
+        yggRememberPassword = false
     }
 
     /// Clears all data and resets authentication state when the sheet is dismissed.
@@ -211,6 +316,10 @@ struct AddPlayerSheetView: View {
         container.system.minecraftAuthService.isLoading = false
         showErrorPopover = false
         container.system.yggdrasilAuthService.logout()
+        // Also clear the password form: closing the sheet discards the entered credentials.
+        yggLoginUsername = ""
+        yggLoginPassword = ""
+        yggRememberPassword = false
         viewModel.reset()
     }
 

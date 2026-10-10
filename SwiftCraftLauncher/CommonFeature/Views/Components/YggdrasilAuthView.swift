@@ -8,40 +8,64 @@
 import SwiftUI
 
 /// A view for authenticating with Yggdrasil-compatible Minecraft servers.
+///
+/// Built-in presets use OAuth in the browser; user-added custom skin sites use
+/// username/password login against a classic authserver.
 struct YggdrasilAuthView: View {
     @Environment(DIContainer.self)
     private var container
     @State private var viewModel = YggdrasilAuthViewModel()
     var onLoginSuccess: ((YggdrasilProfile) -> Void)?
 
-    private let servers = YggdrasilServerPresets.servers
+    /// Password form state is owned by the parent sheet, whose footer hosts the login
+    /// button and therefore needs to read these values.
+    @Binding private var loginUsername: String
+    @Binding private var loginPassword: String
+    @Binding private var rememberPassword: Bool
 
     init(
         onLoginSuccess: ((YggdrasilProfile) -> Void)? = nil,
+        loginUsername: Binding<String>,
+        loginPassword: Binding<String>,
+        rememberPassword: Binding<Bool>,
     ) {
         CommonYggdrasilProfileParsersConfigurator.bootstrap()
         self.onLoginSuccess = onLoginSuccess
+        _loginUsername = loginUsername
+        _loginPassword = loginPassword
+        _rememberPassword = rememberPassword
     }
 
+    /// Presets plus custom servers from the unified registry.
+    private var servers: [YggdrasilServerConfig] {
+        YggdrasilServerRegistry.allServers
+    }
+
+    private var selectedServerIsPassword: Bool {
+        container.system.yggdrasilAuthService.currentServer?.isPasswordLogin == true
+    }
+
+    /// The server picker lives in the add-account title bar, next to the auth type picker.
     var body: some View {
-        @Bindable var viewModel = viewModel
         VStack {
             if container.system.yggdrasilAuthService.currentServer == nil {
-                serverPickerSection
+                Text("yggdrasil.server.please_select".localized())
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
             } else {
                 authStateSection
-                    .padding(.vertical, 20)
+                    .padding(.vertical, 8)
             }
         }
-        .onChange(of: viewModel.selectedOption) { _, newValue in
-            viewModel.onSelectedOptionChanged(newValue, authService: container.system.yggdrasilAuthService)
-        }
         .onAppear {
-            guard viewModel.selectedOption == nil else { return }
+            // Preselect the default skin site configured in settings.
+            guard container.system.yggdrasilAuthService.currentServer == nil else { return }
             let presetBaseURL = container.ui.playerSettingsManager.defaultYggdrasilServerBaseURL
             guard !presetBaseURL.isEmpty else { return }
             if let preset = servers.first(where: { $0.baseURL.absoluteString == presetBaseURL }) {
-                viewModel.selectedOption = preset
+                container.system.yggdrasilAuthService.setServer(preset)
             }
         }
         .onDisappear {
@@ -49,33 +73,14 @@ struct YggdrasilAuthView: View {
         }
     }
 
-    private var serverPickerSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("yggdrasil.server.select".localized())
-                .font(.headline)
-                .padding(.bottom, 4)
-
-            Text("yggdrasil.server.select.description".localized())
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.bottom, 10)
-
-            Picker("yggdrasil.server.picker".localized(), selection: $viewModel.selectedOption) {
-                Text("yggdrasil.server.please_select".localized())
-                    .tag(nil as YggdrasilServerConfig?)
-
-                ForEach(servers, id: \.self) { server in
-                    Text(server.name).tag(server as YggdrasilServerConfig?)
-                }
-            }
-            .pickerStyle(.menu)
-        }
-    }
-
     @ViewBuilder private var authStateSection: some View {
         switch container.system.yggdrasilAuthService.authState {
         case .idle:
-            notAuthenticatedView
+            if selectedServerIsPassword {
+                passwordLoginForm
+            } else {
+                notAuthenticatedView
+            }
         case .waitingForBrowser:
             waitingForBrowserView
         case .processing:
@@ -85,6 +90,30 @@ struct YggdrasilAuthView: View {
         case let .error(message):
             failedView(message: message)
         }
+    }
+
+    /// The login button is rendered by the add-account sheet footer.
+    private var passwordLoginForm: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            let server = container.system.yggdrasilAuthService.currentServer
+            let usernameKey = server?.nonEmailLoginHintAvailable == true
+                ? "yggdrasil.password.username_non_email" : "yggdrasil.password.username"
+
+            TextField(usernameKey.localized(), text: $loginUsername)
+                .textFieldStyle(.roundedBorder)
+                .textContentType(.username)
+
+            SecureField("yggdrasil.password.password".localized(), text: $loginPassword)
+                .textFieldStyle(.roundedBorder)
+                .textContentType(.password)
+
+            Toggle("yggdrasil.password.remember".localized(), isOn: $rememberPassword)
+
+            Text("yggdrasil.password.remember.hint".localized())
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 8)
     }
 
     private var notAuthenticatedView: some View {
@@ -220,5 +249,15 @@ struct YggdrasilAuthView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
+    }
+}
+
+/// Whether to show the "profile name login supported" hint (custom server metadata).
+private extension YggdrasilServerConfig {
+    var nonEmailLoginHintAvailable: Bool {
+        guard let apiRootString = apiRoot?.absoluteString else { return false }
+        return DIContainer.shared.system.customYggdrasilServerStore.servers
+            .first { $0.apiRoot == apiRootString }?
+            .nonEmailLogin ?? false
     }
 }
