@@ -29,6 +29,10 @@ enum AppConstants {
         static let enableMinecraftFriendsPresenceNotifications = "enableMinecraftFriendsPresenceNotifications"
         static let hasAddedPremiumAccount = "hasAddedPremiumAccount"
         static let offlineUserServerMap = "offlineUserServerMap"
+        /// User-added custom Yggdrasil servers (not sensitive).
+        static let customYggdrasilServers = "customYggdrasilServers"
+        /// Installation-wide Yggdrasil classic clientToken, generated on first use.
+        static let yggdrasilClientToken = "yggdrasilClientToken"
 
         static let aiProvider = "aiProvider"
         static let aiOllamaBaseURL = "aiOllamaBaseURL"

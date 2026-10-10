@@ -43,12 +43,16 @@ struct MinecraftLaunchCommand {
     }
 
     private func validatePlayerTokenBeforeLaunch() async throws -> Player {
-        if let profile = OfflineUserServerMap.serverKey(for: player.id),
-           let server = YggdrasilServerPresets.server(for: profile.serverBaseURL) {
-            await DIContainer.shared.system.yggdrasilAuthService.refreshThirdPartyToken(
-                profile: profile,
-                server: server,
-            )
+        if let profile = OfflineUserServerMap.serverKey(for: player.id) {
+            if profile.isPasswordLogin {
+                return try await renewPasswordProfileBeforeLaunch(profile)
+            }
+            if let server = YggdrasilServerPresets.server(for: profile.serverBaseURL) {
+                await DIContainer.shared.system.yggdrasilAuthService.refreshThirdPartyToken(
+                    profile: profile,
+                    server: server,
+                )
+            }
         }
         guard player.isOnlineAccount else {
             return player
@@ -72,6 +76,45 @@ struct MinecraftLaunchCommand {
         }
 
         return validatedPlayer
+    }
+
+    /// Ensures a password-login player has a usable token before launching.
+    ///
+    /// Unlike OAuth presets, which keep the old token when refreshing fails, a password
+    /// login that cannot be recovered aborts the launch with a clear error. The renewed
+    /// profile is written back to ``OfflineUserServerMap``, and a rename on the server
+    /// side is synced to the local player.
+    private func renewPasswordProfileBeforeLaunch(_ profile: YggdrasilProfile) async throws -> Player {
+        let renewed: YggdrasilProfile
+        do {
+            renewed = try await DIContainer.shared.system.yggdrasilAuthService.ensureFreshPasswordProfile(profile)
+        } catch let YggdrasilAuthService.YggdrasilRenewalError.passwordRejected(clearedProfile) {
+            OfflineUserServerMap.setServer(clearedProfile)
+            throw GlobalError.authentication(
+                i18nKey: "yggdrasil.error.password_changed",
+                level: .popup,
+                message: "Saved password rejected for user \(profile.id)",
+            )
+        }
+
+        if renewed != profile {
+            OfflineUserServerMap.setServer(renewed)
+        }
+
+        guard renewed.name != player.name else {
+            return player
+        }
+        AppLog.game.info("Yggdrasil player renamed on server: \(player.name) -> \(renewed.name)")
+        var updated = player
+        updated.profile = UserProfile(
+            id: player.profile.id,
+            name: renewed.name,
+            avatar: player.profile.avatar,
+            lastPlayed: player.profile.lastPlayed,
+            isCurrent: player.profile.isCurrent,
+        )
+        await updatePlayerInDataManager(updated)
+        return updated
     }
 
     private func updatePlayerInDataManager(_ updatedPlayer: Player) async {
@@ -135,9 +178,13 @@ struct MinecraftLaunchCommand {
         player: Player,
         profile: YggdrasilProfile?,
     ) async throws -> String {
-        guard let profile,
-              let server = YggdrasilServerPresets.server(for: profile.serverBaseURL) else {
+        guard let profile else {
             return player.authAccessToken
+        }
+        // Custom password servers have no token exchange endpoint: the (already renewed)
+        // authserver accessToken stored in the profile is the game session token.
+        guard let server = YggdrasilServerPresets.server(for: profile.serverBaseURL) else {
+            return profile.accessToken
         }
 
         let accessToken: String

@@ -137,11 +137,38 @@ class PlayerListViewModel: @unchecked Sendable {
 
     /// Adds a Yggdrasil-authenticated player from a profile, throwing on failure.
     ///
+    /// Signing in again to a player that already belongs to the same server only
+    /// refreshes its stored Yggdrasil profile (for example after the token expired or
+    /// the password changed). Otherwise the player is added as before, and the server
+    /// link is written only after the add succeeded, so a rejected add (such as an
+    /// offline player with the same name and an offline-compatible UUID) never gets a
+    /// server attached to it.
+    ///
     /// - Parameter profile: The Yggdrasil player profile.
     /// - Throws: A `GlobalError` if adding the player fails.
     func addOnlinePlayerThrowing(profile: YggdrasilProfile) throws {
+        let dataManager = DIContainer.shared.ui.playerDataManager
         let avatarUrl = profile.skins.isEmpty ? "" : profile.skins[0].url.httpToHttps()
-        try DIContainer.shared.ui.playerDataManager.addPlayer(
+
+        if OfflineUserServerMap.serverKey(for: profile.id)?.serverBaseURL == profile.serverBaseURL,
+           var existing = try dataManager.loadPlayersThrowing().first(where: { $0.id == profile.id }) {
+            OfflineUserServerMap.setServer(profile)
+            if existing.name != profile.name || (!avatarUrl.isEmpty && existing.avatarName != avatarUrl) {
+                existing.profile = UserProfile(
+                    id: existing.profile.id,
+                    name: profile.name,
+                    avatar: avatarUrl.isEmpty ? existing.profile.avatar : avatarUrl,
+                    lastPlayed: existing.profile.lastPlayed,
+                    isCurrent: existing.profile.isCurrent,
+                )
+                try dataManager.updatePlayer(existing)
+            }
+            try loadPlayersThrowing()
+            AppLog.player.debug("Yggdrasil player \(profile.name) signed in again, stored profile refreshed.")
+            return
+        }
+
+        try dataManager.addPlayer(
             name: profile.name,
             uuid: profile.id,
             isOnline: false,
@@ -150,6 +177,7 @@ class PlayerListViewModel: @unchecked Sendable {
             refreshToken: profile.refreshToken,
             xuid: "",
         )
+        OfflineUserServerMap.setServer(profile)
         try loadPlayersThrowing()
         AppLog.player.debug("Yggdrasil player \(profile.name) added successfully, list updated.")
     }

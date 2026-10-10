@@ -24,12 +24,24 @@ final class YggdrasilAuthService: @unchecked Sendable {
     /// The list of player profiles returned after authentication.
     var authenticatedProfiles: [YggdrasilProfile] = []
 
+    /// Whether a password-login token still needs to be bound to a profile
+    /// (servers with several profiles require the user to pick one first).
+    var passwordTokenNeedsBinding = false
+
     private let webAuthenticator = WebAuthenticator()
+
+    /// The classic authserver client (injectable for tests).
+    let authServerClient: YggdrasilAuthServerClientProtocol
+
+    init(authServerClient: YggdrasilAuthServerClientProtocol = YggdrasilAuthServerClient()) {
+        self.authServerClient = authServerClient
+    }
 
     /// Sets the Yggdrasil server to use for authentication.
     func setServer(_ config: YggdrasilServerConfig) {
         currentServer = config
         authenticatedProfiles = []
+        passwordTokenNeedsBinding = false
         if case .authenticated = authState {
             authState = .idle
         }
@@ -132,6 +144,44 @@ final class YggdrasilAuthService: @unchecked Sendable {
         webAuthenticator.cancel()
         currentServer = nil
         authenticatedProfiles = []
+        passwordTokenNeedsBinding = false
+    }
+
+    /// Returns the profile to persist when the user adds the account.
+    ///
+    /// A password-login token that is not bound to a profile yet is bound to the chosen
+    /// profile first via `refresh(selectedProfile)`. The state stays `.processing` while
+    /// binding so the add button cannot be triggered twice; on success the other
+    /// candidates are dropped because the token can no longer be used for them. Returns
+    /// `nil` (and ends in an error state) when binding fails, so an unbound token is
+    /// never stored.
+    @MainActor
+    func prepareProfileForAdding(_ profile: YggdrasilProfile) async -> YggdrasilProfile? {
+        guard passwordTokenNeedsBinding, profile.isPasswordLogin,
+              let apiRoot = currentServer?.passwordAPIRoot else {
+            return profile
+        }
+
+        authState = .processing
+        do {
+            let response = try await authServerClient.refresh(
+                accessToken: profile.accessToken,
+                clientToken: profile.clientToken ?? YggdrasilClientTokenProvider.currentToken(),
+                selectedProfileId: profile.id,
+                apiRoot: apiRoot,
+            )
+            var bound = profile
+            bound.accessToken = response.accessToken
+            bound.clientToken = response.clientToken
+            passwordTokenNeedsBinding = false
+            authenticatedProfiles = [bound]
+            authState = .authenticated(profile: bound)
+            return bound
+        } catch {
+            AppLog.common.error("Yggdrasil profile binding failed: \(error.localizedDescription)")
+            authState = .error(Self.localizePasswordFailure(error))
+            return nil
+        }
     }
 }
 

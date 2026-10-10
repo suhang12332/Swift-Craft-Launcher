@@ -20,6 +20,9 @@ struct CommonYggdrasilProfileParserProvider: YggdrasilProfileParserProvider {
             return CommonBlessingSkinStyleProfileListParser(baseURL: baseURL)
         case .ely:
             return ElyflyProfileStyleProfileListParser(baseURL: baseURL)
+        case .custom:
+            // Custom password servers return profiles from authenticate; no list parser is needed.
+            return nil
         }
     }
 }

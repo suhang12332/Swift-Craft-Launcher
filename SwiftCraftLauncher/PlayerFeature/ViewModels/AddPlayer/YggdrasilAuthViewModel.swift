@@ -8,23 +8,13 @@
 import Foundation
 
 /// Manages Yggdrasil authentication server selection and profile dispatch.
+///
+/// The selected server lives in `YggdrasilAuthService.currentServer` (the picker is
+/// visible and switchable at any stage); this view model only handles profile
+/// selection and cleanup when the view disappears.
 @MainActor
 @Observable
 final class YggdrasilAuthViewModel {
-    /// The currently selected Yggdrasil server configuration.
-    var selectedOption: YggdrasilServerConfig?
-
-    /// Handles a change in server selection and updates the auth service.
-    ///
-    /// - Parameters:
-    ///   - option: The newly selected server configuration.
-    ///   - authService: The Yggdrasil authentication service.
-    func onSelectedOptionChanged(_ option: YggdrasilServerConfig?, authService: YggdrasilAuthService) {
-        if let option {
-            authService.setServer(option)
-        }
-    }
-
     /// Cleans up the auth service state when the view disappears.
     ///
     /// - Parameter authService: The Yggdrasil authentication service.
