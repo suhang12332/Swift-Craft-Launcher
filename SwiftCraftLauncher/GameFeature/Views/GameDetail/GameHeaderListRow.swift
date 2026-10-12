@@ -150,7 +150,10 @@ struct GameHeaderListRow: View {
         .onTapGesture {
             onIconTap?()
         }
-        .task {
+        // `id:` so the stream is re-subscribed with the current `game` whenever the
+        // displayed game changes (switching games or renaming). Without it, `.task`
+        // runs only once per view identity and the closure keeps a stale `game`.
+        .task(id: game.gameName) {
             for await refreshedGameName in container.ui.iconRefreshNotifier.refreshRequests() {
                 if refreshedGameName == nil || refreshedGameName == game.gameName {
                     refreshTrigger = UUID()
