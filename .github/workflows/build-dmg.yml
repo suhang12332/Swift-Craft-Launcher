@@ -347,6 +347,7 @@ jobs:
     runs-on: xcode-27
     permissions:
       contents: write
+      actions: write
 
     steps:
       - name: Download build artifacts
@@ -447,6 +448,18 @@ jobs:
               appcast-arm64.xml \
               appcast-x86_64.xml
           fi
+
+      # Release 上传成功后自动触发 Notify Discord
+      # 注意：用 GITHUB_TOKEN 创建的 release 不会触发 release:published 事件，
+      # 因此这里主动 dispatch（workflow_dispatch 是 GITHUB_TOKEN 限制的例外，无需人工操作）
+      - name: Trigger Notify Discord
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh workflow run discord-notify.yml \
+            --repo "${{ github.repository }}"
+          echo "✅ 已触发 Notify Discord"
 
       - name: Checkout Homebrew Cask repository
         uses: actions/checkout@v6
