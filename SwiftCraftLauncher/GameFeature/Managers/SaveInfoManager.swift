@@ -128,9 +128,9 @@ final class SaveInfoManager {
 
     /// Load task handle.
     ///
-    /// `nonisolated(unsafe)`: assigned on the main actor and cancelled from the
-    /// nonisolated `deinit`; never accessed concurrently.
-    nonisolated(unsafe) private var loadTask: Task<Void, Never>?
+    /// `nonisolated`: assigned on the main actor and cancelled from the nonisolated
+    /// `deinit`; never accessed concurrently.
+    nonisolated private var loadTask: Task<Void, Never>?
 
     private var isVanilla: Bool {
         modLoader.lowercased() == GameLoader.vanilla.displayName
