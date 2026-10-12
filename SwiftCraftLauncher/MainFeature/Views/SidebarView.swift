@@ -36,30 +36,31 @@ public struct SidebarView: View {
                     }
                 }
             }
-
-            Section(header: Text("sidebar.games.title".localized())) {
-                ForEach(filteredGames) { game in
-                    NavigationLink(value: SidebarItem.game(game.id)) {
-                        HStack(spacing: 6) {
-                            GameIconView(
-                                game: game,
-                                refreshTrigger: viewModel.refreshTrigger(for: game.gameName),
-                            )
-                            Text(game.gameName)
-                                .lineLimit(1)
-                                .fixedSize(horizontal: false, vertical: true)
+            if !gameRepository.games.isEmpty {
+                Section(header: Text("sidebar.games.title".localized())) {
+                    ForEach(filteredGames) { game in
+                        NavigationLink(value: SidebarItem.game(game.id)) {
+                            HStack(spacing: 6) {
+                                GameIconView(
+                                    game: game,
+                                    refreshTrigger: viewModel.refreshTrigger(for: game.gameName),
+                                )
+                                Text(game.gameName)
+                                    .lineLimit(1)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .tag(game.id)
                         }
-                        .tag(game.id)
-                    }
-                    .contextMenu {
-                        GameContextMenu(
-                            game: game,
-                            onDelete: { container.ui.gameDialogsPresenter.requestGameDeletion(of: game) },
-                            onOpenSettings: { openSettings() },
-                            onExport: {
-                                container.ui.gameDialogsPresenter.presentModPackExport(for: game)
-                            },
-                        )
+                        .contextMenu {
+                            GameContextMenu(
+                                game: game,
+                                onDelete: { container.ui.gameDialogsPresenter.requestGameDeletion(of: game) },
+                                onOpenSettings: { openSettings() },
+                                onExport: {
+                                    container.ui.gameDialogsPresenter.presentModPackExport(for: game)
+                                },
+                            )
+                        }
                     }
                 }
             }
