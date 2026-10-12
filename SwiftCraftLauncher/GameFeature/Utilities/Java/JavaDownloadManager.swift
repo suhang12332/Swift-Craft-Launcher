@@ -49,7 +49,7 @@ class JavaDownloadManager {
             downloadState.startDownload(version: version)
             setCancelRequested(false)
 
-            await showDownloadWindow()
+            showDownloadWindow()
 
             DIContainer.shared.system.javaRuntimeDownloader.setProgressCallback { @Sendable [weak self] fileName, completed, total in
                 Task { @MainActor in
@@ -71,17 +71,17 @@ class JavaDownloadManager {
 
             if downloadState.isCancelled || cancelRequested {
                 AppLog.game.info("Java download cancelled")
-                await cleanupCancelledDownload()
+                cleanupCancelledDownload()
                 return
             }
 
             downloadState.isDownloading = false
 
-            await closeWindow()
+            closeWindow()
         } catch {
             if error is CancellationError || downloadState.isCancelled || cancelRequested {
                 AppLog.game.info("Java download task cancelled")
-                await cleanupCancelledDownload()
+                cleanupCancelledDownload()
                 return
             }
             if !downloadState.isCancelled {
