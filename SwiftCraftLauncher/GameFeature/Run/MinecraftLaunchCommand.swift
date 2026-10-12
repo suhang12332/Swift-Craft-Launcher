@@ -22,7 +22,7 @@ struct MinecraftLaunchCommand {
     }
 
     func stopGame() async {
-        _ = DIContainer.shared.core.gameProcessManager.stopProcess(for: game.id, userId: player.id)
+        _ = await DIContainer.shared.core.gameProcessManager.stopProcess(for: game.id, userId: player.id)
     }
 
     func launchGameThrowing() async throws {
@@ -255,7 +255,7 @@ struct MinecraftLaunchCommand {
             process.environment = env
         }
 
-        DIContainer.shared.core.gameProcessManager.storeProcess(gameId: game.id, userId: player.id, process: process)
+        await DIContainer.shared.core.gameProcessManager.storeProcess(gameId: game.id, userId: player.id, process: process)
 
         do {
             try process.run()
@@ -266,7 +266,7 @@ struct MinecraftLaunchCommand {
         } catch {
             AppLog.game.error("Failed to launch process: \(error.localizedDescription)")
 
-            _ = DIContainer.shared.core.gameProcessManager.stopProcess(for: game.id, userId: player.id)
+            _ = await DIContainer.shared.core.gameProcessManager.stopProcess(for: game.id, userId: player.id)
             _ = await MainActor.run {
                 DIContainer.shared.core.gameStatusManager.setGameRunning(gameId: game.id, userId: player.id, isRunning: false)
             }

@@ -8,37 +8,36 @@
 import Foundation
 
 /// Manages running game processes and tracks their lifecycle.
+@MainActor
 @Observable
-final class GameProcessManager: @unchecked Sendable {
+final class GameProcessManager {
     static func processKey(gameId: String, userId: String) -> String {
         "\(gameId)_\(userId)"
     }
 
     private var gameProcesses: [String: Process] = [:]
-
     private var manuallyStoppedGames: Set<String> = []
-    private let queue = DispatchQueue(label: "com.swiftcraftlauncher.gameprocessmanager")
-    private let gameDatabase = GameVersionDatabase(dbPath: AppPaths.gameVersionDatabase.path)
+
+    /// `nonisolated` so database lookups can run off the main actor.
+    nonisolated private let gameDatabase = GameVersionDatabase(dbPath: AppPaths.gameVersionDatabase.path)
 
     init() { }
 
     func storeProcess(gameId: String, userId: String, process: Process) {
         let key = Self.processKey(gameId: gameId, userId: userId)
         process.terminationHandler = { [weak self] process in
-            Task {
+            Task { @MainActor in
                 await self?.handleProcessTermination(gameId: gameId, userId: userId, process: process)
             }
         }
 
-        queue.async { [weak self] in
-            self?.gameProcesses[key] = process
-        }
+        gameProcesses[key] = process
         AppLog.game.debug("Stored game process: \(key)")
     }
 
     private func handleProcessTermination(gameId: String, userId: String, process: Process) async {
         let key = Self.processKey(gameId: gameId, userId: userId)
-        let wasManuallyStopped = queue.sync { manuallyStoppedGames.contains(key) }
+        let wasManuallyStopped = manuallyStoppedGames.contains(key)
 
         handleProcessExit(gameId: gameId, wasManuallyStopped: wasManuallyStopped)
 
@@ -52,29 +51,24 @@ final class GameProcessManager: @unchecked Sendable {
                     await collectLogsForGameImmediately(gameId: gameId)
                 } else {
                     let gameDirectory = CommonUtil.gameDirectory(for: gameId)
-                    await MainActor.run {
-                        NotificationCenter.default.post(
-                            name: .gameCrashed,
-                            object: nil,
-                            userInfo: ["directory": gameDirectory as Any],
-                        )
-                    }
+                    NotificationCenter.default.post(
+                        name: .gameCrashed,
+                        object: nil,
+                        userInfo: ["directory": gameDirectory as Any],
+                    )
                 }
             } else {
                 AppLog.game.debug("Game exited normally, not triggering AI analysis: \(gameId)")
             }
         }
 
-        await MainActor.run {
-            DIContainer.shared.core.gameStatusManager.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
-        }
-        queue.async { [weak self] in
-            self?.gameProcesses.removeValue(forKey: key)
-            self?.manuallyStoppedGames.remove(key)
-        }
+        DIContainer.shared.core.gameStatusManager.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
+        gameProcesses.removeValue(forKey: key)
+        manuallyStoppedGames.remove(key)
     }
 
-    private func checkIfCrash(gameId: String, process: Process) async -> Bool {
+    /// Runs off the main actor because it performs database and file-system I/O.
+    nonisolated private func checkIfCrash(gameId: String, process: Process) async -> Bool {
         let exitCode = process.terminationStatus
         if exitCode == 0 {
             AppLog.game.debug("Game exit code is 0: \(gameId)")
@@ -130,7 +124,8 @@ final class GameProcessManager: @unchecked Sendable {
         }
     }
 
-    func collectLogsForGameImmediately(gameId: String) async {
+    /// Runs off the main actor because it performs database I/O.
+    nonisolated func collectLogsForGameImmediately(gameId: String) async {
         do {
             try? gameDatabase.initialize()
             guard let game = try gameDatabase.getGame(by: gameId) else {
@@ -154,16 +149,12 @@ final class GameProcessManager: @unchecked Sendable {
 
     func stopProcess(for gameId: String, userId: String) -> Bool {
         let key = Self.processKey(gameId: gameId, userId: userId)
-        let process: Process? = queue.sync {
-            guard let proc = gameProcesses[key] else { return nil }
-            manuallyStoppedGames.insert(key)
-            return proc
-        }
-        guard let process else { return false }
+        guard let process = gameProcesses[key] else { return false }
+        manuallyStoppedGames.insert(key)
 
         if process.isRunning {
             process.terminate()
-            DispatchQueue.global(qos: .utility).async {
+            Task.detached(priority: .utility) {
                 process.waitUntilExit()
             }
         }
@@ -174,48 +165,40 @@ final class GameProcessManager: @unchecked Sendable {
 
     func isGameRunning(gameId: String, userId: String) -> Bool {
         let key = Self.processKey(gameId: gameId, userId: userId)
-        return queue.sync { gameProcesses[key]?.isRunning ?? false }
+        return gameProcesses[key]?.isRunning ?? false
     }
 
     func isGameRunningForAnyUser(gameId: String) -> Bool {
         let prefix = "\(gameId)_"
-        return queue.sync {
-            gameProcesses.contains { key, proc in key.hasPrefix(prefix) && proc.isRunning }
-        }
+        return gameProcesses.contains { key, proc in key.hasPrefix(prefix) && proc.isRunning }
     }
 
     func removeGameState(gameId: String) {
         let prefix = "\(gameId)_"
-        let toRemove: [(String, Process)] = queue.sync {
-            let pairs = gameProcesses.filter { key, _ in key.hasPrefix(prefix) }
-            for (key, proc) in pairs {
-                gameProcesses.removeValue(forKey: key)
-                if proc.isRunning {
-                    manuallyStoppedGames.insert(key)
-                }
+        let toRemove = gameProcesses.filter { key, _ in key.hasPrefix(prefix) }
+        for (key, process) in toRemove {
+            gameProcesses.removeValue(forKey: key)
+            if process.isRunning {
+                manuallyStoppedGames.insert(key)
             }
-            return pairs.map { ($0.key, $0.value) }
         }
 
         for (key, process) in toRemove where process.isRunning {
             process.terminate()
-            DispatchQueue.global(qos: .utility).async { [weak self] in
-                process.waitUntilExit()
-                guard let self else { return }
-                self.queue.async { [weak self] in
-                    self?.gameProcesses.removeValue(forKey: key)
-                    self?.manuallyStoppedGames.remove(key)
-                }
+            Task { @MainActor [weak self] in
+                await Task.detached(priority: .utility) {
+                    process.waitUntilExit()
+                }.value
+                self?.gameProcesses.removeValue(forKey: key)
+                self?.manuallyStoppedGames.remove(key)
             }
         }
 
-        Task { @MainActor in
-            for (key, process) in toRemove where !process.isRunning {
-                if let idx = key.firstIndex(of: "_") {
-                    let gameId = String(key[..<idx])
-                    let userId = String(key[key.index(after: idx)...])
-                    DIContainer.shared.core.gameStatusManager.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
-                }
+        for (key, process) in toRemove where !process.isRunning {
+            if let idx = key.firstIndex(of: "_") {
+                let gameId = String(key[..<idx])
+                let userId = String(key[key.index(after: idx)...])
+                DIContainer.shared.core.gameStatusManager.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
             }
         }
     }

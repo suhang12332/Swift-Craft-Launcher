@@ -5,7 +5,6 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Combine
 import SwiftUI
 
 /// A list row displaying the game icon, name, version info, and cache size.
@@ -24,7 +23,6 @@ struct GameHeaderListRow: View {
     var onIconTap: (() -> Void)?
 
     @State private var refreshTrigger: UUID = .init()
-    @State private var cancellable: AnyCancellable?
     @State private var showRenamePopover = false
     @State private var viewModel = GameHeaderViewModel()
 
@@ -152,16 +150,12 @@ struct GameHeaderListRow: View {
         .onTapGesture {
             onIconTap?()
         }
-        .onAppear {
-            cancellable = container.ui.iconRefreshNotifier.refreshPublisher
-                .sink { refreshedGameName in
-                    if refreshedGameName == nil || refreshedGameName == game.gameName {
-                        refreshTrigger = UUID()
-                    }
+        .task {
+            for await refreshedGameName in container.ui.iconRefreshNotifier.refreshRequests() {
+                if refreshedGameName == nil || refreshedGameName == game.gameName {
+                    refreshTrigger = UUID()
                 }
-        }
-        .onDisappear {
-            cancellable?.cancel()
+            }
         }
         .applyPointerHandIfAvailable()
     }

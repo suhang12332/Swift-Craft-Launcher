@@ -72,7 +72,7 @@ class WindowManager {
         NSApplication.shared.activate(ignoringOtherApps: true)
         if window.isMiniaturized {
             window.deminiaturize(nil)
-            DispatchQueue.main.async {
+            Task { @MainActor in
                 NSApplication.shared.activate(ignoringOtherApps: true)
                 window.makeKeyAndOrderFront(nil)
             }

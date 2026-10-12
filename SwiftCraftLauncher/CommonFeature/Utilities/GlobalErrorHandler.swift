@@ -289,8 +289,9 @@ extension GlobalError {
 }
 
 /// Manages global error state, including presentation and history.
+@MainActor
 @Observable
-final class GlobalErrorHandler: @unchecked Sendable {
+final class GlobalErrorHandler {
     var currentError: GlobalError?
     var errorHistory: [GlobalError] = []
 
@@ -304,37 +305,45 @@ final class GlobalErrorHandler: @unchecked Sendable {
     private let maxErrorsPerWindow = 5
     private let rateLimitWindow: TimeInterval = 10.0
 
-    init() { }
+    /// `nonisolated` so the shared instance can be created lazily from any context.
+    nonisolated init() { }
 
-    func handle(_ error: Error, source: ErrorSource = .main) {
+    /// Fire-and-forget entry point, callable from any isolation domain.
+    ///
+    /// The error is enqueued on the main actor, so the deduplication and
+    /// rate-limiting state below is only ever mutated there.
+    nonisolated func handle(_ error: Error, source: ErrorSource = .main) {
         handle(GlobalError.from(error, source: source))
     }
 
-    func handle(_ globalError: GlobalError) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-
-            let now = Date()
-
-            if globalError.id == lastErrorId,
-               now.timeIntervalSince(lastErrorTime) < deduplicationWindow {
-                return
-            }
-
-            pruneTimestamps(before: now)
-            if recentErrorTimestamps.count >= maxErrorsPerWindow {
-                return
-            }
-
-            lastErrorId = globalError.id
-            lastErrorTime = now
-            recentErrorTimestamps.append(now)
-
-            currentError = globalError
-            addToHistory(globalError)
-            logError(globalError)
-            handleErrorByLevel(globalError)
+    /// Fire-and-forget entry point, callable from any isolation domain.
+    nonisolated func handle(_ globalError: GlobalError) {
+        Task { @MainActor [weak self] in
+            self?.present(globalError)
         }
+    }
+
+    private func present(_ globalError: GlobalError) {
+        let now = Date()
+
+        if globalError.id == lastErrorId,
+           now.timeIntervalSince(lastErrorTime) < deduplicationWindow {
+            return
+        }
+
+        pruneTimestamps(before: now)
+        if recentErrorTimestamps.count >= maxErrorsPerWindow {
+            return
+        }
+
+        lastErrorId = globalError.id
+        lastErrorTime = now
+        recentErrorTimestamps.append(now)
+
+        currentError = globalError
+        addToHistory(globalError)
+        logError(globalError)
+        handleErrorByLevel(globalError)
     }
 
     private func pruneTimestamps(before cutoff: Date) {

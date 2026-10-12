@@ -11,13 +11,18 @@ import SQLite3
 /// A thread-safe wrapper around the SQLite C API.
 ///
 /// Manages a single database connection with WAL journal mode and memory-mapped I/O.
-/// All operations are serialized on a dedicated dispatch queue: transactions via
-/// ``transaction(_:)``, plain SQL via ``execute(_:)`` and statements via
-/// ``withStatement(_:_:)``, which keeps prepare/bind/step/finalize inside the queue as well.
+/// All operations are serialized by a recursive lock: transactions via ``transaction(_:)``,
+/// plain SQL via ``execute(_:)`` and statements via ``withStatement(_:_:)``, which keeps
+/// prepare/bind/step/finalize inside the same critical section.
 ///
 /// Instances are shared by path: calling ``database(at:)`` with the same path
 /// returns the same connection, avoiding redundant opens and file descriptors.
-class SQLiteDatabase {
+///
+/// `@unchecked Sendable`: all access to `db` is serialized by `lock`. An `actor` is
+/// deliberately not used here — making ``transaction(_:)`` `async` would let the actor
+/// re-enter between `BEGIN` and `COMMIT`, breaking transaction atomicity.
+class SQLiteDatabase: @unchecked Sendable {
+    /// `@unchecked Sendable`: the `instances` map is guarded by `lock`.
     private final class InstanceRegistry: @unchecked Sendable {
         private let lock = NSLock()
         private var instances: [String: SQLiteDatabase] = [:]
@@ -36,8 +41,10 @@ class SQLiteDatabase {
 
     private var db: OpaquePointer?
     private let dbPath: String
-    private let queue: DispatchQueue
-    private let queueKey = DispatchSpecificKey<Bool>()
+    /// Serializes all database work. Recursive, so a ``transaction(_:)`` block can re-enter
+    /// through ``withStatement(_:_:)`` / ``execute(_:)`` without deadlocking, keeping the
+    /// statement inside the surrounding transaction.
+    private let lock = NSRecursiveLock()
 
     private static let instanceRegistry = InstanceRegistry()
 
@@ -54,24 +61,12 @@ class SQLiteDatabase {
 
     private init(path: String) {
         dbPath = path
-        queue = DispatchQueue(label: "com.swiftcraftlauncher.sqlite", qos: .utility)
-        queue.setSpecific(key: queueKey, value: true)
-    }
-
-    /// A Boolean value indicating whether the current thread runs on this database's queue.
-    ///
-    /// The key is per instance, so a thread sitting on the queue of another database does not
-    /// count as being on this one and cannot bypass this instance's serialization.
-    private var isOnQueue: Bool {
-        DispatchQueue.getSpecific(key: queueKey) != nil
     }
 
     private func sync<T>(_ block: () throws -> T) rethrows -> T {
-        if isOnQueue {
-            return try block()
-        } else {
-            return try queue.sync(execute: block)
-        }
+        lock.lock()
+        defer { lock.unlock() }
+        return try block()
     }
 
     /// Opens the database connection.
@@ -224,13 +219,13 @@ class SQLiteDatabase {
         }
     }
 
-    /// Runs `body` with a prepared statement, entirely on the database queue.
+    /// Runs `body` with a prepared statement, entirely inside the database's critical section.
     ///
-    /// Preparing, binding, stepping and finalizing happen inside a single queue hop, so a
-    /// statement can never run between the `BEGIN` and the `COMMIT` of a transaction that is
-    /// executing on the queue, and two callers can never step statements concurrently.
-    /// Calling this from within ``transaction(_:)`` re-enters the queue instead of deadlocking,
-    /// which keeps the statement inside the surrounding transaction.
+    /// Preparing, binding, stepping and finalizing happen while holding `lock`, so a statement
+    /// can never run between the `BEGIN` and the `COMMIT` of a transaction, and two callers can
+    /// never step statements concurrently. Calling this from within ``transaction(_:)``
+    /// re-acquires the recursive lock instead of deadlocking, keeping the statement inside the
+    /// surrounding transaction.
     ///
     /// - Parameters:
     ///   - sql: The SQL statement to prepare.
@@ -238,14 +233,14 @@ class SQLiteDatabase {
     /// - Returns: The value produced by `body`.
     func withStatement<T>(_ sql: String, _ body: (OpaquePointer) throws -> T) throws -> T {
         try sync {
-            let statement = try prepareOnQueue(sql)
+            let statement = try prepareLocked(sql)
             defer { sqlite3_finalize(statement) }
             return try body(statement)
         }
     }
 
-    /// Prepares a SQL statement. Must be called on the queue; use ``withStatement(_:_:)``.
-    private func prepareOnQueue(_ sql: String) throws -> OpaquePointer {
+    /// Prepares a SQL statement. Must be called while holding `lock`; use ``withStatement(_:_:)``.
+    private func prepareLocked(_ sql: String) throws -> OpaquePointer {
         guard let db else {
             throw GlobalError.validation(
                 i18nKey: "error.validation.database_not_open",

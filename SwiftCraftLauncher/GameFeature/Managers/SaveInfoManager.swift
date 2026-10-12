@@ -11,8 +11,9 @@ import SwiftNBT
 
 /// Loads and manages save information including worlds, screenshots,
 /// litematica files, and logs for a specific game instance.
+@MainActor
 @Observable
-final class SaveInfoManager: @unchecked Sendable {
+final class SaveInfoManager {
     private struct WorldParseResult {
         let lastPlayed: Date?
         let gameMode: String?
@@ -23,7 +24,7 @@ final class SaveInfoManager: @unchecked Sendable {
         let seed: Int64?
     }
 
-    private static func parseLevelDat(at levelDatPath: URL) -> WorldParseResult? {
+    nonisolated private static func parseLevelDat(at levelDatPath: URL) -> WorldParseResult? {
         guard let data = try? Data(contentsOf: levelDatPath),
               let document = try? NBTDecoder().decode(data),
               let dataTag = document.root["Data"]?.compoundValue else {
@@ -74,7 +75,7 @@ final class SaveInfoManager: @unchecked Sendable {
         )
     }
 
-    private static func buildWorldInfo(worldPath: URL, parsed: WorldParseResult?) -> WorldInfo {
+    nonisolated private static func buildWorldInfo(worldPath: URL, parsed: WorldParseResult?) -> WorldInfo {
         let worldName = worldPath.lastPathComponent
         var fileLastPlayed: Date?
         if let modDate = try? worldPath.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate {
@@ -125,7 +126,11 @@ final class SaveInfoManager: @unchecked Sendable {
     private(set) var hasLitematicaType: Bool = false
     private(set) var hasLogsType: Bool = false
 
-    private var loadTask: Task<Void, Never>?
+    /// Load task handle.
+    ///
+    /// `nonisolated(unsafe)`: assigned on the main actor and cancelled from the
+    /// nonisolated `deinit`; never accessed concurrently.
+    nonisolated(unsafe) private var loadTask: Task<Void, Never>?
 
     private var isVanilla: Bool {
         modLoader.lowercased() == GameLoader.vanilla.displayName
@@ -189,7 +194,6 @@ final class SaveInfoManager: @unchecked Sendable {
     }
 
     /// Checks which save types are available on disk, performing I/O off the main thread.
-    @MainActor
     private func checkTypesAvailability() async {
         let name = gameName
         let (worlds, screenshots, litematica, logs) = await Task.detached(priority: .userInitiated) {
@@ -286,7 +290,6 @@ final class SaveInfoManager: @unchecked Sendable {
         hasLogsType = logs
     }
 
-    @MainActor
     private func fetchData() async {
         await checkTypesAvailability()
 
@@ -325,7 +328,6 @@ final class SaveInfoManager: @unchecked Sendable {
         isLoading = false
     }
 
-    @MainActor
     private func loadWorlds() async {
         isLoadingWorlds = true
         defer { isLoadingWorlds = false }
@@ -341,7 +343,6 @@ final class SaveInfoManager: @unchecked Sendable {
         worlds = result
     }
 
-    @MainActor
     private func loadScreenshots() async {
         isLoadingScreenshots = true
         defer { isLoadingScreenshots = false }
@@ -357,7 +358,6 @@ final class SaveInfoManager: @unchecked Sendable {
         screenshots = result
     }
 
-    @MainActor
     private func loadLitematicaFiles() async {
         isLoadingLitematica = true
         defer { isLoadingLitematica = false }
@@ -370,7 +370,6 @@ final class SaveInfoManager: @unchecked Sendable {
         }
     }
 
-    @MainActor
     private func loadLogs() async {
         isLoadingLogs = true
         defer { isLoadingLogs = false }
@@ -386,7 +385,6 @@ final class SaveInfoManager: @unchecked Sendable {
         logs = result
     }
 
-    @MainActor
     private func loadResourceCounts() async {
         let name = gameName
         let vanilla = isVanilla
@@ -416,7 +414,7 @@ final class SaveInfoManager: @unchecked Sendable {
         resourceCounts = counts
     }
 
-    private static func countFiles(in directory: URL, fm: FileManager) -> Int {
+    nonisolated private static func countFiles(in directory: URL, fm: FileManager) -> Int {
         guard fm.fileExists(atPath: directory.path) else { return 0 }
         guard let contents = try? fm.contentsOfDirectory(
             at: directory,

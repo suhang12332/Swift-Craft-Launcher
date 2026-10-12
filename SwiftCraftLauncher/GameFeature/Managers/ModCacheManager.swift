@@ -8,9 +8,12 @@
 import Foundation
 
 /// Provides a SQLite-backed cache for parsed mod metadata.
-class ModCacheManager {
+///
+/// `@unchecked Sendable`: all database access and the `isInitialized` flag are
+/// serialized by `lock`.
+class ModCacheManager: @unchecked Sendable {
     private let modCacheDB: ModCacheDatabase
-    private let queue = DispatchQueue(label: "com.swiftcraftlauncher.modcachemanager")
+    private let lock = NSLock()
     private var isInitialized = false
 
     init() {
@@ -36,7 +39,7 @@ class ModCacheManager {
     ///   - jsonData: The raw JSON bytes to cache.
     /// - Throws: A ``GlobalError`` if the operation fails.
     func set(hash: String, jsonData: Data) throws {
-        try queue.sync {
+        try lock.withLock {
             try ensureInitialized()
             try modCacheDB.saveModCache(hash: hash, jsonData: jsonData)
         }
@@ -46,7 +49,7 @@ class ModCacheManager {
     /// - Parameter hash: The hash of the mod file.
     /// - Returns: The cached JSON data, or `nil` if not found.
     func get(hash: String) -> Data? {
-        queue.sync {
+        lock.withLock {
             do {
                 try ensureInitialized()
                 return try modCacheDB.getModCache(hash: hash)
@@ -59,7 +62,7 @@ class ModCacheManager {
 
     /// Clears cached mod entries that are local-only fallbacks.
     func clearLocal() throws {
-        try queue.sync {
+        try lock.withLock {
             try ensureInitialized()
             try modCacheDB.clearLocalModCaches()
         }

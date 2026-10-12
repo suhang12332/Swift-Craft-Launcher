@@ -10,12 +10,18 @@ import Observation
 import SwiftUI
 
 /// Manages the player list and coordinates with ``PlayerDataManager`` for persistence.
+@MainActor
 @Observable
-class PlayerListViewModel: @unchecked Sendable {
+class PlayerListViewModel {
     var players: [Player] = []
     var currentPlayer: Player?
 
-    private var notificationObserver: NSObjectProtocol?
+    /// Notification observer token.
+    ///
+    /// `nonisolated(unsafe)`: written exactly once during `init` and read exactly once
+    /// during `deinit`, with no concurrent access. It cannot be main-actor isolated
+    /// because `deinit` is `nonisolated`.
+    nonisolated(unsafe) private var notificationObserver: NSObjectProtocol?
     private var hasLoadedPlayers = false
 
     init() {
@@ -34,8 +40,11 @@ class PlayerListViewModel: @unchecked Sendable {
             object: nil,
             queue: .main,
         ) { [weak self] notification in
-            if let updatedPlayer = notification.userInfo?["updatedPlayer"] as? Player {
-                self?.updatePlayerInList(updatedPlayer)
+            let updatedPlayer = notification.userInfo?["updatedPlayer"] as? Player
+            MainActor.assumeIsolated {
+                if let updatedPlayer {
+                    self?.updatePlayerInList(updatedPlayer)
+                }
             }
         }
     }

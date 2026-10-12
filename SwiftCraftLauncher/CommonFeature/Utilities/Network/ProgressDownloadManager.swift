@@ -159,6 +159,8 @@ private enum ProgressDownloadError: Error {
     case httpStatus(Int)
 }
 
+/// `@unchecked Sendable`: a `URLSessionDownloadDelegate`; all mutable state is guarded
+/// by `OSAllocatedUnfairLock` (`lock`, `sessionState`).
 private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
     static let shared = ProgressDownloadSession()
 
@@ -337,6 +339,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
     }
 }
 
+/// `@unchecked Sendable`: all mutable state is guarded by `OSAllocatedUnfairLock` (`state`).
 private final class ProgressDownloadTracker: @unchecked Sendable {
     private let totalFileSize: Int64
     private let progressCallback: ((Int64, Int64) -> Void)?
@@ -350,7 +353,7 @@ private final class ProgressDownloadTracker: @unchecked Sendable {
     func reportProgress(totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         let actualTotalSize = totalBytesExpectedToWrite > 0 ? totalBytesExpectedToWrite : totalFileSize
         guard actualTotalSize > 0 else { return }
-        DispatchQueue.main.async { [weak self] in
+        Task { @MainActor [weak self] in
             self?.progressCallback?(totalBytesWritten, actualTotalSize)
         }
     }
@@ -376,6 +379,7 @@ private final class ProgressDownloadTracker: @unchecked Sendable {
     }
 }
 
+/// `@unchecked Sendable`: the download task is guarded by `OSAllocatedUnfairLock` (`lock`).
 private final class ProgressDownloadTaskContext: @unchecked Sendable {
     private let lock = OSAllocatedUnfairLock<URLSessionDownloadTask?>(initialState: nil)
 

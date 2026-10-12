@@ -13,13 +13,13 @@ import SQLite3
 ///
 /// Maintains an in-memory map `[type: Set<id>]` that is kept in sync with the
 /// database. Database thread safety is handled by `SQLiteDatabase`'s internal
-/// serial queue. The in-memory map is updated on the main thread so SwiftUI
+/// serial queue; the in-memory map is main-actor isolated so SwiftUI
 /// observations remain responsive.
+@MainActor
 @Observable
-final class FavoriteStore: @unchecked Sendable {
+final class FavoriteStore {
     private let db: SQLiteDatabase
     private let tableName = AppConstants.DatabaseTables.favorites
-    private let initQueue = DispatchQueue(label: "com.swiftcraftlauncher.favoritestore.init")
     private var isInitialized = false
 
     private let createTableSQL: String
@@ -67,9 +67,7 @@ final class FavoriteStore: @unchecked Sendable {
                 try stepStatement(statement)
             }
         }
-        DispatchQueue.main.async { [self] in
-            favoriteIds[type, default: []].insert(id)
-        }
+        favoriteIds[type, default: []].insert(id)
     }
 
     /// Removes a favorite entry for a specific type and updates the in-memory map.
@@ -82,9 +80,7 @@ final class FavoriteStore: @unchecked Sendable {
                 try stepStatement(statement)
             }
         }
-        DispatchQueue.main.async { [self] in
-            favoriteIds[type]?.remove(id)
-        }
+        favoriteIds[type]?.remove(id)
     }
 
     /// Checks whether a project is favorited for a given type using the in-memory map.
@@ -99,9 +95,7 @@ final class FavoriteStore: @unchecked Sendable {
         try db.transaction {
             try db.execute("DELETE FROM \(tableName)")
         }
-        DispatchQueue.main.async { [self] in
-            favoriteIds.removeAll()
-        }
+        favoriteIds.removeAll()
     }
 
     private func loadAllIds() {
@@ -125,26 +119,22 @@ final class FavoriteStore: @unchecked Sendable {
         for (id, type) in pairs {
             map[type, default: []].insert(id)
         }
-        DispatchQueue.main.async { [self] in
-            favoriteIds = map
-        }
+        favoriteIds = map
     }
 
     private func ensureInitialized() throws {
-        try initQueue.sync {
-            guard !isInitialized else { return }
-            try FileManager.default.createDirectory(
-                at: AppPaths.dataDirectory,
-                withIntermediateDirectories: true,
-            )
-            try db.open()
-            try db.execute(createTableSQL)
-            try? db.execute(
-                "CREATE INDEX IF NOT EXISTS idx_favorites_type ON \(tableName)(type);",
-            )
-            isInitialized = true
-            loadAllIds()
-        }
+        guard !isInitialized else { return }
+        try FileManager.default.createDirectory(
+            at: AppPaths.dataDirectory,
+            withIntermediateDirectories: true,
+        )
+        try db.open()
+        try db.execute(createTableSQL)
+        try? db.execute(
+            "CREATE INDEX IF NOT EXISTS idx_favorites_type ON \(tableName)(type);",
+        )
+        isInitialized = true
+        loadAllIds()
     }
 
     private func withPreparedStatement<T>(

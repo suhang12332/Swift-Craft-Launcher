@@ -8,6 +8,7 @@
 @testable import SwiftCraftLauncher
 import XCTest
 
+@MainActor
 final class GlobalErrorHandlerTests: XCTestCase {
     private func flushMainQueue() {
         let exp = XCTestExpectation(description: "flush main queue")
