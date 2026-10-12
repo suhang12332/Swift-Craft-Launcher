@@ -128,9 +128,11 @@ final class SaveInfoManager {
 
     /// Load task handle.
     ///
-    /// `nonisolated`: assigned on the main actor and cancelled from the nonisolated
-    /// `deinit`; never accessed concurrently.
-    nonisolated private var loadTask: Task<Void, Never>?
+    /// Load task handle.
+    ///
+    /// `@ObservationIgnored` — internal bookkeeping, not observable state. Accessible from
+    /// the nonisolated `deinit` because `Task` is `Sendable`.
+    @ObservationIgnored private var loadTask: Task<Void, Never>?
 
     private var isVanilla: Bool {
         modLoader.lowercased() == GameLoader.vanilla.displayName

@@ -18,10 +18,12 @@ class PlayerListViewModel {
 
     /// Notification observer token.
     ///
-    /// `nonisolated`: written exactly once during `init` and read exactly once during
-    /// `deinit`, with no concurrent access. It cannot be main-actor isolated because
-    /// `deinit` is `nonisolated`.
-    nonisolated private var notificationObserver: NSObjectProtocol?
+    /// Notification observer token.
+    ///
+    /// `@ObservationIgnored` — internal bookkeeping, not observable state.
+    /// `nonisolated(unsafe)` — written once during `init` and read once during the
+    /// nonisolated `deinit`, with no concurrent access.
+    @ObservationIgnored nonisolated(unsafe) private var notificationObserver: NSObjectProtocol?
     private var hasLoadedPlayers = false
 
     init() {
