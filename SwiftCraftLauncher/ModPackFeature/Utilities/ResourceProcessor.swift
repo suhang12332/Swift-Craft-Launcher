@@ -137,7 +137,7 @@ enum ModrinthResourceIdentifier {
     /// - Parameter modFile: The URL of the mod file to look up.
     /// - Returns: The lookup result, or `nil` if the file is not found on Modrinth.
     static func getModrinthInfo(for modFile: URL) async -> ModrinthLookupResult? {
-        guard let hash = try? SHA1Calculator.sha1(ofFileAt: modFile) else {
+        guard let hash = try? await SHA1Calculator.sha1InBackground(ofFileAt: modFile) else {
             return nil
         }
 

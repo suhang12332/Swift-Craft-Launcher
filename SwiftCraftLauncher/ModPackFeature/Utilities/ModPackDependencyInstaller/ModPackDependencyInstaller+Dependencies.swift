@@ -227,7 +227,7 @@ extension ModPackDependencyInstaller {
                 expectedSha1: primaryFile.hashes.sha1,
             )
 
-            if let hash = DIContainer.shared.core.modScanner.sha1Hash(of: downloadedFile) {
+            if let hash = await DIContainer.shared.core.modScanner.sha1Hash(of: downloadedFile) {
                 var detailWithFile = projectDetail
                 detailWithFile.fileName = primaryFile.filename
                 detailWithFile.type = ResourceType.mod.rawValue

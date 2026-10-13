@@ -116,7 +116,7 @@ enum ModUpdateChecker {
         if let fileName = installedFileName {
             let fileURL = resourceDir.appendingPathComponent(fileName)
             if FileManager.default.fileExists(atPath: fileURL.path) {
-                return DIContainer.shared.core.modScanner.sha1Hash(of: fileURL)
+                return await DIContainer.shared.core.modScanner.sha1Hash(of: fileURL)
             }
         }
         return nil

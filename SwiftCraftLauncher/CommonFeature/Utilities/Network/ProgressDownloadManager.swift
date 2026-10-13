@@ -38,7 +38,7 @@ enum ProgressDownloadManager {
 
         try FileDownloadCore.ensureParentDirectory(for: destinationURL, fileManager: fileManager)
 
-        if let existingFileSize = FileDownloadCore.existingFileSizeIfReusable(
+        if let existingFileSize = await FileDownloadCore.existingFileSizeIfReusable(
             at: destinationURL,
             expectedSha1: expectedSha1,
             fileManager: fileManager,
@@ -67,7 +67,7 @@ enum ProgressDownloadManager {
                 )
                 defer { try? fileManager.removeItem(at: tempURL) }
 
-                try FileDownloadCore.validateSHA1IfNeeded(for: tempURL, expectedSha1: expectedSha1)
+                try await FileDownloadCore.validateSHA1IfNeeded(for: tempURL, expectedSha1: expectedSha1)
                 try FileDownloadCore.moveDownloadedFile(from: tempURL, to: destinationURL, fileManager: fileManager)
                 return destinationURL
             } catch {
