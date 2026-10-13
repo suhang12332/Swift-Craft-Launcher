@@ -58,63 +58,71 @@ final class FileDownloadCoreExtendedTests: XCTestCase {
         XCTAssertThrowsError(try FileDownloadCore.parseURL(from: "https://exam ple.com/file.jar"))
     }
 
-    func testExistingFileSizeIfReusable_missingFile_returnsNil() {
+    func testExistingFileSizeIfReusable_missingFile_returnsNil() async {
         let url = tmpFile("missing-\(UUID().uuidString).jar")
-        XCTAssertNil(FileDownloadCore.existingFileSizeIfReusable(at: url, expectedSha1: nil))
+        let size = await FileDownloadCore.existingFileSizeIfReusable(at: url, expectedSha1: nil)
+        XCTAssertNil(size)
     }
 
-    func testExistingFileSizeIfReusable_existingFile_returnsSize() throws {
+    func testExistingFileSizeIfReusable_existingFile_returnsSize() async throws {
         let file = tmpFile("test.jar")
         let data = Data("hello".utf8)
         try data.write(to: file)
-        XCTAssertEqual(FileDownloadCore.existingFileSizeIfReusable(at: file, expectedSha1: nil), Int64(data.count))
+        let size = await FileDownloadCore.existingFileSizeIfReusable(at: file, expectedSha1: nil)
+        XCTAssertEqual(size, Int64(data.count))
     }
 
-    func testExistingFileSizeIfReusable_matchingSha1_returnsSize() throws {
-        let file = tmpFile("test.jar")
-        let data = Data("hello".utf8)
-        try data.write(to: file)
-        let sha1 = SHA1Calculator.sha1(of: data)
-        XCTAssertEqual(FileDownloadCore.existingFileSizeIfReusable(at: file, expectedSha1: sha1), Int64(data.count))
-    }
-
-    func testExistingFileSizeIfReusable_wrongSha1_returnsNil() throws {
-        let file = tmpFile("test.jar")
-        try Data("hello".utf8).write(to: file)
-        XCTAssertNil(FileDownloadCore.existingFileSizeIfReusable(at: file, expectedSha1: "wrong_sha1"))
-    }
-
-    func testExistingFileSizeIfReusable_emptySha1_returnsSize() throws {
-        let file = tmpFile("test.jar")
-        let data = Data("hello".utf8)
-        try data.write(to: file)
-        XCTAssertEqual(FileDownloadCore.existingFileSizeIfReusable(at: file, expectedSha1: ""), Int64(data.count))
-    }
-
-    func testValidateSHA1IfNeeded_nilExpected_noError() throws {
-        let file = tmpFile("test.jar")
-        try Data("hello".utf8).write(to: file)
-        XCTAssertNoThrow(try FileDownloadCore.validateSHA1IfNeeded(for: file, expectedSha1: nil))
-    }
-
-    func testValidateSHA1IfNeeded_emptyExpected_noError() throws {
-        let file = tmpFile("test.jar")
-        try Data("hello".utf8).write(to: file)
-        XCTAssertNoThrow(try FileDownloadCore.validateSHA1IfNeeded(for: file, expectedSha1: ""))
-    }
-
-    func testValidateSHA1IfNeeded_matchingSha1_noError() throws {
+    func testExistingFileSizeIfReusable_matchingSha1_returnsSize() async throws {
         let file = tmpFile("test.jar")
         let data = Data("hello".utf8)
         try data.write(to: file)
         let sha1 = SHA1Calculator.sha1(of: data)
-        XCTAssertNoThrow(try FileDownloadCore.validateSHA1IfNeeded(for: file, expectedSha1: sha1))
+        let size = await FileDownloadCore.existingFileSizeIfReusable(at: file, expectedSha1: sha1)
+        XCTAssertEqual(size, Int64(data.count))
     }
 
-    func testValidateSHA1IfNeeded_wrongSha1_throws() throws {
+    func testExistingFileSizeIfReusable_wrongSha1_returnsNil() async throws {
         let file = tmpFile("test.jar")
         try Data("hello".utf8).write(to: file)
-        XCTAssertThrowsError(try FileDownloadCore.validateSHA1IfNeeded(for: file, expectedSha1: "wrong")) { error in
+        let size = await FileDownloadCore.existingFileSizeIfReusable(at: file, expectedSha1: "wrong_sha1")
+        XCTAssertNil(size)
+    }
+
+    func testExistingFileSizeIfReusable_emptySha1_returnsSize() async throws {
+        let file = tmpFile("test.jar")
+        let data = Data("hello".utf8)
+        try data.write(to: file)
+        let size = await FileDownloadCore.existingFileSizeIfReusable(at: file, expectedSha1: "")
+        XCTAssertEqual(size, Int64(data.count))
+    }
+
+    func testValidateSHA1IfNeeded_nilExpected_noError() async throws {
+        let file = tmpFile("test.jar")
+        try Data("hello".utf8).write(to: file)
+        try await FileDownloadCore.validateSHA1IfNeeded(for: file, expectedSha1: nil)
+    }
+
+    func testValidateSHA1IfNeeded_emptyExpected_noError() async throws {
+        let file = tmpFile("test.jar")
+        try Data("hello".utf8).write(to: file)
+        try await FileDownloadCore.validateSHA1IfNeeded(for: file, expectedSha1: "")
+    }
+
+    func testValidateSHA1IfNeeded_matchingSha1_noError() async throws {
+        let file = tmpFile("test.jar")
+        let data = Data("hello".utf8)
+        try data.write(to: file)
+        let sha1 = SHA1Calculator.sha1(of: data)
+        try await FileDownloadCore.validateSHA1IfNeeded(for: file, expectedSha1: sha1)
+    }
+
+    func testValidateSHA1IfNeeded_wrongSha1_throws() async throws {
+        let file = tmpFile("test.jar")
+        try Data("hello".utf8).write(to: file)
+        do {
+            try await FileDownloadCore.validateSHA1IfNeeded(for: file, expectedSha1: "wrong")
+            XCTFail("Expected SHA1 validation to throw")
+        } catch {
             let globalError = error as? GlobalError
             XCTAssertEqual(globalError?.i18nKey, "error.validation.sha1_check_failed")
         }
