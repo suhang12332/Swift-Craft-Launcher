@@ -72,7 +72,7 @@ struct ModrinthLoader: Codable {
             String.self,
             forKey: .minecraftArguments,
         ) {
-            let gameArguments = try LegacyMinecraftArguments.decode(minecraftArguments, decoder: decoder)
+            let gameArguments = LegacyMinecraftArguments.decode(minecraftArguments)
             arguments = Arguments(game: gameArguments, jvm: nil)
         } else {
             throw DecodingError.keyNotFound(

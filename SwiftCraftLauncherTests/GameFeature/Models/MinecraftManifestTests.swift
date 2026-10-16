@@ -42,7 +42,7 @@ final class MinecraftManifestTests: XCTestCase {
     func testMinecraftVersionManifest_decodesLegacyMinecraftArguments() throws {
         let json = """
         {
-            "minecraftArguments": "--username player --displayName \\\"two words\\\"",
+            "minecraftArguments": "--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userType ${user_type} --versionType ${version_type}",
             "assetIndex": {"id": "1.12", "sha1": "abc", "size": 100, "totalSize": 200, "url": "https://example.com/index.json"},
             "assets": "1.12",
             "downloads": {"client": {"sha1": "def", "size": 300, "url": "https://example.com/client.jar"}},
@@ -50,7 +50,7 @@ final class MinecraftManifestTests: XCTestCase {
             "javaVersion": {"component": "jre-legacy", "majorVersion": 8},
             "libraries": [],
             "logging": {"client": {"argument": "-Dlog4j", "file": {"id": "log.xml", "sha1": "ghi", "size": 400, "url": "https://example.com/log.xml"}, "type": "log4j2-xml"}},
-            "mainClass": "net.minecraft.launchwrapper.Launch",
+            "mainClass": "net.minecraft.client.main.Main",
             "minimumLauncherVersion": 18,
             "releaseTime": "2017-09-18T08:32:39+00:00",
             "time": "2017-09-18T08:32:39+00:00",
@@ -60,7 +60,20 @@ final class MinecraftManifestTests: XCTestCase {
         let manifest = try JSONDecoder().decode(MinecraftVersionManifest.self, from: Data(json.utf8))
 
         XCTAssertEqual(manifest.id, "1.12.2")
-        XCTAssertEqual(manifest.arguments.game, ["--username", "player", "--displayName", "two words"])
+        XCTAssertEqual(
+            manifest.arguments.game,
+            [
+                "--username", "${auth_player_name}",
+                "--version", "${version_name}",
+                "--gameDir", "${game_directory}",
+                "--assetsDir", "${assets_root}",
+                "--assetIndex", "${assets_index_name}",
+                "--uuid", "${auth_uuid}",
+                "--accessToken", "${auth_access_token}",
+                "--userType", "${user_type}",
+                "--versionType", "${version_type}",
+            ],
+        )
         XCTAssertNil(manifest.arguments.jvm)
     }
 
