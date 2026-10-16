@@ -58,10 +58,31 @@ struct ModrinthLoader: Codable {
         case mainClass, arguments, libraries, version, processors, data
     }
 
+    private enum LegacyCodingKeys: String, CodingKey {
+        case minecraftArguments
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        let legacyContainer = try decoder.container(keyedBy: LegacyCodingKeys.self)
         mainClass = try container.decode(String.self, forKey: .mainClass)
-        arguments = try container.decode(Arguments.self, forKey: .arguments)
+        if let decodedArguments = try container.decodeIfPresent(Arguments.self, forKey: .arguments) {
+            arguments = decodedArguments
+        } else if let minecraftArguments = try legacyContainer.decodeIfPresent(
+            String.self,
+            forKey: .minecraftArguments,
+        ) {
+            let gameArguments = LegacyMinecraftArguments.decode(minecraftArguments)
+            arguments = Arguments(game: gameArguments, jvm: nil)
+        } else {
+            throw DecodingError.keyNotFound(
+                CodingKeys.arguments,
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Expected either 'arguments' or 'minecraftArguments'.",
+                ),
+            )
+        }
         libraries = try container.decode(
             [ModrinthLoaderLibrary].self,
             forKey: .libraries,

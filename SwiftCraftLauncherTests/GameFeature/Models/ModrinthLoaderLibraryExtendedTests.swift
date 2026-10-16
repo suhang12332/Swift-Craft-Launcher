@@ -108,6 +108,43 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
         XCTAssertTrue(loader.libraries.isEmpty)
     }
 
+    func testModrinthLoader_legacyMinecraftArguments() throws {
+        let legacyArguments = "--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userType ${user_type} --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --versionType Forge"
+        let data = try JSONSerialization.data(withJSONObject: [
+            "mainClass": "net.minecraft.launchwrapper.Launch",
+            "minecraftArguments": legacyArguments,
+            "libraries": [],
+        ])
+        let loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
+
+        XCTAssertEqual(
+            loader.arguments.game,
+            [
+                "--username",
+                "${auth_player_name}",
+                "--version",
+                "${version_name}",
+                "--gameDir",
+                "${game_directory}",
+                "--assetsDir",
+                "${assets_root}",
+                "--assetIndex",
+                "${assets_index_name}",
+                "--uuid",
+                "${auth_uuid}",
+                "--accessToken",
+                "${auth_access_token}",
+                "--userType",
+                "${user_type}",
+                "--tweakClass",
+                "net.minecraftforge.fml.common.launcher.FMLTweaker",
+                "--versionType",
+                "Forge",
+            ],
+        )
+        XCTAssertNil(loader.arguments.jvm)
+    }
+
     func testLoaderVersion_multipleLoaders() throws {
         let json = """
         {

@@ -29,10 +29,33 @@ struct MinecraftVersionManifest: Codable {
         case complianceLevel
     }
 
+    private enum LegacyCodingKeys: String, CodingKey {
+        case minecraftArguments
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        let legacyContainer = try decoder.container(keyedBy: LegacyCodingKeys.self)
 
-        arguments = try container.decode(Arguments.self, forKey: .arguments)
+        if let decodedArguments = try container.decodeIfPresent(Arguments.self, forKey: .arguments) {
+            arguments = decodedArguments
+        } else if let minecraftArguments = try legacyContainer.decodeIfPresent(
+            String.self,
+            forKey: .minecraftArguments,
+        ) {
+            arguments = Arguments(
+                game: LegacyMinecraftArguments.decode(minecraftArguments),
+                jvm: nil,
+            )
+        } else {
+            throw DecodingError.keyNotFound(
+                CodingKeys.arguments,
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Expected either 'arguments' or 'minecraftArguments'.",
+                ),
+            )
+        }
         assetIndex = try container.decode(AssetIndex.self, forKey: .assetIndex)
         assets = try container.decode(String.self, forKey: .assets)
         complianceLevel = try container.decodeIfPresent(Int.self, forKey: .complianceLevel)
@@ -49,10 +72,22 @@ struct MinecraftVersionManifest: Codable {
     }
 }
 
+/// Splits the space-delimited argument string used by legacy Minecraft manifests.
+enum LegacyMinecraftArguments {
+    static func decode(_ string: String) -> [String] {
+        string.split(whereSeparator: \.isWhitespace).map(String.init)
+    }
+}
+
 /// Game and JVM arguments for a Minecraft version.
 struct Arguments: Codable {
     let game: [String]?
     let jvm: [String]?
+
+    init(game: [String]?, jvm: [String]?) {
+        self.game = game
+        self.jvm = jvm
+    }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
