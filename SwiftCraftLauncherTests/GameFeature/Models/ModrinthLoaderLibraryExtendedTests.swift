@@ -109,16 +109,13 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
     }
 
     func testModrinthLoader_legacyMinecraftArguments() throws {
-        let legacyArguments = "--username ${auth_player_name} " +
-            "--tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker"
-        let json = """
-        {
+        let legacyArguments = #"--username ${auth_player_name} --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --displayName "two words" --escaped escaped\ value --quotedEscape "a\"b" --windowsPath "C:\Games\instance""#
+        let data = try JSONSerialization.data(withJSONObject: [
             "mainClass": "net.minecraft.launchwrapper.Launch",
-            "minecraftArguments": "\(legacyArguments)",
-            "libraries": []
-        }
-        """
-        let loader = try JSONDecoder().decode(ModrinthLoader.self, from: Data(json.utf8))
+            "minecraftArguments": legacyArguments,
+            "libraries": [],
+        ])
+        let loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
 
         XCTAssertEqual(
             loader.arguments.game,
@@ -127,6 +124,14 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
                 "${auth_player_name}",
                 "--tweakClass",
                 "net.minecraftforge.fml.common.launcher.FMLTweaker",
+                "--displayName",
+                "two words",
+                "--escaped",
+                "escaped value",
+                "--quotedEscape",
+                "a\"b",
+                "--windowsPath",
+                "C:\\Games\\instance",
             ],
         )
         XCTAssertNil(loader.arguments.jvm)

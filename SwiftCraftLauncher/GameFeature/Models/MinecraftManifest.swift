@@ -29,10 +29,33 @@ struct MinecraftVersionManifest: Codable {
         case complianceLevel
     }
 
+    private enum LegacyCodingKeys: String, CodingKey {
+        case minecraftArguments
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        let legacyContainer = try decoder.container(keyedBy: LegacyCodingKeys.self)
 
-        arguments = try container.decode(Arguments.self, forKey: .arguments)
+        if let decodedArguments = try container.decodeIfPresent(Arguments.self, forKey: .arguments) {
+            arguments = decodedArguments
+        } else if let minecraftArguments = try legacyContainer.decodeIfPresent(
+            String.self,
+            forKey: .minecraftArguments,
+        ) {
+            arguments = Arguments(
+                game: try LegacyMinecraftArguments.decode(minecraftArguments, decoder: decoder),
+                jvm: nil,
+            )
+        } else {
+            throw DecodingError.keyNotFound(
+                CodingKeys.arguments,
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Expected either 'arguments' or 'minecraftArguments'.",
+                ),
+            )
+        }
         assetIndex = try container.decode(AssetIndex.self, forKey: .assetIndex)
         assets = try container.decode(String.self, forKey: .assets)
         complianceLevel = try container.decodeIfPresent(Int.self, forKey: .complianceLevel)
@@ -46,6 +69,85 @@ struct MinecraftVersionManifest: Codable {
         releaseTime = try container.decode(String.self, forKey: .releaseTime)
         time = try container.decode(String.self, forKey: .time)
         type = try container.decode(String.self, forKey: .type)
+    }
+}
+
+/// Splits a legacy Minecraft argument string while preserving quoted values.
+enum LegacyMinecraftArguments {
+    enum ParseError: Error {
+        case unterminatedQuote
+    }
+
+    static func tokenize(_ string: String) throws -> [String] {
+        let characters = Array(string)
+        var arguments: [String] = []
+        var argument = ""
+        var quote: Character?
+        var hasStartedArgument = false
+        var index = 0
+
+        while index < characters.count {
+            let character = characters[index]
+            if let activeQuote = quote {
+                if character == activeQuote {
+                    quote = nil
+                    index += 1
+                } else if activeQuote == "\"" && character == "\\" && index + 1 < characters.count &&
+                    (characters[index + 1] == "\"" || characters[index + 1] == "\\")
+                {
+                    argument.append(characters[index + 1])
+                    index += 2
+                } else {
+                    argument.append(character)
+                    index += 1
+                }
+            } else if character == "\"" || character == "'" {
+                quote = character
+                hasStartedArgument = true
+                index += 1
+            } else if character == "\\", index + 1 < characters.count {
+                let escapedCharacter = characters[index + 1]
+                if escapedCharacter.isWhitespace || escapedCharacter == "\"" || escapedCharacter == "'" || escapedCharacter == "\\" {
+                    argument.append(escapedCharacter)
+                    index += 2
+                } else {
+                    argument.append(character)
+                    index += 1
+                }
+                hasStartedArgument = true
+            } else if character.isWhitespace {
+                if hasStartedArgument {
+                    arguments.append(argument)
+                    argument = ""
+                    hasStartedArgument = false
+                }
+                index += 1
+            } else {
+                argument.append(character)
+                hasStartedArgument = true
+                index += 1
+            }
+        }
+
+        guard quote == nil else { throw ParseError.unterminatedQuote }
+        if hasStartedArgument {
+            arguments.append(argument)
+        }
+        return arguments
+    }
+
+    static func decode(_ string: String, decoder: Decoder) throws -> [String] {
+        do {
+            return try tokenize(string)
+        } catch {
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Invalid legacy 'minecraftArguments' value.",
+                    underlyingError: error,
+                ),
+            )
+        }
     }
 }
 
