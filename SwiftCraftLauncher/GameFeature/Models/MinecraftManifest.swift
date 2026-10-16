@@ -54,6 +54,11 @@ struct Arguments: Codable {
     let game: [String]?
     let jvm: [String]?
 
+    init(game: [String]?, jvm: [String]?) {
+        self.game = game
+        self.jvm = jvm
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 

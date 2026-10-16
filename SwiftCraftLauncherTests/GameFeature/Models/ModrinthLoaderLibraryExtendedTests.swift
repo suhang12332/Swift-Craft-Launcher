@@ -108,6 +108,30 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
         XCTAssertTrue(loader.libraries.isEmpty)
     }
 
+    func testModrinthLoader_legacyMinecraftArguments() throws {
+        let legacyArguments = "--username ${auth_player_name} " +
+            "--tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker"
+        let json = """
+        {
+            "mainClass": "net.minecraft.launchwrapper.Launch",
+            "minecraftArguments": "\(legacyArguments)",
+            "libraries": []
+        }
+        """
+        let loader = try JSONDecoder().decode(ModrinthLoader.self, from: Data(json.utf8))
+
+        XCTAssertEqual(
+            loader.arguments.game,
+            [
+                "--username",
+                "${auth_player_name}",
+                "--tweakClass",
+                "net.minecraftforge.fml.common.launcher.FMLTweaker",
+            ],
+        )
+        XCTAssertNil(loader.arguments.jvm)
+    }
+
     func testLoaderVersion_multipleLoaders() throws {
         let json = """
         {
