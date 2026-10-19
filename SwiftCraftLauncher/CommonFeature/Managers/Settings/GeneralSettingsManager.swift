@@ -6,7 +6,6 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Combine
 import Foundation
 import SwiftUI
 
@@ -23,9 +22,6 @@ public enum InterfaceLayoutStyle: String, CaseIterable {
 /// Manages general application settings including downloads and layout preferences.
 @Observable
 final class GeneralSettingsManager {
-    /// A Combine subject that fires when the working directory path changes.
-    private let workingPathDidChangeSubject = PassthroughSubject<Void, Never>()
-
     var limitCommonSheetHeight: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.limitCommonSheetHeight) {
         didSet { Defaults.save(limitCommonSheetHeight, forKey: AppConstants.UserDefaultsKeys.limitCommonSheetHeight) }
     }
@@ -33,7 +29,6 @@ final class GeneralSettingsManager {
     var launcherWorkingDirectory: String = Defaults.loadString(forKey: AppConstants.UserDefaultsKeys.launcherWorkingDirectory, defaultValue: AppPaths.launcherSupportDirectory.path) {
         didSet {
             Defaults.save(launcherWorkingDirectory, forKey: AppConstants.UserDefaultsKeys.launcherWorkingDirectory)
-            workingPathDidChangeSubject.send()
         }
     }
 
@@ -44,9 +39,5 @@ final class GeneralSettingsManager {
     /// The current working path, falling back to the default support directory when empty.
     var currentWorkingPath: String {
         launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : launcherWorkingDirectory
-    }
-
-    var workingPathWillChange: AnyPublisher<Void, Never> {
-        workingPathDidChangeSubject.eraseToAnyPublisher()
     }
 }

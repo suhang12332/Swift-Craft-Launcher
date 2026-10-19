@@ -136,7 +136,7 @@ extension ModPackDependencyInstaller {
                 headers: CurseForgeService.getHeaders(),
             )
 
-            if let hash = DIContainer.shared.core.modScanner.sha1Hash(of: downloadedFile) {
+            if let hash = await DIContainer.shared.core.modScanner.sha1Hash(of: downloadedFile) {
                 if let cfAsModrinth = CFToModrinthAdapter.convertProjectDetail(effectiveModDetail) {
                     var detailWithFile = cfAsModrinth
                     detailWithFile.fileName = fileDetail.fileName
@@ -172,7 +172,7 @@ extension ModPackDependencyInstaller {
             return false
         }
 
-        if let hash = DIContainer.shared.core.modScanner.sha1Hash(of: downloadedFile),
+        if let hash = await DIContainer.shared.core.modScanner.sha1Hash(of: downloadedFile),
            var detailWithFile = try? await ModrinthService.fetchModrinthDetailThrowing(by: hash) {
             let fileUrl = URL(fileURLWithPath: file.path)
             detailWithFile.fileName = fileUrl.lastPathComponent

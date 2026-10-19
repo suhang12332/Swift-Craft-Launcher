@@ -11,8 +11,9 @@ import os
 import SwiftUI
 
 /// Handles Microsoft OAuth authentication for Minecraft accounts.
+@MainActor
 @Observable
-final class MinecraftAuthService: @unchecked Sendable {
+final class MinecraftAuthService {
     var authState: AuthenticationState = .idle
     var isLoading: Bool = false
     var authenticationIssue: MinecraftAuthenticationIssue?

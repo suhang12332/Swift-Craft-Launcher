@@ -9,8 +9,9 @@ import AppKit
 import SwiftUI
 
 /// Provides game-related actions such as revealing in Finder and deletion.
+@MainActor
 @Observable
-class GameActionManager: @unchecked Sendable {
+class GameActionManager {
     init() { }
 
     /// Reveals the game directory in Finder.
@@ -33,7 +34,6 @@ class GameActionManager: @unchecked Sendable {
     ///   - gameRepository: The game repository for record management.
     ///   - selectedItem: An optional binding to the current sidebar selection, updated after deletion.
     ///   - gameType: An optional binding set to `true` when navigating to the resource page.
-    @MainActor
     func deleteGame(
         game: GameVersionInfo,
         gameRepository: GameRepository,

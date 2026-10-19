@@ -107,6 +107,54 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertEqual(gameArgs[3], "forge_client")
     }
 
+    func testInjectingLibraryDirectory_forgeWithoutProperty() {
+        let jvmArgs = ["-Xmx4G", "-Djava.net.preferIPv6Addresses=system"]
+
+        let result = MinecraftLaunchCommandBuilder.injectingLibraryDirectoryIfNeeded(
+            into: jvmArgs,
+            modLoader: GameLoader.forge.displayName,
+        )
+
+        XCTAssertEqual(result.first, "-DlibraryDirectory=\(AppPaths.librariesDirectory.path)")
+        XCTAssertEqual(Array(result.dropFirst()), jvmArgs)
+    }
+
+    func testInjectingLibraryDirectory_notAddedForNeoForge() {
+        // NeoForge profiles always declare `-DlibraryDirectory` themselves.
+        let jvmArgs = ["-Xmx4G"]
+
+        let result = MinecraftLaunchCommandBuilder.injectingLibraryDirectoryIfNeeded(
+            into: jvmArgs,
+            modLoader: GameLoader.neoforge.displayName,
+        )
+
+        XCTAssertEqual(result, jvmArgs)
+    }
+
+    func testInjectingLibraryDirectory_existingPropertyIsPreserved() {
+        let jvmArgs = ["-DlibraryDirectory=/custom/libraries", "-Xmx4G"]
+
+        let result = MinecraftLaunchCommandBuilder.injectingLibraryDirectoryIfNeeded(
+            into: jvmArgs,
+            modLoader: GameLoader.forge.displayName,
+        )
+
+        XCTAssertEqual(result, jvmArgs)
+    }
+
+    func testInjectingLibraryDirectory_notAddedForOtherLoaders() {
+        for loader in [GameLoader.vanilla, .fabric, .quilt] {
+            let jvmArgs = ["-Xmx4G"]
+
+            let result = MinecraftLaunchCommandBuilder.injectingLibraryDirectoryIfNeeded(
+                into: jvmArgs,
+                modLoader: loader.displayName,
+            )
+
+            XCTAssertEqual(result, jvmArgs, "Unexpected injection for \(loader.displayName)")
+        }
+    }
+
     func testVariableMap_containsRequiredKeys() {
         let gameInfo = makeGameInfo(
             gameName: "TestGame",

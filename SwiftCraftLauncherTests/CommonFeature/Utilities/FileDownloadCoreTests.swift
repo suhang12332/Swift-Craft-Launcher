@@ -21,9 +21,10 @@ final class FileDownloadCoreTests: XCTestCase {
         }
     }
 
-    func testExistingFileSizeIfReusable_missingFile_returnsNil() {
+    func testExistingFileSizeIfReusable_missingFile_returnsNil() async {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("missing-\(UUID().uuidString).jar")
-        XCTAssertNil(FileDownloadCore.existingFileSizeIfReusable(at: url, expectedSha1: nil))
+        let size = await FileDownloadCore.existingFileSizeIfReusable(at: url, expectedSha1: nil)
+        XCTAssertNil(size)
     }
 }

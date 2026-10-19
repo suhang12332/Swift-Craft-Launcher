@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// `@unchecked Sendable`: immutable container; services are created through
+/// thread-safe `@Lazy` / `@MainActorLazy` wrappers.
 final class CoreContainer: @unchecked Sendable {
     // Error handling
 
@@ -28,14 +30,14 @@ final class CoreContainer: @unchecked Sendable {
 
     // Game
 
-    @Lazy var gameProcessManager: GameProcessManager = .init()
-    @Lazy var gameStatusManager: GameStatusManager = .init()
+    @MainActorLazy var gameProcessManager: GameProcessManager = .init()
+    @MainActorLazy var gameStatusManager: GameStatusManager = .init()
     @Lazy var gameLogCollector: GameLogCollector = .init()
-    @Lazy var gameActionManager: GameActionManager = .init()
+    @MainActorLazy var gameActionManager: GameActionManager = .init()
 
     // Favorites
 
-    @Lazy var favoriteStore: FavoriteStore = .init()
+    @MainActorLazy var favoriteStore: FavoriteStore = .init()
 
     // Settings core
 

@@ -6,16 +6,30 @@
 //
 
 import Foundation
+import os
 
 /// Manages Java runtime downloads and tracks their progress.
+@MainActor
 @Observable
-class JavaDownloadManager: @unchecked Sendable {
+class JavaDownloadManager {
     var downloadState = JavaDownloadState()
     var isWindowVisible = false
 
     private var dismissCallback: (() -> Void)?
     private var currentDownloadTask: Task<Void, Error>?
-    private var cancelRequested = false
+    /// Cross-thread cancellation flag.
+    ///
+    /// Written on the main actor and read from the downloader's `CancelActor`
+    /// callback, so it is guarded by a lock rather than actor isolation.
+    nonisolated private let cancelRequestedFlag = OSAllocatedUnfairLock(initialState: false)
+
+    nonisolated private var cancelRequested: Bool {
+        cancelRequestedFlag.withLock { $0 }
+    }
+
+    nonisolated private func setCancelRequested(_ value: Bool) {
+        cancelRequestedFlag.withLock { $0 = value }
+    }
 
     init() { }
 
@@ -28,14 +42,14 @@ class JavaDownloadManager: @unchecked Sendable {
     func downloadJavaRuntime(version: String) async {
         defer {
             currentDownloadTask = nil
-            cancelRequested = false
+            setCancelRequested(false)
         }
         do {
             downloadState.reset()
             downloadState.startDownload(version: version)
-            cancelRequested = false
+            setCancelRequested(false)
 
-            await showDownloadWindow()
+            showDownloadWindow()
 
             DIContainer.shared.system.javaRuntimeDownloader.setProgressCallback { @Sendable [weak self] fileName, completed, total in
                 Task { @MainActor in
@@ -57,17 +71,17 @@ class JavaDownloadManager: @unchecked Sendable {
 
             if downloadState.isCancelled || cancelRequested {
                 AppLog.game.info("Java download cancelled")
-                await cleanupCancelledDownload()
+                cleanupCancelledDownload()
                 return
             }
 
             downloadState.isDownloading = false
 
-            await closeWindow()
+            closeWindow()
         } catch {
             if error is CancellationError || downloadState.isCancelled || cancelRequested {
                 AppLog.game.info("Java download task cancelled")
-                await cleanupCancelledDownload()
+                cleanupCancelledDownload()
                 return
             }
             if !downloadState.isCancelled {
@@ -83,7 +97,7 @@ class JavaDownloadManager: @unchecked Sendable {
             closeWindow()
             return
         }
-        cancelRequested = true
+        setCancelRequested(true)
         downloadState.cancel()
         currentDownloadTask?.cancel()
     }

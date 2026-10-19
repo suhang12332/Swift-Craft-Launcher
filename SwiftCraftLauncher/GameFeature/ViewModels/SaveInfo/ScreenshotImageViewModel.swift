@@ -18,19 +18,19 @@ final class ScreenshotImageViewModel {
     var loadFailed: Bool = false
 
     func load(path: URL) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            if let nsImage = NSImage(contentsOf: path) {
-                DispatchQueue.main.async {
-                    self.image = nsImage
-                    self.isLoading = false
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self.loadFailed = true
-                    self.isLoading = false
-                }
-            }
+        Task.detached(priority: .userInitiated) { [weak self] in
+            let nsImage = NSImage(contentsOf: path)
+            await self?.applyLoadedImage(nsImage)
         }
+    }
+
+    private func applyLoadedImage(_ image: NSImage?) {
+        if let image {
+            self.image = image
+        } else {
+            loadFailed = true
+        }
+        isLoading = false
     }
 
     func reset() {

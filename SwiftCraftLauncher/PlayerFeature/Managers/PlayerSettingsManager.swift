@@ -5,16 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Combine
 import SwiftUI
 
 /// Manages player-related settings persisted in `UserDefaults`.
 @Observable
 final class PlayerSettingsManager {
-    /// A Combine subject that fires when presence notification setting changes,
-    /// for consumers that need Combine streams (e.g. MinecraftFriendsPresencePollingCoordinator).
-    let presenceNotificationsDidChange = PassthroughSubject<Void, Never>()
-
     /// A Boolean value indicating whether offline login is allowed in the launcher.
     var enableOfflineLogin: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableOfflineLogin) {
         didSet { Defaults.save(enableOfflineLogin, forKey: AppConstants.UserDefaultsKeys.enableOfflineLogin) }
@@ -44,7 +39,6 @@ final class PlayerSettingsManager {
     var enableMinecraftFriendsPresenceNotifications: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableMinecraftFriendsPresenceNotifications) {
         didSet {
             Defaults.save(enableMinecraftFriendsPresenceNotifications, forKey: AppConstants.UserDefaultsKeys.enableMinecraftFriendsPresenceNotifications)
-            presenceNotificationsDidChange.send()
         }
     }
 }

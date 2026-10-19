@@ -5,25 +5,37 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Combine
 import Foundation
+import Observation
 
 /// Publishes notifications when game icons need to refresh.
+///
+/// Consumers obtain a stream via ``refreshRequests()`` and iterate it with
+/// `for await`; the stream terminates automatically when the consuming task is
+/// cancelled, removing the underlying continuation.
+@MainActor
 @Observable
 final class IconRefreshNotifier {
-    /// The subject that emits game names to refresh, where `nil` refreshes all icons.
-    private let refreshSubject = PassthroughSubject<String?, Never>()
-
-    /// A publisher that emits the game name to refresh.
-    var refreshPublisher: AnyPublisher<String?, Never> {
-        refreshSubject.eraseToAnyPublisher()
-    }
+    private var continuations: [UUID: AsyncStream<String?>.Continuation] = [:]
 
     init() { }
+
+    /// A stream of icon refresh requests, where a `nil` game name means refresh all icons.
+    func refreshRequests() -> AsyncStream<String?> {
+        AsyncStream { continuation in
+            let id = UUID()
+            continuations[id] = continuation
+            continuation.onTermination = { [weak self] _ in
+                Task { @MainActor in self?.continuations[id] = nil }
+            }
+        }
+    }
 
     /// Notifies observers to refresh the icon for a specific game.
     /// - Parameter gameName: The game name, or `nil` to refresh all icons.
     func notifyRefresh(for gameName: String?) {
-        refreshSubject.send(gameName)
+        for continuation in continuations.values {
+            continuation.yield(gameName)
+        }
     }
 }

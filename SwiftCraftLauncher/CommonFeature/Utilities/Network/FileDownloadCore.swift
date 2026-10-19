@@ -41,7 +41,7 @@ enum FileDownloadCore {
         at destinationURL: URL,
         expectedSha1: String?,
         fileManager: FileManager = .default,
-    ) -> Int64? {
+    ) async -> Int64? {
         guard fileManager.fileExists(atPath: destinationURL.path) else {
             return nil
         }
@@ -49,9 +49,7 @@ enum FileDownloadCore {
         let shouldCheckSha1 = (expectedSha1?.isEmpty == false)
         if shouldCheckSha1, let expectedSha1 {
             do {
-                let actualSha1 = try autoreleasepool {
-                    try SHA1Calculator.sha1(ofFileAt: destinationURL)
-                }
+                let actualSha1 = try await SHA1Calculator.sha1InBackground(ofFileAt: destinationURL)
                 guard actualSha1 == expectedSha1 else {
                     return nil
                 }
@@ -67,11 +65,9 @@ enum FileDownloadCore {
         return 0
     }
 
-    static func validateSHA1IfNeeded(for fileURL: URL, expectedSha1: String?) throws {
+    static func validateSHA1IfNeeded(for fileURL: URL, expectedSha1: String?) async throws {
         guard let expectedSha1, !expectedSha1.isEmpty else { return }
-        let actualSha1 = try autoreleasepool {
-            try SHA1Calculator.sha1(ofFileAt: fileURL)
-        }
+        let actualSha1 = try await SHA1Calculator.sha1InBackground(ofFileAt: fileURL)
         if actualSha1 != expectedSha1 {
             throw GlobalError.validation(
                 i18nKey: "error.validation.sha1_check_failed",

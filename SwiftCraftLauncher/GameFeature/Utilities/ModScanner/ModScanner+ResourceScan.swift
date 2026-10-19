@@ -36,26 +36,28 @@ extension ModScanner {
         fileURLs: [URL],
         semaphore: AsyncSemaphore,
     ) async -> [ModrinthProjectDetail] {
-        await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
-            for fileURL in fileURLs {
-                group.addTask {
-                    await semaphore.wait()
-                    defer { Task { await semaphore.signal() } }
+        await Task.detached { [modScanner = self] in
+            await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
+                for fileURL in fileURLs {
+                    group.addTask {
+                        await semaphore.wait()
+                        defer { Task { await semaphore.signal() } }
 
-                    return try? await self.getModrinthProjectDetail(
-                        for: fileURL,
-                    )
+                        return try? await modScanner.getModrinthProjectDetail(
+                            for: fileURL,
+                        )
+                    }
                 }
-            }
 
-            var results: [ModrinthProjectDetail] = []
-            for await result in group {
-                if let detail = result {
-                    results.append(detail)
+                var results: [ModrinthProjectDetail] = []
+                for await result in group {
+                    if let detail = result {
+                        results.append(detail)
+                    }
                 }
+                return results
             }
-            return results
-        }
+        }.value
     }
 
     /// Returns all jar and zip files in the directory without resolving details, returning an empty array if the directory does not exist.

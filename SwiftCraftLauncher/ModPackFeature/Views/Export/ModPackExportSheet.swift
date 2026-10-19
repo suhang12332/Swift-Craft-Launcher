@@ -152,7 +152,7 @@ struct ModPackExportSheet: View {
                     rootURL: AppPaths.profileDirectory(gameName: gameInfo.gameName),
                 ) { urls in
                     if viewModel.selectedFileURLs != urls {
-                        DispatchQueue.main.async {
+                        Task { @MainActor in
                             viewModel.selectedFileURLs = urls
                         }
                     }

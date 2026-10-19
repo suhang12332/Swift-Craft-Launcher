@@ -5,7 +5,6 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Combine
 import Foundation
 import Observation
 
@@ -13,8 +12,9 @@ import Observation
 ///
 /// `GameRepository` serves as the primary data access layer for game instances,
 /// coordinating between the local SQLite database and the in-memory cache.
+@MainActor
 @Observable
-class GameRepository: @unchecked Sendable {
+class GameRepository {
     /// A dictionary of game instances keyed by their working path.
     private(set) var gamesByWorkingPath: [String: [GameVersionInfo]] = [:]
 
@@ -40,8 +40,11 @@ class GameRepository: @unchecked Sendable {
         DIContainer.shared.ui.generalSettingsManager.currentWorkingPath
     }
 
-    private let database: GameVersionDatabase
-    private var workingPathCancellable: AnyCancellable?
+    /// The backing store.
+    ///
+    /// `nonisolated` so database work can be performed off the main actor via
+    /// `Task.detached`; `GameVersionDatabase` is safe to use from any thread.
+    nonisolated let database: GameVersionDatabase
     private var lastWorkingPath: String = ""
     private var initialLoadTask: Task<Void, Never>?
     private var workspaceSwitchTask: Task<Void, Never>?
@@ -55,7 +58,7 @@ class GameRepository: @unchecked Sendable {
 
         lastWorkingPath = currentWorkingPath
 
-        setupWorkingPathObserver()
+        observeWorkingPath()
     }
 
     private func initializeDatabase() async throws {
@@ -65,42 +68,52 @@ class GameRepository: @unchecked Sendable {
         try database.initialize()
     }
 
-    deinit {
-        workingPathCancellable?.cancel()
+    /// Reloads games whenever the configured working path changes.
+    ///
+    /// Uses Swift Observation (instead of a Combine subscription) to react to
+    /// `GeneralSettingsManager.launcherWorkingDirectory`. The reload is debounced so
+    /// that rapid edits coalesce into a single load; the path is re-read when the
+    /// debounced work runs, so a change is never lost.
+    private func observeWorkingPath() {
+        let settingsManager = DIContainer.shared.ui.generalSettingsManager
+        withObservationTracking {
+            _ = settingsManager.launcherWorkingDirectory
+        } onChange: { [weak self] in
+            Task { @MainActor in
+                self?.observeWorkingPath()
+                self?.scheduleWorkspaceSwitch()
+            }
+        }
     }
 
-    private func setupWorkingPathObserver() {
-        lastWorkingPath = currentWorkingPath
+    private func scheduleWorkspaceSwitch() {
+        let newPath = currentWorkingPath
+        guard newPath != lastWorkingPath else { return }
 
-        workingPathCancellable = DIContainer.shared.ui.generalSettingsManager.workingPathWillChange
-            .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
-            .sink { [weak self] _ in
-                guard let self else { return }
-                let newPath = currentWorkingPath
-                if newPath != lastWorkingPath {
-                    lastWorkingPath = newPath
-                    workingPathChanged = true
-                    workspaceSwitchTask?.cancel()
-                    workspaceSwitchTask = Task { @MainActor in
-                        do {
-                            try await self.loadGamesThrowing()
-                            if !Task.isCancelled {
-                                await self.scanAllGamesModsDirectory()
-                            }
-                            self.workingPathChanged = false
-                        } catch {
-                            if !(error is CancellationError) {
-                                DIContainer.shared.core.errorHandler.handle(error)
-                            }
-                            self.workingPathChanged = false
-                        }
-                    }
+        lastWorkingPath = newPath
+        workspaceSwitchTask?.cancel()
+        workspaceSwitchTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            do {
+                try await Task.sleep(for: .milliseconds(100))
+                guard !Task.isCancelled else { return }
+
+                workingPathChanged = true
+                try await loadGamesThrowing()
+                if !Task.isCancelled {
+                    await scanAllGamesModsDirectory()
                 }
+                workingPathChanged = false
+            } catch {
+                if !(error is CancellationError) {
+                    DIContainer.shared.core.errorHandler.handle(error)
+                }
+                workingPathChanged = false
             }
+        }
     }
 
     /// Loads initial data if it has not already been loaded.
-    @MainActor
     func loadInitialDataIfNeeded() async {
         if hasLoadedInitialData {
             return
@@ -110,7 +123,7 @@ class GameRepository: @unchecked Sendable {
             return
         }
 
-        let task = Task { [weak self] in
+        let task = Task { @MainActor [weak self] in
             guard let self else { return }
             do {
                 try await initializeDatabase()
@@ -120,9 +133,7 @@ class GameRepository: @unchecked Sendable {
                 hasLoadedInitialData = true
             } catch {
                 DIContainer.shared.core.errorHandler.handle(error)
-                await MainActor.run {
-                    self.gamesByWorkingPath = [:]
-                }
+                gamesByWorkingPath = [:]
             }
         }
 
@@ -134,9 +145,7 @@ class GameRepository: @unchecked Sendable {
     /// Reloads all working paths and their game counts.
     func refreshWorkingPathOptions() async {
         let options = await fetchAllWorkingPathsWithCounts()
-        await MainActor.run {
-            self.workingPathOptions = options
-        }
+        workingPathOptions = options
     }
 
     func addGame(_ game: GameVersionInfo) async throws {
@@ -148,15 +157,13 @@ class GameRepository: @unchecked Sendable {
             try self.database.saveGame(gameToSave, workingPath: workingPath)
         }.value
 
-        await MainActor.run {
-            if gamesByWorkingPath[workingPath] == nil {
-                gamesByWorkingPath[workingPath] = []
-            }
-            if let index = gamesByWorkingPath[workingPath]?.firstIndex(where: { $0.id == game.id }) {
-                gamesByWorkingPath[workingPath]?[index] = game
-            } else {
-                gamesByWorkingPath[workingPath]?.append(game)
-            }
+        if gamesByWorkingPath[workingPath] == nil {
+            gamesByWorkingPath[workingPath] = []
+        }
+        if let index = gamesByWorkingPath[workingPath]?.firstIndex(where: { $0.id == game.id }) {
+            gamesByWorkingPath[workingPath]?[index] = game
+        } else {
+            gamesByWorkingPath[workingPath]?.append(game)
         }
 
         AppLog.game.info("Successfully added game: \(game.gameName) (working path: \(workingPath))")
@@ -176,9 +183,7 @@ class GameRepository: @unchecked Sendable {
             try self.database.deleteGame(id: id)
         }.value
 
-        await MainActor.run {
-            gamesByWorkingPath[workingPath]?.removeAll { $0.id == id }
-        }
+        gamesByWorkingPath[workingPath]?.removeAll { $0.id == id }
 
         AppLog.game.info("Successfully deleted game: \(game.gameName) (working path: \(workingPath))")
     }
@@ -193,10 +198,8 @@ class GameRepository: @unchecked Sendable {
             try self.database.deleteGames(workingPath: workingPath, gameName: gameName)
         }.value
 
-        await MainActor.run {
-            gamesByWorkingPath[workingPath]?.removeAll { $0.gameName == gameName }
-            corruptedGamesByWorkingPath[workingPath]?.removeAll { $0 == gameName }
-        }
+        gamesByWorkingPath[workingPath]?.removeAll { $0.gameName == gameName }
+        corruptedGamesByWorkingPath[workingPath]?.removeAll { $0 == gameName }
 
         AppLog.game.info("Successfully deleted game record named \(gameName) (working path: \(workingPath))")
     }
@@ -214,11 +217,10 @@ class GameRepository: @unchecked Sendable {
         let oldName = game.gameName
         guard oldName != newName else { return }
 
-        let fm = FileManager.default
         let oldDir = AppPaths.profileDirectory(gameName: oldName)
         let newDir = AppPaths.profileDirectory(gameName: newName)
 
-        guard !fm.fileExists(atPath: newDir.path) else {
+        guard !FileManager.default.fileExists(atPath: newDir.path) else {
             throw GlobalError.validation(
                 i18nKey: "error.validation.game_name_already_exists",
                 level: .notification,
@@ -226,7 +228,9 @@ class GameRepository: @unchecked Sendable {
             )
         }
 
-        try fm.moveItem(at: oldDir, to: newDir)
+        try await Task.detached(priority: .userInitiated) {
+            try FileManager.default.moveItem(at: oldDir, to: newDir)
+        }.value
 
         game.gameName = newName
         try await updateGame(game)
@@ -246,15 +250,13 @@ class GameRepository: @unchecked Sendable {
             try self.database.saveGame(gameToSave, workingPath: workingPath)
         }.value
 
-        await MainActor.run {
-            if let index = gamesByWorkingPath[workingPath]?.firstIndex(where: { $0.id == game.id }) {
-                gamesByWorkingPath[workingPath]?[index] = game
-            } else {
-                if gamesByWorkingPath[workingPath] == nil {
-                    gamesByWorkingPath[workingPath] = []
-                }
-                gamesByWorkingPath[workingPath]?.append(game)
+        if let index = gamesByWorkingPath[workingPath]?.firstIndex(where: { $0.id == game.id }) {
+            gamesByWorkingPath[workingPath]?[index] = game
+        } else {
+            if gamesByWorkingPath[workingPath] == nil {
+                gamesByWorkingPath[workingPath] = []
             }
+            gamesByWorkingPath[workingPath]?.append(game)
         }
 
         AppLog.game.info("Successfully updated game: \(game.gameName) (working path: \(workingPath))")
@@ -268,13 +270,10 @@ class GameRepository: @unchecked Sendable {
         Task {
             do {
                 try await loadGamesThrowing()
-
                 await scanAllGamesModsDirectory()
             } catch {
                 DIContainer.shared.core.errorHandler.handle(error)
-                await MainActor.run {
-                    gamesByWorkingPath = [:]
-                }
+                gamesByWorkingPath = [:]
             }
         }
     }
@@ -344,10 +343,8 @@ class GameRepository: @unchecked Sendable {
             return (valid, corrupted, workingPath)
         }.value
 
-        await MainActor.run {
-            gamesByWorkingPath[workingPath] = validGames
-            corruptedGamesByWorkingPath[workingPath] = corruptedNames
-        }
+        gamesByWorkingPath[workingPath] = validGames
+        corruptedGamesByWorkingPath[workingPath] = corruptedNames
 
         AppLog.game.info("Successfully loaded \(validGames.count) games (working path: \(pathForLog))")
     }

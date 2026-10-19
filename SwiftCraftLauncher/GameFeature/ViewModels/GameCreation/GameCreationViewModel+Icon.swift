@@ -71,8 +71,8 @@ extension GameCreationViewModel {
                 forTypeIdentifier: UTType.image.identifier,
             ) { data, error in
                 if let error {
-                    DispatchQueue.main.async {
-                        let globalError = GlobalError.from(error)
+                    let globalError = GlobalError.from(error)
+                    Task { @MainActor in
                         self.handleNonCriticalError(
                             globalError,
                             message: "error.image.load.drag.failed".localized(),

@@ -8,8 +8,9 @@
 import Foundation
 
 /// Tracks game running and launching states per player using process keys.
+@MainActor
 @Observable
-final class GameStatusManager: @unchecked Sendable {
+final class GameStatusManager {
     /// Running states keyed by processKey(gameId, userId).
     private var gameRunningStates: [String: Bool] = [:]
     /// Launching states keyed by processKey(gameId, userId).
@@ -25,23 +26,21 @@ final class GameStatusManager: @unchecked Sendable {
     func syncRunningStates(for games: [GameVersionInfo], userId: String) {
         guard !games.isEmpty else { return }
 
-        applyOnMain { [self] in
-            var updated = gameRunningStates
-            var changed = false
-            let processManager = DIContainer.shared.core.gameProcessManager
+        var updated = gameRunningStates
+        var changed = false
+        let processManager = DIContainer.shared.core.gameProcessManager
 
-            for game in games {
-                let key = GameProcessManager.processKey(gameId: game.id, userId: userId)
-                let actuallyRunning = processManager.isGameRunning(gameId: game.id, userId: userId)
-                if updated[key] != actuallyRunning {
-                    updated[key] = actuallyRunning
-                    changed = true
-                }
+        for game in games {
+            let key = GameProcessManager.processKey(gameId: game.id, userId: userId)
+            let actuallyRunning = processManager.isGameRunning(gameId: game.id, userId: userId)
+            if updated[key] != actuallyRunning {
+                updated[key] = actuallyRunning
+                changed = true
             }
+        }
 
-            if changed {
-                gameRunningStates = updated
-            }
+        if changed {
+            gameRunningStates = updated
         }
     }
 
@@ -49,19 +48,9 @@ final class GameStatusManager: @unchecked Sendable {
         let actuallyRunning = DIContainer.shared.core.gameProcessManager.isGameRunning(gameId: gameId, userId: userId)
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
 
-        applyOnMain { [self] in
-            updateGameStatusIfNeeded(key: key, actuallyRunning: actuallyRunning)
-        }
+        updateGameStatusIfNeeded(key: key, actuallyRunning: actuallyRunning)
 
         return actuallyRunning
-    }
-
-    private func applyOnMain(_ block: @escaping @Sendable () -> Void) {
-        if Thread.isMainThread {
-            block()
-        } else {
-            DispatchQueue.main.async { @Sendable in block() }
-        }
     }
 
     private func updateGameStatusIfNeeded(key: String, actuallyRunning: Bool) {
@@ -78,13 +67,10 @@ final class GameStatusManager: @unchecked Sendable {
     func refreshGameStatus(gameId: String, userId: String) {
         let actuallyRunning = DIContainer.shared.core.gameProcessManager.isGameRunning(gameId: gameId, userId: userId)
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
-        applyOnMain { [weak self] in
-            guard let self else { return }
-            let currentState = gameRunningStates[key] ?? false
-            guard currentState != actuallyRunning else { return }
-            gameRunningStates[key] = actuallyRunning
-            AppLog.game.debug("Force refresh game state: \(key) -> \(actuallyRunning ? "Running" : "Stopped")")
-        }
+        let currentState = gameRunningStates[key] ?? false
+        guard currentState != actuallyRunning else { return }
+        gameRunningStates[key] = actuallyRunning
+        AppLog.game.debug("Force refresh game state: \(key) -> \(actuallyRunning ? "Running" : "Stopped")")
     }
 
     /// Updates the running state for a specific game and player.
@@ -94,13 +80,10 @@ final class GameStatusManager: @unchecked Sendable {
     ///   - isRunning: Whether the game is currently running.
     func setGameRunning(gameId: String, userId: String, isRunning: Bool) {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
-        applyOnMain { [weak self] in
-            guard let self else { return }
-            let currentState = gameRunningStates[key]
-            if currentState != isRunning {
-                gameRunningStates[key] = isRunning
-                AppLog.game.debug("Game state updated: \(key) -> \(isRunning ? "Running" : "Stopped")")
-            }
+        let currentState = gameRunningStates[key]
+        if currentState != isRunning {
+            gameRunningStates[key] = isRunning
+            AppLog.game.debug("Game state updated: \(key) -> \(isRunning ? "Running" : "Stopped")")
         }
     }
 
@@ -116,13 +99,10 @@ final class GameStatusManager: @unchecked Sendable {
     ///   - isLaunching: Whether the game is currently launching.
     func setGameLaunching(gameId: String, userId: String, isLaunching: Bool) {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
-        applyOnMain { [weak self] in
-            guard let self else { return }
-            let currentState = gameLaunchingStates[key] ?? false
-            if currentState != isLaunching {
-                gameLaunchingStates[key] = isLaunching
-                AppLog.game.debug("Game launch state updated: \(key) -> \(isLaunching ? "Launching" : "Not launching")")
-            }
+        let currentState = gameLaunchingStates[key] ?? false
+        if currentState != isLaunching {
+            gameLaunchingStates[key] = isLaunching
+            AppLog.game.debug("Game launch state updated: \(key) -> \(isLaunching ? "Launching" : "Not launching")")
         }
     }
 
@@ -140,14 +120,11 @@ final class GameStatusManager: @unchecked Sendable {
     /// - Parameter gameId: The game identifier.
     func removeGameState(gameId: String) {
         let prefix = "\(gameId)_"
-        applyOnMain { [weak self] in
-            guard let self else { return }
-            let keysToRemove = gameRunningStates.keys.filter { $0.hasPrefix(prefix) }
-                + gameLaunchingStates.keys.filter { $0.hasPrefix(prefix) }
-            for key in keysToRemove {
-                gameRunningStates.removeValue(forKey: key)
-                gameLaunchingStates.removeValue(forKey: key)
-            }
+        let keysToRemove = gameRunningStates.keys.filter { $0.hasPrefix(prefix) }
+            + gameLaunchingStates.keys.filter { $0.hasPrefix(prefix) }
+        for key in keysToRemove {
+            gameRunningStates.removeValue(forKey: key)
+            gameLaunchingStates.removeValue(forKey: key)
         }
     }
 }

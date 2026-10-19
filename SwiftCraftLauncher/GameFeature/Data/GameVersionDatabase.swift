@@ -12,9 +12,14 @@ import SQLite3
 ///
 /// Uses WAL mode and mmap optimization for concurrent access and crash recovery.
 /// Game data is stored as JSON blobs, indexed by working path and game name.
-class GameVersionDatabase {
+///
+/// `@unchecked Sendable`: all storage access is delegated to `SQLiteDatabase`,
+/// which serializes operations on its own internal queue. The only mutable state
+/// here is the `isInitialized` flag, which is guarded by `lock`.
+class GameVersionDatabase: @unchecked Sendable {
     private let db: SQLiteDatabase
     private let tableName = AppConstants.DatabaseTables.gameVersions
+    private let lock = NSLock()
     private var isInitialized = false
 
     private let upsertSQL: String
@@ -52,6 +57,8 @@ class GameVersionDatabase {
 
     /// Opens the database and creates the table schema if needed.
     func initialize() throws {
+        lock.lock()
+        defer { lock.unlock() }
         if isInitialized {
             return
         }

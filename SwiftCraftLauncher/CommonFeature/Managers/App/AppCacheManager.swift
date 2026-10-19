@@ -8,8 +8,10 @@
 import Foundation
 
 /// Provides thread-safe JSON-based caching organized by namespaces.
-class AppCacheManager {
-    private let queue = DispatchQueue(label: "com.swiftcraftlauncher.appcachemanager")
+///
+/// `@unchecked Sendable`: all cache file access is serialized by `lock`.
+class AppCacheManager: @unchecked Sendable {
+    private let lock = NSLock()
 
     init() { }
 
@@ -34,7 +36,7 @@ class AppCacheManager {
     ///   - value: The value to store.
     /// - Throws: A `GlobalError` when encoding or persistence fails.
     func set(namespace: String, key: String, value: some Codable, directory: URL = AppPaths.appCache) throws {
-        try queue.sync {
+        try lock.withLock {
             var nsDict = try loadNamespace(namespace, directory: directory)
 
             do {
@@ -58,7 +60,7 @@ class AppCacheManager {
     ///   - type: The expected value type.
     /// - Returns: The decoded value, or `nil` if not found or decoding fails.
     func get<T: Codable>(namespace: String, key: String, as _: T.Type, directory: URL = AppPaths.appCache) -> T? {
-        queue.sync {
+        lock.withLock {
             do {
                 let nsDict = try loadNamespace(namespace, directory: directory)
                 guard let data = nsDict[key] else { return nil }

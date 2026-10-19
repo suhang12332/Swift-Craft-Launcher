@@ -59,6 +59,13 @@ public enum SHA1Calculator {
         }
     }
 
+    /// Computes a file hash on a detached utility task so callers never block their current executor.
+    public static func sha1InBackground(ofFileAt url: URL) async throws -> String {
+        try await Task.detached(priority: .utility) {
+            try sha1(ofFileAt: url)
+        }.value
+    }
+
     /// Computes the SHA1 hash of a file, returning `nil` on failure.
     /// - Parameter url: The file URL.
     /// - Returns: A lowercase hexadecimal SHA1 string, or `nil` if the computation fails.

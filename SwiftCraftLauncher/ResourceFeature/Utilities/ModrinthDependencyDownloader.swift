@@ -136,7 +136,7 @@ enum ModrinthDependencyDownloader {
                         depCopy.fileName = primaryFile.filename
                         depCopy.type = input.resourceType
                         success = true
-                        if let hash = DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
+                        if let hash = await DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
                             DIContainer.shared.core.modScanner.saveToCache(
                                 hash: hash,
                                 detail: depCopy,
@@ -226,7 +226,7 @@ enum ModrinthDependencyDownloader {
             )
             mainProjectDetail.fileName = primaryFile.filename
             mainProjectDetail.type = input.resourceType
-            if let hash = DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
+            if let hash = await DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
                 DIContainer.shared.core.modScanner.saveToCache(
                     hash: hash,
                     detail: mainProjectDetail,
@@ -291,7 +291,7 @@ enum ModrinthDependencyDownloader {
             mainProjectDetail.type = query
 
             var hash: String?
-            if let h = DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
+            if let h = await DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
                 hash = h
                 DIContainer.shared.core.modScanner.saveToCache(
                     hash: h,

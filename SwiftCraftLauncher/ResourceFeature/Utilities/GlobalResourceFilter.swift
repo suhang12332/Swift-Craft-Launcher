@@ -14,6 +14,7 @@ import Foundation
 ///   - resourceType: The type of resource.
 ///   - projectId: The project identifier.
 /// - Returns: The game versions compatible with and not already containing the resource.
+@MainActor
 func filterCompatibleGames(
     detail: ModrinthProjectDetail,
     gameRepository: GameRepository,

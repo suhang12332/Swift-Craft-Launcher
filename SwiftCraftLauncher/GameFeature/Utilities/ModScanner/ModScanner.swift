@@ -42,7 +42,7 @@ class ModScanner: @unchecked Sendable {
     func getModrinthProjectDetail(
         for fileURL: URL,
     ) async throws -> ModrinthProjectDetail? {
-        guard let hash = try Self.sha1HashThrowing(of: fileURL) else {
+        guard let hash = try await Self.sha1HashThrowing(of: fileURL) else {
             throw GlobalError.validation(
                 i18nKey: "error.validation.file_hash_calculation_failed",
                 level: .silent,
@@ -115,12 +115,19 @@ class ModScanner: @unchecked Sendable {
     }
 
     /// Computes the SHA-1 hash of the file at the given URL, returning `nil` on failure.
-    func sha1Hash(of url: URL) -> String? {
-        SHA1Calculator.sha1Silent(ofFileAt: url)
+    func sha1Hash(of url: URL) async -> String? {
+        do {
+            return try await SHA1Calculator.sha1InBackground(ofFileAt: url)
+        } catch {
+            let globalError = GlobalError.from(error)
+            AppLog.common.error("Failed to calculate file hash: \(globalError.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(globalError)
+            return nil
+        }
     }
 
     /// Computes the SHA-1 hash of the file at the given URL, throwing on I/O errors.
-    static func sha1HashThrowing(of url: URL) throws -> String? {
-        try SHA1Calculator.sha1(ofFileAt: url)
+    static func sha1HashThrowing(of url: URL) async throws -> String? {
+        try await SHA1Calculator.sha1InBackground(ofFileAt: url)
     }
 }

@@ -10,8 +10,9 @@ import Foundation
 import SwiftUI
 
 /// Manages OAuth2 authentication with Yggdrasil-compatible authentication servers.
+@MainActor
 @Observable
-final class YggdrasilAuthService: @unchecked Sendable {
+final class YggdrasilAuthService {
     /// The current authentication state.
     var authState: YggdrasilAuthState = .idle
 
@@ -68,6 +69,7 @@ final class YggdrasilAuthService: @unchecked Sendable {
                 prefersEphemeral: DIContainer.shared.ui.playerSettingsManager.enableEphemeralWebLogin,
             ) { [weak self] callbackURL, error in
                 Task { @MainActor in
+                    @MainActor
                     func finish(_ state: YggdrasilAuthState) {
                         self?.authState = state
                         self?.isLoading = false

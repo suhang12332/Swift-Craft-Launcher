@@ -5,7 +5,6 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Combine
 import Foundation
 
 /// Manages sidebar state and icon refresh triggers for game items.
@@ -14,7 +13,7 @@ import Foundation
 final class SidebarViewModel {
     private(set) var iconRefreshTriggers: [String: UUID] = [:]
 
-    private var cancellable: AnyCancellable?
+    private var observationTask: Task<Void, Never>?
 
     init() { }
 
@@ -30,23 +29,30 @@ final class SidebarViewModel {
     func onAppear(games: [GameVersionInfo]) {
         ensureTriggers(for: games)
 
-        cancellable = DIContainer.shared.ui.iconRefreshNotifier.refreshPublisher
-            .sink { [weak self] refreshedGameName in
+        observationTask?.cancel()
+        let notifier = DIContainer.shared.ui.iconRefreshNotifier
+        observationTask = Task { @MainActor [weak self] in
+            for await refreshedGameName in notifier.refreshRequests() {
                 guard let self else { return }
-                if let gameName = refreshedGameName {
-                    iconRefreshTriggers[gameName] = UUID()
-                } else {
-                    for gameName in iconRefreshTriggers.keys {
-                        iconRefreshTriggers[gameName] = UUID()
-                    }
-                }
+                applyIconRefresh(refreshedGameName)
             }
+        }
     }
 
     /// Cancels the icon refresh subscription when the view disappears.
     func onDisappear() {
-        cancellable?.cancel()
-        cancellable = nil
+        observationTask?.cancel()
+        observationTask = nil
+    }
+
+    private func applyIconRefresh(_ refreshedGameName: String?) {
+        if let gameName = refreshedGameName {
+            iconRefreshTriggers[gameName] = UUID()
+        } else {
+            for gameName in iconRefreshTriggers.keys {
+                iconRefreshTriggers[gameName] = UUID()
+            }
+        }
     }
 
     /// Ensures refresh triggers exist for the updated game list.

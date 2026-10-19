@@ -52,9 +52,11 @@ extension AddOrDeleteResourceButtonViewModel {
         }
 
         let fileURL = resourceDir.appendingPathComponent(fileName)
-        performDelete(fileURL: fileURL)
-        if !isUpdate {
-            onResourceChanged?()
+        Task {
+            await performDelete(fileURL: fileURL)
+            if !isUpdate {
+                onResourceChanged?()
+            }
         }
     }
 
@@ -145,9 +147,9 @@ extension AddOrDeleteResourceButtonViewModel {
         }
     }
 
-    func performDelete(fileURL: URL) {
+    func performDelete(fileURL: URL) async {
         do {
-            try performDeleteThrowing(fileURL: fileURL)
+            try await performDeleteThrowing(fileURL: fileURL)
         } catch {
             let globalError = GlobalError.from(error)
             AppLog.game.error("Failed to delete file: \(globalError.localizedDescription)")
@@ -155,7 +157,7 @@ extension AddOrDeleteResourceButtonViewModel {
         }
     }
 
-    func performDeleteThrowing(fileURL: URL) throws {
+    func performDeleteThrowing(fileURL: URL) async throws {
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
             throw GlobalError.resource(
                 i18nKey: "error.filesystem.file_not_found",
@@ -168,7 +170,7 @@ extension AddOrDeleteResourceButtonViewModel {
         var gameName: String?
         if fileURL.deletingLastPathComponent().lastPathComponent.lowercased() == "mods" {
             gameName = fileURL.deletingLastPathComponent().deletingLastPathComponent().lastPathComponent
-            hash = DIContainer.shared.core.modScanner.sha1Hash(of: fileURL)
+            hash = await DIContainer.shared.core.modScanner.sha1Hash(of: fileURL)
         }
 
         do {

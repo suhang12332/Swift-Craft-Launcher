@@ -9,6 +9,11 @@ import Foundation
 import Sparkle
 
 /// Manages application updates using the Sparkle framework.
+///
+/// `@unchecked Sendable`: this is a Sparkle delegate object that must remain an
+/// `NSObject` conforming to `SPUUpdaterDelegate`, whose callbacks are delivered by
+/// the framework. Its mutable state is only touched on the main thread — by the UI
+/// and by Sparkle's main-thread delegate callbacks — so the conformance is safe.
 @Observable
 final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Sendable {
     private var updater: SPUUpdater?
@@ -85,8 +90,9 @@ final class SparkleUpdateService: NSObject, SPUUpdaterDelegate, @unchecked Senda
     func scheduleStartupCheckIfNeeded() {
         guard !hasScheduledStartupCheck else { return }
         hasScheduledStartupCheck = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + startupCheckDelay) { [weak self] in
-            self?.checkForUpdatesSilently()
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(startupCheckDelay))
+            checkForUpdatesSilently()
         }
     }
 

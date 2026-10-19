@@ -5,7 +5,6 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Combine
 import Foundation
 import MinecraftFriendsKit
 import Observation
@@ -26,11 +25,9 @@ final class MinecraftFriendsPresencePollingCoordinator {
 
     private weak var playerListViewModel: PlayerListViewModel?
     private var currentPlayerObservationTask: Task<Void, Never>?
-    private var presenceNotificationsSettingObservation: AnyCancellable?
+    private var presenceNotificationsSettingObservationTask: Task<Void, Never>?
     private var pollingTask: Task<Void, Never>?
     private var pollingGeneration = 0
-    private var lastPresenceNotificationsEnabled =
-        DIContainer.shared.ui.playerSettingsManager.enableMinecraftFriendsPresenceNotifications
 
     init() {
         hostAdapter = MinecraftFriendsPresenceMonitorHostAdapter()
@@ -66,15 +63,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
         currentPlayerObservationTask = observeCurrentPlayer(playerListViewModel)
 
         let playerSettings = DIContainer.shared.ui.playerSettingsManager
-        presenceNotificationsSettingObservation = playerSettings.presenceNotificationsDidChange
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                guard let self else { return }
-                let enabled = playerSettings.enableMinecraftFriendsPresenceNotifications
-                guard enabled != lastPresenceNotificationsEnabled else { return }
-                lastPresenceNotificationsEnabled = enabled
-                syncPollingToCurrentPlayer()
-            }
+        presenceNotificationsSettingObservationTask = observePresenceNotificationsSetting(playerSettings)
 
         syncPollingToCurrentPlayer()
     }
@@ -85,6 +74,24 @@ final class MinecraftFriendsPresencePollingCoordinator {
                 await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
                     withObservationTracking {
                         _ = vm.currentPlayer
+                    } onChange: {
+                        Task { @MainActor in
+                            continuation.resume()
+                            self?.syncPollingToCurrentPlayer()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// Observes the presence-notifications setting and re-syncs polling when it changes.
+    private func observePresenceNotificationsSetting(_ settings: PlayerSettingsManager) -> Task<Void, Never> {
+        Task { [weak self] in
+            while !Task.isCancelled {
+                await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                    withObservationTracking {
+                        _ = settings.enableMinecraftFriendsPresenceNotifications
                     } onChange: {
                         Task { @MainActor in
                             continuation.resume()
