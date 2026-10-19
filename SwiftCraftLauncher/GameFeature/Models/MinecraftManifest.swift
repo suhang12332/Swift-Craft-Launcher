@@ -272,11 +272,13 @@ struct LibraryArtifact: Codable {
         sha1 = try container.decode(String.self, forKey: .sha1)
         size = try container.decode(Int.self, forKey: .size)
 
-        let urlString = try container.decode(String.self, forKey: .url)
-        if urlString.isEmpty {
-            url = nil
-        } else {
+        // Modrinth loader profiles may omit `url` for artifacts that are
+        // generated locally by processors (e.g. Forge's client jar).
+        if let urlString = try container.decodeIfPresent(String.self, forKey: .url),
+           !urlString.isEmpty {
             url = URL(string: urlString)
+        } else {
+            url = nil
         }
     }
 
