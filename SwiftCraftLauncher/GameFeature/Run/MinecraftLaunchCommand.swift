@@ -36,7 +36,11 @@ struct MinecraftLaunchCommand {
             guard await checkMemoryPressure() else { return }
         }
 
-        let command = game.launchCommand
+        // Patch at launch time as well so already-created instances pick up the fix.
+        let command = MinecraftLaunchCommandBuilder.injectingLibraryDirectoryIfNeeded(
+            into: game.launchCommand,
+            modLoader: game.modLoader,
+        )
         try await launchGameProcess(
             command: try await replaceAuthParameters(command: command, with: validatedPlayer),
         )

@@ -55,7 +55,33 @@ enum MinecraftLaunchCommandBuilder {
             gameArgs.append(contentsOf: gameInfo.gameArguments)
         }
 
+        jvmArgs = injectingLibraryDirectoryIfNeeded(
+            into: jvmArgs,
+            modLoader: gameInfo.modLoader,
+        )
+
         return jvmArgs + [gameInfo.mainClass] + gameArgs
+    }
+
+    /// Ensures Forge receives the `libraryDirectory` JVM property.
+    ///
+    /// Forge 49.0.x (Minecraft 1.20.3) uses `ForgeBootstrap` together with
+    /// `LibraryFinder`, which requires `-DlibraryDirectory`, but Modrinth's
+    /// profile no longer declares it. Without the property the game fails
+    /// during mod discovery with "Library directory: `libraries` does not exist".
+    ///
+    /// NeoForge profiles always declare `-DlibraryDirectory`, so they are not affected.
+    static func injectingLibraryDirectoryIfNeeded(
+        into jvmArguments: [String],
+        modLoader: String,
+    ) -> [String] {
+        guard modLoader.lowercased() == GameLoader.forge.displayName else {
+            return jvmArguments
+        }
+        guard !jvmArguments.contains(where: { $0.hasPrefix("-DlibraryDirectory=") }) else {
+            return jvmArguments
+        }
+        return ["-DlibraryDirectory=\(AppPaths.librariesDirectory.path)"] + jvmArguments
     }
 
     private struct GamePaths {
