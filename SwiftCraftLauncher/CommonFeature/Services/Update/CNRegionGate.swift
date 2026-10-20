@@ -21,7 +21,7 @@ final class CNRegionGate {
         /// 未设置则默认开启
         var isEnabled: Bool {
             switch self {
-            case .forced(let value): return value
+            case let .forced(value): return value
             case .notSet: return true
             }
         }
@@ -44,7 +44,9 @@ final class CNRegionGate {
     /// 是否拦截(优先级:缓存 > 后门键 > 语言 > IP)
     static func isBlocked() async -> Bool {
         guard isEnabled else { return false }
-        if let cached = shared.cachedBlockResult { return cached.isEnabled }
+        if let cached = shared.cachedBlockResult {
+            return cached.isEnabled
+        }
         let blocked = await detectBlocked()
         shared.cachedBlockResult = blocked
         AppLog.common.info("CNRegionGate: 检测结果 拦截=\(blocked.isEnabled)")
@@ -103,7 +105,9 @@ final class CNRegionGate {
 
     /// 优先级:UserDefaults > Info.plist > 未设置
     static func resolveOverride() -> Override {
-        if let cached = shared.cachedOverride { return cached }
+        if let cached = shared.cachedOverride {
+            return cached
+        }
         let resolved = readOverride()
         shared.cachedOverride = resolved
         return resolved
