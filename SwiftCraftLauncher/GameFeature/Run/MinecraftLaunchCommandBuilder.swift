@@ -69,8 +69,6 @@ enum MinecraftLaunchCommandBuilder {
     /// `LibraryFinder`, which requires `-DlibraryDirectory`, but Modrinth's
     /// profile no longer declares it. Without the property the game fails
     /// during mod discovery with "Library directory: `libraries` does not exist".
-    ///
-    /// NeoForge profiles always declare `-DlibraryDirectory`, so they are not affected.
     static func injectingLibraryDirectoryIfNeeded(
         into jvmArguments: [String],
         modLoader: String,
