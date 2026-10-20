@@ -16,6 +16,18 @@ enum ChunkedDownloadError: Error {
     case incompleteChunk(index: Int, expected: Int64, actual: Int64)
 }
 
+/// Everything one chunk needs to run, grouped so the retry helper stays within
+/// the project's six-parameter limit.
+private struct ChunkDownloadContext: Sendable {
+    let chunk: DownloadChunk
+    let url: URL
+    let headers: [String: String]?
+    let partURL: URL
+    let aggregator: ChunkProgressAggregator
+    let recorder: ChunkResumptionRecorder
+    let cursor: ChunkWriteCursor
+}
+
 /// Downloads one large file with several concurrent HTTP Range requests.
 ///
 /// Each chunk writes into a pre-allocated temporary file through its own file
@@ -92,9 +104,7 @@ enum ChunkedDownloader {
         let recorder = ChunkResumptionRecorder(
             key: key,
             url: urlString,
-            etag: info.etag,
-            lastModified: info.lastModified,
-            fileSize: info.contentLength,
+            info: info,
             chunkCount: chunks.count,
             initial: resumed,
         )
@@ -122,17 +132,17 @@ enum ChunkedDownloader {
         do {
             try await withThrowingTaskGroup(of: Void.self) { group in
                 for chunk in chunks {
-                    let cursor = cursors[chunk.index] ?? ChunkWriteCursor()
+                    let context = ChunkDownloadContext(
+                        chunk: chunk,
+                        url: url,
+                        headers: headers,
+                        partURL: partURL,
+                        aggregator: aggregator,
+                        recorder: recorder,
+                        cursor: cursors[chunk.index] ?? ChunkWriteCursor(),
+                    )
                     group.addTask {
-                        try await downloadChunkWithRetry(
-                            chunk: chunk,
-                            url: url,
-                            headers: headers,
-                            partURL: partURL,
-                            aggregator: aggregator,
-                            recorder: recorder,
-                            cursor: cursor,
-                        )
+                        try await downloadChunkWithRetry(context)
                     }
                 }
                 try await group.waitForAll()
@@ -236,15 +246,9 @@ enum ChunkedDownloader {
         }
     }
 
-    private static func downloadChunkWithRetry(
-        chunk: DownloadChunk,
-        url: URL,
-        headers: [String: String]?,
-        partURL: URL,
-        aggregator: ChunkProgressAggregator,
-        recorder: ChunkResumptionRecorder,
-        cursor: ChunkWriteCursor,
-    ) async throws {
+    private static func downloadChunkWithRetry(_ context: ChunkDownloadContext) async throws {
+        let chunk = context.chunk
+        let cursor = context.cursor
         var attempt = 0
 
         while true {
@@ -253,18 +257,18 @@ enum ChunkedDownloader {
             do {
                 try await ChunkedDownloadSession.shared.download(
                     chunk: chunk,
-                    from: url,
-                    headers: headers,
-                    partURL: partURL,
+                    from: context.url,
+                    headers: context.headers,
+                    partURL: context.partURL,
                     cursor: cursor,
-                    aggregator: aggregator,
+                    aggregator: context.aggregator,
                 )
-                await recorder.set(chunk: chunk.index, written: chunk.length)
+                await context.recorder.set(chunk: chunk.index, written: chunk.length)
                 return
             } catch {
                 if let urlError = error as? URLError, urlError.code == .cancelled {
                     // Keep whatever landed on disk so the next run can resume.
-                    await recorder.set(chunk: chunk.index, written: cursor.written)
+                    await context.recorder.set(chunk: chunk.index, written: cursor.written)
                     throw CancellationError()
                 }
                 if case ChunkedDownloadError.notSupported = error {
@@ -272,7 +276,7 @@ enum ChunkedDownloader {
                 }
                 guard attempt < DownloadRetryPolicy.maxRetryCount,
                       DownloadRetryPolicy.shouldRetry(error) else {
-                    await recorder.set(chunk: chunk.index, written: cursor.written)
+                    await context.recorder.set(chunk: chunk.index, written: cursor.written)
                     throw mapChunkError(error)
                 }
                 attempt += 1
@@ -357,18 +361,16 @@ private actor ChunkResumptionRecorder {
     init(
         key: String,
         url: String,
-        etag: String?,
-        lastModified: String?,
-        fileSize: Int64,
+        info: RemoteFileInfo,
         chunkCount: Int,
         initial: [Int: Int64],
     ) {
         self.key = key
         state = DownloadResumptionState(
             url: url,
-            etag: etag,
-            lastModified: lastModified,
-            fileSize: fileSize,
+            etag: info.etag,
+            lastModified: info.lastModified,
+            fileSize: info.contentLength,
             chunkCount: chunkCount,
             chunks: initial,
             updatedAt: Date(),
