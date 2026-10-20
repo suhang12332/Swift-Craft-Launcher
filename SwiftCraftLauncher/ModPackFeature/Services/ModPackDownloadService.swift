@@ -176,9 +176,11 @@ final class ModPackDownloadService {
             urlString: urlString,
             destinationURL: destinationURL,
             expectedSha1: expectedSha1,
-        ) { downloadedBytes, totalBytes in
-            handler?(downloadedBytes, totalBytes)
-        }
+            progressHandler: { downloadedBytes, totalBytes in
+                handler?(downloadedBytes, totalBytes)
+            },
+            allowsChunking: true,
+        )
     }
 
     private func createTempDirectory(for purpose: String) throws -> URL {

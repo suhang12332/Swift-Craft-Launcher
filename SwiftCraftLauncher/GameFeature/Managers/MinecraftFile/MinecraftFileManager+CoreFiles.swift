@@ -45,6 +45,7 @@ extension MinecraftFileManager {
             type: .core,
             i18nKey: "error.download.client_jar_failed",
             errorMessage: "Failed to download client.jar for manifestId=\(manifest.id), url=\(manifest.downloads.client.url.absoluteString)",
+            allowsChunking: true,
         )
     }
 

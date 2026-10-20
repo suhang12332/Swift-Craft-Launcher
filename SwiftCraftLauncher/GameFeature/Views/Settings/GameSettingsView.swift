@@ -31,6 +31,7 @@ public struct GameSettingsView: View {
             GameSettingsModPackExportFormatRow()
             spacerView()
             GameSettingsConcurrentDownloadsRow(draft: $concurrentDownloadsDraft)
+            GameSettingsChunkedDownloadsRow()
             GameSettingsIncludeSnapshotsRow()
             GameSettingsAICrashAnalysisRow()
             GameSettingsMemoryPressureWarningRow()

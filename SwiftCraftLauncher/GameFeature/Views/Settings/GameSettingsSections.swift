@@ -124,6 +124,25 @@ struct GameSettingsSyncLanguageRow: View {
     }
 }
 
+/// A row toggling chunked (parallel range request) downloads for large files.
+struct GameSettingsChunkedDownloadsRow: View {
+    @Environment(GameSettingsManager.self)
+    private var gameSettingsManager
+
+    var body: some View {
+        @Bindable var gameSettingsManager = gameSettingsManager
+        LabeledContent("settings.chunked_downloads.label".localized()) {
+            HStack {
+                Toggle(
+                    "",
+                    isOn: $gameSettingsManager.enableChunkedDownloads,
+                ).labelsHidden()
+                Text("settings.chunked_downloads.description".localized())
+            }
+        }
+    }
+}
+
 /// A row with a slider for the maximum concurrent download count.
 struct GameSettingsConcurrentDownloadsRow: View {
     @Environment(GameSettingsManager.self)

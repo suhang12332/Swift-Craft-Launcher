@@ -30,7 +30,26 @@ enum ProgressDownloadManager {
         expectedSha1: String? = nil,
         headers: [String: String]? = nil,
         progressHandler: (@Sendable (Int64, Int64) -> Void)? = nil,
+        allowsChunking: Bool = false,
     ) async throws -> URL {
+        if allowsChunking {
+            do {
+                return try await ChunkedDownloader.download(
+                    urlString: urlString,
+                    destinationURL: destinationURL,
+                    expectedSha1: expectedSha1,
+                    headers: headers,
+                    progressHandler: progressHandler,
+                )
+            } catch ChunkedDownloadError.notSupported(let reason) {
+                AppLog.common.info("Chunked download unavailable, falling back to single stream: \(reason)")
+            } catch let error as GlobalError where error.i18nKey == "error.validation.sha1_check_failed" {
+                // The assembled file did not match the expected hash; retry once
+                // with a single stream before surfacing the failure.
+                AppLog.common.error("Chunked download checksum mismatch, falling back to single stream")
+            }
+        }
+
         try Task.checkCancellation()
         let url = try FileDownloadCore.parseURL(from: urlString)
 

@@ -67,6 +67,7 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in
                     ProgressDownloadManager.cleanup()
+                    DownloadResumptionStore.cleanup()
                 }
         }
         .windowStyle(.titleBar)

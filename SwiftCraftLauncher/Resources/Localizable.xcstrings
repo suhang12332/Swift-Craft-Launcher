@@ -17175,6 +17175,23 @@
         }
       }
     },
+    "error.filesystem.insufficient_disk_space" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not enough disk space"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "磁盘空间不足"
+          }
+        }
+      }
+    },
     "error.filesystem.file_access_failed" : {
       "comment" : "GameFormView Errors",
       "extractionState" : "manual",
@@ -70845,6 +70862,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "視窗高度限制："
+          }
+        }
+      }
+    },
+    "settings.chunked_downloads.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Split files larger than 8 MB into parallel downloads"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对大于 8 MB 的文件启用并发分片下载"
+          }
+        }
+      }
+    },
+    "settings.chunked_downloads.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chunked Downloads"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "大文件分片下载"
           }
         }
       }

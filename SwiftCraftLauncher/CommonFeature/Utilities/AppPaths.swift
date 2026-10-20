@@ -164,6 +164,14 @@ extension AppPaths {
         appCache.appendingPathComponent("loaders", isDirectory: true)
     }
 
+    /// The directory holding in-progress chunked download parts and their resumption metadata.
+    ///
+    /// Parts live here (rather than in the temporary directory) so a partially
+    /// downloaded file survives an app restart and can be resumed later.
+    static var chunkedDownloadDirectory: URL {
+        appCache.appendingPathComponent(AppConstants.DirectoryNames.chunkedDownloads, isDirectory: true)
+    }
+
     /// The data directory for application-specific storage.
     static var dataDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.data, isDirectory: true)
