@@ -9,7 +9,7 @@
 import XCTest
 
 final class DownloadResumptionStoreTests: XCTestCase {
-    private var key: String!
+    private var key = ""
 
     override func setUp() {
         super.setUp()
