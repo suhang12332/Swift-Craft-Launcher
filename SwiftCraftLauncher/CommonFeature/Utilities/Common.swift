@@ -353,7 +353,7 @@ enum CommonUtil {
     /// Returns whether the current user is treated as being in China.
     ///
     /// When `enableCNRegionGate` is disabled, no region detection is performed and `false`
-    /// is returned. When enabled, a non-Chinese timezone/IP or a detection failure returns
+    /// is returned. When enabled, a non-Chinese IP or a detection failure returns
     /// `false` (fail-closed).
     static func isCnGate() async -> Bool {
         let enableCnGate = Defaults.loadBool(
