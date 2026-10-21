@@ -23,8 +23,6 @@ final class ChunkBoardTests: XCTestCase {
         return (ChunkBoard(chunks: chunks, cursors: cursors, maxChunks: maxChunks), chunks, cursors)
     }
 
-    // MARK: - Initial plan
-
     func testInitialPlanReservesStealSlots() {
         let chunks = ChunkPlan.make(fileSize: 40 * 1024 * 1024, maxChunks: 6, reservedSlots: 2)
         XCTAssertEqual(chunks.count, 4)
@@ -34,8 +32,6 @@ final class ChunkBoardTests: XCTestCase {
         let chunks = ChunkPlan.make(fileSize: 9 * 1024 * 1024, maxChunks: 6, reservedSlots: 2)
         XCTAssertEqual(chunks.count, 3)
     }
-
-    // MARK: - When stealing is skipped
 
     func testSteal_skippedWhenChunksProgressEvenly() async {
         let (board, chunks, _) = board(fileSize: 40 * 1024 * 1024, maxChunks: 6, reservedSlots: 2) { _ in 0 }
@@ -70,8 +66,6 @@ final class ChunkBoardTests: XCTestCase {
         let stolen = await board.steal()
         XCTAssertNil(stolen)
     }
-
-    // MARK: - When stealing happens
 
     func testSteal_handsTheStragglerTailToANewChunk() async {
         let (board, chunks, cursors) = board(fileSize: 40 * 1024 * 1024, maxChunks: 6, reservedSlots: 2) { index in

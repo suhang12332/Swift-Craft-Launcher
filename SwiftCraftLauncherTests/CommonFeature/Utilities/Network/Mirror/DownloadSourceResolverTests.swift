@@ -14,8 +14,6 @@ final class DownloadSourceResolverTests: XCTestCase {
     private let libraryURL = URL(string: "https://libraries.minecraft.net/com/mojang/gson/2.10/gson-2.10.jar")!
     private let unrelatedURL = URL(string: "https://cdn.azul.com/zulu/bin/zulu17.zip")!
 
-    // MARK: - Mirror rewriting
-
     func testMirror_rewritesAssetHostWithPathPrefix() {
         let mirrored = DownloadMirror.bmclapi.mirroredURL(for: assetsURL)
         XCTAssertEqual(mirrored?.absoluteString, "https://bmclapi2.bangbang93.com/assets/b6/b62ca8ec")
@@ -35,8 +33,6 @@ final class DownloadSourceResolverTests: XCTestCase {
         XCTAssertNil(DownloadMirror.bmclapi.mirroredURL(for: unrelatedURL))
         XCTAssertFalse(DownloadMirror.bmclapi.covers(unrelatedURL))
     }
-
-    // MARK: - Candidate ordering
 
     func testCandidates_automaticPrefersMirror() async {
         await DownloadSourceResolver.shared.resetHealth()
@@ -67,8 +63,6 @@ final class DownloadSourceResolverTests: XCTestCase {
         XCTAssertEqual(urls.count, 1)
         XCTAssertEqual(urls.first?.absoluteString, unrelatedURL.absoluteString)
     }
-
-    // MARK: - Host health
 
     func testHealth_demotesMirrorAfterRepeatedHostFailures() async {
         await DownloadSourceResolver.shared.resetHealth()
@@ -103,8 +97,6 @@ final class DownloadSourceResolverTests: XCTestCase {
         let urls = await DownloadSourceResolver.shared.candidateURLs(for: assetsURL, preference: .automatic)
         XCTAssertEqual(urls.first?.host, mirrorHost)
     }
-
-    // MARK: - Failure classification
 
     func testFailureClassify_rateLimitedIsContentFailure() {
         let error = DownloadHTTPStatusError.httpStatus(429)

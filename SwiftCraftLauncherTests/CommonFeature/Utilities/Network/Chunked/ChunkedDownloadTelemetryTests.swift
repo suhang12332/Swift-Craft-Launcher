@@ -47,8 +47,6 @@ final class ChunkedDownloadTelemetryTests: XCTestCase {
         XCTAssertFalse(ChunkedDownloadTelemetry.isChunkingDisabled(forHost: slowHost))
     }
 
-    // MARK: - Sampling
-
     /// One slow transfer proves nothing: the file may simply have shared the pipe
     /// with a queue of others. Pinning on a single sample disabled working hosts.
     func testRecordIneffective_needsAStreakBeforePinning() {
