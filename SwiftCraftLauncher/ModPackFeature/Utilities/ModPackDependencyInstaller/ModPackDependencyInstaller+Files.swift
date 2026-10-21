@@ -57,7 +57,9 @@ extension ModPackDependencyInstaller {
             var results: [(Int, ModrinthIndexFile?)] = []
             for await result in group {
                 results.append(result)
-                if Task.isCancelled { group.cancelAll() }
+                if Task.isCancelled {
+                    group.cancelAll()
+                }
             }
             return results.sorted { $0.0 < $1.0 }
         }

@@ -60,7 +60,9 @@ actor DownloadBudget {
         // A reservation may have been made before the limit was lowered. Release
         // the original reservation, then clamp only the resulting free capacity.
         available += max(1, count)
-        if available > limit { available = limit }
+        if available > limit {
+            available = limit
+        }
         drain()
     }
 

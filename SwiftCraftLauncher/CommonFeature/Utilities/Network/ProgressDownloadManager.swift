@@ -124,7 +124,7 @@ enum ProgressDownloadManager {
                     headers: headers,
                     progressHandler: progressHandler,
                 )
-            } catch ChunkedDownloadError.notSupported(let reason) {
+            } catch let ChunkedDownloadError.notSupported(reason) {
                 AppLog.common.info("Chunked download unavailable, falling back to single stream: \(reason)")
             } catch is CancellationError {
                 throw CancellationError()
@@ -247,7 +247,7 @@ enum ProgressDownloadManager {
         if let globalError = error as? GlobalError {
             return globalError
         }
-        if case ProgressDownloadError.httpStatus(let statusCode) = error {
+        if case let ProgressDownloadError.httpStatus(statusCode) = error {
             return GlobalError.download(
                 i18nKey: "error.download.http_status_error",
                 level: .notification,

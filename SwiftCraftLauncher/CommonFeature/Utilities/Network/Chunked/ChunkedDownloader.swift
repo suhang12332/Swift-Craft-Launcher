@@ -427,8 +427,12 @@ enum ChunkedDownloader {
     }
 
     private static func mapChunkError(_ error: Error) -> Error {
-        if error is CancellationError { return error }
-        if error is GlobalError { return error }
+        if error is CancellationError {
+            return error
+        }
+        if error is GlobalError {
+            return error
+        }
         if case let ChunkedDownloadError.incompleteChunk(index, expected, actual) = error {
             return GlobalError.download(
                 i18nKey: "error.download.general_failure",
@@ -532,7 +536,9 @@ private final class ChunkedDownloadSession: NSObject, URLSessionDataDelegate, @u
             }
             let created = NetworkSession.makeSession(delegate: self)
             let previous = cache.session
-            if let previous { cache.retiring.append(previous) }
+            if let previous {
+                cache.retiring.append(previous)
+            }
             cache.session = created
             cache.connectionsPerHost = limit
             return (created, previous)

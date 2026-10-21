@@ -22,7 +22,7 @@ final class ChunkWriteCursor: @unchecked Sendable {
     private let lock: OSAllocatedUnfairLock<State>
 
     init(written: Int64 = 0, capacity: Int64) {
-        self.lock = OSAllocatedUnfairLock<State>(initialState: State(written: written, capacity: capacity))
+        lock = OSAllocatedUnfairLock<State>(initialState: State(written: written, capacity: capacity))
     }
 
     /// Reserves up to `count` bytes of the remaining budget.
