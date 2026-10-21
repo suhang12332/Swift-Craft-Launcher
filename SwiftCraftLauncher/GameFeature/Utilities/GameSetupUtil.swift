@@ -436,7 +436,7 @@ class GameSetupUtil {
             }
         }
 
-        return await handler.setupWithSpecificVersion(
+        return try await handler.setupWithSpecificVersionThrowing(
             for: selectedGameVersion,
             loaderVersion: specifiedLoaderVersion,
             gameInfo: gameInfo,
