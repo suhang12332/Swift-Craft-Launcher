@@ -175,24 +175,37 @@ class GameSetupUtil {
         return finalizedInfo
     }
 
-    /// Fetches the version manifest, makes sure a Java runtime exists, and
-    /// downloads the core files and assets.
+    /// Fetches the version manifest, then downloads the core files and assets
+    /// while the Java runtime is provisioned alongside them.
     private func downloadRuntimeAndFiles(
         gameName: String,
         selectedGameVersion: String,
         modLoader: String,
     ) async throws -> (manifest: MinecraftVersionManifest, javaPath: String) {
         let manifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
-        let javaPath = await DIContainer.shared.system.javaManager.ensureJavaExists(
-            version: manifest.javaVersion.component,
-        )
+
+        // Java is only used by the loader installer, which is the very last
+        // step, so it runs next to the game's own downloads instead of in front
+        // of them. A missing runtime is ~180MB from yet another host; serialising
+        // it used to push the whole resource download behind that transfer.
+        async let javaPath = ensureJavaRuntime(version: manifest.javaVersion.component)
+
         let fileManager = try await setupFileManager(manifest: manifest, modLoader: modLoader)
         try await startDownloadProcess(
             fileManager: fileManager,
             manifest: manifest,
             gameName: gameName,
         )
-        return (manifest, javaPath)
+        return (manifest, await javaPath)
+    }
+
+    /// Provisions the Java runtime for the game being installed.
+    ///
+    /// Returns immediately when a usable runtime is already on disk, so the
+    /// common case costs nothing; the download only overlaps the game files
+    /// when the runtime is genuinely missing.
+    private func ensureJavaRuntime(version: String) async -> String {
+        await DIContainer.shared.system.javaManager.ensureJavaExists(version: version)
     }
 
     /// Installs the mod loader and builds the finalized launch configuration.

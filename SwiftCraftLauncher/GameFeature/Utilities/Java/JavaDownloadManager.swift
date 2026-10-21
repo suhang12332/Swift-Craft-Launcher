@@ -67,7 +67,17 @@ class JavaDownloadManager {
                 try await javaRuntimeDownloader.downloadJavaRuntime(for: version)
             }
             currentDownloadTask = task
-            try await task.value
+            // The download runs in an unstructured task, so it does not inherit
+            // cancellation from whoever triggered it. Game installs now provision
+            // Java alongside their own downloads, which means an install can be
+            // cancelled while this is still in flight; without this the runtime
+            // would keep pulling ~180MB in the background.
+            try await withTaskCancellationHandler {
+                try await task.value
+            } onCancel: {
+                task.cancel()
+                setCancelRequested(true)
+            }
 
             if downloadState.isCancelled || cancelRequested {
                 AppLog.game.info("Java download cancelled")
