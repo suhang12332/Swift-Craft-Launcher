@@ -10,59 +10,60 @@ import Foundation
 /// Detects the user's geographic location by IP address and timezone.
 @Observable
 class IPLocationService {
-    /// Chinese timezone identifier.
-    private static let chinaTimeZone = "Asia/Shanghai"
+    /// Timezone identifiers used in China.
+    /// `Asia/Urumqi` is UTC+6; the others are UTC+8.
+    private static let chinaTimeZones: Set<String> = [
+        "Asia/Shanghai",
+        "Asia/Chongqing",
+        "Asia/Harbin",
+        "Asia/Urumqi",
+        "Asia/Hong_Kong",
+        "Asia/Macau",
+        "Asia/Taipei",
+    ]
 
     init() { }
 
     /// Checks whether the user's IP is outside the current region, throwing on failure.
-    /// Uses timezone detection as a fast local check, falls back to IP API if timezone is uncertain.
-    /// - Returns: `true` if the IP is foreign.
+    /// Both the local timezone (one of ``chinaTimeZones``) and the country reported by
+    /// Cloudflare's trace endpoint must be Chinese to be treated as domestic; any other
+    /// timezone already implies foreign and skips the network request.
+    /// - Returns: `true` if the user is considered foreign.
     /// - Throws: A `GlobalError` if detection fails.
     func isForeignIPThrowing() async throws -> Bool {
-        // Fast local check: if timezone is clearly Chinese, return false immediately.
+        // Both the timezone and the IP must be Chinese to return `false`.
         let timezone = TimeZone.current.identifier
         AppLog.common.debug("Current timezone: \(timezone)")
-        if timezone == Self.chinaTimeZone {
-            AppLog.common.debug("Timezone is Chinese, skipping IP detection")
-            return false
+        guard Self.chinaTimeZones.contains(timezone) else {
+            AppLog.common.debug("Timezone is not Chinese, treating as foreign")
+            return true
         }
 
-        // Timezone is non-Chinese or unknown — fall back to IP API for accurate detection.
+        // Timezone is Chinese — verify the IP location as well.
         let (data, statusCode) = try await APIClient.getUnchecked(url: URLConfig.API.IPLocation.currentLocation)
 
-        // Some APIs return non-200 status codes while still including data in the response body.
-        let locationResponse: IPLocationResponse
-        do {
-            locationResponse = try JSONDecoder().decode(IPLocationResponse.self, from: data)
-        } catch {
-            AppLog.common.error("Failed to parse IP geolocation response: HTTP \(statusCode), error: \(error.localizedDescription)")
+        guard statusCode == 200 else {
+            AppLog.common.error("Cloudflare trace request returned non-200 status: \(statusCode)")
+            throw GlobalError.network(
+                i18nKey: "error.network.ip_location_failed",
+                level: .notification,
+                message: "Cloudflare trace request failed with HTTP \(statusCode)",
+            )
+        }
+
+        guard let trace = CloudflareTraceResponse(data: data), let countryCode = trace.countryCode else {
             if let responseString = String(data: data, encoding: .utf8) {
                 AppLog.common.error("Response content: \(responseString)")
             }
             throw GlobalError.validation(
                 i18nKey: "error.validation.ip_location_parse_failed",
                 level: .notification,
-                message: "Failed to parse IP location response (HTTP \(statusCode)): \(error.localizedDescription)",
+                message: "Failed to parse Cloudflare trace response (HTTP \(statusCode))",
             )
         }
 
-        if statusCode != 200 {
-            AppLog.common.error("IP geolocation API returned non-200 status: \(statusCode)")
-        }
+        AppLog.common.debug("IP geolocation detection complete: country code = \(countryCode), is foreign = \(trace.isForeign)")
 
-        guard locationResponse.isSuccess else {
-            let errorMessage = locationResponse.reason ?? "IP geolocation detection failed"
-            AppLog.common.error("IP geolocation detection failed: \(errorMessage), country code: \(locationResponse.countryCode ?? "unknown")")
-            throw GlobalError.network(
-                i18nKey: "error.network.ip_location_failed",
-                level: .notification,
-                message: "IP geolocation API failed: \(errorMessage), countryCode=\(locationResponse.countryCode ?? "unknown")",
-            )
-        }
-
-        AppLog.common.debug("IP geolocation detection complete: country code = \(locationResponse.countryCode ?? "unknown"), is foreign = \(locationResponse.isForeign)")
-
-        return locationResponse.isForeign
+        return trace.isForeign
     }
 }

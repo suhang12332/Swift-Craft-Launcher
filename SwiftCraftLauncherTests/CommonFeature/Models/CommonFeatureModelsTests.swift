@@ -103,54 +103,64 @@ final class CommonFeatureModelsTests: XCTestCase {
         XCTAssertEqual(decoded.isCurrent, original.isCurrent)
     }
 
-    func testIPLocationResponse_success() throws {
-        let json = """
-        {"country_code": "US", "error": false}
+    func testCloudflareTrace_foreign() {
+        let text = """
+        fl=1276f4
+        ip=203.0.113.1
+        loc=US
+        colo=LAX
         """
-        let data = Data(json.utf8)
-        let response = try JSONDecoder().decode(IPLocationResponse.self, from: data)
+        let response = CloudflareTraceResponse(data: Data(text.utf8))
 
-        XCTAssertEqual(response.countryCode, "US")
-        XCTAssertFalse(response.error)
-        XCTAssertTrue(response.isSuccess)
-        XCTAssertFalse(response.isChina)
-        XCTAssertTrue(response.isForeign)
+        XCTAssertEqual(response?.countryCode, "US")
+        XCTAssertTrue(response?.isSuccess ?? false)
+        XCTAssertFalse(response?.isChina ?? true)
+        XCTAssertTrue(response?.isForeign ?? false)
     }
 
-    func testIPLocationResponse_china() throws {
-        let json = """
-        {"country_code": "CN", "error": false}
+    func testCloudflareTrace_china() {
+        let text = """
+        ip=203.0.113.1
+        loc=CN
+        colo=HKG
         """
-        let data = Data(json.utf8)
-        let response = try JSONDecoder().decode(IPLocationResponse.self, from: data)
+        let response = CloudflareTraceResponse(data: Data(text.utf8))
 
-        XCTAssertTrue(response.isChina)
-        XCTAssertFalse(response.isForeign)
-        XCTAssertTrue(response.isSuccess)
+        XCTAssertEqual(response?.countryCode, "CN")
+        XCTAssertTrue(response?.isSuccess ?? false)
+        XCTAssertTrue(response?.isChina ?? false)
+        XCTAssertFalse(response?.isForeign ?? true)
     }
 
-    func testIPLocationResponse_error() throws {
-        let json = """
-        {"error": true, "reason": "Rate limited"}
-        """
-        let data = Data(json.utf8)
-        let response = try JSONDecoder().decode(IPLocationResponse.self, from: data)
+    func testCloudflareTrace_lowercaseCountryCode() {
+        let text = "loc=cn"
+        let response = CloudflareTraceResponse(data: Data(text.utf8))
 
-        XCTAssertTrue(response.error)
-        XCTAssertFalse(response.isSuccess)
-        XCTAssertFalse(response.isChina)
-        XCTAssertFalse(response.isForeign)
-        XCTAssertEqual(response.reason, "Rate limited")
+        XCTAssertEqual(response?.countryCode, "CN")
+        XCTAssertTrue(response?.isChina ?? false)
     }
 
-    func testIPLocationResponse_missingFields() throws {
-        let json = "{}"
-        let data = Data(json.utf8)
-        let response = try JSONDecoder().decode(IPLocationResponse.self, from: data)
+    func testCloudflareTrace_crlfAndSpaces() {
+        let text = "ip=203.0.113.1\r\n loc = CN \r\ncolo=HKG"
+        let response = CloudflareTraceResponse(data: Data(text.utf8))
 
-        XCTAssertNil(response.countryCode)
-        XCTAssertFalse(response.error)
-        XCTAssertFalse(response.isSuccess)
+        XCTAssertEqual(response?.countryCode, "CN")
+        XCTAssertEqual(response?.fields["loc"], "CN")
+    }
+
+    func testCloudflareTrace_missingLocation() {
+        let text = "ip=203.0.113.1\ncolo=LAX"
+        let response = CloudflareTraceResponse(data: Data(text.utf8))
+
+        XCTAssertNil(response?.countryCode)
+        XCTAssertFalse(response?.isSuccess ?? true)
+        XCTAssertFalse(response?.isChina ?? true)
+        XCTAssertFalse(response?.isForeign ?? true)
+    }
+
+    func testCloudflareTrace_invalidPayload_returnsNil() {
+        XCTAssertNil(CloudflareTraceResponse(data: Data()))
+        XCTAssertNil(CloudflareTraceResponse(data: Data("<html></html>".utf8)))
     }
 
     func testGitHubContributor_codable() throws {
