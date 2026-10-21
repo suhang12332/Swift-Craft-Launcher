@@ -30,9 +30,11 @@ extension ModPackDependencyInstaller {
 
         let results = await withTaskGroup(of: (Int, ModrinthIndexProjectDependency?).self) { group in
             for (index, dep) in requiredDependencies.enumerated() {
+                guard !Task.isCancelled else { break }
                 group.addTask {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
+                    guard !Task.isCancelled else { return (index, dep) }
 
                     if await shouldSkipDependency(dep: dep, gameInfo: gameInfo, resourceDir: resourceDir) {
                         let currentCount = await completedCount.increment()
@@ -61,6 +63,7 @@ extension ModPackDependencyInstaller {
             var results: [(Int, ModrinthIndexProjectDependency?)] = []
             for await result in group {
                 results.append(result)
+                if Task.isCancelled { group.cancelAll() }
             }
             return results.sorted { $0.0 < $1.0 }
         }

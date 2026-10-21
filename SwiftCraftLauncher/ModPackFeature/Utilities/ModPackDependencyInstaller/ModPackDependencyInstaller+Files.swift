@@ -32,10 +32,15 @@ extension ModPackDependencyInstaller {
 
         let results = await withTaskGroup(of: (Int, ModrinthIndexFile?).self) { group in
             for index in downloadOrder {
+                // Stop queueing work once the install is cancelled: every task
+                // already running will fail fast on its own, and adding more
+                // only keeps the network busy after the user asked to stop.
+                guard !Task.isCancelled else { break }
                 let file = filesToDownload[index]
                 group.addTask {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
+                    guard !Task.isCancelled else { return (index, file) }
 
                     let success = await downloadSingleFile(file: file, resourceDir: resourceDir)
 
@@ -52,6 +57,7 @@ extension ModPackDependencyInstaller {
             var results: [(Int, ModrinthIndexFile?)] = []
             for await result in group {
                 results.append(result)
+                if Task.isCancelled { group.cancelAll() }
             }
             return results.sorted { $0.0 < $1.0 }
         }

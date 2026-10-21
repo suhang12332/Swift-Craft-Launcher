@@ -141,40 +141,43 @@ final class ModPackInstallCoordinator {
             specifiedLoaderVersion: indexInfo.loaderVersion,
             pendingIconData: nil,
         )
-        let gameSetupService = input.gameSetupService
-        let gameFiles = Task { @MainActor in
-            try await gameSetupService.downloadGameFiles(input: gameSetupInput)
-        }
-        defer { gameFiles.cancel() }
+        // Structured rather than an unstructured `Task`: the install runs inside
+        // a task the user can cancel, and only a structured child inherits that
+        // cancellation. A detached `Task` would keep pulling core files and
+        // assets long after the install was stopped.
+        async let pendingGameFiles = input.gameSetupService.downloadGameFiles(input: gameSetupInput)
 
         // Files still run before dependencies: a dependency is skipped when the
         // modpack's own files already provide it, which only works if those files
         // are on disk first.
-        guard await installFilesStep(
+        var modPackStepsOK = await installFilesStep(
             indexInfo: indexInfo,
             resourceDir: resourceDir,
             gameInfo: tempGameInfo,
             input: input,
-        ) else {
-            gameFiles.cancel()
-            return await handleStepFailure(input)
+        )
+        if modPackStepsOK {
+            modPackStepsOK = await installDependenciesStep(
+                indexInfo: indexInfo,
+                resourceDir: resourceDir,
+                gameInfo: tempGameInfo,
+                input: input,
+            )
         }
 
-        guard await installDependenciesStep(
-            indexInfo: indexInfo,
-            resourceDir: resourceDir,
-            gameInfo: tempGameInfo,
-            input: input,
-        ) else {
-            gameFiles.cancel()
-            return await handleStepFailure(input)
-        }
-
-        let pending: GameSetupUtil.PendingGameSetup
+        // Awaited on every path, including the failure ones: this is what lets
+        // the cancellation reach the download instead of leaving it running.
+        let pending: GameSetupUtil.PendingGameSetup?
         do {
-            pending = try await gameFiles.value
+            pending = try await pendingGameFiles
         } catch {
-            DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+            pending = nil
+            if !Task.isCancelled {
+                DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+            }
+        }
+
+        guard modPackStepsOK, let pending else {
             return await handleStepFailure(input)
         }
 
@@ -277,6 +280,9 @@ final class ModPackInstallCoordinator {
         }
 
         guard failedFiles.isEmpty else {
+            // Every file still in flight reports as failed once the install is
+            // cancelled, so offering them as download failures would be misleading.
+            guard !Task.isCancelled else { return false }
             let failedResources = await FailedResourceResolver.makeFailedResources(from: failedFiles, gameInfo: gameInfo)
             return await FailedResourceResolver.presentFailedResources(failedResources, input: input)
         }
@@ -306,6 +312,9 @@ final class ModPackInstallCoordinator {
         }
 
         guard failedDependencies.isEmpty else {
+            // Same as the files step: a cancelled install turns everything still
+            // in flight into a "failed" dependency.
+            guard !Task.isCancelled else { return false }
             let failedResources = await FailedResourceResolver.makeFailedResources(from: failedDependencies, gameInfo: gameInfo)
             return await FailedResourceResolver.presentFailedResources(failedResources, input: input)
         }
