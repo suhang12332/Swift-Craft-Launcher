@@ -57,7 +57,9 @@ actor DownloadBudget {
     }
 
     func release(_ count: Int) {
-        available += min(max(1, count), limit)
+        // A reservation may have been made before the limit was lowered. Release
+        // the original reservation, then clamp only the resulting free capacity.
+        available += max(1, count)
         if available > limit { available = limit }
         drain()
     }

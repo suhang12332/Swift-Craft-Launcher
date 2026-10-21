@@ -40,7 +40,8 @@ final class ChunkBoardTests: XCTestCase {
     func testSteal_skippedWhenChunksProgressEvenly() async {
         let (board, chunks, _) = board(fileSize: 40 * 1024 * 1024, maxChunks: 6, reservedSlots: 2) { _ in 0 }
         XCTAssertEqual(chunks.count, 4)
-        XCTAssertNil(await board.steal())
+        let stolen = await board.steal()
+        XCTAssertNil(stolen)
     }
 
     func testSteal_skippedWhenEverythingIsDone() async {
@@ -49,14 +50,16 @@ final class ChunkBoardTests: XCTestCase {
             return 10 * 1024 * 1024
         }
         XCTAssertEqual(chunks.count, 4)
-        XCTAssertNil(await board.steal())
+        let stolen = await board.steal()
+        XCTAssertNil(stolen)
     }
 
     func testSteal_skippedBelowTheMinimumSize() async {
         let (board, _, _) = board(fileSize: 10 * 1024 * 1024, maxChunks: 6, reservedSlots: 2) { index in
             index == 0 ? Int64(2.5 * 1024 * 1024) - 500 * 1024 : 3 * 1024 * 1024
         }
-        XCTAssertNil(await board.steal())
+        let stolen = await board.steal()
+        XCTAssertNil(stolen)
     }
 
     func testSteal_skippedWhenTheTailWouldBeTooSmall() async {
@@ -64,7 +67,8 @@ final class ChunkBoardTests: XCTestCase {
         let (board, _, _) = board(fileSize: 10 * 1024 * 1024, maxChunks: 6, reservedSlots: 2) { index in
             index == 0 ? Int64(2.5 * 1024 * 1024) - 1536 * 1024 : 3 * 1024 * 1024
         }
-        XCTAssertNil(await board.steal())
+        let stolen = await board.steal()
+        XCTAssertNil(stolen)
     }
 
     // MARK: - When stealing happens
@@ -91,7 +95,8 @@ final class ChunkBoardTests: XCTestCase {
         XCTAssertEqual(stolen.chunk.upperBound, victim.upperBound)
         // Nothing is lost or double counted.
         XCTAssertEqual(victimCursor.capacity + stolen.cursor.capacity, victim.length)
-        XCTAssertEqual(await board.chunkCount, 5)
+        let chunkCount = await board.chunkCount
+        XCTAssertEqual(chunkCount, 5)
     }
 
     func testSteal_keepsSplittingUntilTheCap() async {
@@ -101,7 +106,8 @@ final class ChunkBoardTests: XCTestCase {
         var steals = 0
         while await board.steal() != nil { steals += 1 }
         XCTAssertEqual(steals, 2)
-        XCTAssertEqual(await board.chunkCount, 6)
+        let chunkCount = await board.chunkCount
+        XCTAssertEqual(chunkCount, 6)
     }
 
     func testProgressSnapshotIncludesStolenChunks() async {

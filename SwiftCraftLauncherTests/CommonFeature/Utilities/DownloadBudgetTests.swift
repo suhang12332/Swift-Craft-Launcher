@@ -19,11 +19,13 @@ final class DownloadBudgetTests: XCTestCase {
             await budget.acquire(1)
             await flag.set()
         }
-        XCTAssertFalse(await flag.current, "a request beyond the limit must wait")
+        let waiting = await flag.current
+        XCTAssertFalse(waiting, "a request beyond the limit must wait")
 
         await budget.release(4)
         await pending.value
-        XCTAssertTrue(await flag.current)
+        let completed = await flag.current
+        XCTAssertTrue(completed)
     }
 
     func testSyncLimit_wakesWaitersWhenCapacityGrows() async {
@@ -36,11 +38,13 @@ final class DownloadBudgetTests: XCTestCase {
             await budget.acquire(2)
             await flag.set()
         }
-        XCTAssertFalse(await flag.current)
+        let waiting = await flag.current
+        XCTAssertFalse(waiting)
 
         await budget.syncLimit(4)
         await pending.value
-        XCTAssertTrue(await flag.current)
+        let completed = await flag.current
+        XCTAssertTrue(completed)
     }
 
     func testSyncLimit_clampsToAtLeastOne() async {
@@ -62,11 +66,13 @@ final class DownloadBudgetTests: XCTestCase {
             await budget.acquire(1)
             await flag.set()
         }
-        XCTAssertFalse(await flag.current, "releasing more than acquired must not create capacity")
+        let waiting = await flag.current
+        XCTAssertFalse(waiting, "releasing more than acquired must not create capacity")
 
         await budget.release(2)
         await pending.value
-        XCTAssertTrue(await flag.current)
+        let completed = await flag.current
+        XCTAssertTrue(completed)
     }
 }
 

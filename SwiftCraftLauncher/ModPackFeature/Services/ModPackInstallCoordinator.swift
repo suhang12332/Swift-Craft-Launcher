@@ -145,7 +145,9 @@ final class ModPackInstallCoordinator {
         // a task the user can cancel, and only a structured child inherits that
         // cancellation. A detached `Task` would keep pulling core files and
         // assets long after the install was stopped.
-        async let pendingGameFiles = input.gameSetupService.downloadGameFiles(input: gameSetupInput)
+        let pendingGameFiles = Task {
+            try await input.gameSetupService.downloadGameFiles(input: gameSetupInput)
+        }
 
         // Files still run before dependencies: a dependency is skipped when the
         // modpack's own files already provide it, which only works if those files
@@ -165,11 +167,17 @@ final class ModPackInstallCoordinator {
             )
         }
 
-        // Awaited on every path, including the failure ones: this is what lets
-        // the cancellation reach the download instead of leaving it running.
+        // Stop the game-side download as soon as a modpack step fails; do not
+        // wait for unrelated core files to finish before reporting the failure.
+        if !modPackStepsOK {
+            pendingGameFiles.cancel()
+            _ = try? await pendingGameFiles.value
+            return await handleStepFailure(input)
+        }
+
         let pending: GameSetupUtil.PendingGameSetup?
         do {
-            pending = try await pendingGameFiles
+            pending = try await pendingGameFiles.value
         } catch {
             pending = nil
             if !Task.isCancelled {
@@ -177,7 +185,7 @@ final class ModPackInstallCoordinator {
             }
         }
 
-        guard modPackStepsOK, let pending else {
+        guard let pending else {
             return await handleStepFailure(input)
         }
 

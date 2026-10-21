@@ -175,6 +175,13 @@ class GameSetupUtil {
         return finalizedInfo
     }
 
+    /// Discards downloads that completed before the caller was able to finish setup.
+    func discardPendingGameSetup(_ pending: PendingGameSetup) async {
+        _ = pending
+        downloadState.isDownloading = false
+        await cleanupGameDirectories(gameName: pending.baseGameInfo.gameName)
+    }
+
     /// Fetches the version manifest, then downloads the core files and assets
     /// while the Java runtime is provisioned alongside them.
     private func downloadRuntimeAndFiles(

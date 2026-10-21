@@ -90,25 +90,28 @@ actor ChunkBoard {
         guard stolenBytes >= ChunkedDownloadConfig.minimumStealableBytes else { return nil }
 
         let victimUpperBound = victimEntry.upperBound
-        let newLowerBound = victimUpperBound + 1 - stolenBytes
-        // The victim must still own at least one byte, otherwise the ranges would
-        // overlap and the two requests would write over each other.
-        guard newLowerBound > victimEntry.lowerBound + victimEntry.cursor.written else { return nil }
-
-        victimEntry.cursor.capCapacity(toRemaining: victim.remaining - stolenBytes)
+        // The cursor performs the bound check and capacity change under the same
+        // lock as writers, so a concurrent response cannot overlap the stolen tail.
+        guard let split = victimEntry.cursor.stealTail(
+            stolenBytes,
+            lowerBound: victimEntry.lowerBound,
+            upperBound: victimUpperBound,
+        ) else { return nil }
+        let newLowerBound = split.lowerBound
+        let actualStolenBytes = split.bytes
         victimEntry.upperBound = newLowerBound - 1
         entries[victim.index] = victimEntry
 
         let index = nextIndex
         nextIndex += 1
-        let cursor = ChunkWriteCursor(capacity: stolenBytes)
+        let cursor = ChunkWriteCursor(capacity: actualStolenBytes)
         entries[index] = Entry(
             lowerBound: newLowerBound,
             upperBound: victimUpperBound,
             cursor: cursor,
         )
 
-        AppLog.common.info("Chunk \(victim.index) is behind; handed \(stolenBytes) bytes of its tail to chunk \(index)")
+        AppLog.common.info("Chunk \(victim.index) is behind; handed \(actualStolenBytes) bytes of its tail to chunk \(index)")
         return ChunkSteal(
             chunk: DownloadChunk(index: index, lowerBound: newLowerBound, upperBound: victimUpperBound),
             cursor: cursor,

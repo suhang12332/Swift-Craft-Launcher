@@ -19,13 +19,13 @@ struct DownloadResumptionState: Codable, Sendable {
     var updatedAt: Date
 
     /// Guards against reusing progress recorded for a different file layout.
-    func matches(etag: String?, fileSize: Int64, chunkCount: Int) -> Bool {
+    func matches(etag: String?, lastModified: String? = nil, fileSize: Int64, chunkCount: Int) -> Bool {
         guard self.fileSize == fileSize, self.chunkCount == chunkCount else { return false }
         if let etag, let stored = self.etag {
             return stored == etag
         }
-        // Without an ETag on either side, fall back to Last-Modified.
-        return lastModified == nil || lastModified == self.lastModified
+        guard etag == nil, let lastModified, let stored = self.lastModified else { return false }
+        return stored == lastModified
     }
 }
 

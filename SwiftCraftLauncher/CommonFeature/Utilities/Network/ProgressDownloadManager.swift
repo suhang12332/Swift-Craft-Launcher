@@ -163,12 +163,22 @@ enum ProgressDownloadManager {
         while true {
             try Task.checkCancellation()
             do {
-                let tempURL = try await ProgressDownloadSession.shared.download(
-                    from: url,
-                    totalSize: fileSize,
-                    headers: headers,
-                    progressHandler: progressHandler,
-                )
+                let budget = DownloadBudget.shared
+                await budget.syncLimit(DIContainer.shared.ui.gameSettingsManager.concurrentDownloads)
+                await budget.acquire(1)
+                let tempURL: URL
+                do {
+                    tempURL = try await ProgressDownloadSession.shared.download(
+                        from: url,
+                        totalSize: fileSize,
+                        headers: headers,
+                        progressHandler: progressHandler,
+                    )
+                } catch {
+                    await budget.release(1)
+                    throw error
+                }
+                await budget.release(1)
                 defer { try? fileManager.removeItem(at: tempURL) }
 
                 try await FileDownloadCore.validateSHA1IfNeeded(for: tempURL, expectedSha1: expectedSha1)

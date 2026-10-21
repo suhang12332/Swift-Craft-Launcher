@@ -38,10 +38,30 @@ final class ChunkWriteCursor: @unchecked Sendable {
         }
     }
 
+    func rollback(_ count: Int64) {
+        lock.withLock { state in
+            state.written = max(Int64(0), state.written - count)
+        }
+    }
+
     /// Lowers the total byte budget to what is already written plus `remaining`.
     func capCapacity(toRemaining remaining: Int64) {
         lock.withLock { state in
-            state.capacity = min(state.capacity, state.written + max(0, remaining))
+            state.capacity = min(state.capacity, state.written + max(Int64(0), remaining))
+        }
+    }
+
+    /// Atomically removes a tail from this cursor while checking the bytes
+    /// currently written. This prevents a concurrent writer from racing a steal.
+    func stealTail(_ requested: Int64, lowerBound: Int64, upperBound: Int64) -> (lowerBound: Int64, bytes: Int64)? {
+        lock.withLock { state in
+            let remaining = state.capacity - state.written
+            let bytes = min(requested, remaining)
+            guard bytes > 0 else { return nil }
+            let newLowerBound = upperBound + 1 - bytes
+            guard newLowerBound > lowerBound + state.written else { return nil }
+            state.capacity -= bytes
+            return (newLowerBound, bytes)
         }
     }
 
