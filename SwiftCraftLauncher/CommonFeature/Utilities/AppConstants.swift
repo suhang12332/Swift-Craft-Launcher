@@ -47,6 +47,7 @@ enum AppConstants {
         static let limitCommonSheetHeight = "limitCommonSheetHeight"
         static let concurrentDownloads = "concurrentDownloads"
         static let enableChunkedDownloads = "enableChunkedDownloads"
+        static let downloadSourcePreference = "downloadSourcePreference"
         static let launcherWorkingDirectory = "launcherWorkingDirectory"
         static let interfaceLayoutStyle = "interfaceLayoutStyle"
         static let defaultModPackExportFormat = "defaultModPackExportFormat"
