@@ -34,6 +34,20 @@ class GameSetupUtil {
         let specifiedLoaderVersion: String
     }
 
+    /// The downloaded half of a game setup, waiting to be finished.
+    ///
+    /// Held between ``downloadGameFiles(input:)`` and
+    /// ``finishGameSetup(_:gameRepository:)`` so the downloads can overlap with
+    /// whatever else the caller still has to fetch.
+    struct PendingGameSetup: Sendable {
+        let manifest: MinecraftVersionManifest
+        let javaPath: String
+        let baseGameInfo: GameVersionInfo
+        let selectedGameVersion: String
+        let selectedModLoader: String
+        let specifiedLoaderVersion: String
+    }
+
     func saveGame(
         input: GameSaveInput,
         playerListViewModel: PlayerListViewModel?,
@@ -55,55 +69,9 @@ class GameSetupUtil {
             }
         }
 
-        await MainActor.run {
-            downloadState.reset()
-            downloadState.isDownloading = true
-        }
-
-        defer {
-            Task { @MainActor in
-                downloadState.isDownloading = false
-                downloadTask = nil
-            }
-        }
-
-        let standardIconPresent = await saveGameIcon(
-            gameName: input.gameName,
-            modLoader: input.selectedModLoader,
-            pendingIconData: input.pendingIconData,
-        )
-        let persistedGameIcon = standardIconPresent ? AppConstants.defaultGameIcon : ""
-
-        var gameInfo = GameVersionInfo(
-            id: UUID(),
-            gameName: input.gameName,
-            gameIcon: persistedGameIcon,
-            gameVersion: input.selectedGameVersion,
-            assetIndex: "",
-            modLoader: input.selectedModLoader,
-        )
-
         do {
-            gameInfo = try await performSetup(
-                baseGameInfo: gameInfo,
-                selectedGameVersion: input.selectedGameVersion,
-                selectedModLoader: input.selectedModLoader,
-                specifiedLoaderVersion: input.specifiedLoaderVersion,
-            )
-            try await gameRepository.addGame(gameInfo)
-
-            if DIContainer.shared.ui.gameSettingsManager.syncLanguageForNewGames {
-                configureGameLanguage(for: gameInfo.gameName)
-            }
-
-            Task.detached(priority: .utility) { [gameInfo] in
-                await DIContainer.shared.core.modScanner.scanGameModsDirectory(game: gameInfo)
-            }
-
-            try? await NotificationManager.send(
-                title: "notification.download.complete.title".localized(),
-                body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader),
-            )
+            let pending = try await downloadGameFiles(input: input)
+            _ = try await finishGameSetup(pending, gameRepository: gameRepository)
             onSuccess()
         } catch {
             if isSaveGameDownloadCancelled(error) {
@@ -117,6 +85,139 @@ class GameSetupUtil {
             await cleanupGameDirectories(gameName: input.gameName)
             DIContainer.shared.core.errorHandler.handle(error)
         }
+    }
+
+    /// Downloads everything a new game needs that depends on nothing else the
+    /// caller is installing: the version manifest, the Java runtime, the core
+    /// files and the assets.
+    ///
+    /// Kept apart from ``finishGameSetup(_:gameRepository:)`` so a modpack
+    /// install can run these downloads alongside its own mods. The two write to
+    /// different directories and reach different hosts, so running them together
+    /// uses bandwidth that would otherwise sit idle while the other side works.
+    /// - Returns: A handle to pass to ``finishGameSetup(_:gameRepository:)``.
+    func downloadGameFiles(input: GameSaveInput) async throws -> PendingGameSetup {
+        await MainActor.run {
+            downloadState.reset()
+            downloadState.isDownloading = true
+        }
+
+        do {
+            let standardIconPresent = await saveGameIcon(
+                gameName: input.gameName,
+                modLoader: input.selectedModLoader,
+                pendingIconData: input.pendingIconData,
+            )
+            let persistedGameIcon = standardIconPresent ? AppConstants.defaultGameIcon : ""
+
+            let baseGameInfo = GameVersionInfo(
+                id: UUID(),
+                gameName: input.gameName,
+                gameIcon: persistedGameIcon,
+                gameVersion: input.selectedGameVersion,
+                assetIndex: "",
+                modLoader: input.selectedModLoader,
+            )
+
+            let (manifest, javaPath) = try await downloadRuntimeAndFiles(
+                gameName: input.gameName,
+                selectedGameVersion: input.selectedGameVersion,
+                modLoader: baseGameInfo.modLoader,
+            )
+
+            return PendingGameSetup(
+                manifest: manifest,
+                javaPath: javaPath,
+                baseGameInfo: baseGameInfo,
+                selectedGameVersion: input.selectedGameVersion,
+                selectedModLoader: input.selectedModLoader,
+                specifiedLoaderVersion: input.specifiedLoaderVersion,
+            )
+        } catch {
+            await MainActor.run { downloadState.isDownloading = false }
+            throw error
+        }
+    }
+
+    /// Installs the mod loader, persists the game record and scans its mods,
+    /// finishing what ``downloadGameFiles(input:)`` started.
+    ///
+    /// This half has to wait: the loader installer needs Java and the mod scan
+    /// needs every mod file in place, neither of which is true while a modpack's
+    /// own files are still downloading.
+    /// - Returns: The persisted game record.
+    @discardableResult
+    func finishGameSetup(
+        _ pending: PendingGameSetup,
+        gameRepository: GameRepository,
+    ) async throws -> GameVersionInfo {
+        defer {
+            downloadState.isDownloading = false
+            downloadTask = nil
+        }
+
+        let finalizedInfo = try await installLoaderAndFinalize(pending)
+
+        try await gameRepository.addGame(finalizedInfo)
+
+        if DIContainer.shared.ui.gameSettingsManager.syncLanguageForNewGames {
+            configureGameLanguage(for: finalizedInfo.gameName)
+        }
+
+        Task.detached(priority: .utility) { [finalizedInfo] in
+            await DIContainer.shared.core.modScanner.scanGameModsDirectory(game: finalizedInfo)
+        }
+
+        try? await NotificationManager.send(
+            title: "notification.download.complete.title".localized(),
+            body: String(format: "notification.download.complete.body".localized(), finalizedInfo.gameName, finalizedInfo.gameVersion, finalizedInfo.modLoader),
+        )
+        return finalizedInfo
+    }
+
+    /// Fetches the version manifest, makes sure a Java runtime exists, and
+    /// downloads the core files and assets.
+    private func downloadRuntimeAndFiles(
+        gameName: String,
+        selectedGameVersion: String,
+        modLoader: String,
+    ) async throws -> (manifest: MinecraftVersionManifest, javaPath: String) {
+        let manifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
+        let javaPath = await DIContainer.shared.system.javaManager.ensureJavaExists(
+            version: manifest.javaVersion.component,
+        )
+        let fileManager = try await setupFileManager(manifest: manifest, modLoader: modLoader)
+        try await startDownloadProcess(
+            fileManager: fileManager,
+            manifest: manifest,
+            gameName: gameName,
+        )
+        return (manifest, javaPath)
+    }
+
+    /// Installs the mod loader and builds the finalized launch configuration.
+    private func installLoaderAndFinalize(_ pending: PendingGameSetup) async throws -> GameVersionInfo {
+        let modLoaderResult = try await setupModLoaderIfNeeded(
+            selectedModLoader: pending.selectedModLoader,
+            selectedGameVersion: pending.selectedGameVersion,
+            gameName: pending.baseGameInfo.gameName,
+            gameIcon: pending.baseGameInfo.gameIcon,
+            specifiedLoaderVersion: pending.specifiedLoaderVersion,
+        )
+
+        var finalizedInfo = await finalizeGameInfo(
+            gameInfo: pending.baseGameInfo,
+            manifest: pending.manifest,
+            selectedModLoader: pending.selectedModLoader,
+            selectedGameVersion: pending.selectedGameVersion,
+            specifiedLoaderVersion: pending.specifiedLoaderVersion,
+            fabricResult: pending.selectedModLoader.lowercased() == GameLoader.fabric.displayName ? modLoaderResult : nil,
+            forgeResult: pending.selectedModLoader.lowercased() == GameLoader.forge.displayName ? modLoaderResult : nil,
+            neoForgeResult: pending.selectedModLoader.lowercased() == GameLoader.neoforge.displayName ? modLoaderResult : nil,
+            quiltResult: pending.selectedModLoader.lowercased() == GameLoader.quilt.rawValue ? modLoaderResult : nil,
+        )
+        finalizedInfo.javaPath = pending.javaPath
+        return finalizedInfo
     }
 
     private func isSaveGameDownloadCancelled(_ error: Error) -> Bool {
@@ -147,41 +248,22 @@ class GameSetupUtil {
         selectedModLoader: String,
         specifiedLoaderVersion: String,
     ) async throws -> GameVersionInfo {
-        let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
-
-        let javaPath = await DIContainer.shared.system.javaManager.ensureJavaExists(
-            version: downloadedManifest.javaVersion.component,
-        )
-
-        let fileManager = try await setupFileManager(manifest: downloadedManifest, modLoader: baseGameInfo.modLoader)
-
-        try await startDownloadProcess(
-            fileManager: fileManager,
-            manifest: downloadedManifest,
+        let (downloadedManifest, javaPath) = try await downloadRuntimeAndFiles(
             gameName: baseGameInfo.gameName,
+            selectedGameVersion: selectedGameVersion,
+            modLoader: baseGameInfo.modLoader,
         )
 
-        let modLoaderResult = try await setupModLoaderIfNeeded(
-            selectedModLoader: selectedModLoader,
-            selectedGameVersion: selectedGameVersion,
-            gameName: baseGameInfo.gameName,
-            gameIcon: baseGameInfo.gameIcon,
-            specifiedLoaderVersion: specifiedLoaderVersion,
+        return try await installLoaderAndFinalize(
+            PendingGameSetup(
+                manifest: downloadedManifest,
+                javaPath: javaPath,
+                baseGameInfo: baseGameInfo,
+                selectedGameVersion: selectedGameVersion,
+                selectedModLoader: selectedModLoader,
+                specifiedLoaderVersion: specifiedLoaderVersion,
+            ),
         )
-
-        var finalizedInfo = await finalizeGameInfo(
-            gameInfo: baseGameInfo,
-            manifest: downloadedManifest,
-            selectedModLoader: selectedModLoader,
-            selectedGameVersion: selectedGameVersion,
-            specifiedLoaderVersion: specifiedLoaderVersion,
-            fabricResult: selectedModLoader.lowercased() == GameLoader.fabric.displayName ? modLoaderResult : nil,
-            forgeResult: selectedModLoader.lowercased() == GameLoader.forge.displayName ? modLoaderResult : nil,
-            neoForgeResult: selectedModLoader.lowercased() == GameLoader.neoforge.displayName ? modLoaderResult : nil,
-            quiltResult: selectedModLoader.lowercased() == GameLoader.quilt.rawValue ? modLoaderResult : nil,
-        )
-        finalizedInfo.javaPath = javaPath
-        return finalizedInfo
     }
 
     /// Updates the mod loader on an existing game instance, reusing the installation pipeline.

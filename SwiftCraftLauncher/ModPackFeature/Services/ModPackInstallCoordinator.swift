@@ -130,12 +130,33 @@ final class ModPackInstallCoordinator {
             dependenciesTotal: requiredDependencies.count,
         )
 
+        // The game's own downloads share nothing with the modpack's files: they
+        // write to the versions, libraries and assets directories rather than the
+        // profile, and they reach different hosts. Starting them here hides that
+        // work behind the mod downloads instead of running it after the last mod.
+        let gameSetupInput = GameSetupUtil.GameSaveInput(
+            gameName: input.gameName,
+            selectedGameVersion: input.selectedGameVersion,
+            selectedModLoader: indexInfo.loaderType,
+            specifiedLoaderVersion: indexInfo.loaderVersion,
+            pendingIconData: nil,
+        )
+        let gameSetupService = input.gameSetupService
+        let gameFiles = Task { @MainActor in
+            try await gameSetupService.downloadGameFiles(input: gameSetupInput)
+        }
+        defer { gameFiles.cancel() }
+
+        // Files still run before dependencies: a dependency is skipped when the
+        // modpack's own files already provide it, which only works if those files
+        // are on disk first.
         guard await installFilesStep(
             indexInfo: indexInfo,
             resourceDir: resourceDir,
             gameInfo: tempGameInfo,
             input: input,
         ) else {
+            gameFiles.cancel()
             return await handleStepFailure(input)
         }
 
@@ -145,13 +166,21 @@ final class ModPackInstallCoordinator {
             gameInfo: tempGameInfo,
             input: input,
         ) else {
+            gameFiles.cancel()
             return await handleStepFailure(input)
         }
 
-        let gameSuccess = await installGameStep(
-            input: input,
-            indexInfo: indexInfo,
-        )
+        let pending: GameSetupUtil.PendingGameSetup
+        do {
+            pending = try await gameFiles.value
+        } catch {
+            DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+            return await handleStepFailure(input)
+        }
+
+        // The loader installer needs Java and the mod scan needs every mod in
+        // place, so this half waits for both sides to finish downloading.
+        let gameSuccess = await finishGameStep(pending: pending, input: input)
 
         await handleInstallationResult(
             success: gameSuccess,
@@ -283,34 +312,22 @@ final class ModPackInstallCoordinator {
         return true
     }
 
-    private func installGameStep(
+    /// Installs the mod loader and persists the game, finishing the download
+    /// started alongside the modpack's own files.
+    private func finishGameStep(
+        pending: GameSetupUtil.PendingGameSetup,
         input: RunInput,
-        indexInfo: ModrinthIndexInfo,
     ) async -> Bool {
-        await withCheckedContinuation { continuation in
-            Task {
-                await input.gameSetupService.saveGame(
-                    input: .init(
-                        gameName: input.gameName,
-                        selectedGameVersion: input.selectedGameVersion,
-                        selectedModLoader: indexInfo.loaderType,
-                        specifiedLoaderVersion: indexInfo.loaderVersion,
-                        pendingIconData: nil,
-                    ),
-                    playerListViewModel: nil,
-                    gameRepository: input.gameRepository,
-                    onSuccess: {
-                        continuation.resume(returning: true)
-                    },
-                    onError: { error, message in
-                        Task { @MainActor in
-                            AppLog.modPack.error("Game setup failed: \(message)")
-                            DIContainer.shared.core.errorHandler.handle(error)
-                        }
-                        continuation.resume(returning: false)
-                    },
-                )
-            }
+        do {
+            _ = try await input.gameSetupService.finishGameSetup(
+                pending,
+                gameRepository: input.gameRepository,
+            )
+            return true
+        } catch {
+            AppLog.modPack.error("Game setup failed: \(error.localizedDescription)")
+            DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+            return false
         }
     }
 

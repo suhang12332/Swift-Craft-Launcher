@@ -17,13 +17,17 @@ enum ProgressDownloadManager {
     }
 
     /// Downloads a file from a remote URL to a local destination.
+    ///
+    /// The URL is expanded into an ordered list of candidate sources (official
+    /// plus mirror) according to the user's download source preference, and each
+    /// candidate is tried in turn until one succeeds.
     /// - Parameters:
     ///   - urlString: The remote file URL string.
     ///   - destinationURL: The local file URL to write to.
     ///   - expectedSha1: An optional SHA1 hash for integrity validation.
     ///   - progressHandler: An optional closure invoked with (bytesWritten, totalBytes) on progress updates.
     /// - Returns: The local file URL after a successful download.
-    /// - Throws: An error if the download fails after retries.
+    /// - Throws: An error if every candidate source fails.
     static func downloadFile(
         urlString: String,
         destinationURL: URL,
@@ -32,10 +36,89 @@ enum ProgressDownloadManager {
         progressHandler: (@Sendable (Int64, Int64) -> Void)? = nil,
         allowsChunking: Bool = false,
     ) async throws -> URL {
+        let url = try FileDownloadCore.parseURL(from: urlString)
+        let preference = DIContainer.shared.ui.gameSettingsManager.downloadSourcePreference
+        let candidates = await DownloadSourceResolver.shared.candidateURLs(for: url, preference: preference)
+        return try await downloadFile(
+            candidateURLs: candidates,
+            destinationURL: destinationURL,
+            expectedSha1: expectedSha1,
+            headers: headers,
+            progressHandler: progressHandler,
+            allowsChunking: allowsChunking,
+        )
+    }
+
+    /// Downloads a file from the first candidate source that succeeds.
+    /// - Parameter candidateURLs: The sources to try, best first.
+    /// - Returns: The local file URL after a successful download.
+    /// - Throws: The error raised by the last source when all of them fail.
+    static func downloadFile(
+        candidateURLs: [URL],
+        destinationURL: URL,
+        expectedSha1: String? = nil,
+        headers: [String: String]? = nil,
+        progressHandler: (@Sendable (Int64, Int64) -> Void)? = nil,
+        allowsChunking: Bool = false,
+    ) async throws -> URL {
+        var lastError: Error?
+
+        for (index, candidate) in candidateURLs.enumerated() {
+            do {
+                let result = try await downloadFromSingleSource(
+                    sources: Array(candidateURLs[index...]),
+                    destinationURL: destinationURL,
+                    expectedSha1: expectedSha1,
+                    headers: headers,
+                    progressHandler: progressHandler,
+                    allowsChunking: allowsChunking,
+                )
+                await DownloadSourceResolver.shared.recordSuccess(host: candidate.host)
+                return result
+            } catch {
+                if error is CancellationError {
+                    throw error
+                }
+                let kind = DownloadSourceFailure.classify(error)
+                await DownloadSourceResolver.shared.recordFailure(host: candidate.host, failure: kind)
+                lastError = error
+                guard index < candidateURLs.count - 1 else { break }
+                AppLog.common.info("Download from \(candidate.host ?? "?") failed, trying the next source")
+            }
+        }
+
+        throw lastError ?? GlobalError.download(
+            i18nKey: "error.download.general_failure",
+            level: .notification,
+            message: "No download source available for \(destinationURL.lastPathComponent)",
+        )
+    }
+
+    /// Downloads a file from one specific source, retrying transient failures.
+    ///
+    /// - Parameter sources: The source to use first, followed by any remaining
+    ///   sources. The chunked path probes all of them because a mirror may not
+    ///   honour range requests even when the official host does.
+    private static func downloadFromSingleSource(
+        sources: [URL],
+        destinationURL: URL,
+        expectedSha1: String? = nil,
+        headers: [String: String]? = nil,
+        progressHandler: (@Sendable (Int64, Int64) -> Void)? = nil,
+        allowsChunking: Bool = false,
+    ) async throws -> URL {
+        guard let url = sources.first else {
+            throw GlobalError.download(
+                i18nKey: "error.download.general_failure",
+                level: .notification,
+                message: "No download source supplied for \(destinationURL.lastPathComponent)",
+            )
+        }
+
         if allowsChunking {
             do {
                 return try await ChunkedDownloader.download(
-                    urlString: urlString,
+                    candidateURLs: sources,
                     destinationURL: destinationURL,
                     expectedSha1: expectedSha1,
                     headers: headers,
@@ -43,16 +126,18 @@ enum ProgressDownloadManager {
                 )
             } catch ChunkedDownloadError.notSupported(let reason) {
                 AppLog.common.info("Chunked download unavailable, falling back to single stream: \(reason)")
-            } catch let error as GlobalError where error.i18nKey == "error.validation.sha1_check_failed" {
-                // The assembled file did not match the expected hash; retry once
-                // with a single stream before surfacing the failure.
-                AppLog.common.error("Chunked download checksum mismatch, falling back to single stream")
+            } catch is CancellationError {
+                throw CancellationError()
+            } catch {
+                // Chunking is an optimisation, so anything that goes wrong in it
+                // degrades to the plain single-stream path instead of failing the
+                // download. Servers that advertise range support in a HEAD but
+                // refuse `Range` on a GET land here, and the plain GET still works.
+                AppLog.common.info("Chunked download failed, falling back to single stream: \(error)")
             }
         }
 
         try Task.checkCancellation()
-        let url = try FileDownloadCore.parseURL(from: urlString)
-
         let fileManager = FileManager.default
 
         try FileDownloadCore.ensureParentDirectory(for: destinationURL, fileManager: fileManager)
@@ -152,11 +237,12 @@ enum ProgressDownloadManager {
         if let globalError = error as? GlobalError {
             return globalError
         }
-        if case ProgressDownloadError.httpStatus = error {
+        if case ProgressDownloadError.httpStatus(let statusCode) = error {
             return GlobalError.download(
                 i18nKey: "error.download.http_status_error",
                 level: .notification,
-                message: "HTTP error from download: \(error.localizedDescription)",
+                statusCode: statusCode,
+                message: "HTTP \(statusCode) from single-stream download",
             )
         }
         if error is URLError {

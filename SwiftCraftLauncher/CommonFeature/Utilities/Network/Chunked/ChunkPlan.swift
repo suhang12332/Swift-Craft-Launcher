@@ -27,16 +27,21 @@ enum ChunkPlan {
     ///   - fileSize: Total size of the remote file in bytes.
     ///   - chunkSize: Desired size of one chunk.
     ///   - maxChunks: Hard cap on the number of chunks.
+    ///   - reservedSlots: Slots left free for tail stealing. The initial plan
+    ///     stops short of `maxChunks` by this many so a straggler later has
+    ///     somewhere to hand its tail.
     /// - Returns: Chunks covering `[0, fileSize - 1]` in ascending order, empty if `fileSize <= 0`.
     static func make(
         fileSize: Int64,
         chunkSize: Int64 = ChunkedDownloadConfig.chunkSize,
         maxChunks: Int = ChunkedDownloadConfig.maxChunksPerFile,
+        reservedSlots: Int = 0,
     ) -> [DownloadChunk] {
         guard fileSize > 0, maxChunks > 0 else { return [] }
 
+        let cap = max(1, maxChunks - reservedSlots)
         let desired = Int((fileSize + chunkSize - 1) / max(1, chunkSize))
-        let count = max(1, min(maxChunks, desired))
+        let count = max(1, min(cap, desired))
         let chunkLength = (fileSize + Int64(count) - 1) / Int64(count)
 
         var chunks: [DownloadChunk] = []

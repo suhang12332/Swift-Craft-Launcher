@@ -16,16 +16,21 @@ enum ChunkedDownloadError: Error {
     case incompleteChunk(index: Int, expected: Int64, actual: Int64)
 }
 
-/// Everything one chunk needs to run, grouped so the retry helper stays within
-/// the project's six-parameter limit.
-private struct ChunkDownloadContext: Sendable {
-    let chunk: DownloadChunk
+/// State shared by every chunk of one download, grouped so the per-chunk helper
+/// stays within the project's six-parameter limit.
+private struct ChunkJobContext: Sendable {
     let url: URL
     let headers: [String: String]?
     let partURL: URL
     let aggregator: ChunkProgressAggregator
     let recorder: ChunkResumptionRecorder
+}
+
+/// Everything one chunk needs to run.
+private struct ChunkDownloadContext: Sendable {
+    let chunk: DownloadChunk
     let cursor: ChunkWriteCursor
+    let job: ChunkJobContext
 }
 
 /// Downloads one large file with several concurrent HTTP Range requests.
@@ -35,7 +40,27 @@ private struct ChunkDownloadContext: Sendable {
 /// as the last chunk completes.
 enum ChunkedDownloader {
     static func download(
-        urlString: String,
+        url: URL,
+        destinationURL: URL,
+        expectedSha1: String? = nil,
+        headers: [String: String]? = nil,
+        progressHandler: (@Sendable (Int64, Int64) -> Void)? = nil,
+    ) async throws -> URL {
+        try await download(
+            candidateURLs: [url],
+            destinationURL: destinationURL,
+            expectedSha1: expectedSha1,
+            headers: headers,
+            progressHandler: progressHandler,
+        )
+    }
+
+    /// Downloads one large file with several concurrent HTTP Range requests.
+    ///
+    /// The candidate sources are probed in order so a mirror that ignores range
+    /// requests falls through to the official host instead of abandoning chunking.
+    static func download(
+        candidateURLs: [URL],
         destinationURL: URL,
         expectedSha1: String? = nil,
         headers: [String: String]? = nil,
@@ -43,7 +68,6 @@ enum ChunkedDownloader {
     ) async throws -> URL {
         try Task.checkCancellation()
 
-        let url = try FileDownloadCore.parseURL(from: urlString)
         let fileManager = FileManager.default
 
         try FileDownloadCore.ensureParentDirectory(for: destinationURL, fileManager: fileManager)
@@ -57,28 +81,23 @@ enum ChunkedDownloader {
             return destinationURL
         }
 
-        let info = try await RemoteFileProbe.probe(url: url, headers: headers)
-        guard info.acceptsRanges, info.contentLength >= ChunkedDownloadConfig.minimumFileSize else {
-            throw ChunkedDownloadError.notSupported(
-                reason: "acceptsRanges=\(info.acceptsRanges), size=\(info.contentLength)",
-            )
-        }
-
         guard DIContainer.shared.ui.gameSettingsManager.enableChunkedDownloads else {
             throw ChunkedDownloadError.notSupported(reason: "chunked downloads are disabled in settings")
         }
 
-        guard !ChunkedDownloadTelemetry.isChunkingDisabled(forHost: url.host) else {
-            throw ChunkedDownloadError.notSupported(reason: "chunking previously measured ineffective for \(url.host ?? "?")")
-        }
+        let (url, info) = try await probeChunkableSource(candidateURLs: candidateURLs, headers: headers)
 
         let budget = DownloadBudget.shared
         await budget.syncLimit(DIContainer.shared.ui.gameSettingsManager.concurrentDownloads)
         let limit = await budget.currentLimit()
+        let maxChunks = min(ChunkedDownloadConfig.maxChunksPerFile, limit)
 
+        // The initial plan deliberately stops short of the cap so a straggler has
+        // somewhere to hand its tail later.
         let chunks = ChunkPlan.make(
             fileSize: info.contentLength,
-            maxChunks: min(ChunkedDownloadConfig.maxChunksPerFile, limit),
+            maxChunks: maxChunks,
+            reservedSlots: ChunkedDownloadConfig.stealSlots,
         )
         guard !chunks.isEmpty else {
             throw ChunkedDownloadError.notSupported(reason: "empty chunk plan for size \(info.contentLength)")
@@ -86,7 +105,7 @@ enum ChunkedDownloader {
 
         try ensureFreeSpace(for: info.contentLength, at: destinationURL)
 
-        let key = resumptionKey(for: urlString)
+        let key = resumptionKey(for: url.absoluteString)
         let partURL = DownloadResumptionStore.partFileURL(for: key)
         let resumed = preparePartFile(
             at: partURL,
@@ -103,55 +122,88 @@ enum ChunkedDownloader {
         )
         let recorder = ChunkResumptionRecorder(
             key: key,
-            url: urlString,
+            url: url.absoluteString,
             info: info,
             chunkCount: chunks.count,
             initial: resumed,
         )
 
-        let clock = ContinuousClock()
-        let startedAt = clock.now
-
         let cursors: [Int: ChunkWriteCursor] = Dictionary(uniqueKeysWithValues: chunks.map { chunk in
-            (chunk.index, ChunkWriteCursor(initial: resumed[chunk.index] ?? 0))
+            (chunk.index, ChunkWriteCursor(written: resumed[chunk.index] ?? 0, capacity: chunk.length))
         })
+
+        let board = ChunkBoard(chunks: chunks, cursors: cursors, maxChunks: maxChunks)
+
+        let job = ChunkJobContext(
+            url: url,
+            headers: headers,
+            partURL: partURL,
+            aggregator: aggregator,
+            recorder: recorder,
+        )
 
         // Periodic saves mean a crash or force-quit loses at most one second of
         // progress rather than everything downloaded so far.
         let persistence = Task {
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
-                for (index, cursor) in cursors {
-                    await recorder.set(chunk: index, written: cursor.written)
+                for entry in await board.progressSnapshot() {
+                    await recorder.set(chunk: entry.index, written: entry.written)
                 }
             }
         }
         defer { persistence.cancel() }
 
-        await budget.acquire(chunks.count)
+        // Reserve the whole cap up front: stealing may grow the chunk count later,
+        // and acquiring per chunk would race with the group's teardown.
+        let clock = ContinuousClock()
+        let queuedAt = clock.now
+        await budget.acquire(maxChunks)
+        // Waiting for connections is not transferring bytes. During a busy
+        // install that wait can dwarf the download itself, and counting it would
+        // report a throughput that measures the queue rather than the transfer.
+        let queueDelay = queuedAt.duration(to: clock.now)
+        let startedAt = clock.now
+
         do {
             try await withThrowingTaskGroup(of: Void.self) { group in
                 for chunk in chunks {
                     let context = ChunkDownloadContext(
                         chunk: chunk,
-                        url: url,
-                        headers: headers,
-                        partURL: partURL,
-                        aggregator: aggregator,
-                        recorder: recorder,
-                        cursor: cursors[chunk.index] ?? ChunkWriteCursor(),
+                        cursor: cursors[chunk.index] ?? ChunkWriteCursor(capacity: chunk.length),
+                        job: job,
                     )
                     group.addTask {
                         try await downloadChunkWithRetry(context)
                     }
                 }
-                try await group.waitForAll()
+
+                // Every completed chunk frees a connection. Offer it to the tail of
+                // whichever chunk fell behind instead of letting it sit idle.
+                while try await group.next() != nil {
+                    guard let stolen = await board.steal() else { continue }
+                    let context = ChunkDownloadContext(chunk: stolen.chunk, cursor: stolen.cursor, job: job)
+                    group.addTask {
+                        try await downloadChunkWithRetry(context)
+                    }
+                }
             }
         } catch {
-            await budget.release(chunks.count)
+            await budget.release(maxChunks)
             throw error
         }
-        await budget.release(chunks.count)
+        await budget.release(maxChunks)
+
+        // Sampled here rather than after validation: hashing and moving the file
+        // cost time that has nothing to do with how fast bytes arrived.
+        let chunksUsed = await board.chunkCount
+        recordThroughput(
+            bytes: info.contentLength,
+            elapsed: startedAt.duration(to: clock.now),
+            queueDelay: queueDelay,
+            chunkCount: chunksUsed,
+            host: url.host,
+        )
 
         await aggregator.flush()
 
@@ -166,8 +218,36 @@ enum ChunkedDownloader {
         try FileDownloadCore.moveDownloadedFile(from: partURL, to: destinationURL, fileManager: fileManager)
         await recorder.clear()
 
-        recordThroughput(bytes: info.contentLength, startedAt: startedAt, clock: clock, chunkCount: chunks.count, host: url.host)
         return destinationURL
+    }
+
+    /// Finds the first candidate source that can serve range requests for a large file.
+    /// - Returns: The chosen source and what its HEAD response told us.
+    /// - Throws: ``ChunkedDownloadError.notSupported`` when no candidate qualifies.
+    private static func probeChunkableSource(
+        candidateURLs: [URL],
+        headers: [String: String]?,
+    ) async throws -> (URL, RemoteFileInfo) {
+        var lastReason = "no candidate source"
+
+        for candidate in candidateURLs {
+            let host = candidate.host ?? "?"
+            if ChunkedDownloadTelemetry.isChunkingDisabled(forHost: candidate.host) {
+                lastReason = "chunking previously measured ineffective for \(host)"
+                continue
+            }
+            guard let info = try? await RemoteFileProbe.probe(url: candidate, headers: headers) else {
+                lastReason = "HEAD failed for \(host)"
+                continue
+            }
+            guard info.acceptsRanges, info.contentLength >= ChunkedDownloadConfig.minimumFileSize else {
+                lastReason = "acceptsRanges=\(info.acceptsRanges), size=\(info.contentLength) on \(host)"
+                continue
+            }
+            return (candidate, info)
+        }
+
+        throw ChunkedDownloadError.notSupported(reason: lastReason)
     }
 
     /// Creates the part file if needed and returns any resumable per-chunk progress.
@@ -227,23 +307,40 @@ enum ChunkedDownloader {
         }
     }
 
+    /// Samples how fast a chunked download actually moved bytes.
+    ///
+    /// Only unpressured transfers are worth sampling. When a download had to wait
+    /// for connections or shared the pipe with a queue of other files, its
+    /// throughput says how busy the machine was, not whether splitting the file
+    /// helped — and acting on those numbers pins hosts that are perfectly fine.
     private static func recordThroughput(
         bytes: Int64,
-        startedAt: ContinuousClock.Instant,
-        clock: ContinuousClock,
+        elapsed: Duration,
+        queueDelay: Duration,
         chunkCount: Int,
         host: String?,
     ) {
         guard chunkCount > 1 else { return }
-        let elapsed = startedAt.duration(to: clock.now)
+
         let components = elapsed.components
         let seconds = Double(components.seconds) + Double(components.attoseconds) / 1e18
         guard seconds > 0 else { return }
-        let bytesPerSecond = Double(bytes) / seconds
-        if bytesPerSecond < Double(ChunkedDownloadConfig.minimumEffectiveBytesPerSecond) {
-            AppLog.common.info("Chunked download averaged \(Int(bytesPerSecond)) B/s from \(host ?? "?"); disabling chunking for this host")
-            ChunkedDownloadTelemetry.markIneffective(host: host)
+
+        let queuedSeconds = Double(queueDelay.components.seconds)
+            + Double(queueDelay.components.attoseconds) / 1e18
+        guard queuedSeconds < ChunkedDownloadConfig.maximumUnpressuredQueueSeconds else {
+            AppLog.common.info("Ignoring a chunked throughput sample for \(host ?? "?"): waited \(Int(queuedSeconds))s for connections")
+            return
         }
+
+        let bytesPerSecond = Double(bytes) / seconds
+        guard bytesPerSecond < Double(ChunkedDownloadConfig.minimumEffectiveBytesPerSecond) else {
+            ChunkedDownloadTelemetry.recordEffective(host: host)
+            return
+        }
+
+        AppLog.common.info("Chunked download averaged \(Int(bytesPerSecond)) B/s from \(host ?? "?"); sampling against chunking for this host")
+        ChunkedDownloadTelemetry.recordIneffective(host: host)
     }
 
     private static func downloadChunkWithRetry(_ context: ChunkDownloadContext) async throws {
@@ -257,18 +354,20 @@ enum ChunkedDownloader {
             do {
                 try await ChunkedDownloadSession.shared.download(
                     chunk: chunk,
-                    from: context.url,
-                    headers: context.headers,
-                    partURL: context.partURL,
+                    from: context.job.url,
+                    headers: context.job.headers,
+                    partURL: context.job.partURL,
                     cursor: cursor,
-                    aggregator: context.aggregator,
+                    aggregator: context.job.aggregator,
                 )
-                await context.recorder.set(chunk: chunk.index, written: chunk.length)
+                // `cursor.written` rather than `chunk.length`: the chunk's tail may
+                // have been handed to another request mid-flight.
+                await context.job.recorder.set(chunk: chunk.index, written: cursor.written)
                 return
             } catch {
                 if let urlError = error as? URLError, urlError.code == .cancelled {
                     // Keep whatever landed on disk so the next run can resume.
-                    await context.recorder.set(chunk: chunk.index, written: cursor.written)
+                    await context.job.recorder.set(chunk: chunk.index, written: cursor.written)
                     throw CancellationError()
                 }
                 if case ChunkedDownloadError.notSupported = error {
@@ -276,7 +375,7 @@ enum ChunkedDownloader {
                 }
                 guard attempt < DownloadRetryPolicy.maxRetryCount,
                       DownloadRetryPolicy.shouldRetry(error) else {
-                    await context.recorder.set(chunk: chunk.index, written: cursor.written)
+                    await context.job.recorder.set(chunk: chunk.index, written: cursor.written)
                     throw mapChunkError(error)
                 }
                 attempt += 1
@@ -317,6 +416,7 @@ enum ChunkedDownloader {
             return GlobalError.download(
                 i18nKey: "error.download.http_status_error",
                 level: .notification,
+                statusCode: statusCode,
                 message: "HTTP \(statusCode) from chunked download",
             )
         }
@@ -332,23 +432,6 @@ enum ChunkedDownloader {
             level: .notification,
             message: "Unexpected chunked download error: \(error.localizedDescription)",
         )
-    }
-}
-
-/// Tracks how many bytes of a chunk have already landed on disk, across retries.
-private final class ChunkWriteCursor: @unchecked Sendable {
-    private let lock: OSAllocatedUnfairLock<Int64>
-
-    init(initial: Int64 = 0) {
-        lock = OSAllocatedUnfairLock<Int64>(initialState: initial)
-    }
-
-    func advance(_ delta: Int64) {
-        lock.withLock { $0 += delta }
-    }
-
-    var written: Int64 {
-        lock.withLock { $0 }
     }
 }
 
@@ -397,9 +480,17 @@ private final class ChunkedDownloadSession: NSObject, URLSessionDataDelegate, @u
 
     private let lock = OSAllocatedUnfairLock<[Int: ChunkDownloadTracker]>(initialState: [:])
     private let sessionState = OSAllocatedUnfairLock<URLSession?>(initialState: nil)
-    /// Set once a chunk discovers the server ignores `Range`, so the remaining
-    /// chunks stop before each of them pulls a full copy of the file.
-    private let aborted = OSAllocatedUnfairLock<Bool>(initialState: false)
+    /// Hosts that answered a `Range` request with 200 instead of 206, so the
+    /// remaining chunks stop before each of them pulls a full copy of the file.
+    ///
+    /// Keyed by host rather than a single flag: a host that ignores `Range` says
+    /// nothing about the others, and one bad host must not quietly turn chunking
+    /// off for the whole process.
+    /// Statuses that mean "this host will not serve byte ranges", as opposed to a
+    /// transient failure such as 429 or a 5xx that may clear on its own.
+    private static let rangeRefusalStatuses: Set<Int> = [403, 405, 501]
+
+    private let hostsWithoutRangeSupport = OSAllocatedUnfairLock<Set<String>>(initialState: [])
 
     /// Created on first use: the delegate (`self`) only exists after `init`.
     private var session: URLSession {
@@ -420,13 +511,16 @@ private final class ChunkedDownloadSession: NSObject, URLSessionDataDelegate, @u
         aggregator: ChunkProgressAggregator,
     ) async throws {
         let resumeOffset = cursor.written
-        if resumeOffset >= chunk.length {
-            await aggregator.report(chunk: chunk.index, totalWritten: chunk.length)
+        let capacity = cursor.capacity
+        if resumeOffset >= capacity {
+            await aggregator.report(chunk: chunk.index, totalWritten: capacity)
             return
         }
 
-        if isAborted {
-            throw ChunkedDownloadError.notSupported(reason: "another chunk found the server ignores Range requests")
+        if ignoresRange(host: url.host) {
+            throw ChunkedDownloadError.notSupported(
+                reason: "\(url.host ?? "?") ignores Range requests",
+            )
         }
 
         guard let handle = FileHandle(forWritingAtPath: partURL.path) else {
@@ -438,6 +532,9 @@ private final class ChunkedDownloadSession: NSObject, URLSessionDataDelegate, @u
         }
 
         let startOffset = chunk.lowerBound + resumeOffset
+        // The end follows `capacity`, not the chunk's original upper bound: a
+        // stolen tail lowers the capacity so a retried request stops earlier too.
+        let endOffset = chunk.lowerBound + capacity - 1
 
         do {
             try handle.seek(toOffset: UInt64(startOffset))
@@ -464,7 +561,7 @@ private final class ChunkedDownloadSession: NSObject, URLSessionDataDelegate, @u
                     tracker.setContinuation(continuation)
 
                     var request = URLRequest(url: url).headers(headers)
-                    request.setValue("bytes=\(startOffset)-\(chunk.upperBound)", forHTTPHeaderField: "Range")
+                    request.setValue("bytes=\(startOffset)-\(endOffset)", forHTTPHeaderField: "Range")
 
                     let task = self.session.dataTask(with: request)
                     self.set(tracker: tracker, for: task)
@@ -498,7 +595,7 @@ private final class ChunkedDownloadSession: NSObject, URLSessionDataDelegate, @u
 
         if let httpResponse = response as? HTTPURLResponse {
             if httpResponse.statusCode == 200 {
-                markAborted()
+                markIgnoresRange(host: response.url?.host ?? dataTask.originalRequest?.url?.host)
                 fail(tracker, for: dataTask, with: ChunkedDownloadError.notSupported(
                     reason: "server returned 200 for a Range request",
                 ))
@@ -506,6 +603,11 @@ private final class ChunkedDownloadSession: NSObject, URLSessionDataDelegate, @u
                 return
             }
             guard httpResponse.statusCode == 206 else {
+                // A refusal rather than a transient failure: the host will not
+                // serve this file in parts, so stop offering it ranges.
+                if Self.rangeRefusalStatuses.contains(httpResponse.statusCode) {
+                    markIgnoresRange(host: response.url?.host ?? dataTask.originalRequest?.url?.host)
+                }
                 fail(tracker, for: dataTask, with: DownloadHTTPStatusError.httpStatus(httpResponse.statusCode))
                 completionHandler(.cancel)
                 return
@@ -518,7 +620,16 @@ private final class ChunkedDownloadSession: NSObject, URLSessionDataDelegate, @u
     func urlSession(_: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         guard let tracker = tracker(for: dataTask) else { return }
         do {
-            try tracker.append(data)
+            switch try tracker.append(data) {
+            case .accepted:
+                break
+            case .reachedEnd:
+                // The tail of this chunk now belongs to another request, so stop
+                // pulling bytes we are no longer allowed to write.
+                tracker.finish()
+                removeTracker(for: dataTask)
+                dataTask.cancel()
+            }
         } catch {
             fail(tracker, for: dataTask, with: error)
             dataTask.cancel()
@@ -540,12 +651,16 @@ private final class ChunkedDownloadSession: NSObject, URLSessionDataDelegate, @u
         removeTracker(for: task)
     }
 
-    private var isAborted: Bool {
-        aborted.withLock { $0 }
+    private func ignoresRange(host: String?) -> Bool {
+        guard let host else { return false }
+        return hostsWithoutRangeSupport.withLock { $0.contains(host) }
     }
 
-    private func markAborted() {
-        aborted.withLock { $0 = true }
+    private func markIgnoresRange(host: String?) {
+        guard let host else { return }
+        let isNew = hostsWithoutRangeSupport.withLock { $0.insert(host).inserted }
+        guard isNew else { return }
+        AppLog.common.info("\(host) will not serve byte ranges; chunking disabled for this host")
     }
 
     private func set(tracker: ChunkDownloadTracker, for task: URLSessionTask) {
@@ -597,22 +712,36 @@ private final class ChunkDownloadTracker: @unchecked Sendable {
         }
     }
 
-    func append(_ data: Data) throws {
-        try fileHandle.write(contentsOf: data)
-        let delta = Int64(data.count)
-        cursor.advance(delta)
+    /// What happened after handing a buffer to a tracker.
+    enum AppendOutcome: Sendable {
+        /// The whole buffer belonged to this chunk and was written.
+        case accepted
+        /// The chunk's end was reached, either exactly or because its tail was
+        /// handed to another request. The caller should stop the transfer.
+        case reachedEnd
+    }
+
+    func append(_ data: Data) throws -> AppendOutcome {
+        let requested = Int64(data.count)
+        let allowed = cursor.reserve(requested)
+        guard allowed > 0 else { return .reachedEnd }
+
+        let payload = allowed == requested ? data : Data(data.prefix(Int(allowed)))
+        try fileHandle.write(contentsOf: payload)
 
         let shouldReport = state.withLock { state -> Bool in
-            state.lastReported += delta
+            state.lastReported += allowed
             guard state.lastReported >= ChunkedDownloadConfig.progressReportThreshold else { return false }
             state.lastReported = 0
             return true
         }
-        guard shouldReport else { return }
+        if shouldReport {
+            let written = cursor.written
+            let index = chunk.index
+            Task { await aggregator.report(chunk: index, totalWritten: written) }
+        }
 
-        let written = cursor.written
-        let index = chunk.index
-        Task { await aggregator.report(chunk: index, totalWritten: written) }
+        return allowed == requested ? .accepted : .reachedEnd
     }
 
     func finish() {
@@ -620,10 +749,12 @@ private final class ChunkDownloadTracker: @unchecked Sendable {
         let index = chunk.index
         Task { await aggregator.report(chunk: index, totalWritten: written) }
 
-        if written != chunk.length {
+        // Compare against the cursor rather than `chunk.length`: a stolen tail
+        // legitimately shortens the chunk.
+        guard cursor.isComplete else {
             complete(.failure(ChunkedDownloadError.incompleteChunk(
                 index: chunk.index,
-                expected: chunk.length,
+                expected: cursor.capacity,
                 actual: written,
             )))
             return
