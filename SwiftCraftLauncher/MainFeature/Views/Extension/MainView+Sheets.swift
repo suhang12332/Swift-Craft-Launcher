@@ -13,19 +13,20 @@ struct ModPackImportSheetModifier: ViewModifier {
     private var container
 
     func body(content: Content) -> some View {
-        content.sheet(
-            isPresented: Binding(
-                get: { container.ui.openURLModPackImportPresenter.showImportSheet },
-                set: { container.ui.openURLModPackImportPresenter.showImportSheet = $0 },
-            ),
-            onDismiss: { container.ui.openURLModPackImportPresenter.clear() },
-            content: {
-                if let file = container.ui.openURLModPackImportPresenter.preselectedTempFile {
-                    GameFormView(initialMode: GameFormMode.modPackImport(file: file, shouldProcess: true))
-                        .presentationBackgroundInteraction(.automatic)
-                }
-            },
-        )
+        content
+            .sheet(
+                isPresented: Binding(
+                    get: { container.ui.openURLModPackImportPresenter.showImportSheet },
+                    set: { container.ui.openURLModPackImportPresenter.showImportSheet = $0 },
+                ),
+                onDismiss: { container.ui.openURLModPackImportPresenter.clear() },
+                content: {
+                    if let file = container.ui.openURLModPackImportPresenter.preselectedTempFile {
+                        GameFormView(initialMode: GameFormMode.modPackImport(file: file, shouldProcess: true))
+                            .presentationBackgroundInteraction(.automatic)
+                    }
+                },
+            )
     }
 }
 

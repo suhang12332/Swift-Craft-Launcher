@@ -349,6 +349,24 @@ enum CommonUtil {
             AppLog.common.error("Failed to update options.txt (game: \(gameName), key: \(key)): \(error.localizedDescription)")
         }
     }
+
+    /// Returns whether the current user is treated as being in China.
+    ///
+    /// When `enableCNRegionGate` is disabled, no region detection is performed and `false`
+    /// is returned. When enabled, a non-Chinese timezone/IP or a detection failure returns
+    /// `false` (fail-closed).
+    static func isCnGate() async -> Bool {
+        let enableCnGate = Defaults.loadBool(
+            forKey: AppConstants.UserDefaultsKeys.enableCNRegionGate,
+            defaultValue: true,
+        )
+        guard enableCnGate else {
+            return false
+        }
+
+        let isForeign = (try? await DIContainer.shared.system.ipLocationService.isForeignIPThrowing()) ?? true
+        return !isForeign
+    }
 }
 
 extension ResourceType {

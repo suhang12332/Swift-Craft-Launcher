@@ -29,6 +29,7 @@ enum AppConstants {
         static let enableMinecraftFriendsPresenceNotifications = "enableMinecraftFriendsPresenceNotifications"
         static let hasAddedPremiumAccount = "hasAddedPremiumAccount"
         static let offlineUserServerMap = "offlineUserServerMap"
+        static let enableCNRegionGate = "enableCNRegionGate"
 
         static let aiProvider = "aiProvider"
         static let aiOllamaBaseURL = "aiOllamaBaseURL"

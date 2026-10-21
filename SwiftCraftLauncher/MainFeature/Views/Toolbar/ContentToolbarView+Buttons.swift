@@ -25,10 +25,16 @@ struct AddGameToolbarButton: View {
 
     var body: some View {
         Button {
-            if currentPlayer == nil {
-                activeAlert = .noPlayer
-            } else {
-                showForm.toggle()
+            Task {
+                if await CommonUtil.isCnGate() {
+                    activeAlert = .regionBlocked
+                    return
+                }
+                if currentPlayer == nil {
+                    activeAlert = .noPlayer
+                } else {
+                    showForm.toggle()
+                }
             }
         } label: {
             Label("game.form.title".localized(), systemImage: "plus")
