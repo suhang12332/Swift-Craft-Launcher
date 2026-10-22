@@ -6,34 +6,6 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
-
-/// A file document type used for exporting modpack archives.
-struct ModPackDocument: FileDocument {
-    static var readableContentTypes: [UTType] {
-        [
-            UTType(filenameExtension: AppConstants.FileExtensions.mrpack) ?? UTType.zip,
-            UTType.zip,
-        ]
-    }
-
-    var data: Data
-
-    init(data: Data) {
-        self.data = data
-    }
-
-    init(configuration: ReadConfiguration) throws {
-        guard let data = configuration.file.regularFileContents else {
-            throw CocoaError(.fileReadCorruptFile)
-        }
-        self.data = data
-    }
-
-    func fileWrapper(configuration _: WriteConfiguration) throws -> FileWrapper {
-        FileWrapper(regularFileWithContents: data)
-    }
-}
 
 /// A sheet for exporting a game profile as a modpack.
 struct ModPackExportSheet: View {
@@ -41,13 +13,12 @@ struct ModPackExportSheet: View {
     @Environment(\.dismiss)
     private var dismiss
     @State private var viewModel: ModPackExportViewModel
-    @State private var coordinator = ModPackExportSheetCoordinatorViewModel()
+    @State private var saveModel = ModPackExportSaveModel()
+    @FocusState private var isSummaryFocused: Bool
 
     init(gameInfo: GameVersionInfo) {
         self.gameInfo = gameInfo
-        let viewModel = ModPackExportViewModel()
-        viewModel.modPackName = gameInfo.gameName
-        _viewModel = State(wrappedValue: viewModel)
+        _viewModel = State(wrappedValue: ModPackExportViewModel())
     }
 
     var body: some View {
@@ -56,33 +27,24 @@ struct ModPackExportSheet: View {
             body: { bodyView },
             footer: { footerView },
         )
+        .modifier(
+            ModPackFileExporter(
+                isPresented: $saveModel.isExporterPresented,
+                prepared: saveModel.prepared,
+                onCompletion: handleSaveCompletion,
+            ) {
+                saveModel.cleanup()
+                viewModel.handleSaveCancellation()
+            },
+        )
         .onDisappear {
             viewModel.cleanupAllData()
+            saveModel.cleanup()
         }
         .onChange(of: viewModel.shouldShowSaveDialog) { _, shouldShow in
-            if shouldShow, let tempPath = viewModel.tempExportPath {
+            if shouldShow, let tempPath = viewModel.completedExportPath {
                 handleExportCompleted(tempFilePath: tempPath)
             }
-        }
-        .onChange(of: coordinator.isExporting) { oldValue, newValue in
-            coordinator.cleanupExporterStateIfNeeded(oldValue: oldValue, newValue: newValue)
-        }
-        .fileExporter(
-            isPresented: $coordinator.isExporting,
-            document: coordinator.exportDocument,
-            contentType: exportContentType,
-            defaultFilename: exportDefaultFilename,
-        ) { result in
-            switch result {
-            case let .success(url):
-                AppLog.modPack.info("Modpack saved to: \(url.path)")
-                viewModel.handleSaveSuccess()
-                dismiss()
-            case let .failure(error):
-                AppLog.modPack.error("Failed to save file: \(error.localizedDescription)")
-                viewModel.handleSaveFailure(error: error.localizedDescription)
-            }
-            coordinator.reset()
         }
     }
 
@@ -101,28 +63,27 @@ struct ModPackExportSheet: View {
             } label: {
                 Text(viewModel.currentExportFormat.displayName)
             }
-            .disabled(viewModel.isExporting)
+            .disabled(viewModel.exportState != .idle)
             .fixedSize()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder private var bodyView: some View {
-        switch viewModel.exportState {
-        case .idle:
-            idleStateView
-                .frame(maxWidth: .infinity, alignment: .topLeading)
-        case .exporting, .completed:
-            exportProgressView
-        }
-    }
+        VStack(alignment: .leading, spacing: 16) {
+            if viewModel.exportState == .idle, let error = viewModel.exportError {
+                errorView(error: error)
+            } else {
+                exportFormView
+            }
 
-    @ViewBuilder private var idleStateView: some View {
-        if let error = viewModel.exportError {
-            errorView(error: error)
-        } else {
-            exportFormView
+            if viewModel.exportState == .exporting || viewModel.exportState == .completed,
+               viewModel.exportProgress.scanProgress != nil || viewModel.exportProgress.copyProgress != nil {
+                progressItemsView
+                    .padding(.top, 8)
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
     private var exportFormView: some View {
@@ -142,6 +103,7 @@ struct ModPackExportSheet: View {
                     .foregroundColor(.secondary)
                 TextField("modpack.export.summary.placeholder".localized(), text: $viewModel.summary)
                     .textFieldStyle(.roundedBorder)
+                    .focused($isSummaryFocused)
             }
 
             VStack(alignment: .leading, spacing: 8) {
@@ -151,11 +113,7 @@ struct ModPackExportSheet: View {
                 FileTreeView(
                     rootURL: AppPaths.profileDirectory(gameName: gameInfo.gameName),
                 ) { urls in
-                    if viewModel.selectedFileURLs != urls {
-                        Task { @MainActor in
-                            viewModel.selectedFileURLs = urls
-                        }
-                    }
+                    viewModel.selectedFileURLs = urls
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 300)
@@ -163,26 +121,14 @@ struct ModPackExportSheet: View {
         }
     }
 
-    private var exportProgressView: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            exportFormView
-            if viewModel.exportProgress.scanProgress != nil || viewModel.exportProgress.copyProgress != nil {
-                progressItemsView
-                    .padding(.top, 8)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .topLeading)
-    }
-
     private var footerView: some View {
         HStack {
             Button("common.cancel".localized()) {
-                if viewModel.isExporting {
-                    coordinator.reset()
-                    viewModel.cancelExport()
-                    viewModel.resetToInitial(gameInfo: gameInfo)
-                } else {
+                if viewModel.exportState == .idle {
                     dismiss()
+                } else {
+                    viewModel.cancelExport()
+                    saveModel.cleanup()
                 }
             }
             .keyboardShortcut(.cancelAction)
@@ -190,7 +136,8 @@ struct ModPackExportSheet: View {
             Spacer()
 
             Button {
-                if viewModel.exportState == .completed, let tempPath = viewModel.tempExportPath {
+                isSummaryFocused = false
+                if let tempPath = viewModel.completedExportPath {
                     handleExportCompleted(tempFilePath: tempPath)
                 } else {
                     viewModel.startExport(gameInfo: gameInfo)
@@ -206,19 +153,6 @@ struct ModPackExportSheet: View {
             .keyboardShortcut(.defaultAction)
             .disabled(viewModel.isExporting)
         }
-    }
-
-    private var exportContentType: UTType {
-        switch viewModel.currentExportFormat {
-        case .modrinth:
-            return UTType(filenameExtension: AppConstants.FileExtensions.mrpack) ?? UTType.zip
-        case .curseforge:
-            return UTType.zip
-        }
-    }
-
-    private var exportDefaultFilename: String {
-        "\(gameInfo.gameName).\(viewModel.currentExportFormat.fileExtension)"
     }
 
     private var progressItemsView: some View {
@@ -271,9 +205,31 @@ struct ModPackExportSheet: View {
         if viewModel.shouldShowSaveDialog {
             viewModel.markSaveDialogShown()
         }
-        coordinator.prepareExportDocument(from: tempFilePath) { errorMessage in
-            AppLog.modPack.error("Failed to read temp file: \(errorMessage)")
-            viewModel.handleSaveFailure(error: errorMessage)
+
+        saveModel.prepare(
+            PreparedModPackArchive(
+                fileURL: tempFilePath,
+                format: viewModel.currentExportFormat,
+            ),
+        )
+    }
+
+    private func handleSaveCompletion(_ result: Result<URL, Error>) {
+        saveModel.cleanup()
+
+        switch result {
+        case let .success(url):
+            AppLog.modPack.info("Modpack saved to: \(url.path)")
+            viewModel.handleSaveSuccess()
+            dismiss()
+        case let .failure(error):
+            let nsError = error as NSError
+            if error is CancellationError || nsError.code == NSUserCancelledError {
+                viewModel.handleSaveCancellation()
+                return
+            }
+            AppLog.modPack.error("Failed to save file: \(error.localizedDescription)")
+            viewModel.handleSaveFailure(error: error.localizedDescription)
         }
     }
 }

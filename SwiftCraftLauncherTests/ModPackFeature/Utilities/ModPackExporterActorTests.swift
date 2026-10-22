@@ -21,17 +21,6 @@ final class ModPackExporterActorTests: XCTestCase {
         XCTAssertEqual(count3, 3)
     }
 
-    func testCopyCounter_increment() async {
-        let counter = ModPackExporter.CopyCounter(total: 10)
-        let (count1, total1) = await counter.increment()
-        let (count2, total2) = await counter.increment()
-
-        XCTAssertEqual(count1, 1)
-        XCTAssertEqual(total1, 10)
-        XCTAssertEqual(count2, 2)
-        XCTAssertEqual(total2, 10)
-    }
-
     func testProgressUpdater_setCopyProgressTotal() async {
         let updater = ModPackExporter.ProgressUpdater()
         await updater.setCopyProgressTotal(20)

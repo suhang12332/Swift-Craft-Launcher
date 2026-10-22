@@ -103,45 +103,34 @@ final class ModPackExporterExtendedTests: XCTestCase {
     func testCurseForgeModListItem_allFields() {
         let item = ModPackExporter.CurseForgeModListItem(
             projectID: 999_999,
-            fileID: 888_888,
             fileName: "awesome-mod-3.0.jar",
-            projectName: "Awesome Mod",
-            authorsText: "Author1, Author2",
         )
 
         XCTAssertEqual(item.projectID, 999_999)
-        XCTAssertEqual(item.fileID, 888_888)
         XCTAssertEqual(item.fileName, "awesome-mod-3.0.jar")
-        XCTAssertEqual(item.projectName, "Awesome Mod")
-        XCTAssertEqual(item.authorsText, "Author1, Author2")
     }
 
     func testCurseForgeModListItem_zeroIds() {
         let item = ModPackExporter.CurseForgeModListItem(
             projectID: 0,
-            fileID: 0,
             fileName: "empty.jar",
-            projectName: nil,
-            authorsText: nil,
         )
 
         XCTAssertEqual(item.projectID, 0)
-        XCTAssertEqual(item.fileID, 0)
-        XCTAssertNil(item.projectName)
-        XCTAssertNil(item.authorsText)
+        XCTAssertEqual(item.fileName, "empty.jar")
     }
 
     func testSelectedResourcesResult_empty() {
         let result = ModPackExporter.SelectedResourcesResult(
-            indexFiles: [],
-            curseForgeFiles: [],
-            curseForgeModListItems: [],
+            manifest: .modrinth([]),
             filesToCopy: [],
         )
 
-        XCTAssertTrue(result.indexFiles.isEmpty)
-        XCTAssertTrue(result.curseForgeFiles.isEmpty)
-        XCTAssertTrue(result.curseForgeModListItems.isEmpty)
+        guard case let .modrinth(files) = result.manifest else {
+            XCTFail("Expected Modrinth manifest")
+            return
+        }
+        XCTAssertTrue(files.isEmpty)
         XCTAssertTrue(result.filesToCopy.isEmpty)
     }
 
@@ -158,13 +147,15 @@ final class ModPackExporterExtendedTests: XCTestCase {
         )
 
         let result = ModPackExporter.SelectedResourcesResult(
-            indexFiles: [indexFile],
-            curseForgeFiles: [],
-            curseForgeModListItems: [],
+            manifest: .modrinth([indexFile]),
             filesToCopy: [copyItem],
         )
 
-        XCTAssertEqual(result.indexFiles.count, 1)
+        guard case let .modrinth(files) = result.manifest else {
+            XCTFail("Expected Modrinth manifest")
+            return
+        }
+        XCTAssertEqual(files.count, 1)
         XCTAssertEqual(result.filesToCopy.count, 1)
         XCTAssertEqual(result.filesToCopy.first?.relativePath, "config")
     }
@@ -193,14 +184,10 @@ final class ModPackExporterExtendedTests: XCTestCase {
             modPackName: "Pack",
             modPackVersion: "1.0",
             summary: "Test",
-            indexFiles: [],
-            curseForgeFiles: [],
-            curseForgeModListItems: [],
-            exportFormat: .modrinth,
+            manifest: .modrinth([]),
         )
 
         XCTAssertEqual(params.modPackName, "Pack")
-        XCTAssertEqual(params.exportFormat, .modrinth)
         XCTAssertEqual(params.gameInfo.gameVersion, "1.20.1")
     }
 }

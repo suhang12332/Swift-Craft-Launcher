@@ -8,17 +8,17 @@
 import Foundation
 import ZIPFoundation
 
-/// Archives a modpack directory into a `.mrpack` file.
+/// Archives a modpack directory into a zip-based modpack archive.
 enum ModPackArchiver {
-    /// Creates a `.mrpack` archive from a temporary directory.
+    /// Creates a modpack archive from a temporary directory.
     /// - Parameters:
-    ///   - tempDir: The temporary directory containing `modrinth.index.json` and `overrides`.
+    ///   - tempDir: The temporary directory containing the manifest and overrides.
     ///   - outputPath: The destination file path for the archive.
-    ///   - rootFiles: The root-level files to include. Defaults to the Modrinth index file.
+    ///   - rootFiles: The root-level files to include.
     static func archive(
         tempDir: URL,
         outputPath: URL,
-        rootFiles: [String] = [AppConstants.modrinthIndexFileName],
+        rootFiles: [String],
     ) throws {
         if Task.isCancelled {
             throw CancellationError()
@@ -45,16 +45,12 @@ enum ModPackArchiver {
             }
             let filePath = tempDir.appendingPathComponent(fileName)
             if FileManager.default.fileExists(atPath: filePath.path) {
-                let fileData = try Data(contentsOf: filePath)
-                try archive.addEntry(
-                    with: fileName,
-                    type: .file,
-                    uncompressedSize: Int64(fileData.count),
-                    compressionMethod: .deflate,
-                ) { position, size -> Data in
-                    let start = Int(position)
-                    let end = min(start + size, fileData.count)
-                    return fileData.subdata(in: start ..< end)
+                try autoreleasepool {
+                    try archive.addEntry(
+                        with: fileName,
+                        fileURL: filePath,
+                        compressionMethod: .deflate,
+                    )
                 }
             }
         }
@@ -88,18 +84,12 @@ enum ModPackArchiver {
                     let relativeToOverrides = String(filePath.dropFirst(overridesDirPathWithSlash.count))
                     let relativePath = "overrides/\(relativeToOverrides)"
 
-                    let fileData = try Data(contentsOf: fileURL)
-                    let fileSize = Int64(fileData.count)
-
-                    try archive.addEntry(
-                        with: relativePath,
-                        type: .file,
-                        uncompressedSize: fileSize,
-                        compressionMethod: .deflate,
-                    ) { position, size -> Data in
-                        let start = Int(position)
-                        let end = min(start + size, fileData.count)
-                        return fileData.subdata(in: start ..< end)
+                    try autoreleasepool {
+                        try archive.addEntry(
+                            with: relativePath,
+                            fileURL: fileURL,
+                            compressionMethod: .deflate,
+                        )
                     }
                 }
             }
