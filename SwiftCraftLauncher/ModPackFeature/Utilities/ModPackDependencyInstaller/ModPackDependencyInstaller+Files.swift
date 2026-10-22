@@ -20,14 +20,27 @@ extension ModPackDependencyInstaller {
 
         onProgressUpdate?("modpack.progress.files_download_started".localized(), 0, filesToDownload.count, .files)
 
+        // Largest first. A big file that starts late becomes the tail of the whole
+        // install, waiting on nothing else; starting it up front lets the small
+        // files fill in around it and shortens the critical path.
+        let downloadOrder = filesToDownload.indices.sorted {
+            filesToDownload[$0].fileSize > filesToDownload[$1].fileSize
+        }
+
         let semaphore = AsyncSemaphore(value: downloadSemaphoreValue)
         let completedCount = AtomicCounter()
 
         let results = await withTaskGroup(of: (Int, ModrinthIndexFile?).self) { group in
-            for (index, file) in filesToDownload.enumerated() {
+            for index in downloadOrder {
+                // Stop queueing work once the install is cancelled: every task
+                // already running will fail fast on its own, and adding more
+                // only keeps the network busy after the user asked to stop.
+                guard !Task.isCancelled else { break }
+                let file = filesToDownload[index]
                 group.addTask {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
+                    guard !Task.isCancelled else { return (index, file) }
 
                     let success = await downloadSingleFile(file: file, resourceDir: resourceDir)
 
@@ -44,6 +57,9 @@ extension ModPackDependencyInstaller {
             var results: [(Int, ModrinthIndexFile?)] = []
             for await result in group {
                 results.append(result)
+                if Task.isCancelled {
+                    group.cancelAll()
+                }
             }
             return results.sorted { $0.0 < $1.0 }
         }
@@ -67,6 +83,17 @@ extension ModPackDependencyInstaller {
             }
             return true
         }
+    }
+
+    /// Whether a file of this size is worth offering to the chunked downloader.
+    ///
+    /// Chunking opens with a HEAD request to confirm the host serves ranges, so
+    /// offering it to every mod would add one round trip per file for the many
+    /// that are too small to be split anyway. The size is already known from the
+    /// index, so small files skip the probe and go straight to a single stream.
+    private static func allowsChunking(forFileSize size: Int?) -> Bool {
+        guard let size else { return false }
+        return ChunkedDownloadConfig.isWorthChunking(fileSize: Int64(size))
     }
 
     private static func downloadSingleFile(
@@ -129,6 +156,10 @@ extension ModPackDependencyInstaller {
                 withIntermediateDirectories: true,
             )
 
+            // CurseForge stays on a single stream. Its CDN answers byte-range
+            // requests from third-party clients with 403 and throttles bursts
+            // hard, so the extra connections buy nothing and can fail the whole
+            // install. Modrinth's CDN does serve ranges, so only that path opts in.
             let downloadedFile = try await DownloadManager.downloadFile(
                 urlString: downloadUrl,
                 destinationURL: destinationPath,
@@ -166,6 +197,7 @@ extension ModPackDependencyInstaller {
                 urlString: urlString,
                 destinationURL: destinationPath,
                 expectedSha1: file.hashes["sha1"],
+                allowsChunking: allowsChunking(forFileSize: file.fileSize),
             )
         } catch {
             AppLog.modPack.error("Failed to download file: \(file.path)")

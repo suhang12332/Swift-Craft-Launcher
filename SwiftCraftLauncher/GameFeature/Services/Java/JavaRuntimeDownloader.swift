@@ -279,6 +279,7 @@ class JavaRuntimeDownloader: @unchecked Sendable {
             urlString: url.absoluteString,
             destinationURL: destinationURL,
             progressHandler: progressCallback,
+            allowsChunking: true,
         )
     }
 }

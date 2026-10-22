@@ -42,6 +42,19 @@ final class GameSettingsManager {
         didSet { Defaults.save(max(concurrentDownloads, 1), forKey: AppConstants.UserDefaultsKeys.concurrentDownloads) }
     }
 
+    /// Whether large files may be downloaded with several concurrent range requests.
+    var enableChunkedDownloads: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableChunkedDownloads, defaultValue: true) {
+        didSet { Defaults.save(enableChunkedDownloads, forKey: AppConstants.UserDefaultsKeys.enableChunkedDownloads) }
+    }
+
+    /// Whether downloads may be served by a mainland-China mirror instead of the official host.
+    var downloadSourcePreference: DownloadSourcePreference = Defaults.loadEnum(
+        forKey: AppConstants.UserDefaultsKeys.downloadSourcePreference,
+        defaultValue: DownloadSourcePreference.defaultValue,
+    ) {
+        didSet { Defaults.save(downloadSourcePreference.rawValue, forKey: AppConstants.UserDefaultsKeys.downloadSourcePreference) }
+    }
+
     var enableAICrashAnalysis: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableAICrashAnalysis) {
         didSet { Defaults.save(enableAICrashAnalysis, forKey: AppConstants.UserDefaultsKeys.enableAICrashAnalysis) }
     }

@@ -206,12 +206,14 @@ class MinecraftFileManager: @unchecked Sendable {
         type: DownloadType,
         i18nKey: String = "error.download.file_download_failed",
         errorMessage: String? = nil,
+        allowsChunking: Bool = false,
     ) async throws {
         do {
             _ = try await DownloadManager.downloadFile(
                 urlString: url.absoluteString,
                 destinationURL: destinationURL,
                 expectedSha1: sha1,
+                allowsChunking: allowsChunking,
             )
 
             if let fileNameForNotification {

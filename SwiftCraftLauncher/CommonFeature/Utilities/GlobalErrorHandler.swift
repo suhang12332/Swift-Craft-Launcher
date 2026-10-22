@@ -177,10 +177,11 @@ extension GlobalError {
     static func download(
         i18nKey: String,
         level: ErrorLevel = .notification,
+        statusCode: Int? = nil,
         message: String? = nil,
         source: ErrorSource = .main,
     ) -> GlobalError {
-        GlobalError(kind: .download, i18nKey: i18nKey, level: level, message: message, source: source)
+        GlobalError(kind: .download, i18nKey: i18nKey, level: level, statusCode: statusCode, message: message, source: source)
     }
 
     static func installation(

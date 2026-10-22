@@ -17,19 +17,16 @@ class JavaDownloadManager {
 
     private var dismissCallback: (() -> Void)?
     private var currentDownloadTask: Task<Void, Error>?
-    /// Cross-thread cancellation flag.
-    ///
-    /// Written on the main actor and read from the downloader's `CancelActor`
-    /// callback, so it is guarded by a lock rather than actor isolation.
-    nonisolated private let cancelRequestedFlag = OSAllocatedUnfairLock(initialState: false)
 
-    nonisolated private var cancelRequested: Bool {
-        cancelRequestedFlag.withLock { $0 }
+    private final class JobCancellation: @unchecked Sendable {
+        let lock = OSAllocatedUnfairLock(initialState: false)
+
+        var isCancelled: Bool { lock.withLock { $0 } }
+
+        func cancel() { lock.withLock { $0 = true } }
     }
 
-    nonisolated private func setCancelRequested(_ value: Bool) {
-        cancelRequestedFlag.withLock { $0 = value }
-    }
+    private var currentJobCancellation: JobCancellation?
 
     init() { }
 
@@ -42,13 +39,13 @@ class JavaDownloadManager {
     func downloadJavaRuntime(version: String) async {
         defer {
             currentDownloadTask = nil
-            setCancelRequested(false)
+            currentJobCancellation = nil
         }
+        let jobCancellation = JobCancellation()
+        currentJobCancellation = jobCancellation
         do {
             downloadState.reset()
             downloadState.startDownload(version: version)
-            setCancelRequested(false)
-
             showDownloadWindow()
 
             DIContainer.shared.system.javaRuntimeDownloader.setProgressCallback { @Sendable [weak self] fileName, completed, total in
@@ -60,16 +57,27 @@ class JavaDownloadManager {
             }
 
             DIContainer.shared.system.javaRuntimeDownloader.setCancelCallback { @Sendable [weak self] in
-                return self?.cancelRequested ?? false
+                _ = self
+                return jobCancellation.isCancelled
             }
 
             let task = Task { [javaRuntimeDownloader = DIContainer.shared.system.javaRuntimeDownloader] in
                 try await javaRuntimeDownloader.downloadJavaRuntime(for: version)
             }
             currentDownloadTask = task
-            try await task.value
+            // The download runs in an unstructured task, so it does not inherit
+            // cancellation from whoever triggered it. Game installs now provision
+            // Java alongside their own downloads, which means an install can be
+            // cancelled while this is still in flight; without this the runtime
+            // would keep pulling ~180MB in the background.
+            try await withTaskCancellationHandler {
+                try await task.value
+            } onCancel: {
+                task.cancel()
+                jobCancellation.cancel()
+            }
 
-            if downloadState.isCancelled || cancelRequested {
+            if downloadState.isCancelled || jobCancellation.isCancelled {
                 AppLog.game.info("Java download cancelled")
                 cleanupCancelledDownload()
                 return
@@ -79,7 +87,7 @@ class JavaDownloadManager {
 
             closeWindow()
         } catch {
-            if error is CancellationError || downloadState.isCancelled || cancelRequested {
+            if error is CancellationError || downloadState.isCancelled || jobCancellation.isCancelled {
                 AppLog.game.info("Java download task cancelled")
                 cleanupCancelledDownload()
                 return
@@ -97,7 +105,7 @@ class JavaDownloadManager {
             closeWindow()
             return
         }
-        setCancelRequested(true)
+        currentJobCancellation?.cancel()
         downloadState.cancel()
         currentDownloadTask?.cancel()
     }

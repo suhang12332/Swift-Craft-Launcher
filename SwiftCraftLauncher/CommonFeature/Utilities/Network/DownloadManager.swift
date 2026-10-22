@@ -84,12 +84,14 @@ enum DownloadManager {
         destinationURL: URL,
         expectedSha1: String? = nil,
         headers: [String: String]? = nil,
+        allowsChunking: Bool = false,
     ) async throws -> URL {
         try await ProgressDownloadManager.downloadFile(
             urlString: urlString,
             destinationURL: destinationURL,
             expectedSha1: expectedSha1,
             headers: headers,
+            allowsChunking: allowsChunking,
         )
     }
 

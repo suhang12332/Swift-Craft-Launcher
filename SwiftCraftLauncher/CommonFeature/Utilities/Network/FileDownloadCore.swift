@@ -8,6 +8,48 @@
 import Foundation
 
 /// Provides core utilities for downloading files, including URL parsing, directory setup, and SHA-1 validation.
+/// A non-2xx HTTP status observed while downloading.
+enum DownloadHTTPStatusError: Error {
+    case httpStatus(Int)
+}
+
+/// Retry policy shared by download paths.
+///
+/// The single-stream path keeps its own private equivalent for now; new code
+/// uses this so the two can later be unified without touching that path.
+enum DownloadRetryPolicy {
+    static let maxRetryCount = 3
+
+    static func shouldRetry(_ error: Error) -> Bool {
+        if let urlError = error as? URLError {
+            switch urlError.code {
+            case .timedOut,
+                 .cannotFindHost,
+                 .cannotConnectToHost,
+                 .networkConnectionLost,
+                 .dnsLookupFailed,
+                 .notConnectedToInternet,
+                 .resourceUnavailable:
+                return true
+            default:
+                return false
+            }
+        }
+
+        if case let DownloadHTTPStatusError.httpStatus(statusCode) = error {
+            return statusCode == 408 || statusCode == 429 || (500 ... 599).contains(statusCode)
+        }
+
+        return false
+    }
+
+    /// Exponential backoff capped at 4 seconds: 0.5s, 1s, 2s.
+    static func delayNanoseconds(for attempt: Int) -> UInt64 {
+        let seconds = min(pow(2.0, Double(attempt - 1)) * 0.5, 4.0)
+        return UInt64(seconds * 1_000_000_000)
+    }
+}
+
 enum FileDownloadCore {
     static func parseURL(from urlString: String) throws -> URL {
         try autoreleasepool {

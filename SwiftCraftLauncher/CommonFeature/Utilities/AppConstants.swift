@@ -46,6 +46,8 @@ enum AppConstants {
 
         static let limitCommonSheetHeight = "limitCommonSheetHeight"
         static let concurrentDownloads = "concurrentDownloads"
+        static let enableChunkedDownloads = "enableChunkedDownloads"
+        static let downloadSourcePreference = "downloadSourcePreference"
         static let launcherWorkingDirectory = "launcherWorkingDirectory"
         static let interfaceLayoutStyle = "interfaceLayoutStyle"
         static let defaultModPackExportFormat = "defaultModPackExportFormat"
@@ -135,6 +137,7 @@ enum AppConstants {
         static let auth = "auth"
         static let config = "config"
         static let option = "options.txt"
+        static let chunkedDownloads = "chunked-downloads"
     }
 
     /// The top-level directories and files selected by default in the file tree.
