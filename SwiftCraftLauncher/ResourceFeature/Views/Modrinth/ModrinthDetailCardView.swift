@@ -72,7 +72,9 @@ struct ModrinthDetailCardView: View {
     var onLocalDisableStateChanged: ((ModrinthProject, Bool) -> Void)?
     /// Update callback: updates the current item's hash and list entry without a full scan. Parameters: (projectId, oldFileName, newFileName, newHash).
     var onResourceUpdated: ((String, String, String, String?) -> Void)?
-    @Binding var scannedDetailIds: Set<String> // detail IDs from the parent for fast lookup
+    let scannedDetailIds: Set<String> // detail IDs from the parent for fast lookup
+    /// Recorded after a successful install when the parent owns a scanned-ID set.
+    var onScannedHashAdded: ((String) -> Void)?
     @State private var addButtonState: AddButtonState = .idle
     @State private var showDeleteAlert = false
     @State private var isResourceDisabled: Bool = false
@@ -215,7 +217,8 @@ struct ModrinthDetailCardView: View {
                     type: type,
                     selectedItem: $selectedItem,
                     onResourceChanged: onResourceChanged,
-                    scannedDetailIds: $scannedDetailIds,
+                    scannedDetailIds: scannedDetailIds,
+                    onScannedHashAdded: onScannedHashAdded,
                     isResourceDisabled: $isResourceDisabled,
                     onResourceUpdated: onResourceUpdated,
                 ) { isDisabled in

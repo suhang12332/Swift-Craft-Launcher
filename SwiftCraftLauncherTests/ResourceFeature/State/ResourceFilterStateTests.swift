@@ -66,13 +66,4 @@ final class ResourceFilterStateTests: XCTestCase {
 
         XCTAssertEqual(state.searchText, "")
     }
-
-    func testBindingGetters_defaultValues() {
-        let state = ResourceFilterState()
-
-        XCTAssertEqual(state.selectedVersionsBinding.wrappedValue, [])
-        XCTAssertEqual(state.sortIndexBinding.wrappedValue, AppConstants.modrinthIndex)
-        XCTAssertEqual(state.searchTextBinding.wrappedValue, "")
-        XCTAssertEqual(state.localResourceFilterBinding.wrappedValue, .all)
-    }
 }

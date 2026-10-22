@@ -16,7 +16,9 @@ struct AddOrDeleteResourceButton: View {
     let gameInfo: GameVersionInfo?
     let query: String
     let type: Bool
-    @Binding var scannedDetailIds: Set<String>
+    let scannedDetailIds: Set<String>
+    /// Records a newly installed hash when the parent owns a scanned-ID set.
+    let onScannedHashAdded: ((String) -> Void)?
     @Environment(GameRepository.self)
     private var gameRepository
     @Environment(PlayerListViewModel.self)
@@ -41,7 +43,8 @@ struct AddOrDeleteResourceButton: View {
         type: Bool,
         selectedItem: Binding<SidebarItem>,
         onResourceChanged: (() -> Void)? = nil,
-        scannedDetailIds: Binding<Set<String>> = .constant([]),
+        scannedDetailIds: Set<String> = [],
+        onScannedHashAdded: ((String) -> Void)? = nil,
         isResourceDisabled: Binding<Bool> = .constant(false),
         onResourceUpdated: ((String, String, String, String?) -> Void)? = nil,
         onToggleDisableState: ((Bool) -> Void)? = nil,
@@ -54,7 +57,8 @@ struct AddOrDeleteResourceButton: View {
         self.type = type
         _selectedItem = selectedItem
         self.onResourceChanged = onResourceChanged
-        _scannedDetailIds = scannedDetailIds
+        self.scannedDetailIds = scannedDetailIds
+        self.onScannedHashAdded = onScannedHashAdded
         _isResourceDisabled = isResourceDisabled
         self.onResourceUpdated = onResourceUpdated
         self.onToggleDisableState = onToggleDisableState
@@ -71,7 +75,7 @@ struct AddOrDeleteResourceButton: View {
                 onResourceUpdated: onResourceUpdated,
                 onToggleDisableState: onToggleDisableState,
                 setIsResourceDisabled: { isResourceDisabled.wrappedValue = $0 },
-                addScannedHash: { hash in scannedDetailIds.wrappedValue.insert(hash) },
+                addScannedHash: { hash in onScannedHashAdded?(hash) },
             ),
         )
     }

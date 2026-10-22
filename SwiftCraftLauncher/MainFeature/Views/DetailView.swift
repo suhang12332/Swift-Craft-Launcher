@@ -30,28 +30,32 @@ struct DetailView: View {
 
     @ViewBuilder
     private func gameDetailView(gameId: String) -> some View {
+        @Bindable var filterState = filterState
+        @Bindable var detailState = detailState
         if let gameInfo = gameRepository.getGame(by: gameId) {
             GameInfoDetailView(
                 game: gameInfo,
-                query: detailState.gameResourcesTypeBinding,
-                dataSource: filterState.dataSourceBinding,
-                selectedVersions: filterState.selectedVersionsBinding,
-                selectedCategories: filterState.selectedCategoriesBinding,
-                selectedFeatures: filterState.selectedFeaturesBinding,
-                selectedResolutions: filterState.selectedResolutionsBinding,
-                selectedPerformanceImpact: filterState.selectedPerformanceImpactBinding,
-                selectedProjectId: detailState.selectedProjectIdBinding,
-                selectedLoaders: filterState.selectedLoadersBinding,
-                gameType: detailState.gameTypeBinding,
-                selectedItem: detailState.selectedItemBinding,
-                searchText: filterState.searchTextBinding,
-                localResourceFilter: filterState.localResourceFilterBinding,
+                query: detailState.gameResourcesType,
+                dataSource: filterState.dataSource,
+                selectedVersions: filterState.selectedVersions,
+                selectedCategories: filterState.selectedCategories,
+                selectedFeatures: filterState.selectedFeatures,
+                selectedResolutions: filterState.selectedResolutions,
+                selectedPerformanceImpact: filterState.selectedPerformanceImpact,
+                selectedProjectId: $detailState.selectedProjectId,
+                selectedLoaders: filterState.selectedLoaders,
+                gameType: detailState.gameType,
+                selectedItem: $detailState.selectedItem,
+                searchText: $filterState.searchText,
+                localResourceFilter: filterState.localResourceFilter,
             )
         }
     }
 
     @ViewBuilder
     private func resourceDetailView(type: ResourceType) -> some View {
+        @Bindable var filterState = filterState
+        @Bindable var detailState = detailState
         if detailState.selectedProjectId != nil {
             List {
                 ModrinthProjectDetailView(
@@ -61,18 +65,18 @@ struct DetailView: View {
         } else {
             ModrinthDetailView(
                 query: type.rawValue,
-                selectedVersions: filterState.selectedVersionsBinding,
-                selectedCategories: filterState.selectedCategoriesBinding,
-                selectedFeatures: filterState.selectedFeaturesBinding,
-                selectedResolutions: filterState.selectedResolutionsBinding,
-                selectedPerformanceImpact: filterState.selectedPerformanceImpactBinding,
-                selectedProjectId: detailState.selectedProjectIdBinding,
-                selectedLoader: filterState.selectedLoadersBinding,
+                selectedVersions: filterState.selectedVersions,
+                selectedCategories: filterState.selectedCategories,
+                selectedFeatures: filterState.selectedFeatures,
+                selectedResolutions: filterState.selectedResolutions,
+                selectedPerformanceImpact: filterState.selectedPerformanceImpact,
+                selectedProjectId: $detailState.selectedProjectId,
+                selectedLoader: filterState.selectedLoaders,
                 gameInfo: nil,
-                selectedItem: detailState.selectedItemBinding,
-                gameType: detailState.gameTypeBinding,
-                dataSource: filterState.dataSourceBinding,
-                searchText: filterState.searchTextBinding,
+                selectedItem: $detailState.selectedItem,
+                gameType: detailState.gameType,
+                dataSource: filterState.dataSource,
+                searchText: $filterState.searchText,
             )
         }
     }

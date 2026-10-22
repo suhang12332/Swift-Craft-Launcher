@@ -20,7 +20,7 @@ struct GameLocalResourceView: View {
     @Binding var selectedProjectId: String?
     let refreshToken: UUID
     @Binding var searchText: String
-    @Binding var localFilter: LocalResourceFilter
+    let localFilter: LocalResourceFilter
 
     @State private var viewModel = GameLocalResourceViewModel()
 

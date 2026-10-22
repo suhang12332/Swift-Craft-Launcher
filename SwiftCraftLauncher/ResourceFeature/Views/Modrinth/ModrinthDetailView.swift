@@ -12,19 +12,19 @@ struct ModrinthDetailView: View {
     @Environment(DIContainer.self)
     private var container
     let query: String
-    @Binding var selectedVersions: [String]
-    @Binding var selectedCategories: [String]
-    @Binding var selectedFeatures: [String]
-    @Binding var selectedResolutions: [String]
-    @Binding var selectedPerformanceImpact: [String]
+    let selectedVersions: [String]
+    let selectedCategories: [String]
+    let selectedFeatures: [String]
+    let selectedResolutions: [String]
+    let selectedPerformanceImpact: [String]
     @Binding var selectedProjectId: String?
-    @Binding var selectedLoader: [String]
+    let selectedLoader: [String]
     let gameInfo: GameVersionInfo?
     @Binding var selectedItem: SidebarItem
-    @Binding var gameType: Bool
+    let gameType: Bool
     let header: AnyView?
     @Binding var scannedDetailIds: Set<String> // detail IDs from the parent for fast lookup
-    @Binding var dataSource: DataSource
+    let dataSource: DataSource
 
     @State private var viewModel = ModrinthSearchViewModel()
     @Binding var searchText: String
@@ -36,35 +36,35 @@ struct ModrinthDetailView: View {
 
     init(
         query: String,
-        selectedVersions: Binding<[String]>,
-        selectedCategories: Binding<[String]>,
-        selectedFeatures: Binding<[String]>,
-        selectedResolutions: Binding<[String]>,
-        selectedPerformanceImpact: Binding<[String]>,
+        selectedVersions: [String],
+        selectedCategories: [String],
+        selectedFeatures: [String],
+        selectedResolutions: [String],
+        selectedPerformanceImpact: [String],
         selectedProjectId: Binding<String?>,
-        selectedLoader: Binding<[String]>,
+        selectedLoader: [String],
         gameInfo: GameVersionInfo?,
         selectedItem: Binding<SidebarItem>,
-        gameType: Binding<Bool>,
+        gameType: Bool,
         header: AnyView? = nil,
         scannedDetailIds: Binding<Set<String>> = .constant([]),
-        dataSource: Binding<DataSource> = .constant(.modrinth),
+        dataSource: DataSource,
         searchText: Binding<String> = .constant(""),
     ) {
         self.query = query
-        _selectedVersions = selectedVersions
-        _selectedCategories = selectedCategories
-        _selectedFeatures = selectedFeatures
-        _selectedResolutions = selectedResolutions
-        _selectedPerformanceImpact = selectedPerformanceImpact
+        self.selectedVersions = selectedVersions
+        self.selectedCategories = selectedCategories
+        self.selectedFeatures = selectedFeatures
+        self.selectedResolutions = selectedResolutions
+        self.selectedPerformanceImpact = selectedPerformanceImpact
         _selectedProjectId = selectedProjectId
-        _selectedLoader = selectedLoader
+        self.selectedLoader = selectedLoader
         self.gameInfo = gameInfo
         _selectedItem = selectedItem
-        _gameType = gameType
+        self.gameType = gameType
         self.header = header
         _scannedDetailIds = scannedDetailIds
-        _dataSource = dataSource
+        self.dataSource = dataSource
         _searchText = searchText
     }
 
@@ -177,8 +177,10 @@ struct ModrinthDetailView: View {
                     query: query,
                     type: true,
                     selectedItem: $selectedItem,
-                    scannedDetailIds: $scannedDetailIds,
-                )
+                    scannedDetailIds: scannedDetailIds,
+                ) { hash in
+                    scannedDetailIds.insert(hash)
+                }
                 .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                 .listRowInsets(
                     EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8),

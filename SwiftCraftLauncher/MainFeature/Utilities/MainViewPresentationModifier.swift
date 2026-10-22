@@ -36,6 +36,7 @@ struct MainViewPresentationModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         @Bindable var gameDialogsPresenter = gameDialogsPresenter
+        @Bindable var detailState = detailState
         content
             .sheet(item: $gameDialogsPresenter.gameForExport) { game in
                 ModPackExportSheet(gameInfo: game)
@@ -69,8 +70,8 @@ struct MainViewPresentationModifier: ViewModifier {
                     container.core.gameActionManager.deleteGame(
                         game: game,
                         gameRepository: gameRepository,
-                        selectedItem: detailState.selectedItemBinding,
-                        gameType: detailState.gameTypeBinding,
+                        selectedItem: $detailState.selectedItem,
+                        gameType: $detailState.gameType,
                     )
                 },
             )

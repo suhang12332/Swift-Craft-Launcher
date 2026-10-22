@@ -14,21 +14,21 @@ struct GameInfoDetailView: View {
     private var container
     let game: GameVersionInfo
 
-    @Binding var query: String
-    @Binding var dataSource: DataSource
-    @Binding var selectedVersions: [String]
-    @Binding var selectedCategories: [String]
-    @Binding var selectedFeatures: [String]
-    @Binding var selectedResolutions: [String]
-    @Binding var selectedPerformanceImpact: [String]
+    let query: String
+    let dataSource: DataSource
+    let selectedVersions: [String]
+    let selectedCategories: [String]
+    let selectedFeatures: [String]
+    let selectedResolutions: [String]
+    let selectedPerformanceImpact: [String]
     @Binding var selectedProjectId: String?
-    @Binding var selectedLoaders: [String]
-    @Binding var gameType: Bool
+    let selectedLoaders: [String]
+    let gameType: Bool
     @Environment(GameRepository.self)
     private var gameRepository
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
-    @Binding var localResourceFilter: LocalResourceFilter
+    let localResourceFilter: LocalResourceFilter
     @State private var localRefreshToken = UUID()
     @State private var ioViewModel = GameInfoDetailIOViewModel()
 
@@ -38,54 +38,54 @@ struct GameInfoDetailView: View {
 
     init(
         game: GameVersionInfo,
-        query: Binding<String>,
-        dataSource: Binding<DataSource>,
-        selectedVersions: Binding<[String]>,
-        selectedCategories: Binding<[String]>,
-        selectedFeatures: Binding<[String]>,
-        selectedResolutions: Binding<[String]>,
-        selectedPerformanceImpact: Binding<[String]>,
+        query: String,
+        dataSource: DataSource,
+        selectedVersions: [String],
+        selectedCategories: [String],
+        selectedFeatures: [String],
+        selectedResolutions: [String],
+        selectedPerformanceImpact: [String],
         selectedProjectId: Binding<String?>,
-        selectedLoaders: Binding<[String]>,
-        gameType: Binding<Bool>,
+        selectedLoaders: [String],
+        gameType: Bool,
         selectedItem: Binding<SidebarItem>,
         searchText: Binding<String>,
-        localResourceFilter: Binding<LocalResourceFilter>,
+        localResourceFilter: LocalResourceFilter,
     ) {
         self.game = game
-        _query = query
-        _dataSource = dataSource
-        _selectedVersions = selectedVersions
-        _selectedCategories = selectedCategories
-        _selectedFeatures = selectedFeatures
-        _selectedResolutions = selectedResolutions
-        _selectedPerformanceImpact = selectedPerformanceImpact
+        self.query = query
+        self.dataSource = dataSource
+        self.selectedVersions = selectedVersions
+        self.selectedCategories = selectedCategories
+        self.selectedFeatures = selectedFeatures
+        self.selectedResolutions = selectedResolutions
+        self.selectedPerformanceImpact = selectedPerformanceImpact
         _selectedProjectId = selectedProjectId
-        _selectedLoaders = selectedLoaders
-        _gameType = gameType
+        self.selectedLoaders = selectedLoaders
+        self.gameType = gameType
         _selectedItem = selectedItem
         _searchText = searchText
-        _localResourceFilter = localResourceFilter
+        self.localResourceFilter = localResourceFilter
     }
 
     var body: some View {
         Group {
             if gameType {
-                GameRemoteResourceView(
-                    game: game,
+                ModrinthDetailView(
                     query: query,
-                    selectedVersions: $selectedVersions,
-                    selectedCategories: $selectedCategories,
-                    selectedFeatures: $selectedFeatures,
-                    selectedResolutions: $selectedResolutions,
-                    selectedPerformanceImpact: $selectedPerformanceImpact,
+                    selectedVersions: selectedVersions,
+                    selectedCategories: selectedCategories,
+                    selectedFeatures: selectedFeatures,
+                    selectedResolutions: selectedResolutions,
+                    selectedPerformanceImpact: selectedPerformanceImpact,
                     selectedProjectId: $selectedProjectId,
-                    selectedLoaders: $selectedLoaders,
+                    selectedLoader: selectedLoaders,
+                    gameInfo: game,
                     selectedItem: $selectedItem,
-                    gameType: $gameType,
+                    gameType: gameType,
                     header: header,
                     scannedDetailIds: $scannedResources,
-                    dataSource: $dataSource,
+                    dataSource: dataSource,
                     searchText: $searchText,
                 )
             } else {
@@ -97,7 +97,7 @@ struct GameInfoDetailView: View {
                     selectedProjectId: $selectedProjectId,
                     refreshToken: localRefreshToken,
                     searchText: $searchText,
-                    localFilter: $localResourceFilter,
+                    localFilter: localResourceFilter,
                 )
             }
         }
