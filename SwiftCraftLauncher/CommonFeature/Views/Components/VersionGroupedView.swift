@@ -10,30 +10,23 @@ import SwiftUI
 /// A view that displays versions grouped by major version series.
 struct VersionGroupedView: View {
     let items: [FilterItem]
-    @Binding var selectedItems: [String]
+    let selectedIds: Set<String>
     let onItemTap: (String) -> Void
-    var isMultiSelect: Bool = true
     @State private var visibleItemCounts: [String: Int] = [:]
     @State private var visibleGroupCount: Int = Constants.initialVisibleGroupCount
 
-    @Binding var selectedItem: String?
-
     /// Initializes the view for multi-select mode.
-    init(items: [FilterItem], selectedItems: Binding<[String]>, onItemTap: @escaping (String) -> Void) {
+    init(items: [FilterItem], selectedItems: [String], onItemTap: @escaping (String) -> Void) {
         self.items = items
-        _selectedItems = selectedItems
+        selectedIds = Set(selectedItems)
         self.onItemTap = onItemTap
-        isMultiSelect = true
-        _selectedItem = .constant(nil)
     }
 
     /// Initializes the view for single-select mode.
-    init(items: [FilterItem], selectedItem: Binding<String?>, onItemTap: @escaping (String) -> Void) {
+    init(items: [FilterItem], selectedItem: String?, onItemTap: @escaping (String) -> Void) {
         self.items = items
-        _selectedItem = selectedItem
+        selectedIds = selectedItem.map { [$0] } ?? []
         self.onItemTap = onItemTap
-        isMultiSelect = false
-        _selectedItems = .constant([])
     }
 
     private enum Constants {
@@ -90,11 +83,7 @@ struct VersionGroupedView: View {
     }
 
     private func isSelected(_ itemId: String) -> Bool {
-        if isMultiSelect {
-            return selectedItems.contains(itemId)
-        } else {
-            return selectedItem == itemId
-        }
+        selectedIds.contains(itemId)
     }
 
     private func visibleItems(for key: String, items: [FilterItem]) -> [FilterItem] {
