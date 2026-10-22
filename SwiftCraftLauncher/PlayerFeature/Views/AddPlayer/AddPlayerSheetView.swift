@@ -11,9 +11,12 @@ import SwiftUI
 struct AddPlayerSheetView: View {
     @Environment(DIContainer.self)
     private var container
-    @Binding var playerName: String
-    @Binding var isPlayerNameValid: Bool
-    var onAdd: () -> Void
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
+    @Environment(\.dismiss)
+    private var dismiss
+    @State private var playerName: String = ""
+    @State private var isPlayerNameValid: Bool = false
     var onCancel: () -> Void
     var onLogin: (MinecraftProfileResponse) -> Void
     var onYggdrasilLogin: ((YggdrasilProfile) -> Void)?
@@ -22,32 +25,21 @@ struct AddPlayerSheetView: View {
         case minecraft(MinecraftProfileResponse)
     }
 
-    var playerListViewModel: PlayerListViewModel
-
     @State private var isPremium: Bool = false
     @State private var authenticatedProfile: MinecraftProfileResponse?
     @State private var viewModel = AddPlayerSheetViewModel()
 
     @Environment(\.openURL)
     private var openURL
-    @State private var showErrorPopover: Bool = false
 
     init(
-        playerName: Binding<String>,
-        isPlayerNameValid: Binding<Bool>,
-        onAdd: @escaping () -> Void,
         onCancel: @escaping () -> Void,
         onLogin: @escaping (MinecraftProfileResponse) -> Void,
         onYggdrasilLogin: ((YggdrasilProfile) -> Void)? = nil,
-        playerListViewModel: PlayerListViewModel,
     ) {
-        _playerName = playerName
-        _isPlayerNameValid = isPlayerNameValid
-        self.onAdd = onAdd
         self.onCancel = onCancel
         self.onLogin = onLogin
         self.onYggdrasilLogin = onYggdrasilLogin
-        self.playerListViewModel = playerListViewModel
     }
 
     var body: some View {
@@ -86,11 +78,7 @@ struct AddPlayerSheetView: View {
                 case .yggdrasil:
                     YggdrasilAuthView(onLoginSuccess: onYggdrasilLogin)
                 case .offline:
-                    VStack(alignment: .leading) {
-                        playerInfoSection
-                            .padding(.bottom, 10)
-                        playerNameInputSection
-                    }
+                    OfflineAuthView(playerName: $playerName, isPlayerNameValid: $isPlayerNameValid)
                 }
             },
             footer: {
@@ -174,7 +162,8 @@ struct AddPlayerSheetView: View {
                             "addplayer.create".localized(),
                         ) {
                             container.system.minecraftAuthService.isLoading = false
-                            onAdd()
+                            _ = playerListViewModel.addPlayer(name: playerName)
+                            dismiss()
                         }
                         .disabled(!isPlayerNameValid)
                         .keyboardShortcut(.defaultAction)
@@ -210,68 +199,8 @@ struct AddPlayerSheetView: View {
         authenticatedProfile = nil
         isPremium = false
         container.system.minecraftAuthService.isLoading = false
-        showErrorPopover = false
         container.system.yggdrasilAuthService.logout()
         viewModel.reset()
-    }
-
-    private var playerInfoSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("addplayer.info.title".localized())
-                .font(.headline)
-                .padding(.bottom, 4)
-
-            Text("addplayer.info.line1".localized())
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            Text("addplayer.info.line2".localized())
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            Text("addplayer.info.line3".localized())
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            Text("addplayer.info.line4".localized())
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-    }
-
-    private var playerNameInputSection: some View {
-        VStack(alignment: .leading) {
-            Text("addplayer.name.label".localized())
-                .font(.headline)
-            TextField(
-                "addplayer.name.placeholder".localized(),
-                text: $playerName,
-            )
-            .textFieldStyle(.roundedBorder)
-            .popover(isPresented: $showErrorPopover, arrowEdge: .trailing) {
-                if let errorMessage = playerNameError {
-                    Text(errorMessage)
-                        .padding()
-                        .presentationCompactAdaptation(.popover)
-                }
-            }
-            .onChange(of: playerName) { _, newValue in
-                checkPlayerName(newValue)
-            }
-        }
-    }
-
-    private var playerNameError: String? {
-        let trimmedName = playerName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedName.isEmpty else { return nil }
-        if playerListViewModel.playerExists(name: trimmedName) {
-            return "addplayer.name.error.duplicate".localized()
-        }
-        return nil
-    }
-
-    private func checkPlayerName(_ name: String) {
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        let hasError = playerNameError != nil
-        isPlayerNameValid = !trimmedName.isEmpty && !hasError
-        showErrorPopover = hasError
     }
 }
 
