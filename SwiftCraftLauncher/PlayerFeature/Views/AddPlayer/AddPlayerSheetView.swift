@@ -103,7 +103,8 @@ struct AddPlayerSheetView: View {
                         onCancel()
                     }
                     Spacer()
-                    if viewModel.selectedAuthType == .premium {
+                    switch viewModel.selectedAuthType {
+                    case .premium:
                         switch container.system.minecraftAuthService.authState {
                         case .idle:
                             Button("addplayer.auth.start_login".localized()) {
@@ -140,7 +141,7 @@ struct AddPlayerSheetView: View {
                         default:
                             ProgressView().controlSize(.small)
                         }
-                    } else if viewModel.selectedAuthType == .yggdrasil {
+                    case .yggdrasil:
                         switch container.system.yggdrasilAuthService.authState {
                         case .idle, .error:
                             Button("addplayer.auth.start_login".localized()) {
@@ -160,7 +161,7 @@ struct AddPlayerSheetView: View {
                         case .waitingForBrowser, .processing:
                             ProgressView().controlSize(.small)
                         }
-                    } else {
+                    default:
                         Button(
                             "addplayer.purchase.minecraft".localized(),
                         ) {
