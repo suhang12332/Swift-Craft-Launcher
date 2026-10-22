@@ -40,7 +40,7 @@ extension GameCreationViewModel {
             gameRepository: gameRepository,
             onSuccess: {
                 Task { @MainActor in
-                    self.configuration.actions.onCancel()
+                    self.completeInstallation()
                 }
             },
             onError: { error, message in

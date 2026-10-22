@@ -58,7 +58,8 @@ extension ModPackImportViewModel {
     func handleModPackInstallationResult(success: Bool, gameName: String) {
         if success {
             AppLog.modPack.info("Local modpack import completed: \(gameName)")
-            configuration.actions.onCancel() // Use cancel to dismiss
+            modPackViewModel.modPackInstallState.reset()
+            completeInstallation()
         } else if Task.isCancelled || gameSetupService.downloadState.isCancelled {
             AppLog.modPack.info("Local modpack import cancelled: \(gameName)")
             modPackViewModel.modPackInstallState.reset()

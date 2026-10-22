@@ -20,7 +20,6 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     var failedResourcesContinuation: ((Bool) -> Void)?
 
     let onProcessingStateChanged: (Bool) -> Void
-    var gameRepository: GameRepository?
 
     init(
         configuration: GameFormConfiguration,
@@ -48,59 +47,33 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         updateParentState()
     }
 
-    override func performConfirmAction() async {
-        startDownloadTask {
-            await self.importModPack()
-        }
-    }
-
-    override func handleCancel() {
-        if computeIsDownloading() || downloadTask != nil {
-            downloadTask?.cancel()
-            downloadTask = nil
-            gameSetupService.downloadState.cancel()
-            modPackViewModel.modPackInstallState.reset()
-            isProcessingModPack = false
-            onProcessingStateChanged(false)
-
-            Task {
-                await performCancelCleanup()
-            }
-        } else {
-            configuration.actions.onCancel()
-        }
+    override func performInstallation() async {
+        await importModPack()
     }
 
     override func performCancelCleanup() async {
-        let gameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let extractedPath = extractedModPackPath
+        modPackViewModel.modPackInstallState.reset()
+        isProcessingModPack = false
+        onProcessingStateChanged(false)
+        modPackViewModel.clearParsedIndexInfo()
+        modPackViewModel.abortFailedResources()
 
-        await Task.detached(priority: .utility) {
-            let fm = FileManager.default
-            if !gameName.isEmpty {
-                let profileDir = AppPaths.profileDirectory(gameName: gameName)
-                if fm.fileExists(atPath: profileDir.path) {
-                    do {
-                        try fm.removeItem(at: profileDir)
-                        AppLog.modPack.info("Deleted cancelled ModPack game folder: \(profileDir.path)")
-                    } catch {
-                        AppLog.modPack.error("Failed to delete ModPack game folder: \(error.localizedDescription)")
-                    }
-                }
-            }
-            if let path = extractedPath, fm.fileExists(atPath: path.path) {
+        let extractedPath = extractedModPackPath
+        extractedModPackPath = nil
+        if let extractedPath {
+            await Task.detached(priority: .utility) {
+                let fm = FileManager.default
+                guard fm.fileExists(atPath: extractedPath.path) else { return }
                 do {
-                    try fm.removeItem(at: path)
-                    AppLog.modPack.info("Deleted ModPack temp extracted files: \(path.path)")
+                    try fm.removeItem(at: extractedPath)
+                    AppLog.modPack.info("Deleted ModPack temp extracted files: \(extractedPath.path)")
                 } catch {
                     AppLog.modPack.error("Failed to delete ModPack temp files: \(error.localizedDescription)")
                 }
-            }
-        }.value
+            }.value
+        }
 
-        gameSetupService.downloadState.reset()
-        modPackViewModel.modPackInstallState.reset()
-        configuration.actions.onCancel()
+        await super.performCancelCleanup()
     }
 
     override func computeIsDownloading() -> Bool {

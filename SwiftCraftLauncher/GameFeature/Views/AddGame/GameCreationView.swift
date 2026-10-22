@@ -91,7 +91,7 @@ struct GameCreationView: View {
     }
 
     private func clearAllData() {
-        if viewModel.isDownloading {
+        if viewModel.isCancellable {
             viewModel.handleCancel()
         }
         viewModel.clearLoadedVersionsOnClose()

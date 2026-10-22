@@ -40,6 +40,7 @@ class GameSetupUtil {
         gameRepository: GameRepository,
         onSuccess: @escaping () -> Void,
         onError: @escaping (GlobalError, String) -> Void,
+        onCancelled: @escaping () -> Void = {},
     ) async {
         if let playerListViewModel {
             guard playerListViewModel.currentPlayer != nil else {
@@ -90,6 +91,7 @@ class GameSetupUtil {
                 selectedModLoader: input.selectedModLoader,
                 specifiedLoaderVersion: input.specifiedLoaderVersion,
             )
+            try Task.checkCancellation()
             try await gameRepository.addGame(gameInfo)
 
             if DIContainer.shared.ui.gameSettingsManager.syncLanguageForNewGames {
@@ -100,10 +102,12 @@ class GameSetupUtil {
                 await DIContainer.shared.core.modScanner.scanGameModsDirectory(game: gameInfo)
             }
 
-            try? await NotificationManager.send(
-                title: "notification.download.complete.title".localized(),
-                body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader),
-            )
+            if !Task.isCancelled {
+                try? await NotificationManager.send(
+                    title: "notification.download.complete.title".localized(),
+                    body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader),
+                )
+            }
             onSuccess()
         } catch {
             if isSaveGameDownloadCancelled(error) {
@@ -112,6 +116,7 @@ class GameSetupUtil {
                 await MainActor.run {
                     self.downloadState.reset()
                 }
+                onCancelled()
                 return
             }
             await cleanupGameDirectories(gameName: input.gameName)

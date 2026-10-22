@@ -20,7 +20,14 @@ class BaseGameFormViewModel {
     let gameSetupService = GameSetupUtil()
     let gameNameValidator: GameNameValidator
 
-    var downloadTask: Task<Void, Error>?
+    var gameRepository: GameRepository?
+    var downloadTask: Task<Void, Never>?
+    private var downloadTaskToken = UUID()
+    private var isCancelling = false
+
+    var isCancellable: Bool {
+        !isCancelling && (computeIsDownloading() || downloadTask != nil)
+    }
 
     let configuration: GameFormConfiguration
 
@@ -51,22 +58,23 @@ class BaseGameFormViewModel {
     }
 
     func handleCancel() {
-        if isDownloading {
-            downloadTask?.cancel()
-            downloadTask = nil
-            gameSetupService.downloadState.cancel()
-            Task {
-                await performCancelCleanup()
-            }
-        } else {
+        guard isCancellable else {
             configuration.actions.onCancel()
+            return
+        }
+
+        isCancelling = true
+        downloadTask?.cancel()
+        downloadTask = nil
+        gameSetupService.downloadState.cancel()
+        Task {
+            await performCancelCleanup()
         }
     }
 
     func handleConfirm() {
-        downloadTask?.cancel()
-        downloadTask = Task {
-            await performConfirmAction()
+        startDownloadTask {
+            await self.performInstallation()
         }
     }
 
@@ -79,15 +87,37 @@ class BaseGameFormViewModel {
         isFormValid = configuration.isFormValid.wrappedValue
     }
 
-    func performConfirmAction() async {
+    func performInstallation() async {
         configuration.actions.onConfirm()
     }
 
+    func completeInstallation() {
+        finishDownloadTask()
+        configuration.actions.onCancel()
+    }
+
     func performCancelCleanup() async {
-        await MainActor.run {
-            gameSetupService.downloadState.reset()
-            configuration.actions.onCancel()
-        }
+        await removeGameArtifacts(
+            gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
+        )
+        gameSetupService.downloadState.reset()
+        configuration.actions.onCancel()
+    }
+
+    func removeGameArtifacts(gameName: String) async {
+        guard !gameName.isEmpty else { return }
+        try? await gameRepository?.deleteGamesByName(gameName)
+
+        await Task.detached(priority: .utility) {
+            let profileDir = AppPaths.profileDirectory(gameName: gameName)
+            guard FileManager.default.fileExists(atPath: profileDir.path) else { return }
+            do {
+                try FileManager.default.removeItem(at: profileDir)
+                AppLog.game.info("Deleted cancelled game folder: \(profileDir.path)")
+            } catch {
+                AppLog.game.error("Failed to delete game folder: \(error.localizedDescription)")
+            }
+        }.value
     }
 
     func computeIsDownloading() -> Bool {
@@ -104,18 +134,27 @@ class BaseGameFormViewModel {
 
     func startDownloadTask(_ task: @escaping () async -> Void) {
         downloadTask?.cancel()
-        downloadTask = Task {
+
+        let token = UUID()
+        downloadTaskToken = token
+        let newTask = Task {
             await task()
+        }
+        downloadTask = newTask
+
+        Task { [weak self] in
+            _ = await newTask.value
+            guard let self, self.downloadTaskToken == token else { return }
+            self.downloadTask = nil
+            self.updateParentState()
         }
     }
 
-    func cancelDownloadIfNeeded() {
-        if isDownloading {
-            downloadTask?.cancel()
-            downloadTask = nil
-        } else {
-            configuration.actions.onCancel()
-        }
+    func finishDownloadTask() {
+        downloadTask = nil
+        downloadTaskToken = UUID()
+        gameSetupService.downloadState.reset()
+        updateParentState()
     }
 
     func handleNonCriticalError(_ error: GlobalError, message: String) {

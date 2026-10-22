@@ -194,6 +194,7 @@ struct ModPackDownloadSheet: View {
     private func handleCancel() {
         if isDownloading {
             Task {
+                viewModel.abortFailedResources()
                 viewModel.cancelDownloadAndResetStates(gameSetupService: gameSetupService)
                 await viewModel.cleanupGameDirectoriesForCancel(
                     gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),

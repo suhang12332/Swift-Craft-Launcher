@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 /// Orchestrates the full modpack installation flow: extraction, parsing, dependency resolution,
 /// override installation, file installation, and game setup.
@@ -287,33 +288,49 @@ final class ModPackInstallCoordinator {
         input: RunInput,
         indexInfo: ModrinthIndexInfo,
     ) async -> Bool {
-        let result = await withCheckedContinuation { continuation in
-            Task {
-                await input.gameSetupService.saveGame(
-                    input: .init(
-                        gameName: input.gameName,
-                        selectedGameVersion: input.selectedGameVersion,
-                        selectedModLoader: indexInfo.loaderType,
-                        specifiedLoaderVersion: indexInfo.loaderVersion,
-                        pendingIconData: nil,
-                    ),
-                    playerListViewModel: nil,
-                    gameRepository: input.gameRepository,
-                    onSuccess: {
-                        continuation.resume(returning: true)
-                    },
-                    onError: { error, message in
-                        Task { @MainActor in
-                            AppLog.modPack.error("Game setup failed: \(message)")
-                            DIContainer.shared.core.errorHandler.handle(error)
-                        }
-                        continuation.resume(returning: false)
-                    },
-                )
+        if Task.isCancelled { return false }
+
+        let saveInput = GameSetupUtil.GameSaveInput(
+            gameName: input.gameName,
+            selectedGameVersion: input.selectedGameVersion,
+            selectedModLoader: indexInfo.loaderType,
+            specifiedLoaderVersion: indexInfo.loaderVersion,
+            pendingIconData: nil,
+        )
+        let saveTaskBox = GameSaveTaskBox()
+
+        let result = await withTaskCancellationHandler {
+            await withCheckedContinuation { (continuation: CheckedContinuation<Bool, Never>) in
+                let saveTask = Task {
+                    await input.gameSetupService.saveGame(
+                        input: saveInput,
+                        playerListViewModel: nil,
+                        gameRepository: input.gameRepository,
+                        onSuccess: {
+                            continuation.resume(returning: true)
+                        },
+                        onError: { error, message in
+                            Task { @MainActor in
+                                AppLog.modPack.error("Game setup failed: \(message)")
+                                DIContainer.shared.core.errorHandler.handle(error)
+                            }
+                            continuation.resume(returning: false)
+                        },
+                        onCancelled: {
+                            continuation.resume(returning: false)
+                        },
+                    )
+                }
+                saveTaskBox.store(saveTask)
+                if Task.isCancelled {
+                    saveTask.cancel()
+                }
             }
+        } onCancel: {
+            saveTaskBox.cancel()
         }
 
-        if Task.isCancelled || input.gameSetupService.downloadState.isCancelled {
+        if Task.isCancelled {
             try? await input.gameRepository.deleteGamesByName(input.gameName)
             return false
         }
@@ -447,5 +464,18 @@ final class ModPackInstallCoordinator {
 
     private func cleanupGameDirectories(gameName: String) async {
         try? MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
+    }
+}
+
+private final class GameSaveTaskBox: @unchecked Sendable {
+    private let storage = OSAllocatedUnfairLock<Task<Void, Never>?>(initialState: nil)
+
+    func store(_ task: Task<Void, Never>) {
+        storage.withLock { $0 = task }
+    }
+
+    func cancel() {
+        let task = storage.withLock { $0 }
+        task?.cancel()
     }
 }
