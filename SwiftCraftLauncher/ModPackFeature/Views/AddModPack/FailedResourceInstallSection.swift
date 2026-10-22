@@ -44,7 +44,7 @@ struct FailedResourceInstallSection: View {
             VersionPickerForSheet(
                 project: viewModel.project,
                 resourceType: viewModel.resourceType,
-                selectedGame: .constant(viewModel.gameInfo),
+                selectedGame: viewModel.gameInfo,
                 selectedVersion: $viewModel.selectedVersion,
                 availableVersions: $viewModel.availableVersions,
                 mainVersionId: $viewModel.mainVersionId,

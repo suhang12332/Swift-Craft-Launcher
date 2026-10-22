@@ -10,7 +10,7 @@ import SwiftUI
 /// Displays remote resource search results for a single game version.
 struct GameRemoteResourceView: View {
     let game: GameVersionInfo
-    @Binding var query: String
+    let query: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
     @Binding var selectedFeatures: [String]
@@ -27,7 +27,7 @@ struct GameRemoteResourceView: View {
 
     init(
         game: GameVersionInfo,
-        query: Binding<String>,
+        query: String,
         selectedVersions: Binding<[String]>,
         selectedCategories: Binding<[String]>,
         selectedFeatures: Binding<[String]>,
@@ -43,7 +43,7 @@ struct GameRemoteResourceView: View {
         searchText: Binding<String> = .constant(""),
     ) {
         self.game = game
-        _query = query
+        self.query = query
         _selectedVersions = selectedVersions
         _selectedCategories = selectedCategories
         _selectedFeatures = selectedFeatures

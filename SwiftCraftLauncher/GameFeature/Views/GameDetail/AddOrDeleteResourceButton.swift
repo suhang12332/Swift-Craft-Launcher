@@ -103,13 +103,13 @@ struct AddOrDeleteResourceButton: View {
             if !isServer {
                 LocalResourceUpdateButton(
                     isVisible: type == false && viewModel.addButtonState == .update && !isResourceDisabled,
-                    isUpdateButtonLoading: $viewModel.isUpdateButtonLoading,
+                    isUpdateButtonLoading: viewModel.isUpdateButtonLoading,
                     addButtonState: viewModel.addButtonState,
                     onTap: viewModel.handleUpdateTap,
                 )
                 LocalResourceToggle(
                     isVisible: type == false,
-                    isDisabled: $viewModel.isDisabled,
+                    isDisabled: viewModel.isDisabled,
                     onToggle: viewModel.toggleDisableState,
                 )
             }

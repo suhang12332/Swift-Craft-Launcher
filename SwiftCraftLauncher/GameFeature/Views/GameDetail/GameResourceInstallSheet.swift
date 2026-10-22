@@ -71,7 +71,7 @@ struct GameResourceInstallSheet: View {
                         VersionPickerForSheet(
                             project: project,
                             resourceType: resourceType,
-                            selectedGame: .constant(gameInfo),
+                            selectedGame: gameInfo,
                             selectedVersion: $viewModel.selectedVersion,
                             availableVersions: $viewModel.availableVersions,
                             mainVersionId: $viewModel.mainVersionId,

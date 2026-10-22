@@ -73,7 +73,7 @@ struct GameInfoDetailView: View {
             if gameType {
                 GameRemoteResourceView(
                     game: game,
-                    query: $query,
+                    query: query,
                     selectedVersions: $selectedVersions,
                     selectedCategories: $selectedCategories,
                     selectedFeatures: $selectedFeatures,

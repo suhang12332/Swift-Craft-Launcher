@@ -11,7 +11,7 @@ import SwiftUI
 struct VersionPickerForSheet: View {
     let project: ModrinthProject
     let resourceType: String
-    @Binding var selectedGame: GameVersionInfo?
+    let selectedGame: GameVersionInfo?
     @Binding var selectedVersion: ModrinthProjectDetailVersion?
     @Binding var availableVersions: [ModrinthProjectDetailVersion]
     @Binding var mainVersionId: String

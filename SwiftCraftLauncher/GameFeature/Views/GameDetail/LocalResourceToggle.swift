@@ -12,7 +12,7 @@ struct LocalResourceToggle: View {
     /// Whether the toggle is visible.
     let isVisible: Bool
     /// Whether the resource is currently disabled.
-    @Binding var isDisabled: Bool
+    let isDisabled: Bool
     /// Called when the toggle value changes.
     let onToggle: () -> Void
 

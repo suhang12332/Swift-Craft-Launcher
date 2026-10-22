@@ -79,7 +79,7 @@ struct GlobalResourceSheet: View {
                                 VersionPickerForSheet(
                                     project: project,
                                     resourceType: resourceType,
-                                    selectedGame: $selectedGame,
+                                    selectedGame: selectedGame,
                                     selectedVersion: $selectedVersion,
                                     availableVersions: $availableVersions,
                                     mainVersionId: $mainVersionId,

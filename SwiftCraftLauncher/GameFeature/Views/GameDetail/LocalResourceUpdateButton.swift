@@ -12,7 +12,7 @@ struct LocalResourceUpdateButton: View {
     /// Whether the update button is visible.
     let isVisible: Bool
     /// Whether the update operation is in progress.
-    @Binding var isUpdateButtonLoading: Bool
+    let isUpdateButtonLoading: Bool
     /// The current state of the primary action button.
     let addButtonState: ModrinthDetailCardView.AddButtonState
     /// Called when the update button is tapped.
