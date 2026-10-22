@@ -20,12 +20,7 @@ struct SkinUploadSectionView: View {
     @Binding var selectedSkinImage: NSImage?
     @Binding var selectedSkinPath: String?
     @Binding var currentSkinRenderImage: NSImage?
-    @Binding var selectedCapeLocalPath: String?
     @Binding var selectedCapeImage: NSImage?
-    @Binding var selectedCapeImageURL: String?
-    @Binding var isCapeLoading: Bool
-    @Binding var capeLoadCompleted: Bool
-    @Binding var showingSkinPreview: Bool
     let showSkinLibrary: Bool
     @State private var showingSkinLibraryPopover = false
     @State private var skinLibraryItems: [SkinLibraryItem] = []
@@ -42,12 +37,7 @@ struct SkinUploadSectionView: View {
         selectedSkinImage: Binding<NSImage?>,
         selectedSkinPath: Binding<String?>,
         currentSkinRenderImage: Binding<NSImage?>,
-        selectedCapeLocalPath: Binding<String?>,
         selectedCapeImage: Binding<NSImage?>,
-        selectedCapeImageURL: Binding<String?>,
-        isCapeLoading: Binding<Bool>,
-        capeLoadCompleted: Binding<Bool>,
-        showingSkinPreview: Binding<Bool>,
         showSkinLibrary: Bool,
         onSkinDropped: @escaping (NSImage) -> Void,
         onDrop: @escaping ([NSItemProvider]) -> Bool,
@@ -59,12 +49,7 @@ struct SkinUploadSectionView: View {
         _selectedSkinImage = selectedSkinImage
         _selectedSkinPath = selectedSkinPath
         _currentSkinRenderImage = currentSkinRenderImage
-        _selectedCapeLocalPath = selectedCapeLocalPath
         _selectedCapeImage = selectedCapeImage
-        _selectedCapeImageURL = selectedCapeImageURL
-        _isCapeLoading = isCapeLoading
-        _capeLoadCompleted = capeLoadCompleted
-        _showingSkinPreview = showingSkinPreview
         self.showSkinLibrary = showSkinLibrary
         self.onSkinDropped = onSkinDropped
         self.onDrop = onDrop

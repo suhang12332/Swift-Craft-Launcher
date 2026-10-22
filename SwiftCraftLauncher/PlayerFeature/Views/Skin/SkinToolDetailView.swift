@@ -78,12 +78,7 @@ struct SkinToolDetailView: View {
                 selectedSkinImage: $viewModel.selectedSkinImage,
                 selectedSkinPath: $viewModel.selectedSkinPath,
                 currentSkinRenderImage: $viewModel.currentSkinRenderImage,
-                selectedCapeLocalPath: $viewModel.selectedCapeLocalPath,
                 selectedCapeImage: $viewModel.selectedCapeImage,
-                selectedCapeImageURL: $viewModel.selectedCapeImageURL,
-                isCapeLoading: $viewModel.isCapeLoading,
-                capeLoadCompleted: $viewModel.capeLoadCompleted,
-                showingSkinPreview: $viewModel.showingSkinPreview,
                 showSkinLibrary: container.ui.playerSettingsManager.enableHistorySkinLibrary,
                 onSkinDropped: { image in
                     viewModel.handleSkinDroppedImage(image)
