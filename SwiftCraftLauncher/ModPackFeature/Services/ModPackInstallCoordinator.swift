@@ -287,7 +287,7 @@ final class ModPackInstallCoordinator {
         input: RunInput,
         indexInfo: ModrinthIndexInfo,
     ) async -> Bool {
-        await withCheckedContinuation { continuation in
+        let result = await withCheckedContinuation { continuation in
             Task {
                 await input.gameSetupService.saveGame(
                     input: .init(
@@ -312,6 +312,12 @@ final class ModPackInstallCoordinator {
                 )
             }
         }
+
+        if Task.isCancelled || input.gameSetupService.downloadState.isCancelled {
+            try? await input.gameRepository.deleteGamesByName(input.gameName)
+            return false
+        }
+        return result
     }
 
     private func handleStepFailure(_ input: RunInput) async -> Bool {

@@ -55,7 +55,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     }
 
     override func handleCancel() {
-        if computeIsDownloading() {
+        if computeIsDownloading() || downloadTask != nil {
             downloadTask?.cancel()
             downloadTask = nil
             gameSetupService.downloadState.cancel()
