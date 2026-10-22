@@ -79,7 +79,7 @@ struct AddPlayerToolbarButton: View {
                     delayedDismiss($showSheet) {
                         container.system.yggdrasilAuthService.logout()
                     }
-                }
+                },
             )
         }
     }

@@ -288,7 +288,9 @@ final class ModPackInstallCoordinator {
         input: RunInput,
         indexInfo: ModrinthIndexInfo,
     ) async -> Bool {
-        if Task.isCancelled { return false }
+        if Task.isCancelled {
+            return false
+        }
 
         let saveInput = GameSetupUtil.GameSaveInput(
             gameName: input.gameName,

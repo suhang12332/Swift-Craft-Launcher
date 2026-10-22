@@ -144,9 +144,9 @@ class BaseGameFormViewModel {
 
         Task { [weak self] in
             _ = await newTask.value
-            guard let self, self.downloadTaskToken == token else { return }
-            self.downloadTask = nil
-            self.updateParentState()
+            guard let self, downloadTaskToken == token else { return }
+            downloadTask = nil
+            updateParentState()
         }
     }
 

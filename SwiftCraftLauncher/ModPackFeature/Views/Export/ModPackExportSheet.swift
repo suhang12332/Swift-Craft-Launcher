@@ -69,7 +69,7 @@ struct ModPackExportSheet: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    @ViewBuilder private var bodyView: some View {
+    private var bodyView: some View {
         VStack(alignment: .leading, spacing: 16) {
             if viewModel.exportState == .idle, let error = viewModel.exportError {
                 errorView(error: error)

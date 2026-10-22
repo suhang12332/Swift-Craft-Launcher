@@ -40,7 +40,7 @@ class GameSetupUtil {
         gameRepository: GameRepository,
         onSuccess: @escaping () -> Void,
         onError: @escaping (GlobalError, String) -> Void,
-        onCancelled: @escaping () -> Void = {},
+        onCancelled: @escaping () -> Void = { },
     ) async {
         if let playerListViewModel {
             guard playerListViewModel.currentPlayer != nil else {
