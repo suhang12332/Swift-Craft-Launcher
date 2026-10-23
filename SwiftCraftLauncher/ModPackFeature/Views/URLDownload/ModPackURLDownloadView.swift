@@ -57,6 +57,10 @@ struct ModPackURLDownloadView: View {
                 }
             }
         }
+        .onDisappear {
+            viewModel.cancel()
+            isDownloading = false
+        }
     }
 
     private var urlInfoSection: some View {

@@ -56,22 +56,45 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         modPackViewModel.clearParsedIndexInfo()
         modPackViewModel.abortFailedResources()
 
-        let extractedPath = extractedModPackPath
-        extractedModPackPath = nil
-        if let extractedPath {
-            await Task.detached(priority: .utility) {
-                let fm = FileManager.default
-                guard fm.fileExists(atPath: extractedPath.path) else { return }
-                do {
-                    try fm.removeItem(at: extractedPath)
-                    AppLog.modPack.info("Deleted ModPack temp extracted files: \(extractedPath.path)")
-                } catch {
-                    AppLog.modPack.error("Failed to delete ModPack temp files: \(error.localizedDescription)")
-                }
-            }.value
-        }
+        await removeTemporaryArtifacts()
 
         await super.performCancelCleanup()
+    }
+
+    /// Clears preview state and temporary files when the sheet closes without
+    /// an active installation. An already installed game is left untouched.
+    func cleanupPreviewState() async {
+        modPackViewModel.modPackInstallState.reset()
+        modPackViewModel.clearParsedIndexInfo()
+        modPackViewModel.abortFailedResources()
+        isProcessingModPack = false
+        onProcessingStateChanged(false)
+
+        await removeTemporaryArtifacts()
+    }
+
+    /// Deletes the copied archive and the extracted preview directory.
+    private func removeTemporaryArtifacts() async {
+        let extractedPath = extractedModPackPath
+        let archiveURL = selectedModPackFile
+
+        extractedModPackPath = nil
+        selectedModPackFile = nil
+        modPackIndexInfo = nil
+
+        await Task.detached(priority: .utility) {
+            let fileManager = FileManager.default
+
+            if let extractedPath {
+                try? fileManager.removeItem(at: extractedPath)
+            }
+
+            // The archive always lives in a launcher temp purpose directory;
+            // delete its per-import folder as well.
+            if let archiveURL, TemporaryFile.isTemporary(archiveURL) {
+                try? fileManager.removeItem(at: archiveURL.deletingLastPathComponent())
+            }
+        }.value
     }
 
     override func computeIsDownloading() -> Bool {

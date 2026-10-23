@@ -72,6 +72,8 @@ struct ModPackImportView: View {
     private func clearAllData() {
         if viewModel.isCancellable {
             viewModel.handleCancel()
+        } else {
+            Task { await viewModel.cleanupPreviewState() }
         }
     }
 

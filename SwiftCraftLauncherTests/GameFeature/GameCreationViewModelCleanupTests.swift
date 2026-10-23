@@ -48,4 +48,20 @@ final class GameCreationViewModelCleanupTests: XCTestCase {
         XCTAssertTrue(vm.availableVersions.isEmpty)
         XCTAssertTrue(vm.availableLoaderVersions.isEmpty)
     }
+
+    func testClearLoadedVersionsOnClose_removesPendingIconTempFile() throws {
+        let vm = makeViewModel()
+        let temporary = try TemporaryFile(purpose: .gameIconPreview, fileName: "icon.png")
+        defer { temporary.remove() }
+        try temporary.write(Data([0x01]))
+
+        vm.pendingIconURL = temporary.url
+        vm.pendingIconData = Data([0x01])
+
+        vm.clearLoadedVersionsOnClose()
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: temporary.url.path))
+        XCTAssertNil(vm.pendingIconURL)
+        XCTAssertNil(vm.pendingIconData)
+    }
 }

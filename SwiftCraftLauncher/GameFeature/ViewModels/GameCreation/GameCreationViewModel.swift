@@ -78,6 +78,13 @@ class GameCreationViewModel: BaseGameFormViewModel {
 
     /// Clears loaded version data when the add-game window closes.
     func clearLoadedVersionsOnClose() {
+        if let pendingIconURL, TemporaryFile.isTemporary(pendingIconURL) {
+            try? FileManager.default.removeItem(at: pendingIconURL)
+        }
+        pendingIconData = nil
+        pendingIconURL = nil
+        iconImage = nil
+
         availableVersions = []
         availableLoaderVersions = []
         selectedGameVersion = ""

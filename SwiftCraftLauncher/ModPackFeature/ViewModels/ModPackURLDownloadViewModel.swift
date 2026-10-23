@@ -17,6 +17,7 @@ final class ModPackURLDownloadViewModel {
     var downloadProgress: Int64 = 0
     var downloadTotalSize: Int64 = 0
     var errorMessage: String?
+    private(set) var hasCompletedDownload = false
 
     var isURLValid: Bool {
         guard let url = URL(string: urlString) else { return false }
@@ -55,6 +56,7 @@ final class ModPackURLDownloadViewModel {
         errorMessage = nil
         downloadProgress = 0
         downloadTotalSize = 0
+        hasCompletedDownload = false
 
         installTasks.start { [weak self] in
             guard let self else { return }
@@ -69,6 +71,9 @@ final class ModPackURLDownloadViewModel {
                 onFailure()
                 return
             }
+            // The archive is handed to the import flow; disappearing must not
+            // delete it.
+            hasCompletedDownload = true
             onComplete(archivePath)
         }
     }
@@ -76,6 +81,7 @@ final class ModPackURLDownloadViewModel {
     func cancel() {
         installTasks.cancel()
         isDownloading = false
+        guard !hasCompletedDownload else { return }
         downloadService.cleanupTempFiles()
     }
 

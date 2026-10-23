@@ -141,6 +141,10 @@ struct GameInfoDetailView: View {
             updateHeaders()
         }
         .onDisappear {
+            scanTask?.cancel()
+            scanTask = nil
+            iconSaveTask?.cancel()
+            iconSaveTask = nil
             clearAllData()
         }
         .fileImporter(
@@ -151,6 +155,9 @@ struct GameInfoDetailView: View {
             handleIconFileSelection(result)
         }
     }
+
+    @State private var scanTask: Task<Void, Never>?
+    @State private var iconSaveTask: Task<Void, Never>?
 
     private func performRefresh() {
         updateHeaders()
@@ -194,31 +201,36 @@ struct GameInfoDetailView: View {
     }
 
     private func scanAllResources() {
-        Task {
-            scannedResources = await ioViewModel.scanAllDetailIds(
+        scanTask?.cancel()
+        scanTask = Task {
+            let detailIds = await ioViewModel.scanAllDetailIds(
                 query: query,
                 gameName: game.gameName,
             )
+            guard !Task.isCancelled else { return }
+            scannedResources = detailIds
         }
     }
 
     private func handleIconFileSelection(_ result: Result<[URL], Error>) {
         let gameName = game.gameName
-        Task {
+        iconSaveTask?.cancel()
+        iconSaveTask = Task {
             let success = await ioViewModel.saveGameIcon(from: result, gameName: gameName)
-            if success {
-                var updatedGame = gameRepository.games.first { $0.id == game.id } ?? game
-                if updatedGame.gameIcon.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    updatedGame.gameIcon = AppConstants.defaultGameIcon
-                    do {
-                        try await gameRepository.updateGame(updatedGame)
-                    } catch {
-                        container.core.errorHandler.handle(error)
-                    }
+            guard !Task.isCancelled, success else { return }
+
+            var updatedGame = gameRepository.games.first { $0.id == game.id } ?? game
+            if updatedGame.gameIcon.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                updatedGame.gameIcon = AppConstants.defaultGameIcon
+                do {
+                    try await gameRepository.updateGame(updatedGame)
+                } catch {
+                    container.core.errorHandler.handle(error)
                 }
-                container.ui.iconRefreshNotifier.notifyRefresh(for: gameName)
-                updateHeaders()
             }
+            guard !Task.isCancelled else { return }
+            container.ui.iconRefreshNotifier.notifyRefresh(for: gameName)
+            updateHeaders()
         }
     }
 }
