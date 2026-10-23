@@ -61,7 +61,6 @@ final class InstallTaskCoordinator {
         isRunning = false
     }
 
-    /// Marks the task as finished without cancelling it.
     func finish() {
         task = nil
         token = UUID()
