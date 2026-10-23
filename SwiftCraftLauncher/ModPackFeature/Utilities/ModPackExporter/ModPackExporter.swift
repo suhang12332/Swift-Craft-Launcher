@@ -144,11 +144,7 @@ enum ModPackExporter {
     }
 
     static func createTempDirectory() throws -> URL {
-        let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("modpack_export")
-            .appendingPathComponent(UUID().uuidString)
-        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        return tempDir
+        try TemporaryDirectory(purpose: .modpackExport).url
     }
 
     enum ModPackManifestData {

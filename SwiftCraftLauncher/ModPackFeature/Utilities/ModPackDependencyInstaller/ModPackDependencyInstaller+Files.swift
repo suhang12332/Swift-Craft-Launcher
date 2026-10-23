@@ -61,12 +61,7 @@ extension ModPackDependencyInstaller {
     }
 
     private static func filterDownloadableFiles(_ files: [ModrinthIndexFile]) -> [ModrinthIndexFile] {
-        files.filter { file in
-            if let env = file.env, let client = env.client, client.lowercased() == "unsupported" {
-                return false
-            }
-            return true
-        }
+        files.filter(\.isClientInstallable)
     }
 
     private static func downloadSingleFile(

@@ -94,7 +94,7 @@ final class ModPackInstallCoordinator {
             gameName: input.gameName,
         )
 
-        let profileCreated = await createProfileDirectories(for: input.gameName)
+        let profileCreated = await MinecraftFileManager.createProfileDirectories(for: input.gameName)
         guard profileCreated else {
             await handleInstallationResult(
                 success: false,
@@ -125,10 +125,9 @@ final class ModPackInstallCoordinator {
             modLoader: indexInfo.loaderType,
         )
 
-        let (filesToDownload, requiredDependencies) = calculateInstallationCounts(from: indexInfo)
         input.modPackInstallState.startInstallation(
-            filesTotal: filesToDownload.count,
-            dependenciesTotal: requiredDependencies.count,
+            filesTotal: indexInfo.clientFiles.count,
+            dependenciesTotal: indexInfo.requiredDependencies.count,
         )
 
         guard await installFilesStep(
@@ -250,7 +249,10 @@ final class ModPackInstallCoordinator {
 
         guard failedFiles.isEmpty else {
             let failedResources = await FailedResourceResolver.makeFailedResources(from: failedFiles, gameInfo: gameInfo)
-            return await FailedResourceResolver.presentFailedResources(failedResources, input: input)
+            return await FailedResourceResolver.presentFailedResources(
+                failedResources,
+                onShowFailedResources: input.onShowFailedResources,
+            )
         }
         return true
     }
@@ -279,7 +281,10 @@ final class ModPackInstallCoordinator {
 
         guard failedDependencies.isEmpty else {
             let failedResources = await FailedResourceResolver.makeFailedResources(from: failedDependencies, gameInfo: gameInfo)
-            return await FailedResourceResolver.presentFailedResources(failedResources, input: input)
+            return await FailedResourceResolver.presentFailedResources(
+                failedResources,
+                onShowFailedResources: input.onShowFailedResources,
+            )
         }
         return true
     }
@@ -383,16 +388,6 @@ final class ModPackInstallCoordinator {
         }
     }
 
-    private func createProfileDirectories(for gameName: String) async -> Bool {
-        await MinecraftFileManager.createProfileDirectories(for: gameName)
-    }
-
-    private func calculateInstallationCounts(
-        from indexInfo: ModrinthIndexInfo,
-    ) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
-        MinecraftFileManager.calculateInstallationCounts(from: indexInfo)
-    }
-
     private func updateInstallProgress(
         modPackInstallState: ModPackInstallState,
         fileName: String,
@@ -441,7 +436,7 @@ final class ModPackInstallCoordinator {
             AppLog.modPack.info("Modpack dependency installation completed: \(gameName)")
         } else {
             AppLog.modPack.error("Modpack dependency installation failed: \(gameName)")
-            await cleanupGameDirectories(gameName: gameName)
+            try? MinecraftFileManager.cleanupGameDirectories(gameName: gameName)
             DIContainer.shared.core.errorHandler.handle(
                 GlobalError.installation(
                     i18nKey: "error.resource.modpack_dependencies_failed",
@@ -459,13 +454,9 @@ final class ModPackInstallCoordinator {
         modPackInstallState: ModPackInstallState,
     ) async {
         AppLog.modPack.info("Modpack installation cancelled: \(gameName)")
-        await cleanupGameDirectories(gameName: gameName)
+        try? MinecraftFileManager.cleanupGameDirectories(gameName: gameName)
         modPackInstallState.reset()
         gameSetupService.downloadState.reset()
-    }
-
-    private func cleanupGameDirectories(gameName: String) async {
-        try? MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
     }
 }
 

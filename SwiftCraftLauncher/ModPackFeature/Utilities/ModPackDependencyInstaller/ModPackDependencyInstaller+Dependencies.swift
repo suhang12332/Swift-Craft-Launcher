@@ -215,25 +215,16 @@ extension ModPackDependencyInstaller {
         resourceDir _: URL,
     ) async -> Bool {
         do {
-            guard let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) else {
+            let installed = try await ResourceInstaller.install(
+                version: version,
+                projectDetail: projectDetail,
+                gameInfo: gameInfo,
+                resourceType: ResourceType.mod.rawValue,
+            )
+            guard installed != nil else {
                 AppLog.modPack.error("No primary file found: \(version.id)")
                 return false
             }
-
-            let downloadedFile = try await DownloadManager.downloadResource(
-                for: gameInfo,
-                urlString: primaryFile.url,
-                resourceType: ResourceType.mod.rawValue,
-                expectedSha1: primaryFile.hashes.sha1,
-            )
-
-            if let hash = await DIContainer.shared.core.modScanner.sha1Hash(of: downloadedFile) {
-                var detailWithFile = projectDetail
-                detailWithFile.fileName = primaryFile.filename
-                detailWithFile.type = ResourceType.mod.rawValue
-                DIContainer.shared.core.modScanner.saveToCache(hash: hash, detail: detailWithFile)
-            }
-
             return true
         } catch {
             AppLog.modPack.error("Failed to download dependency")

@@ -106,12 +106,13 @@ extension SkinToolDetailViewModel {
             Task { @MainActor in
                 guard let self else { return }
                 let tempURL = await Task.detached(priority: .userInitiated) { () -> URL? in
-                    let tempDir = FileManager.default.temporaryDirectory
-                    let fileName = "temp_skin_\(UUID().uuidString).png"
-                    let tempURL = tempDir.appendingPathComponent(fileName)
                     do {
-                        try data.write(to: tempURL)
-                        return tempURL
+                        let temporary = try TemporaryFile(
+                            purpose: .playerSkin,
+                            fileName: "temp_skin_\(UUID().uuidString).png",
+                        )
+                        try temporary.write(data)
+                        return temporary.url
                     } catch {
                         AppLog.player.error("Failed to save temporary skin file: \(error)")
                         return nil
@@ -134,12 +135,13 @@ extension SkinToolDetailViewModel {
 
     /// Saves skin data to a temporary file and returns the file URL.
     nonisolated func saveTempSkinFile(data: Data) -> URL? {
-        let tempDir = FileManager.default.temporaryDirectory
-        let fileName = "temp_skin_\(UUID().uuidString).png"
-        let tempURL = tempDir.appendingPathComponent(fileName)
         do {
-            try data.write(to: tempURL)
-            return tempURL
+            let temporary = try TemporaryFile(
+                purpose: .playerSkin,
+                fileName: "temp_skin_\(UUID().uuidString).png",
+            )
+            try temporary.write(data)
+            return temporary.url
         } catch {
             AppLog.player.error("Failed to save temporary skin file: \(error)")
             return nil

@@ -58,7 +58,6 @@ final class ModPackDownloadSheetCoordinatorViewModel {
         loadTask?.cancel()
         loadTask = nil
 
-        sheetViewModel.cancelDownloadAndResetStates(gameSetupService: gameSetupService)
-        sheetViewModel.cleanupAllData()
+        sheetViewModel.cleanupAllData(gameSetupService: gameSetupService)
     }
 }

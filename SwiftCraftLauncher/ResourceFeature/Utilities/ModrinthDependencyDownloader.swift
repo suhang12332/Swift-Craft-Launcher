@@ -105,10 +105,7 @@ enum ModrinthDependencyDownloader {
             for dep in input.dependencies {
                 guard let versionId = input.selectedVersions[dep.id],
                       let versions = input.dependencyVersions[dep.id],
-                      let version = versions.first(where: { $0.id == versionId }),
-                      let primaryFile = ModrinthService.filterPrimaryFiles(
-                          from: version.files,
-                      )
+                      let version = versions.first(where: { $0.id == versionId })
                 else {
                     allSuccess = false
                     Task { @MainActor in
@@ -126,27 +123,15 @@ enum ModrinthDependencyDownloader {
 
                     var success = false
                     do {
-                        let fileURL =
-                            try await DownloadManager.downloadResource(
-                                for: input.gameInfo,
-                                urlString: primaryFile.url,
-                                resourceType: input.resourceType,
-                                expectedSha1: primaryFile.hashes.sha1,
-                            )
-                        depCopy.fileName = primaryFile.filename
-                        depCopy.type = input.resourceType
-                        success = true
-                        if let hash = await DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
-                            DIContainer.shared.core.modScanner.saveToCache(
-                                hash: hash,
-                                detail: depCopy,
-                            )
-                            if input.resourceType.lowercased() == ResourceType.mod.rawValue {
-                                DIContainer.shared.core.modScanner.addModHash(
-                                    hash,
-                                    to: input.gameInfo.gameName,
-                                )
-                            }
+                        if let installed = try await ResourceInstaller.install(
+                            version: version,
+                            projectDetail: dep,
+                            gameInfo: input.gameInfo,
+                            resourceType: input.resourceType,
+                        ) {
+                            depCopy.fileName = installed.fileName
+                            depCopy.type = input.resourceType
+                            success = true
                         }
                     } catch {
                         let globalError = GlobalError.from(error)
@@ -179,7 +164,7 @@ enum ModrinthDependencyDownloader {
 
         do {
             guard
-                var mainProjectDetail =
+                let mainProjectDetail =
                 try? await ModrinthService.fetchProjectDetailsThrowing(id: input.mainProjectId)
             else {
                 AppLog.resource.error("Unable to get main project details (ID: \(input.mainProjectId))")
@@ -209,34 +194,15 @@ enum ModrinthDependencyDownloader {
                 return false
             }
 
-            guard
-                let primaryFile = ModrinthService.filterPrimaryFiles(
-                    from: targetVersion.files,
-                )
-            else {
+            let installed = try await ResourceInstaller.install(
+                version: targetVersion,
+                projectDetail: mainProjectDetail,
+                gameInfo: input.gameInfo,
+                resourceType: input.resourceType,
+            )
+            guard installed != nil else {
                 AppLog.resource.error("Unable to find main file")
                 return false
-            }
-
-            let fileURL = try await DownloadManager.downloadResource(
-                for: input.gameInfo,
-                urlString: primaryFile.url,
-                resourceType: input.resourceType,
-                expectedSha1: primaryFile.hashes.sha1,
-            )
-            mainProjectDetail.fileName = primaryFile.filename
-            mainProjectDetail.type = input.resourceType
-            if let hash = await DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
-                DIContainer.shared.core.modScanner.saveToCache(
-                    hash: hash,
-                    detail: mainProjectDetail,
-                )
-                if input.resourceType.lowercased() == ResourceType.mod.rawValue {
-                    DIContainer.shared.core.modScanner.addModHash(
-                        hash,
-                        to: input.gameInfo.gameName,
-                    )
-                }
             }
             return true
         } catch {
@@ -259,7 +225,7 @@ enum ModrinthDependencyDownloader {
     ) async -> (Bool, fileName: String?, hash: String?) {
         do {
             guard
-                var mainProjectDetail =
+                let mainProjectDetail =
                 try? await ModrinthService.fetchProjectDetailsThrowing(id: mainProjectId)
             else {
                 AppLog.resource.error("Unable to get main project details (ID: \(mainProjectId))")
@@ -273,38 +239,18 @@ enum ModrinthDependencyDownloader {
                     selectedLoaders: selectedLoaders,
                     type: query,
                 )
-            guard let latestVersion = filteredVersions.first,
-                  let primaryFile = ModrinthService.filterPrimaryFiles(
-                      from: latestVersion.files,
-                  )
-            else {
+            guard let latestVersion = filteredVersions.first else {
                 return (false, nil, nil)
             }
-
-            let fileURL = try await DownloadManager.downloadResource(
-                for: gameInfo,
-                urlString: primaryFile.url,
+            guard let installed = try await ResourceInstaller.install(
+                version: latestVersion,
+                projectDetail: mainProjectDetail,
+                gameInfo: gameInfo,
                 resourceType: query,
-                expectedSha1: primaryFile.hashes.sha1,
-            )
-            mainProjectDetail.fileName = primaryFile.filename
-            mainProjectDetail.type = query
-
-            var hash: String?
-            if let h = await DIContainer.shared.core.modScanner.sha1Hash(of: fileURL) {
-                hash = h
-                DIContainer.shared.core.modScanner.saveToCache(
-                    hash: h,
-                    detail: mainProjectDetail,
-                )
-                if query.lowercased() == ResourceType.mod.rawValue {
-                    DIContainer.shared.core.modScanner.addModHash(
-                        h,
-                        to: gameInfo.gameName,
-                    )
-                }
+            ) else {
+                return (false, nil, nil)
             }
-            return (true, primaryFile.filename, hash)
+            return (true, installed.fileName, installed.hash)
         } catch {
             let globalError = GlobalError.from(error)
             AppLog.resource.error(

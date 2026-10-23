@@ -65,20 +65,12 @@ class MinecraftFileManager: @unchecked Sendable {
         return true
     }
 
-    /// Splits index info into downloadable files and required dependencies.
-    static func calculateInstallationCounts(from indexInfo: ModrinthIndexInfo) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
-        let filesToDownload = indexInfo.files.filter { file in
-            if let env = file.env, let client = env.client, client.lowercased() == "unsupported" {
-                return false
-            }
-            return true
-        }
-        let requiredDependencies = indexInfo.dependencies.filter { $0.dependencyType == "required" }
-        return (filesToDownload, requiredDependencies)
-    }
-
-    func cleanupGameDirectories(gameName: String) throws {
+    /// Removes a game instance's profile directory from disk.
+    /// - Parameter gameName: The name of the game instance.
+    /// - Throws: A ``GlobalError`` when the directory cannot be removed.
+    static func cleanupGameDirectories(gameName: String) throws {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
+        let fileManager = FileManager.default
 
         guard fileManager.fileExists(atPath: profileDirectory.path) else {
             return

@@ -1,6 +1,6 @@
 //
 //  ModPackURLDownloadViewModel.swift
-//  GameFeature
+//  ModPackFeature
 //
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
@@ -23,10 +23,29 @@ final class ModPackURLDownloadViewModel {
         return url.scheme == "http" || url.scheme == "https"
     }
 
-    private var downloadTask: Task<Void, Never>?
+    private let installTasks = InstallTaskCoordinator()
+    private let downloadService = ModPackDownloadService()
+
+    init() {
+        downloadService.progressHandler = { [weak self] downloaded, total in
+            guard let self else { return }
+            Task { @MainActor in
+                self.downloadProgress = downloaded
+                if total > 0 {
+                    self.downloadTotalSize = total
+                }
+            }
+        }
+        downloadService.onError = { [weak self] message, i18nKey in
+            guard let self else { return }
+            Task { @MainActor in
+                self.handleDownloadError(message: message, i18nKey: i18nKey)
+            }
+        }
+    }
 
     func startDownload(onComplete: @escaping (URL) -> Void, onFailure: @escaping () -> Void = { }) {
-        guard let url = URL(string: urlString) else {
+        guard let url = URL(string: urlString), isURLValid else {
             errorMessage = "error.network.invalid_url".localized()
             onFailure()
             return
@@ -37,54 +56,37 @@ final class ModPackURLDownloadViewModel {
         downloadProgress = 0
         downloadTotalSize = 0
 
-        downloadTask?.cancel()
-        downloadTask = Task { [weak self] in
+        installTasks.start { [weak self] in
             guard let self else { return }
-            do {
-                let tempDir = FileManager.default.temporaryDirectory
-                    .appendingPathComponent("modpack_url_download")
-                    .appendingPathComponent(UUID().uuidString)
-                try FileManager.default.createDirectory(
-                    at: tempDir,
-                    withIntermediateDirectories: true,
-                )
+            let archivePath = await downloadService.downloadModPackArchive(from: url)
 
-                let filename = url.lastPathComponent.isEmpty ? "modpack.zip" : url.lastPathComponent
-                let savePath = tempDir.appendingPathComponent(filename)
+            // A cancelled or superseded task must not touch the state of the
+            // download that replaced it.
+            guard !Task.isCancelled else { return }
 
-                _ = try await ProgressDownloadManager.downloadFile(
-                    urlString: url.absoluteString,
-                    destinationURL: savePath,
-                ) { [weak self] downloaded, total in
-                    guard let self else { return }
-                    Task { @MainActor in
-                        self.downloadProgress = downloaded
-                        if total > 0 {
-                            self.downloadTotalSize = total
-                        }
-                    }
-                }
-
-                guard !Task.isCancelled else { return }
-                isDownloading = false
-                onComplete(savePath)
-            } catch {
-                guard !Task.isCancelled else { return }
-                isDownloading = false
-                if let urlError = error as? URLError, urlError.code == .cancelled {
-                    return
-                }
-                let globalError = GlobalError.from(error)
-                errorMessage = globalError.localizedDescription
-                DIContainer.shared.core.errorHandler.handle(globalError)
+            isDownloading = false
+            guard let archivePath else {
                 onFailure()
+                return
             }
+            onComplete(archivePath)
         }
     }
 
     func cancel() {
-        downloadTask?.cancel()
-        downloadTask = nil
+        installTasks.cancel()
         isDownloading = false
+        downloadService.cleanupTempFiles()
+    }
+
+    private func handleDownloadError(message: String, i18nKey: String) {
+        errorMessage = message
+        DIContainer.shared.core.errorHandler.handle(
+            GlobalError.resource(
+                i18nKey: i18nKey,
+                level: .notification,
+                message: message,
+            ),
+        )
     }
 }

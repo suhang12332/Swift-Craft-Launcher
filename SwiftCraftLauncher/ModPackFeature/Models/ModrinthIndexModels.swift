@@ -129,6 +129,14 @@ struct ModrinthIndexFile: Codable {
         self.curseForgeProjectId = curseForgeProjectId
         self.curseForgeFileId = curseForgeFileId
     }
+
+    /// Whether the file should be installed on a client.
+    ///
+    /// Files without environment metadata, or with an unset client value, are
+    /// installable; only an explicit `unsupported` marker excludes them.
+    var isClientInstallable: Bool {
+        env?.client?.lowercased() != "unsupported"
+    }
 }
 
 /// Identifies the source platform of a mod file.
@@ -216,5 +224,17 @@ struct ModrinthIndexInfo {
         self.files = files
         self.dependencies = dependencies
         self.source = source
+    }
+}
+
+extension ModrinthIndexInfo {
+    /// Files that should be installed on the client.
+    var clientFiles: [ModrinthIndexFile] {
+        files.filter(\.isClientInstallable)
+    }
+
+    /// Dependencies required for the mod pack to run.
+    var requiredDependencies: [ModrinthIndexProjectDependency] {
+        dependencies.filter { $0.dependencyType == "required" }
     }
 }

@@ -49,15 +49,7 @@ final class GameFormImportViewModel {
 
     private func copyToTempDirectory(url: URL) async throws -> URL {
         try await Task.detached(priority: .userInitiated) {
-            let tempDir = FileManager.default.temporaryDirectory
-                .appendingPathComponent("modpack_import")
-                .appendingPathComponent(UUID().uuidString)
-
-            try FileManager.default.createDirectory(
-                at: tempDir,
-                withIntermediateDirectories: true,
-            )
-
+            let tempDir = try TemporaryDirectory(purpose: .modpackImport).url
             let tempFile = tempDir.appendingPathComponent(url.lastPathComponent)
             try FileManager.default.copyItem(at: url, to: tempFile)
             return tempFile

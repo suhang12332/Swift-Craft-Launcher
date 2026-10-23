@@ -32,10 +32,12 @@ extension GameCreationViewModel {
                     do {
                         let data = try Data(contentsOf: url)
                         let optimizedData = GameIconProcessor.optimize(data: data)
-                        let tempDir = FileManager.default.temporaryDirectory
-                        let tempURL = tempDir.appendingPathComponent("\(UUID().uuidString).png")
-                        try optimizedData.write(to: tempURL)
-                        return .success((optimizedData, tempURL))
+                        let temporary = try TemporaryFile(
+                            purpose: .gameIconPreview,
+                            fileName: "\(UUID().uuidString).png",
+                        )
+                        try temporary.write(optimizedData)
+                        return .success((optimizedData, temporary.url))
                     } catch {
                         return .failure(error)
                     }
@@ -85,11 +87,13 @@ extension GameCreationViewModel {
                     Task { @MainActor in
                         let optimizedData = GameIconProcessor.optimize(data: data)
                         let result: URL? = await Task.detached(priority: .userInitiated) {
-                            let tempURL = FileManager.default.temporaryDirectory
-                                .appendingPathComponent("\(UUID().uuidString).png")
                             do {
-                                try optimizedData.write(to: tempURL)
-                                return tempURL
+                                let temporary = try TemporaryFile(
+                                    purpose: .gameIconPreview,
+                                    fileName: "\(UUID().uuidString).png",
+                                )
+                                try temporary.write(optimizedData)
+                                return temporary.url
                             } catch {
                                 return nil
                             }

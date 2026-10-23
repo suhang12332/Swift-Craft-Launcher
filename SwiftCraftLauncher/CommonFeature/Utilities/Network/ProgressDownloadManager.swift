@@ -296,8 +296,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
         }
 
         do {
-            let stableTempURL = FileManager.default.temporaryDirectory
-                .appendingPathComponent(UUID().uuidString)
+            let stableTempURL = try TemporaryFile(purpose: .downloadStaging).url
             try FileManager.default.moveItem(at: location, to: stableTempURL)
             tracker.complete(.success(stableTempURL))
         } catch {

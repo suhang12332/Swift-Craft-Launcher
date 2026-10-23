@@ -100,9 +100,9 @@ enum FailedResourceResolver {
 
     static func presentFailedResources(
         _ failedResources: [FailedModPackResource],
-        input: ModPackInstallCoordinator.RunInput,
+        onShowFailedResources: (([FailedModPackResource], @escaping (Bool) -> Void) -> Void)?,
     ) async -> Bool {
-        guard let onShowFailedResources = input.onShowFailedResources, !failedResources.isEmpty else {
+        guard let onShowFailedResources, !failedResources.isEmpty else {
             return failedResources.isEmpty
         }
 

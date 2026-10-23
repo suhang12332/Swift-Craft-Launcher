@@ -21,12 +21,10 @@ class BaseGameFormViewModel {
     let gameNameValidator: GameNameValidator
 
     var gameRepository: GameRepository?
-    var downloadTask: Task<Void, Never>?
-    private var downloadTaskToken = UUID()
-    private var isCancelling = false
+    private let installTasks = InstallTaskCoordinator()
 
     var isCancellable: Bool {
-        !isCancelling && (computeIsDownloading() || downloadTask != nil)
+        !installTasks.isCancelling && (computeIsDownloading() || installTasks.isRunning)
     }
 
     let configuration: GameFormConfiguration
@@ -63,9 +61,7 @@ class BaseGameFormViewModel {
             return
         }
 
-        isCancelling = true
-        downloadTask?.cancel()
-        downloadTask = nil
+        installTasks.cancel()
         gameSetupService.downloadState.cancel()
         Task {
             await performCancelCleanup()
@@ -112,7 +108,7 @@ class BaseGameFormViewModel {
             let profileDir = AppPaths.profileDirectory(gameName: gameName)
             guard FileManager.default.fileExists(atPath: profileDir.path) else { return }
             do {
-                try FileManager.default.removeItem(at: profileDir)
+                try MinecraftFileManager.cleanupGameDirectories(gameName: gameName)
                 AppLog.game.info("Deleted cancelled game folder: \(profileDir.path)")
             } catch {
                 AppLog.game.error("Failed to delete game folder: \(error.localizedDescription)")
@@ -133,26 +129,18 @@ class BaseGameFormViewModel {
     }
 
     func startDownloadTask(_ task: @escaping () async -> Void) {
-        downloadTask?.cancel()
-
-        let token = UUID()
-        downloadTaskToken = token
-        let newTask = Task {
-            await task()
-        }
-        downloadTask = newTask
-
-        Task { [weak self] in
-            _ = await newTask.value
-            guard let self, downloadTaskToken == token else { return }
-            downloadTask = nil
-            updateParentState()
-        }
+        installTasks.start(
+            onFinish: { [weak self] in
+                self?.updateParentState()
+            },
+            operation: {
+                await task()
+            },
+        )
     }
 
     func finishDownloadTask() {
-        downloadTask = nil
-        downloadTaskToken = UUID()
+        installTasks.finish()
         gameSetupService.downloadState.reset()
         updateParentState()
     }

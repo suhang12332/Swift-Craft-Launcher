@@ -27,7 +27,7 @@ class ModPackDownloadSheetViewModel {
     var failedResources: [FailedModPackResource] = []
     var failedResourcesContinuation: ((Bool) -> Void)?
 
-    private var downloadTask: Task<Void, Never>?
+    private let installTasks = InstallTaskCoordinator()
     private let downloadService = ModPackDownloadService()
     private var _installCoordinator: ModPackInstallCoordinator?
     private var installCoordinator: ModPackInstallCoordinator {
@@ -43,8 +43,8 @@ class ModPackDownloadSheetViewModel {
         lastParsedIndexInfo = nil
     }
 
-    func cleanupAllData() {
-        cancelDownloadAndResetStates()
+    func cleanupAllData(gameSetupService: GameSetupUtil? = nil) {
+        cancelDownloadAndResetStates(gameSetupService: gameSetupService)
         clearParsedIndexInfo()
         projectDetail = nil
         availableGameVersions = []
@@ -93,8 +93,7 @@ class ModPackDownloadSheetViewModel {
         gameSetupService: GameSetupUtil,
         onFinished: @escaping @MainActor (_ success: Bool) -> Void,
     ) {
-        downloadTask?.cancel()
-        downloadTask = Task { [weak self] in
+        installTasks.start { [weak self] in
             guard let self else { return }
             let success = await performModPackDownloadAndInstall(
                 selectedVersion: selectedVersion,
@@ -108,8 +107,7 @@ class ModPackDownloadSheetViewModel {
     }
 
     func cancelDownloadAndResetStates(gameSetupService: GameSetupUtil? = nil) {
-        downloadTask?.cancel()
-        downloadTask = nil
+        installTasks.cancel()
         isProcessing = false
         modPackInstallState.reset()
         if let gameSetupService {
@@ -117,12 +115,66 @@ class ModPackDownloadSheetViewModel {
         }
     }
 
-    func cleanupGameDirectoriesForCancel(gameName: String) async {
-        await cleanupGameDirectories(gameName: gameName)
+    /// Cancels an in-flight installation and removes the partially created instance.
+    /// - Parameters:
+    ///   - gameName: The name of the game being installed.
+    ///   - gameSetupService: The setup service whose download state should be reset.
+    func cancelInstallation(gameName: String, gameSetupService: GameSetupUtil) async {
+        abortFailedResources()
+        cancelDownloadAndResetStates(gameSetupService: gameSetupService)
+        clearParsedIndexInfo()
+        cleanupTempFiles()
+
+        let trimmedName = gameName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { return }
+        try? MinecraftFileManager.cleanupGameDirectories(gameName: trimmedName)
     }
 
-    private func cleanupGameDirectories(gameName: String) async {
-        try? MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
+    /// Prepares an archive for preview without installing it.
+    /// - Parameter archivePath: The local modpack archive to extract and parse.
+    /// - Returns: The prepared modpack, or `nil` when extraction or parsing fails.
+    func prepare(archivePath: URL) async -> ModPackInstallCoordinator.PreparedModPack? {
+        await installCoordinator.prepare(archivePath: archivePath)
+    }
+
+    /// Runs the shared modpack installation pipeline.
+    ///
+    /// Local import passes an already prepared pack; online download lets the
+    /// coordinator extract and parse the downloaded archive.
+    /// - Returns: Whether the installation succeeded.
+    func install(
+        archivePath: URL,
+        projectDetailForIcon: ModrinthProjectDetail? = nil,
+        gameName: String,
+        selectedGameVersion: String,
+        gameSetupService: GameSetupUtil,
+        prepared: ModPackInstallCoordinator.PreparedModPack? = nil,
+    ) async -> Bool {
+        guard let gameRepository else { return false }
+
+        let onShowFailedResources: ([FailedModPackResource], @escaping (Bool) -> Void) -> Void = { [weak self] resources, continuation in
+            self?.handleFailedResources(resources, continuation: continuation)
+        }
+
+        let input = ModPackInstallCoordinator.RunInput(
+            archivePath: archivePath,
+            projectDetailForIcon: projectDetailForIcon,
+            gameName: gameName,
+            selectedGameVersion: selectedGameVersion,
+            gameSetupService: gameSetupService,
+            gameRepository: gameRepository,
+            modPackInstallState: modPackInstallState,
+            setProcessing: { [weak self] processing in
+                self?.isProcessing = processing
+            },
+            setLastParsedIndexInfo: { [weak self] info in
+                self?.lastParsedIndexInfo = info
+            },
+            prepared: prepared,
+            onShowFailedResources: onShowFailedResources,
+        )
+
+        return await installCoordinator.run(input)
     }
 
     private func performModPackDownloadAndInstall(
@@ -161,32 +213,15 @@ class ModPackDownloadSheetViewModel {
             return false
         }
 
-        var input: ModPackInstallCoordinator.RunInput = .init(
+        let success = await install(
             archivePath: archivePath,
             projectDetailForIcon: projectDetail,
             gameName: gameName,
             selectedGameVersion: selectedGameVersion,
             gameSetupService: gameSetupService,
-            gameRepository: gameRepository,
-            modPackInstallState: modPackInstallState,
-            setProcessing: { [weak self] processing in
-                self?.isProcessing = processing
-            },
-            setLastParsedIndexInfo: { [weak self] info in
-                self?.lastParsedIndexInfo = info
-            },
-            prepared: nil,
         )
-        input.onShowFailedResources = { [weak self] resources, continuation in
-            self?.handleFailedResources(resources, continuation: continuation)
-        }
-        let success = await installCoordinator.run(input)
 
-        if success {
-            clearParsedIndexInfo()
-        } else {
-            clearParsedIndexInfo()
-        }
+        clearParsedIndexInfo()
 
         return success
     }
@@ -237,26 +272,6 @@ class ModPackDownloadSheetViewModel {
         }
 
         isLoadingModPackVersions = false
-    }
-
-    func downloadModPackFile(
-        file: ModrinthVersionFile,
-        projectDetail: ModrinthProjectDetail,
-    ) async -> URL? {
-        modPackDownloadProgress = 0
-        modPackTotalSize = 0
-        return await downloadService.downloadModPackFile(file: file, projectDetail: projectDetail)
-    }
-
-    func downloadGameIcon(
-        projectDetail: ModrinthProjectDetail,
-        gameName: String,
-    ) async -> String? {
-        await downloadService.downloadGameIcon(projectDetail: projectDetail, gameName: gameName)
-    }
-
-    func extractModPack(modPackPath: URL) async -> URL? {
-        await downloadService.extractModPack(modPackPath: modPackPath)
     }
 
     private func handleDownloadError(_: String, _ i18nKey: String) {

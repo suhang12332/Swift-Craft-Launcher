@@ -13,77 +13,46 @@ extension ModPackImportViewModel {
         guard let archiveURL = selectedModPackFile,
               let extractedPath = extractedModPackPath,
               let indexInfo = modPackIndexInfo,
-              let gameRepository else { return }
+              gameRepository != nil else { return }
 
-        if !CommonUtil.isVersionAtLeast(indexInfo.gameVersion) {
+        guard CommonUtil.isVersionAtLeast(indexInfo.gameVersion) else {
             return
         }
 
         isProcessingModPack = false
 
-        let coordinator = ModPackInstallCoordinator(downloadService: ModPackDownloadService())
-        var input: ModPackInstallCoordinator.RunInput = .init(
+        let gameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let success = await modPackViewModel.install(
             archivePath: archiveURL,
-            projectDetailForIcon: nil,
-            gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
+            gameName: gameName,
             selectedGameVersion: indexInfo.gameVersion,
             gameSetupService: gameSetupService,
-            gameRepository: gameRepository,
-            modPackInstallState: modPackViewModel.modPackInstallState,
-            setProcessing: { _ in },
-            setLastParsedIndexInfo: { [weak self] info in
-                self?.modPackIndexInfo = info
-            },
             prepared: .init(
                 extractedPath: extractedPath,
                 indexInfo: indexInfo,
                 projectDetailForIcon: nil,
             ),
         )
-        input.onShowFailedResources = { [weak self] resources, continuation in
-            self?.handleFailedResources(resources, continuation: continuation)
-        }
-        let success = await coordinator.run(input)
 
-        handleModPackInstallationResult(
-            success: success,
-            gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
-        )
+        handleModPackInstallationResult(success: success, gameName: gameName)
     }
 
     /// Handles the final result of a modpack installation.
+    ///
+    /// Failure and cancellation cleanup (directory removal, error reporting, and
+    /// state resets) is owned by `ModPackInstallCoordinator`; only the success
+    /// path needs view-level completion here.
     /// - Parameters:
     ///   - success: Whether installation succeeded.
     ///   - gameName: The name of the game being installed.
     func handleModPackInstallationResult(success: Bool, gameName: String) {
-        if success {
-            AppLog.modPack.info("Local modpack import completed: \(gameName)")
-            modPackViewModel.modPackInstallState.reset()
-            completeInstallation()
-        } else if Task.isCancelled || gameSetupService.downloadState.isCancelled {
-            AppLog.modPack.info("Local modpack import cancelled: \(gameName)")
-            modPackViewModel.modPackInstallState.reset()
-            gameSetupService.downloadState.reset()
-        } else {
-            AppLog.modPack.error("Local modpack import failed: \(gameName)")
-            Task {
-                await cleanupGameDirectories(gameName: gameName)
-            }
-            let globalError = GlobalError.resource(
-                i18nKey: "error.resource.local_modpack_import_failed",
-                level: .notification,
-            )
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            modPackViewModel.modPackInstallState.reset()
-            gameSetupService.downloadState.reset()
-        }
         modPackViewModel.clearParsedIndexInfo()
         isProcessingModPack = false
-    }
 
-    /// Cleans up game directories on the file system.
-    /// - Parameter gameName: The name of the game whose directories should be removed.
-    func cleanupGameDirectories(gameName: String) async {
-        try? MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
+        guard success else { return }
+
+        AppLog.modPack.info("Local modpack import completed: \(gameName)")
+        modPackViewModel.modPackInstallState.reset()
+        completeInstallation()
     }
 }

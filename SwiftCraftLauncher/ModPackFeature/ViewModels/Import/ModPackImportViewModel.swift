@@ -16,8 +16,6 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     var extractedModPackPath: URL?
     var modPackIndexInfo: ModrinthIndexInfo?
     var isProcessingModPack = false
-    var failedResources: [FailedModPackResource] = []
-    var failedResourcesContinuation: ((Bool) -> Void)?
 
     let onProcessingStateChanged: (Bool) -> Void
 
@@ -92,6 +90,19 @@ class ModPackImportViewModel: BaseGameFormViewModel {
 }
 
 extension ModPackImportViewModel: FailedResourcesPresenting {
+    /// Failed resource state lives on the composed sheet view model so that
+    /// `abortFailedResources()` resumes the continuation the coordinator is
+    /// actually waiting on.
+    var failedResources: [FailedModPackResource] {
+        get { modPackViewModel.failedResources }
+        set { modPackViewModel.failedResources = newValue }
+    }
+
+    var failedResourcesContinuation: ((Bool) -> Void)? {
+        get { modPackViewModel.failedResourcesContinuation }
+        set { modPackViewModel.failedResourcesContinuation = newValue }
+    }
+
     var modPackInstallState: ModPackInstallState {
         modPackViewModel.modPackInstallState
     }

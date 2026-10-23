@@ -56,7 +56,7 @@ extension SkinToolDetailViewModel {
 
         if let skinPath = selectedSkinPath, !skinPath.isEmpty {
             let skinURL = URL(fileURLWithPath: skinPath)
-            if skinURL.path.hasPrefix(fileManager.temporaryDirectory.path) {
+            if TemporaryFile.isTemporary(skinURL) {
                 do {
                     try fileManager.removeItem(at: skinURL)
                     AppLog.player.info("Deleted temporary skin file: \(skinPath)")
@@ -68,7 +68,7 @@ extension SkinToolDetailViewModel {
 
         if let capePath = selectedCapeLocalPath, !capePath.isEmpty {
             let capeURL = URL(fileURLWithPath: capePath)
-            if capeURL.path.hasPrefix(fileManager.temporaryDirectory.path) {
+            if TemporaryFile.isTemporary(capeURL) {
                 do {
                     try fileManager.removeItem(at: capeURL)
                 } catch {

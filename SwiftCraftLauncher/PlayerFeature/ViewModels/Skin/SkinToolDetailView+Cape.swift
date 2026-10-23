@@ -132,15 +132,18 @@ extension SkinToolDetailViewModel {
 
             try Task.checkCancellation()
 
-            let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent("cape_\(UUID().uuidString).png")
+            let temporary = try TemporaryFile(
+                purpose: .playerCape,
+                fileName: "cape_\(UUID().uuidString).png",
+            )
             do {
-                try data.write(to: tempFile)
+                try temporary.write(data)
                 try Task.checkCancellation()
                 if selectedCapeImageURL == urlString {
-                    selectedCapeLocalPath = tempFile.path
+                    selectedCapeLocalPath = temporary.url.path
                 }
             } catch is CancellationError {
-                try? FileManager.default.removeItem(at: tempFile)
+                temporary.remove()
             } catch {
                 AppLog.player.error("Failed to save cape to temp file: \(error)")
             }

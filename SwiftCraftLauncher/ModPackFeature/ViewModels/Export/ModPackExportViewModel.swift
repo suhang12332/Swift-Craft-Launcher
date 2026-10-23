@@ -59,10 +59,14 @@ class ModPackExportViewModel {
         exportError = nil
         hasShownSaveDialog = false
 
-        let runDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("modpack_export")
-            .appendingPathComponent(UUID().uuidString)
-        try? FileManager.default.createDirectory(at: runDirectory, withIntermediateDirectories: true)
+        let runDirectory: URL
+        do {
+            runDirectory = try ModPackExporter.createTempDirectory()
+        } catch {
+            exportState = .idle
+            exportError = error.localizedDescription
+            return
+        }
 
         let tempPath = runDirectory
             .appendingPathComponent("\(gameInfo.gameName).\(currentExportFormat.fileExtension)")
