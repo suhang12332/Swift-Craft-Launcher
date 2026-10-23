@@ -138,7 +138,6 @@ enum ModrinthDependencyDownloader {
                         AppLog.resource.error(
                             "Failed to download dependency \(depId): \(globalError.localizedDescription)",
                         )
-                        DIContainer.shared.core.errorHandler.handle(globalError)
                         success = false
                     }
                     let depCopyFinal = depCopy
@@ -210,7 +209,6 @@ enum ModrinthDependencyDownloader {
             AppLog.resource.error(
                 "Failed to download main resource \(input.mainProjectId): \(globalError.localizedDescription)",
             )
-            DIContainer.shared.core.errorHandler.handle(globalError)
             return false
         }
     }
@@ -256,7 +254,6 @@ enum ModrinthDependencyDownloader {
             AppLog.resource.error(
                 "Failed to download only main resource \(mainProjectId): \(globalError.localizedDescription)",
             )
-            DIContainer.shared.core.errorHandler.handle(globalError)
             return (false, nil, nil)
         }
     }
