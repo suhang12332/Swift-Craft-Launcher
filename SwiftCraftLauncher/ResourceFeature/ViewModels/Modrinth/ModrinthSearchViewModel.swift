@@ -18,7 +18,7 @@ final class ModrinthSearchViewModel {
     private(set) var totalHits: Int = 0
 
     var searchTask: Task<Void, Never>?
-    let pageSize: Int = 20
+    let pageSize: Int = SearchPagination.pageSize
 
     init() { }
 

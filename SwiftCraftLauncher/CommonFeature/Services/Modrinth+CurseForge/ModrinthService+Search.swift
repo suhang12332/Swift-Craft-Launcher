@@ -16,48 +16,33 @@ extension ModrinthService {
         limit: Int,
         query: String?,
     ) async throws -> ModrinthResult {
-        guard var components = URLComponents(
-            url: URLConfig.API.Modrinth.search,
-            resolvingAgainstBaseURL: true,
-        ) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.url_components_build_failed",
-                level: .notification,
-                message: "Failed to build URLComponents from Modrinth search URL: \(URLConfig.API.Modrinth.search.absoluteString)",
-            )
-        }
         var queryItems = [
             URLQueryItem(name: "index", value: index),
             URLQueryItem(name: "offset", value: String(offset)),
-            URLQueryItem(name: "limit", value: String(min(limit, 100))),
+            URLQueryItem(name: "limit", value: String(min(limit, SearchPagination.modrinthMaxLimit))),
         ]
+
         if let query {
             queryItems.append(URLQueryItem(name: "query", value: query))
         }
+
         if let facets {
-            do {
-                let facetsJson = try JSONEncoder().encode(facets)
-                if let facetsString = String(data: facetsJson, encoding: .utf8) {
-                    queryItems.append(
-                        URLQueryItem(name: "facets", value: facetsString),
-                    )
-                }
-            } catch {
-                throw GlobalError.validation(
+            queryItems.append(
+                try SearchRequestBuilder.jsonQueryItem(
+                    name: "facets",
+                    value: facets,
                     i18nKey: "error.validation.search_condition_encode_failed",
-                    level: .notification,
-                    message: "Failed to encode Modrinth search facets JSON: \(error.localizedDescription)",
-                )
-            }
-        }
-        components.queryItems = queryItems
-        guard let url = components.url else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.search_url_build_failed",
-                level: .notification,
-                message: "Failed to build Modrinth search URL from components=\(components.debugDescription)",
+                    contextLabel: "Modrinth search facets",
+                ),
             )
         }
+
+        let url = try SearchRequestBuilder.makeURL(
+            baseURL: URLConfig.API.Modrinth.search,
+            queryItems: queryItems,
+            urlErrorMessage: "Failed to build Modrinth search URL for index=\(index), offset=\(offset), limit=\(limit)",
+        )
+
         let data = try await APIClient.get(url: url)
 
         let decoder = JSONDecoder()

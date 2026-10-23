@@ -9,24 +9,6 @@ import Foundation
 
 /// Provides search operations for CurseForge projects.
 extension CurseForgeService {
-    /// Encodes a string array as a JSON array string for a URL query item.
-    private static func encodeAsQueryItem(
-        _ values: [String],
-        name: String,
-        i18nKey: String,
-        contextLabel: String,
-    ) throws -> URLQueryItem {
-        let data = try JSONEncoder().encode(values)
-        guard let jsonString = String(data: data, encoding: .utf8) else {
-            throw GlobalError.validation(
-                i18nKey: i18nKey,
-                level: .notification,
-                message: "Failed to encode \(contextLabel) to JSON string: \(values)",
-            )
-        }
-        return URLQueryItem(name: name, value: jsonString)
-    }
-
     /// Searches CurseForge projects, throwing on failure.
     /// - Parameters:
     ///   - gameId: The game identifier (432 for Minecraft).
@@ -53,21 +35,16 @@ extension CurseForgeService {
         modLoaderType: Int? = nil,
         modLoaderTypes: [Int]? = nil,
         index: Int = 0,
-        pageSize: Int = 20,
+        pageSize: Int = SearchPagination.pageSize,
     ) async throws -> CurseForgeSearchResult {
         // CurseForge sort field: 6 = Last Updated
         let sortField = 6
         let sortOrder = "desc"
 
-        var components = URLComponents(
-            url: URLConfig.API.CurseForge.search,
-            resolvingAgainstBaseURL: true,
-        )
-
         var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "gameId", value: String(gameId)),
             URLQueryItem(name: "index", value: String(index)),
-            URLQueryItem(name: "pageSize", value: String(min(pageSize, 50))),
+            URLQueryItem(name: "pageSize", value: String(min(pageSize, SearchPagination.curseForgeMaxPageSize))),
         ]
 
         if let classId {
@@ -76,14 +53,27 @@ extension CurseForgeService {
 
         if let categoryIds, !categoryIds.isEmpty {
             let stringIds = categoryIds.prefix(10).map(String.init)
-            queryItems.append(try encodeAsQueryItem(stringIds, name: "categoryIds", i18nKey: "error.validation.encode_category_ids_failed", contextLabel: "categoryIds"))
+            queryItems.append(
+                try SearchRequestBuilder.jsonQueryItem(
+                    name: "categoryIds",
+                    value: stringIds,
+                    i18nKey: "error.validation.encode_category_ids_failed",
+                    contextLabel: "categoryIds",
+                ),
+            )
         } else if let categoryId {
             queryItems.append(URLQueryItem(name: "categoryId", value: String(categoryId)))
         }
 
         if let gameVersions, !gameVersions.isEmpty {
-            let limited = Array(gameVersions.prefix(4))
-            queryItems.append(try encodeAsQueryItem(limited, name: "gameVersions", i18nKey: "error.validation.encode_game_versions_failed", contextLabel: "gameVersions"))
+            queryItems.append(
+                try SearchRequestBuilder.jsonQueryItem(
+                    name: "gameVersions",
+                    value: Array(gameVersions.prefix(4)),
+                    i18nKey: "error.validation.encode_game_versions_failed",
+                    contextLabel: "gameVersions",
+                ),
+            )
         } else if let gameVersion {
             queryItems.append(URLQueryItem(name: "gameVersion", value: gameVersion))
         }
@@ -91,10 +81,10 @@ extension CurseForgeService {
         if let rawSearchFilter = searchFilter?
             .trimmingCharacters(in: .whitespacesAndNewlines),
             !rawSearchFilter.isEmpty {
-            let components = rawSearchFilter
+            let normalizedSearchFilter = rawSearchFilter
                 .split { $0.isWhitespace }
                 .map(String.init)
-            let normalizedSearchFilter = components.joined(separator: "+")
+                .joined(separator: "+")
             queryItems.append(URLQueryItem(name: "searchFilter", value: normalizedSearchFilter))
         }
 
@@ -102,23 +92,25 @@ extension CurseForgeService {
         queryItems.append(URLQueryItem(name: "sortOrder", value: sortOrder))
 
         if let modLoaderTypes, !modLoaderTypes.isEmpty {
-            let stringTypes = modLoaderTypes.prefix(5).map(String.init)
-            queryItems.append(try encodeAsQueryItem(stringTypes, name: "modLoaderTypes", i18nKey: "error.validation.encode_mod_loader_types_failed", contextLabel: "modLoaderTypes"))
+            queryItems.append(
+                try SearchRequestBuilder.jsonQueryItem(
+                    name: "modLoaderTypes",
+                    value: modLoaderTypes.prefix(5).map(String.init),
+                    i18nKey: "error.validation.encode_mod_loader_types_failed",
+                    contextLabel: "modLoaderTypes",
+                ),
+            )
         } else if let modLoaderType {
             queryItems.append(URLQueryItem(name: "modLoaderType", value: String(modLoaderType)))
         }
 
-        components?.queryItems = queryItems
-        guard let url = components?.url else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.search_url_build_failed",
-                level: .notification,
-                message: "Failed to build CurseForge search URL from components=\(components.debugDescription)",
-            )
-        }
+        let url = try SearchRequestBuilder.makeURL(
+            baseURL: URLConfig.API.CurseForge.search,
+            queryItems: queryItems,
+            urlErrorMessage: "Failed to build CurseForge search URL for index=\(index), pageSize=\(pageSize)",
+        )
 
-        let headers = getHeaders()
-        let data = try await APIClient.get(url: url, headers: headers)
+        let data = try await APIClient.get(url: url, headers: getHeaders())
         return try JSONDecoder().decode(CurseForgeSearchResult.self, from: data)
     }
 }

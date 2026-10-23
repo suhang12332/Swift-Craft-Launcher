@@ -147,6 +147,20 @@ enum AppConstants {
         DirectoryNames.option,
     ]
 
+    /// Folder names created under the system temporary directory.
+    enum TemporaryDirectoryNames {
+        static let modpackDownload = "modpack_download"
+        static let modpackExtraction = "modpack_extraction"
+        static let modpackImport = "modpack_import"
+        static let modpackURLDownload = "modpack_url_download"
+        static let modpackExport = "modpack_export"
+        static let minecraftNativeExtraction = "minecraft_native_extraction"
+        static let playerSkin = "player_skin"
+        static let playerCape = "player_cape"
+        static let gameIconPreview = "game_icon_preview"
+        static let downloadStaging = "download_staging"
+    }
+
     /// File extension constants without leading dots.
     enum FileExtensions {
         static let jar = "jar"

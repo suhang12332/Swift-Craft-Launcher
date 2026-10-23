@@ -11,7 +11,6 @@ import SwiftUI
 enum ModrinthConstants {
     /// UI layout and display constants.
     enum UIConstants {
-        static let pageSize = 20
         static let iconSize: CGFloat = 48
         static let cornerRadius: CGFloat = 8
         static let tagCornerRadius: CGFloat = 6
