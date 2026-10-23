@@ -184,7 +184,7 @@ class ModPackDownloadSheetViewModel {
         selectedGameVersion: String,
         gameSetupService: GameSetupUtil,
     ) async -> Bool {
-        guard let gameRepository else {
+        guard gameRepository != nil else {
             return false
         }
 
