@@ -69,18 +69,26 @@ struct OfflineAuthView: View {
     }
 
     private var playerNameError: String? {
-        let trimmedName = playerName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedName.isEmpty else { return nil }
-        if playerListViewModel.playerExists(name: trimmedName) {
+        errorMessage(for: playerName)
+    }
+
+    private func errorMessage(for name: String) -> String? {
+        guard !name.isEmpty else { return nil }
+        if !PlayerUtils.isValidOfflineNameCharacters(name) {
+            return "addplayer.name.error.invalid_characters".localized()
+        }
+        if !PlayerUtils.isValidOfflineNameLength(name) {
+            return "addplayer.name.error.invalid_length".localized()
+        }
+        if playerListViewModel.playerExists(name: name) {
             return "addplayer.name.error.duplicate".localized()
         }
         return nil
     }
 
     private func checkPlayerName(_ name: String) {
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        let hasError = playerNameError != nil
-        isPlayerNameValid = !trimmedName.isEmpty && !hasError
+        let hasError = errorMessage(for: name) != nil
+        isPlayerNameValid = PlayerUtils.isValidOfflineName(name) && !hasError
         showErrorPopover = hasError
     }
 }

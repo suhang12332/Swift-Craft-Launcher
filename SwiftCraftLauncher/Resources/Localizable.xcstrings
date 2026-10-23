@@ -2228,6 +2228,280 @@
         }
       }
     },
+    "addplayer.name.error.invalid_characters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يمكن أن يحتوي اسم اللاعب فقط على أحرف (A-Z, a-z) وأرقام (0-9) وشرطات سفلية (_)"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spillernavn må kun indeholde bogstaver (A-Z, a-z), tal (0-9) og understregninger (_)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Spielername darf nur Buchstaben (A-Z, a-z), Ziffern (0-9) und Unterstriche (_) enthalten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Player name may only contain letters (A-Z, a-z), digits (0-9) and underscores (_)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El nombre del jugador solo puede contener letras (A-Z, a-z), números (0-9) y guiones bajos (_)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelaajan nimi voi sisältää vain kirjaimia (A-Z, a-z), numeroita (0-9) ja alaviivoja (_)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le nom du joueur ne peut contenir que des lettres (A-Z, a-z), des chiffres (0-9) et des traits de soulignement (_)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "खिलाड़ी के नाम में केवल अक्षर (A-Z, a-z), अंक (0-9) और अंडरस्कोर (_) हो सकते हैं"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il nome del giocatore può contenere solo lettere (A-Z, a-z), cifre (0-9) e trattini bassi (_)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレイヤー名には半角英字 (A-Z, a-z)、数字 (0-9)、アンダースコア (_) のみ使用できます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "플레이어 이름에는 영문자(A-Z, a-z), 숫자(0-9), 밑줄(_)만 사용할 수 있습니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spillernavn kan bare inneholde bokstaver (A-Z, a-z), tall (0-9) og understreker (_)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spelernaam mag alleen letters (A-Z, a-z), cijfers (0-9) en underscores (_) bevatten"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazwa gracza może zawierać wyłącznie litery (A-Z, a-z), cyfry (0-9) i podkreślenia (_)"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O nome do jogador só pode conter letras (A-Z, a-z), números (0-9) e sublinhados (_)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имя игрока может содержать только буквы (A-Z, a-z), цифры (0-9) и подчёркивания (_)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spelarnamn får endast innehålla bokstäver (A-Z, a-z), siffror (0-9) och understreck (_)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ชื่อผู้เล่นใช้ได้เฉพาะตัวอักษร (A-Z, a-z) ตัวเลข (0-9) และขีดล่าง (_)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyuncu adı yalnızca harf (A-Z, a-z), rakam (0-9) ve alt çizgi (_) içerebilir"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tên người chơi chỉ được chứa chữ cái (A-Z, a-z), chữ số (0-9) và dấu gạch dưới (_)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玩家名仅可包含半角英文字母 (A-Z, a-z)、数字 (0-9) 和下划线 (_)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玩家名僅可包含半角英文字母 (A-Z, a-z)、數字 (0-9) 和下劃線 (_)"
+          }
+        }
+      }
+    },
+    "addplayer.name.error.invalid_length" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يجب أن يكون طول اسم اللاعب من 3 إلى 16 حرفًا"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spillernavnet skal være 3-16 tegn langt"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Spielername muss 3-16 Zeichen lang sein"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Player name must be 3-16 characters long"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El nombre del jugador debe tener entre 3 y 16 caracteres"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelaajan nimen on oltava 3-16 merkkiä pitkä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le nom du joueur doit comporter entre 3 et 16 caractères"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "खिलाड़ी का नाम 3-16 अक्षरों का होना चाहिए"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il nome del giocatore deve essere lungo 3-16 caratteri"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレイヤー名は3〜16文字である必要があります"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "플레이어 이름은 3-16자여야 합니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spillernavnet må være 3-16 tegn langt"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De spelersnaam moet 3-16 tekens lang zijn"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nazwa gracza musi mieć od 3 do 16 znaków"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O nome do jogador deve ter de 3 a 16 caracteres"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имя игрока должно содержать от 3 до 16 символов"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spelarnamnet måste vara 3-16 tecken långt"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ชื่อผู้เล่นต้องมีความยาว 3-16 ตัวอักษร"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyuncu adı 3-16 karakter uzunluğunda olmalıdır"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tên người chơi phải dài từ 3 đến 16 ký tự"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玩家名长度必须为 3-16 个字符"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玩家名長度必須為 3-16 個字元"
+          }
+        }
+      }
+    },
     "addplayer.name.label" : {
       "extractionState" : "manual",
       "localizations" : {

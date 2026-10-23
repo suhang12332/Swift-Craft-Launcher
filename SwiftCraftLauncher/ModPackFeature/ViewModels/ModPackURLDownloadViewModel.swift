@@ -62,8 +62,6 @@ final class ModPackURLDownloadViewModel {
             guard let self else { return }
             let archivePath = await downloadService.downloadModPackArchive(from: url)
 
-            // A cancelled or superseded task must not touch the state of the
-            // download that replaced it.
             guard !Task.isCancelled else { return }
 
             isDownloading = false
@@ -71,8 +69,6 @@ final class ModPackURLDownloadViewModel {
                 onFailure()
                 return
             }
-            // The archive is handed to the import flow; disappearing must not
-            // delete it.
             hasCompletedDownload = true
             onComplete(archivePath)
         }

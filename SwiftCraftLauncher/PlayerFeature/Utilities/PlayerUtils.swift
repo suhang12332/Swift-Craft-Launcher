@@ -12,6 +12,38 @@ import SwiftUI
 enum PlayerUtils {
     private static let names = ["alex", "ari", "efe", "kai", "makena", "noor", "steve", "sunny", "zuri"]
     private static let offlinePrefix = "OfflinePlayer:"
+    private static let offlineNameAllowedCharacters =
+        CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_")
+    /// The inclusive length range for offline player names.
+    static let offlineNameLengthRange = 3...16
+
+    /// Returns whether the given name has a valid offline player name length.
+    ///
+    /// - Parameter name: The player name to validate.
+    /// - Returns: `true` if the name is 3–16 characters long.
+    static func isValidOfflineNameLength(_ name: String) -> Bool {
+        offlineNameLengthRange.contains(name.count)
+    }
+
+    /// Returns whether the given name contains only allowed offline player name characters.
+    ///
+    /// - Parameter name: The player name to validate.
+    /// - Returns: `true` if the name only contains half-width ASCII letters, digits, and underscores.
+    static func isValidOfflineNameCharacters(_ name: String) -> Bool {
+        name.unicodeScalars.allSatisfy { offlineNameAllowedCharacters.contains($0) }
+    }
+
+    /// Returns whether the given name is a valid offline player name.
+    ///
+    /// A valid name is 3–16 characters long and contains only half-width ASCII
+    /// letters, digits, and underscores. Chinese characters, spaces, and any
+    /// other special characters are rejected.
+    ///
+    /// - Parameter name: The player name to validate.
+    /// - Returns: `true` if the name only contains allowed characters.
+    static func isValidOfflineName(_ name: String) -> Bool {
+        isValidOfflineNameLength(name) && isValidOfflineNameCharacters(name)
+    }
 
     /// Generates an offline-mode UUID for the given username.
     ///
