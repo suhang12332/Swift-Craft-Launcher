@@ -17,26 +17,10 @@ final class ModPackDownloadService {
     /// Cleans up temporary download and extraction directories.
     func cleanupTempFiles() {
         Task.detached(priority: .utility) {
-            let fm = FileManager.default
-            let tempBaseDir = fm.temporaryDirectory
-            let downloadDir = tempBaseDir.appendingPathComponent("modpack_download")
-            if fm.fileExists(atPath: downloadDir.path) {
-                do {
-                    try fm.removeItem(at: downloadDir)
-                    AppLog.modPack.info("Cleaned up temp download directory: \(downloadDir.path)")
-                } catch {
-                    AppLog.modPack.error("Failed to clean up temp download directory: \(error.localizedDescription)")
-                }
+            for purpose in TemporaryDirectoryPurpose.modpackInstall {
+                TemporaryDirectory.removeAll(purpose: purpose)
             }
-            let extractionDir = tempBaseDir.appendingPathComponent("modpack_extraction")
-            if fm.fileExists(atPath: extractionDir.path) {
-                do {
-                    try fm.removeItem(at: extractionDir)
-                    AppLog.modPack.info("Cleaned up temp extraction directory: \(extractionDir.path)")
-                } catch {
-                    AppLog.modPack.error("Failed to clean up temp extraction directory: \(error.localizedDescription)")
-                }
-            }
+            AppLog.modPack.info("Cleaned up modpack temporary directories")
         }
     }
 
@@ -49,19 +33,55 @@ final class ModPackDownloadService {
         file: ModrinthVersionFile,
         projectDetail _: ModrinthProjectDetail,
     ) async -> URL? {
+        await downloadArchive(
+            urlString: file.url,
+            filename: file.filename,
+            expectedSha1: file.hashes.sha1,
+            purpose: .modpackDownload,
+        )
+    }
+
+    /// Downloads a modpack archive from an arbitrary URL to a temporary directory.
+    /// - Parameter url: The URL to download from.
+    /// - Returns: The local archive URL, or `nil` on failure or cancellation.
+    func downloadModPackArchive(from url: URL) async -> URL? {
+        let filename = url.lastPathComponent.isEmpty ? "modpack.zip" : url.lastPathComponent
+        return await downloadArchive(
+            urlString: url.absoluteString,
+            filename: filename,
+            expectedSha1: nil,
+            purpose: .modpackURLDownload,
+        )
+    }
+
+    private func downloadArchive(
+        urlString: String,
+        filename: String,
+        expectedSha1: String?,
+        purpose: TemporaryDirectoryPurpose,
+    ) async -> URL? {
         do {
-            let tempDir = try createTempDirectory(for: "modpack_download")
-            let savePath = tempDir.appendingPathComponent(file.filename)
+            let temporary = try TemporaryDirectory(purpose: purpose)
+            var keepDirectory = false
+            defer {
+                if !keepDirectory {
+                    temporary.remove()
+                }
+            }
+
+            let savePath = temporary.url.appendingPathComponent(filename)
+
             do {
                 _ = try await downloadFileWithProgress(
-                    urlString: file.url,
+                    urlString: urlString,
                     destinationURL: savePath,
-                    expectedSha1: file.hashes.sha1,
+                    expectedSha1: expectedSha1,
                 )
+                keepDirectory = true
                 return savePath
             } catch {
                 if error is CancellationError || Task.isCancelled {
-                    AppLog.modPack.info("Modpack download cancelled")
+                    AppLog.modPack.info("Modpack download cancelled: \(purpose.directoryName)")
                     return nil
                 }
                 let globalError = GlobalError.from(error)
@@ -84,34 +104,17 @@ final class ModPackDownloadService {
         projectDetail: ModrinthProjectDetail,
         gameName: String,
     ) async -> String? {
+        guard let iconUrlString = projectDetail.iconUrl,
+              let iconURL = URL(string: iconUrlString) else {
+            return nil
+        }
+
         do {
-            guard let iconUrl = projectDetail.iconUrl else {
-                return nil
-            }
-
-            let gameDirectory = AppPaths.profileDirectory(gameName: gameName)
-            try FileManager.default.createDirectory(
-                at: gameDirectory,
-                withIntermediateDirectories: true,
+            let iconPresent = try await GameIconStore.downloadIfMissing(
+                from: iconURL,
+                gameName: gameName,
             )
-
-            let iconFileName = "default_game_icon.png"
-            let iconPath = gameDirectory.appendingPathComponent(iconFileName)
-
-            do {
-                _ = try await DownloadManager.downloadFile(
-                    urlString: iconUrl,
-                    destinationURL: iconPath,
-                    expectedSha1: nil,
-                )
-                return iconFileName
-            } catch {
-                onError?(
-                    "Failed to download game icon",
-                    "error.network.icon_download_failed",
-                )
-                return nil
-            }
+            return iconPresent ? AppConstants.defaultGameIcon : nil
         } catch {
             onError?(
                 "Failed to download game icon",
@@ -154,9 +157,17 @@ final class ModPackDownloadService {
                 return nil
             }
 
-            let tempDir = try createTempDirectory(for: "modpack_extraction")
-            try FileManager.default.unzipItem(at: modPackPath, to: tempDir)
-            return tempDir
+            let temporary = try TemporaryDirectory(purpose: .modpackExtraction)
+            var keepDirectory = false
+            defer {
+                if !keepDirectory {
+                    temporary.remove()
+                }
+            }
+
+            try FileManager.default.unzipItem(at: modPackPath, to: temporary.url)
+            keepDirectory = true
+            return temporary.url
         } catch {
             onError?(
                 "Failed to extract modpack: \(error.localizedDescription)",
@@ -179,17 +190,5 @@ final class ModPackDownloadService {
         ) { downloadedBytes, totalBytes in
             handler?(downloadedBytes, totalBytes)
         }
-    }
-
-    private func createTempDirectory(for purpose: String) throws -> URL {
-        let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent(purpose)
-            .appendingPathComponent(UUID().uuidString)
-
-        try FileManager.default.createDirectory(
-            at: tempDir,
-            withIntermediateDirectories: true,
-        )
-        return tempDir
     }
 }

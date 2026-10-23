@@ -1,5 +1,5 @@
 {
-  "originHash" : "6a8aca8171aaa1a316ca7d310d04b1e03b10323d20196daa511b304d598599b3",
+  "originHash" : "6b163db3b5be30c699f63d72a12bfc1b92eb1c8ba412733ab25c981b5d57519e",
   "pins" : [
     {
       "identity" : "cfmodrinthadapterkit",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/suhang12332/CFModrinthAdapterKit.git",
       "state" : {
         "branch" : "release",
-        "revision" : "edd81f444a8503121306aed4b53f7cdf823562f7"
+        "revision" : "0592536c15ee903edc542cac91890f75ff393ec9"
       }
     },
     {

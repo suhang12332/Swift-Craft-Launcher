@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 /// Orchestrates the full modpack installation flow: extraction, parsing, dependency resolution,
 /// override installation, file installation, and game setup.
@@ -93,7 +94,7 @@ final class ModPackInstallCoordinator {
             gameName: input.gameName,
         )
 
-        let profileCreated = await createProfileDirectories(for: input.gameName)
+        let profileCreated = await MinecraftFileManager.createProfileDirectories(for: input.gameName)
         guard profileCreated else {
             await handleInstallationResult(
                 success: false,
@@ -124,10 +125,9 @@ final class ModPackInstallCoordinator {
             modLoader: indexInfo.loaderType,
         )
 
-        let (filesToDownload, requiredDependencies) = calculateInstallationCounts(from: indexInfo)
         input.modPackInstallState.startInstallation(
-            filesTotal: filesToDownload.count,
-            dependenciesTotal: requiredDependencies.count,
+            filesTotal: indexInfo.clientFiles.count,
+            dependenciesTotal: indexInfo.requiredDependencies.count,
         )
 
         guard await installFilesStep(
@@ -249,7 +249,10 @@ final class ModPackInstallCoordinator {
 
         guard failedFiles.isEmpty else {
             let failedResources = await FailedResourceResolver.makeFailedResources(from: failedFiles, gameInfo: gameInfo)
-            return await FailedResourceResolver.presentFailedResources(failedResources, input: input)
+            return await FailedResourceResolver.presentFailedResources(
+                failedResources,
+                onShowFailedResources: input.onShowFailedResources,
+            )
         }
         return true
     }
@@ -278,7 +281,10 @@ final class ModPackInstallCoordinator {
 
         guard failedDependencies.isEmpty else {
             let failedResources = await FailedResourceResolver.makeFailedResources(from: failedDependencies, gameInfo: gameInfo)
-            return await FailedResourceResolver.presentFailedResources(failedResources, input: input)
+            return await FailedResourceResolver.presentFailedResources(
+                failedResources,
+                onShowFailedResources: input.onShowFailedResources,
+            )
         }
         return true
     }
@@ -287,31 +293,55 @@ final class ModPackInstallCoordinator {
         input: RunInput,
         indexInfo: ModrinthIndexInfo,
     ) async -> Bool {
-        await withCheckedContinuation { continuation in
-            Task {
-                await input.gameSetupService.saveGame(
-                    input: .init(
-                        gameName: input.gameName,
-                        selectedGameVersion: input.selectedGameVersion,
-                        selectedModLoader: indexInfo.loaderType,
-                        specifiedLoaderVersion: indexInfo.loaderVersion,
-                        pendingIconData: nil,
-                    ),
-                    playerListViewModel: nil,
-                    gameRepository: input.gameRepository,
-                    onSuccess: {
-                        continuation.resume(returning: true)
-                    },
-                    onError: { error, message in
-                        Task { @MainActor in
-                            AppLog.modPack.error("Game setup failed: \(message)")
-                            DIContainer.shared.core.errorHandler.handle(error)
-                        }
-                        continuation.resume(returning: false)
-                    },
-                )
-            }
+        if Task.isCancelled {
+            return false
         }
+
+        let saveInput = GameSetupUtil.GameSaveInput(
+            gameName: input.gameName,
+            selectedGameVersion: input.selectedGameVersion,
+            selectedModLoader: indexInfo.loaderType,
+            specifiedLoaderVersion: indexInfo.loaderVersion,
+            pendingIconData: nil,
+        )
+        let saveTaskBox = GameSaveTaskBox()
+
+        let result = await withTaskCancellationHandler {
+            await withCheckedContinuation { (continuation: CheckedContinuation<Bool, Never>) in
+                let saveTask = Task {
+                    await input.gameSetupService.saveGame(
+                        input: saveInput,
+                        playerListViewModel: nil,
+                        gameRepository: input.gameRepository,
+                        onSuccess: {
+                            continuation.resume(returning: true)
+                        },
+                        onError: { error, message in
+                            Task { @MainActor in
+                                AppLog.modPack.error("Game setup failed: \(message)")
+                                DIContainer.shared.core.errorHandler.handle(error)
+                            }
+                            continuation.resume(returning: false)
+                        },
+                        onCancelled: {
+                            continuation.resume(returning: false)
+                        },
+                    )
+                }
+                saveTaskBox.store(saveTask)
+                if Task.isCancelled {
+                    saveTask.cancel()
+                }
+            }
+        } onCancel: {
+            saveTaskBox.cancel()
+        }
+
+        if Task.isCancelled {
+            try? await input.gameRepository.deleteGamesByName(input.gameName)
+            return false
+        }
+        return result
     }
 
     private func handleStepFailure(_ input: RunInput) async -> Bool {
@@ -356,16 +386,6 @@ final class ModPackInstallCoordinator {
             AppLog.modPack.error("Failed to calculate overrides total: \(error.localizedDescription)")
             return 0
         }
-    }
-
-    private func createProfileDirectories(for gameName: String) async -> Bool {
-        await MinecraftFileManager.createProfileDirectories(for: gameName)
-    }
-
-    private func calculateInstallationCounts(
-        from indexInfo: ModrinthIndexInfo,
-    ) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
-        MinecraftFileManager.calculateInstallationCounts(from: indexInfo)
     }
 
     private func updateInstallProgress(
@@ -416,7 +436,7 @@ final class ModPackInstallCoordinator {
             AppLog.modPack.info("Modpack dependency installation completed: \(gameName)")
         } else {
             AppLog.modPack.error("Modpack dependency installation failed: \(gameName)")
-            await cleanupGameDirectories(gameName: gameName)
+            try? MinecraftFileManager.cleanupGameDirectories(gameName: gameName)
             DIContainer.shared.core.errorHandler.handle(
                 GlobalError.installation(
                     i18nKey: "error.resource.modpack_dependencies_failed",
@@ -434,12 +454,21 @@ final class ModPackInstallCoordinator {
         modPackInstallState: ModPackInstallState,
     ) async {
         AppLog.modPack.info("Modpack installation cancelled: \(gameName)")
-        await cleanupGameDirectories(gameName: gameName)
+        try? MinecraftFileManager.cleanupGameDirectories(gameName: gameName)
         modPackInstallState.reset()
         gameSetupService.downloadState.reset()
     }
+}
 
-    private func cleanupGameDirectories(gameName: String) async {
-        try? MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
+private final class GameSaveTaskBox: @unchecked Sendable {
+    private let storage = OSAllocatedUnfairLock<Task<Void, Never>?>(initialState: nil)
+
+    func store(_ task: Task<Void, Never>) {
+        storage.withLock { $0 = task }
+    }
+
+    func cancel() {
+        let task = storage.withLock { $0 }
+        task?.cancel()
     }
 }

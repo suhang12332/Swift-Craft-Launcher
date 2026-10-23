@@ -84,30 +84,21 @@ final class ModPackExporterStructsTests: XCTestCase {
     func testCurseForgeModListItem_init() {
         let item = ModPackExporter.CurseForgeModListItem(
             projectID: 123,
-            fileID: 456,
             fileName: "mod.jar",
-            projectName: "TestMod",
-            authorsText: "Author1",
         )
 
         XCTAssertEqual(item.projectID, 123)
-        XCTAssertEqual(item.fileID, 456)
         XCTAssertEqual(item.fileName, "mod.jar")
-        XCTAssertEqual(item.projectName, "TestMod")
-        XCTAssertEqual(item.authorsText, "Author1")
     }
 
-    func testCurseForgeModListItem_nilOptionals() {
+    func testCurseForgeModListItem_zeroProjectID() {
         let item = ModPackExporter.CurseForgeModListItem(
-            projectID: 1,
-            fileID: 2,
+            projectID: 0,
             fileName: "f.jar",
-            projectName: nil,
-            authorsText: nil,
         )
 
-        XCTAssertNil(item.projectName)
-        XCTAssertNil(item.authorsText)
+        XCTAssertEqual(item.projectID, 0)
+        XCTAssertEqual(item.fileName, "f.jar")
     }
 
     func testResolveSelectedFiles_emptyInput() {

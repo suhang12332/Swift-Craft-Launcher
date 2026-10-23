@@ -76,7 +76,7 @@ private struct GameVersionsPopover: View {
     var body: some View {
         VersionGroupedView(
             items: versions.map { FilterItem(id: $0, name: $0) },
-            selectedItems: .constant([]),
+            selectedItems: [],
         ) { _ in }
             .frame(width: Constants.popoverWidth, height: Constants.popoverHeight)
     }

@@ -203,11 +203,7 @@ struct GameFormView: View {
 
     private var cancelButton: some View {
         Button {
-            if isDownloading {
-                triggerCancel = true
-            } else {
-                dismiss()
-            }
+            triggerCancel = true
         } label: {
             Text(isDownloading ? "common.stop".localized() : "common.cancel".localized())
         }

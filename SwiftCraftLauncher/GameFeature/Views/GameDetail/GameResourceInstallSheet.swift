@@ -15,12 +15,8 @@ struct GameResourceInstallSheet: View {
     @Binding var isPresented: Bool
     let preloadedDetail: ModrinthProjectDetail?
     var isUpdateMode: Bool = false
-    @Environment(GameRepository.self)
-    private var gameRepository
-    /// Invoked on successful download with (fileName, hash). Nil values for manual downloads.
-    var onDownloadSuccess: ((String?, String?) -> Void)?
 
-    @State private var viewModel: GameResourceInstallSheetViewModel
+    @State private var viewModel: ResourceInstallViewModel
 
     init(
         project: ModrinthProject,
@@ -37,19 +33,24 @@ struct GameResourceInstallSheet: View {
         _isPresented = isPresented
         self.preloadedDetail = preloadedDetail
         self.isUpdateMode = isUpdateMode
-        self.onDownloadSuccess = onDownloadSuccess
         _viewModel = State(
-            wrappedValue: GameResourceInstallSheetViewModel(
+            wrappedValue: ResourceInstallViewModel(
                 project: project,
                 resourceType: resourceType,
-                gameInfo: gameInfo,
-                isUpdateMode: isUpdateMode,
+                fixedGame: gameInfo,
+                configuration: .init(
+                    isUpdateMode: isUpdateMode,
+                    hasCompatibleGames: true,
+                    dismissOnFailure: false,
+                    onSuccess: onDownloadSuccess,
+                ),
             ),
         )
     }
 
     var body: some View {
-        CommonSheetView(
+        @Bindable var viewModel = viewModel
+        return CommonSheetView(
             header: {
                 Text(
                     String(
@@ -67,104 +68,36 @@ struct GameResourceInstallSheet: View {
                     VStack {
                         ModrinthProjectTitleView(
                             projectDetail: detail,
-                        ).padding(.bottom, 18)
+                        )
                         VersionPickerForSheet(
                             project: project,
                             resourceType: resourceType,
-                            selectedGame: .constant(gameInfo),
+                            selectedGame: gameInfo,
                             selectedVersion: $viewModel.selectedVersion,
                             availableVersions: $viewModel.availableVersions,
+                            isLoading: $viewModel.isLoadingVersions,
                             mainVersionId: $viewModel.mainVersionId,
                         ) { version in
                             viewModel.onVersionChanged(version)
                         }
-                        if resourceType == ResourceType.mod.rawValue, !isUpdateMode {
-                            if viewModel.dependencyState.isLoading
-                                || !viewModel.dependencyState.dependencies.isEmpty {
-                                DependencySectionView(state: $viewModel.dependencyState)
-                            }
+                        if resourceType == ResourceType.mod.rawValue,
+                           !isUpdateMode,
+                           !viewModel.dependencyState.dependencies.isEmpty {
+                            DependencySectionView(state: $viewModel.dependencyState)
                         }
                     }
                 }
             },
             footer: {
-                GameResourceInstallFooter(
-                    isPresented: $isPresented,
+                ResourceInstallFooterView(
                     projectDetail: preloadedDetail,
                     viewModel: viewModel,
-                    onDownloadSuccess: onDownloadSuccess,
+                    isPresented: $isPresented,
                 )
             },
         )
-        .onAppear { viewModel.setDependencies(gameRepository: gameRepository) }
-        .onDisappear { viewModel.cleanup() }
-    }
-}
-
-/// Footer with download action buttons for the resource install sheet.
-private struct GameResourceInstallFooter: View {
-    @Binding var isPresented: Bool
-    let projectDetail: ModrinthProjectDetail?
-    var viewModel: GameResourceInstallSheetViewModel
-    /// Invoked on successful download with (fileName, hash). Nil values for manual downloads.
-    var onDownloadSuccess: ((String?, String?) -> Void)?
-
-    var body: some View {
-        if projectDetail != nil {
-            HStack {
-                Button("common.close".localized()) { isPresented = false }
-                Spacer()
-                if viewModel.resourceType == ResourceType.mod.rawValue,
-                   !viewModel.isUpdateMode {
-                    if !viewModel.dependencyState.isLoading {
-                        if viewModel.selectedVersion != nil {
-                            Button {
-                                viewModel.downloadAllManual(
-                                    onSuccess: { fileName, hash in
-                                        onDownloadSuccess?(fileName, hash)
-                                    },
-                                    dismiss: { isPresented = false },
-                                )
-                            } label: {
-                                if viewModel.isDownloadingAll {
-                                    ProgressView().controlSize(.small)
-                                } else {
-                                    Text(
-                                        "global_resource.download"
-                                            .localized(),
-                                    )
-                                }
-                            }
-                            .disabled(viewModel.isDownloadingAll)
-                            .keyboardShortcut(.defaultAction)
-                        }
-                    }
-                } else {
-                    if viewModel.selectedVersion != nil {
-                        Button {
-                            viewModel.downloadResource(
-                                onSuccess: { fileName, hash in
-                                    onDownloadSuccess?(fileName, hash)
-                                },
-                                dismiss: { isPresented = false },
-                            )
-                        } label: {
-                            if viewModel.isDownloadingAll {
-                                ProgressView().controlSize(.small)
-                            } else {
-                                Text("global_resource.download".localized())
-                            }
-                        }
-                        .disabled(viewModel.isDownloadingAll)
-                        .keyboardShortcut(.defaultAction)
-                    }
-                }
-            }
-        } else {
-            HStack {
-                Spacer()
-                Button("common.close".localized()) { isPresented = false }
-            }
+        .onDisappear {
+            viewModel.cleanup()
         }
     }
 }

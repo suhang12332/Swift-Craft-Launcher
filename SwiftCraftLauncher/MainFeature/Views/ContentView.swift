@@ -42,15 +42,16 @@ struct ContentView: View {
     }
 
     private func serverModeView(game: GameVersionInfo) -> some View {
-        CategoryContentView(
+        @Bindable var filterState = filterState
+        return CategoryContentView(
             project: detailState.gameResourcesType,
             type: "game",
-            selectedCategories: filterState.selectedCategoriesBinding,
-            selectedFeatures: filterState.selectedFeaturesBinding,
-            selectedResolutions: filterState.selectedResolutionsBinding,
-            selectedPerformanceImpacts: filterState.selectedPerformanceImpactBinding,
-            selectedVersions: filterState.selectedVersionsBinding,
-            selectedLoaders: filterState.selectedLoadersBinding,
+            selectedCategories: $filterState.selectedCategories,
+            selectedFeatures: $filterState.selectedFeatures,
+            selectedResolutions: $filterState.selectedResolutions,
+            selectedPerformanceImpacts: $filterState.selectedPerformanceImpact,
+            selectedVersions: $filterState.selectedVersions,
+            selectedLoaders: $filterState.selectedLoaders,
             gameVersion: game.gameVersion,
             gameLoader: game.modLoader.lowercased() == GameLoader.vanilla.displayName ? nil : game.modLoader,
             dataSource: filterState.dataSource,
@@ -65,9 +66,11 @@ struct ContentView: View {
 
     @ViewBuilder
     private func resourceContentView(type: ResourceType) -> some View {
+        @Bindable var filterState = filterState
+        @Bindable var detailState = detailState
         if let projectId = detailState.selectedProjectId {
             ModrinthProjectContentView(
-                projectDetail: detailState.loadedProjectDetailBinding,
+                projectDetail: $detailState.loadedProjectDetail,
                 projectId: projectId,
                 resourceType: type.rawValue,
             )
@@ -75,12 +78,12 @@ struct ContentView: View {
             CategoryContentView(
                 project: type.rawValue,
                 type: "resource",
-                selectedCategories: filterState.selectedCategoriesBinding,
-                selectedFeatures: filterState.selectedFeaturesBinding,
-                selectedResolutions: filterState.selectedResolutionsBinding,
-                selectedPerformanceImpacts: filterState.selectedPerformanceImpactBinding,
-                selectedVersions: filterState.selectedVersionsBinding,
-                selectedLoaders: filterState.selectedLoadersBinding,
+                selectedCategories: $filterState.selectedCategories,
+                selectedFeatures: $filterState.selectedFeatures,
+                selectedResolutions: $filterState.selectedResolutions,
+                selectedPerformanceImpacts: $filterState.selectedPerformanceImpact,
+                selectedVersions: $filterState.selectedVersions,
+                selectedLoaders: $filterState.selectedLoaders,
                 dataSource: filterState.dataSource,
             )
             .id(type)

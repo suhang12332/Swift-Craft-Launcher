@@ -93,6 +93,8 @@ struct GlobalError: Error, LocalizedError, Identifiable {
     let statusCode: Int?
     let message: String?
     let source: ErrorSource
+    /// An optional custom title key; when `nil` the title is derived from ``kind``.
+    let titleKey: String?
 
     private init(
         kind: GlobalErrorKind,
@@ -101,6 +103,7 @@ struct GlobalError: Error, LocalizedError, Identifiable {
         statusCode: Int? = nil,
         message: String? = nil,
         source: ErrorSource = .main,
+        titleKey: String? = nil,
     ) {
         self.kind = kind
         self.i18nKey = i18nKey
@@ -108,6 +111,7 @@ struct GlobalError: Error, LocalizedError, Identifiable {
         self.statusCode = statusCode
         self.message = message
         self.source = source
+        self.titleKey = titleKey
     }
 
     var id: String {
@@ -115,7 +119,7 @@ struct GlobalError: Error, LocalizedError, Identifiable {
     }
 
     var notificationTitle: String {
-        kind.notificationTitle
+        titleKey?.localized() ?? kind.notificationTitle
     }
 
     var errorDescription: String? {
@@ -237,7 +241,12 @@ extension GlobalError {
 extension GlobalError {
     /// Returns a copy of this error with the given source.
     func withSource(_ source: ErrorSource) -> GlobalError {
-        GlobalError(kind: kind, i18nKey: i18nKey, level: level, statusCode: statusCode, message: message, source: source)
+        GlobalError(kind: kind, i18nKey: i18nKey, level: level, statusCode: statusCode, message: message, source: source, titleKey: titleKey)
+    }
+
+    /// Returns a copy of this error with a custom title key.
+    func withTitleKey(_ titleKey: String?) -> GlobalError {
+        GlobalError(kind: kind, i18nKey: i18nKey, level: level, statusCode: statusCode, message: message, source: source, titleKey: titleKey)
     }
 }
 

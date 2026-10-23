@@ -87,6 +87,21 @@ final class GlobalErrorHandlerTests: XCTestCase {
         XCTAssertEqual(error.kind, .validation)
     }
 
+    func testGlobalError_customTitleKey() {
+        let error = GlobalError.validation(i18nKey: "error.val.test", level: .popup)
+            .withTitleKey("custom.title")
+        XCTAssertEqual(error.titleKey, "custom.title")
+        XCTAssertEqual(error.notificationTitle, "custom.title".localized())
+    }
+
+    func testGlobalError_withSource_preservesTitleKey() {
+        let error = GlobalError.network(i18nKey: "error.network.test")
+            .withTitleKey("custom.title")
+            .withSource(.settings)
+        XCTAssertEqual(error.source, .settings)
+        XCTAssertEqual(error.titleKey, "custom.title")
+    }
+
     func testGlobalError_download() {
         let error = GlobalError.download(i18nKey: "error.dl.test")
         XCTAssertEqual(error.kind, .download)

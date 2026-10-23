@@ -11,7 +11,6 @@ extension ModPackExporter {
     /// Copies selected resource files to the overrides directory during export.
     static func copyFiles(
         params: CopyFilesParams,
-        copyCounter: CopyCounter,
         progressUpdater: ProgressUpdater,
         progressCallback: (@Sendable (ExportProgress) -> Void)?,
     ) async throws {
@@ -27,43 +26,35 @@ extension ModPackExporter {
             progressCallback?(updatedProgress)
         }
 
-        await withTaskGroup(of: Void.self) { group in
+        let processedCounter = ProcessedCounter()
+
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            let semaphore = AsyncSemaphore(value: maxConcurrentExportOperations)
+
             for (file, relativePath) in filesToCopy {
                 group.addTask {
-                    if Task.isCancelled {
-                        return
-                    }
-                    do {
-                        try ResourceProcessor.copyToOverrides(
-                            file: file,
-                            relativePath: relativePath,
-                            overridesDir: overridesDir,
-                        )
+                    await semaphore.wait()
+                    defer { Task { await semaphore.signal() } }
 
-                        let (processed, total) = await copyCounter.increment()
-                        let updatedProgress = await progressUpdater.advanceCopyProgress(
-                            processed: processed,
-                            total: total,
-                            currentFile: file.lastPathComponent,
-                        )
-                        progressCallback?(updatedProgress)
-                    } catch {
-                        AppLog.modPack.error(
-                            "Failed to copy resource file: \(file.lastPathComponent), error: \(error.localizedDescription)",
-                        )
+                    try Task.checkCancellation()
 
-                        let (processed, total) = await copyCounter.increment()
-                        let updatedProgress = await progressUpdater.advanceCopyProgress(
-                            processed: processed,
-                            total: total,
-                            currentFile: file.lastPathComponent,
-                        )
-                        progressCallback?(updatedProgress)
-                    }
+                    try ResourceProcessor.copyToOverrides(
+                        file: file,
+                        relativePath: relativePath,
+                        overridesDir: overridesDir,
+                    )
+
+                    let processed = await processedCounter.increment()
+                    let updatedProgress = await progressUpdater.advanceCopyProgress(
+                        processed: processed,
+                        total: totalFilesToCopy,
+                        currentFile: file.lastPathComponent,
+                    )
+                    progressCallback?(updatedProgress)
                 }
             }
 
-            for await _ in group { }
+            try await group.waitForAll()
         }
     }
 
@@ -72,14 +63,9 @@ extension ModPackExporter {
         params: IndexBuildParams,
         tempDir: URL,
         outputPath: URL,
-        progressUpdater: ProgressUpdater,
-        progressCallback: (@Sendable (ExportProgress) -> Void)?,
     ) async throws {
         try Task.checkCancellation()
         let rootFileNames = try await writeManifestFile(params: params, tempDir: tempDir)
-
-        let currentProgress = await progressUpdater.getFullProgress()
-        progressCallback?(currentProgress)
 
         try Task.checkCancellation()
         try ModPackArchiver.archive(tempDir: tempDir, outputPath: outputPath, rootFiles: rootFileNames)
@@ -87,11 +73,20 @@ extension ModPackExporter {
 
     /// Writes the export manifest file (Modrinth or CurseForge) to the temp directory.
     static func writeManifestFile(params: IndexBuildParams, tempDir: URL) async throws -> [String] {
-        switch params.exportFormat {
-        case .modrinth:
-            return try await writeModrinthManifest(params: params, tempDir: tempDir)
-        case .curseforge:
-            return try await writeCurseForgeManifest(params: params, tempDir: tempDir)
+        switch params.manifest {
+        case let .modrinth(files):
+            return try await writeModrinthManifest(
+                params: params,
+                files: files,
+                tempDir: tempDir,
+            )
+        case let .curseForge(files, modListItems):
+            return try await writeCurseForgeManifest(
+                params: params,
+                files: files,
+                modListItems: modListItems,
+                tempDir: tempDir,
+            )
         }
     }
 }
@@ -103,23 +98,13 @@ extension ModPackExporter {
         private var copyProgress: ExportProgress.ProgressItem?
 
         func setCopyProgressTotal(_ total: Int) {
-            if let existing = copyProgress {
-                copyProgress = ExportProgress.ProgressItem(
-                    title: existing.title,
-                    progress: existing.progress,
-                    currentFile: existing.currentFile,
-                    completed: existing.completed,
-                    total: total,
-                )
-            } else {
-                copyProgress = ExportProgress.ProgressItem(
-                    title: "modpack.export.copying.title".localized(),
-                    progress: 0.0,
-                    currentFile: "",
-                    completed: 0,
-                    total: total,
-                )
-            }
+            copyProgress = ExportProgress.ProgressItem(
+                title: "modpack.export.copying.title".localized(),
+                progress: 0.0,
+                currentFile: "",
+                completed: 0,
+                total: total,
+            )
         }
 
         func advanceScanProgress(
@@ -164,28 +149,13 @@ extension ModPackExporter {
         }
     }
 
-    /// Thread-safe counter for processed scan items.
+    /// Thread-safe counter for processed scan and copy items.
     actor ProcessedCounter {
         private var count = 0
 
         func increment() -> Int {
             count += 1
             return count
-        }
-    }
-
-    /// Thread-safe counter for copied files.
-    actor CopyCounter {
-        private var count = 0
-        private let total: Int
-
-        init(total: Int) {
-            self.total = total
-        }
-
-        func increment() -> (count: Int, total: Int) {
-            count += 1
-            return (count, total)
         }
     }
 }

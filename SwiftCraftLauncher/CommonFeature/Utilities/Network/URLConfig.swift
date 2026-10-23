@@ -388,7 +388,7 @@ enum URLConfig {
 
         enum IPLocation {
             static var currentLocation: URL {
-                URLConfig.url("https://ipapi.co/json/")
+                URLConfig.url("https://www.cloudflare-cn.com/cdn-cgi/trace")
             }
         }
 

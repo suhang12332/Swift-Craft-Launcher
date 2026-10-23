@@ -40,6 +40,7 @@ class GameSetupUtil {
         gameRepository: GameRepository,
         onSuccess: @escaping () -> Void,
         onError: @escaping (GlobalError, String) -> Void,
+        onCancelled: @escaping () -> Void = { },
     ) async {
         if let playerListViewModel {
             guard playerListViewModel.currentPlayer != nil else {
@@ -90,6 +91,7 @@ class GameSetupUtil {
                 selectedModLoader: input.selectedModLoader,
                 specifiedLoaderVersion: input.specifiedLoaderVersion,
             )
+            try Task.checkCancellation()
             try await gameRepository.addGame(gameInfo)
 
             if DIContainer.shared.ui.gameSettingsManager.syncLanguageForNewGames {
@@ -100,10 +102,12 @@ class GameSetupUtil {
                 await DIContainer.shared.core.modScanner.scanGameModsDirectory(game: gameInfo)
             }
 
-            try? await NotificationManager.send(
-                title: "notification.download.complete.title".localized(),
-                body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader),
-            )
+            if !Task.isCancelled {
+                try? await NotificationManager.send(
+                    title: "notification.download.complete.title".localized(),
+                    body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader),
+                )
+            }
             onSuccess()
         } catch {
             if isSaveGameDownloadCancelled(error) {
@@ -112,6 +116,7 @@ class GameSetupUtil {
                 await MainActor.run {
                     self.downloadState.reset()
                 }
+                onCancelled()
                 return
             }
             await cleanupGameDirectories(gameName: input.gameName)
@@ -275,7 +280,7 @@ class GameSetupUtil {
     /// Removes partial game files after a failed or cancelled download.
     /// - Parameter gameName: The name of the game instance.
     private func cleanupGameDirectories(gameName: String) async {
-        try? MinecraftFileManager().cleanupGameDirectories(gameName: gameName)
+        try? MinecraftFileManager.cleanupGameDirectories(gameName: gameName)
     }
 
     private func saveGameIcon(
@@ -286,20 +291,14 @@ class GameSetupUtil {
         guard !gameName.isEmpty else {
             return false
         }
-        let profileDir = AppPaths.profileDirectory(gameName: gameName)
-        let iconURL = profileDir.appendingPathComponent(AppConstants.defaultGameIcon)
 
         do {
-            try FileManager.default.createDirectory(at: profileDir, withIntermediateDirectories: true)
-
-            if let data = pendingIconData {
-                try data.write(to: iconURL)
-            } else if !standardIconFilePresent(at: iconURL) {
-                let remoteIconURL = URLConfig.API.GitHub.gameIcon(modLoader)
-                _ = try await DownloadManager.downloadFile(
-                    urlString: remoteIconURL.absoluteString,
-                    destinationURL: iconURL,
-                    expectedSha1: nil,
+            if let pendingIconData {
+                try GameIconStore.write(pendingIconData, gameName: gameName)
+            } else {
+                try await GameIconStore.downloadIfMissing(
+                    from: URLConfig.API.GitHub.gameIcon(modLoader),
+                    gameName: gameName,
                 )
             }
         } catch {
@@ -310,21 +309,12 @@ class GameSetupUtil {
                 GlobalError.fileSystem(
                     i18nKey: "error.filesystem.image_save_failed",
                     level: .silent,
-                    message: "game icon save failed for: \(iconURL.path), error: \(error.localizedDescription)",
+                    message: "game icon save failed for: \(GameIconStore.iconURL(gameName: gameName).path), error: \(error.localizedDescription)",
                 ),
             )
         }
 
-        return standardIconFilePresent(at: iconURL)
-    }
-
-    private func standardIconFilePresent(at iconURL: URL) -> Bool {
-        var isDirectory: ObjCBool = false
-        guard FileManager.default.fileExists(atPath: iconURL.path, isDirectory: &isDirectory),
-              !isDirectory.boolValue else {
-            return false
-        }
-        return true
+        return GameIconStore.hasIcon(gameName: gameName)
     }
 
     private func setupFileManager(manifest _: MinecraftVersionManifest, modLoader _: String) async throws -> MinecraftFileManager {
@@ -436,7 +426,7 @@ class GameSetupUtil {
             }
         }
 
-        return await handler.setupWithSpecificVersion(
+        return try await handler.setupWithSpecificVersionThrowing(
             for: selectedGameVersion,
             loaderVersion: specifiedLoaderVersion,
             gameInfo: gameInfo,

@@ -33,7 +33,7 @@ struct CategorySectionView: View {
                 AnyView(
                     VersionGroupedView(
                         items: items,
-                        selectedItems: $selectedItems,
+                        selectedItems: selectedItems,
                     ) { itemId in
                         toggleSelection(for: itemId)
                     }

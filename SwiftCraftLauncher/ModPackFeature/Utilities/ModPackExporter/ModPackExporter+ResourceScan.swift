@@ -10,34 +10,32 @@ import Foundation
 extension ModPackExporter {
     /// The result of processing a single selected resource during export.
     struct SelectedResourceProcessResult {
-        let indexFile: ModrinthIndexFile?
-        let curseForgeFile: CurseForgeManifestBuilder.ManifestFile?
-        let curseForgeModListItem: CurseForgeModListItem?
-        let shouldCopyToOverrides: Bool
+        enum Outcome {
+            case indexed(ModrinthIndexFile)
+            case curseForge(file: CurseForgeManifestBuilder.ManifestFile, listItem: CurseForgeModListItem)
+            case copy
+            case cancelled
+        }
+
         let sourceFile: URL
         let relativePath: String
+        let outcome: Outcome
     }
 
-    /// Creates temporary export directories including overrides subdirectories.
+    /// Creates the temporary export directory and its overrides root.
     /// - Returns: A tuple of the temp directory and overrides directory.
     static func prepareDirectories() throws -> (tempDir: URL, overridesDir: URL) {
         let tempDir = try createTempDirectory()
         let overridesDir = tempDir.appendingPathComponent("overrides")
         try FileManager.default.createDirectory(at: overridesDir, withIntermediateDirectories: true)
-
-        for resourceType in ResourceType.allCases {
-            let subDir = overridesDir.appendingPathComponent(resourceType.overridesSubdirectory)
-            try FileManager.default.createDirectory(at: subDir, withIntermediateDirectories: true)
-        }
-
         return (tempDir, overridesDir)
     }
 
     /// Scans selected resources and categorizes them by export format.
     static func identifySelectedResources(
-        gameInfo: GameVersionInfo,
-        selectedFiles: [URL],
-        totalResources: Int,
+        gameDirectory: URL,
+        filesToScan: [URL],
+        filesOutsideScanScope: [URL],
         exportFormat: ModPackExportFormat,
         progressUpdater: ProgressUpdater,
         progressCallback: (@Sendable (ExportProgress) -> Void)?,
@@ -45,19 +43,15 @@ extension ModPackExporter {
         var indexFiles: [ModrinthIndexFile] = []
         var curseForgeFiles: [CurseForgeManifestBuilder.ManifestFile] = []
         var curseForgeModListItems: [CurseForgeModListItem] = []
+        // Starts with files outside the four scanned folders; scanned files that
+        // cannot be identified are appended below, so the copy total is exactly
+        // "other files + scan failures".
         var filesToCopy: [(file: URL, relativePath: String)] = []
 
-        let gameDirectory = AppPaths.profileDirectory(gameName: gameInfo.gameName)
         let processedCounter = ProcessedCounter()
+        let scanTotal = max(filesToScan.count, 1)
 
-        let shouldScan: (URL) -> Bool = switch exportFormat {
-        case .modrinth:
-            { shouldScanForModrinth($0, gameDirectory: gameDirectory) }
-        case .curseforge:
-            { shouldScanForCurseForge($0, gameDirectory: gameDirectory) }
-        }
-
-        for file in selectedFiles where !shouldScan(file) {
+        for file in filesOutsideScanScope {
             if Task.isCancelled {
                 break
             }
@@ -66,17 +60,19 @@ extension ModPackExporter {
         }
 
         return await withTaskGroup(of: SelectedResourceProcessResult.self) { group in
-            for file in selectedFiles where shouldScan(file) {
+            let semaphore = AsyncSemaphore(value: maxConcurrentExportOperations)
+
+            for file in filesToScan {
                 group.addTask {
-                    let relativePath = inferOverridesSubdirectory(for: file, gameDirectory: gameDirectory)
+                    await semaphore.wait()
+                    defer { Task { await semaphore.signal() } }
+
+                    let relativePath = makeRelativePath(for: file, gameDirectory: gameDirectory)
                     if Task.isCancelled {
                         return SelectedResourceProcessResult(
-                            indexFile: nil,
-                            curseForgeFile: nil,
-                            curseForgeModListItem: nil,
-                            shouldCopyToOverrides: false,
                             sourceFile: file,
                             relativePath: relativePath,
+                            outcome: .cancelled,
                         )
                     }
                     let result = await identifyResourceByFormat(
@@ -87,7 +83,6 @@ extension ModPackExporter {
                     )
 
                     let processed = await processedCounter.increment()
-                    let scanTotal = max(totalResources, 1)
                     let updatedProgress = await progressUpdater.advanceScanProgress(
                         processed: processed,
                         total: scanTotal,
@@ -100,23 +95,28 @@ extension ModPackExporter {
             }
 
             for await result in group {
-                if let indexFile = result.indexFile {
+                switch result.outcome {
+                case let .indexed(indexFile):
                     indexFiles.append(indexFile)
-                }
-                if let curseForgeFile = result.curseForgeFile {
-                    curseForgeFiles.append(curseForgeFile)
-                    if let modListItem = result.curseForgeModListItem {
-                        curseForgeModListItems.append(modListItem)
-                    }
-                } else if result.shouldCopyToOverrides {
+                case let .curseForge(file, listItem):
+                    curseForgeFiles.append(file)
+                    curseForgeModListItems.append(listItem)
+                case .copy:
                     filesToCopy.append((file: result.sourceFile, relativePath: result.relativePath))
+                case .cancelled:
+                    break
                 }
             }
 
+            let manifest: ModPackManifestData = switch exportFormat {
+            case .modrinth:
+                .modrinth(indexFiles)
+            case .curseforge:
+                .curseForge(files: curseForgeFiles, modListItems: curseForgeModListItems)
+            }
+
             return SelectedResourcesResult(
-                indexFiles: indexFiles,
-                curseForgeFiles: curseForgeFiles,
-                curseForgeModListItems: curseForgeModListItems,
+                manifest: manifest,
                 filesToCopy: filesToCopy,
             )
         }
@@ -140,52 +140,26 @@ extension ModPackExporter {
         }
     }
 
-    static func inferOverridesSubdirectory(for file: URL, gameDirectory: URL) -> String {
-        guard let topLevel = topLevelDirectoryName(of: file, gameDirectory: gameDirectory) else {
-            return makeRelativePath(for: file, gameDirectory: gameDirectory)
-        }
-
-        let lowercasedTopLevel = topLevel.lowercased()
-
-        if lowercasedTopLevel == AppConstants.DirectoryNames.datapacks.lowercased() {
-            return AppConstants.DirectoryNames.datapacks
-        }
-        if lowercasedTopLevel == AppConstants.DirectoryNames.shaderpacks.lowercased() {
-            return AppConstants.DirectoryNames.shaderpacks
-        }
-        if lowercasedTopLevel == AppConstants.DirectoryNames.resourcepacks.lowercased() {
-            return AppConstants.DirectoryNames.resourcepacks
-        }
-        if lowercasedTopLevel == AppConstants.DirectoryNames.mods.lowercased() {
-            return AppConstants.DirectoryNames.mods
-        }
-
-        return makeRelativePath(for: file, gameDirectory: gameDirectory)
-    }
-
     static func topLevelDirectoryName(of file: URL, gameDirectory: URL) -> String? {
-        let filePath = file.standardizedFileURL.path
-        let rootPath = gameDirectory.standardizedFileURL.path
-
-        guard filePath.hasPrefix(rootPath) else {
+        guard let relativePath = normalizedRelativePath(of: file, gameDirectory: gameDirectory) else {
             return nil
         }
 
-        let relative = String(filePath.dropFirst(rootPath.count))
-        let trimmed = relative.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        guard !trimmed.isEmpty else {
-            return nil
+        if let firstSlash = relativePath.firstIndex(of: "/") {
+            return String(relativePath[..<firstSlash])
         }
-
-        if let firstSlash = trimmed.firstIndex(of: "/") {
-            return String(trimmed[..<firstSlash])
-        } else {
-            return trimmed
-        }
+        return relativePath
     }
 
-    static func shouldScanForModrinth(_ file: URL, gameDirectory: URL) -> Bool {
+    static func shouldScanResource(_ file: URL, gameDirectory: URL) -> Bool {
         guard let topLevel = topLevelDirectoryName(of: file, gameDirectory: gameDirectory)?.lowercased() else {
+            return false
+        }
+
+        let fileExtension = file.pathExtension.lowercased()
+        guard fileExtension == AppConstants.FileExtensions.jar
+            || fileExtension == AppConstants.FileExtensions.zip
+        else {
             return false
         }
 
@@ -195,29 +169,28 @@ extension ModPackExporter {
             || topLevel == AppConstants.DirectoryNames.mods.lowercased()
     }
 
-    static func shouldScanForCurseForge(_ file: URL, gameDirectory: URL) -> Bool {
-        guard let topLevel = topLevelDirectoryName(of: file, gameDirectory: gameDirectory)?.lowercased() else {
-            return false
+    static func makeRelativePath(for file: URL, gameDirectory: URL) -> String {
+        guard let relativePath = normalizedRelativePath(of: file, gameDirectory: gameDirectory) else {
+            return ""
         }
-        return topLevel == AppConstants.DirectoryNames.mods.lowercased()
-            && file.pathExtension.lowercased() == AppConstants.FileExtensions.jar
+
+        if let lastSlash = relativePath.lastIndex(of: "/") {
+            return String(relativePath[..<lastSlash])
+        }
+        return ""
     }
 
-    static func makeRelativePath(for file: URL, gameDirectory: URL) -> String {
+    private static func normalizedRelativePath(of file: URL, gameDirectory: URL) -> String? {
         let filePath = file.standardizedFileURL.path
         let rootPath = gameDirectory.standardizedFileURL.path
 
-        if filePath.hasPrefix(rootPath) {
-            let relative = String(filePath.dropFirst(rootPath.count))
-            let trimmed = relative.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-            if let lastSlash = trimmed.lastIndex(of: "/") {
-                return String(trimmed[..<lastSlash])
-            } else {
-                return ""
-            }
-        } else {
-            return ""
+        guard filePath.hasPrefix(rootPath) else {
+            return nil
         }
+
+        let relative = String(filePath.dropFirst(rootPath.count))
+        let trimmed = relative.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        return trimmed.isEmpty ? nil : trimmed
     }
 
     static func resolveSelectedFiles(from urls: [URL]) -> [URL] {

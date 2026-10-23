@@ -49,13 +49,9 @@ struct AddPlayerToolbarButton: View {
     private var playerListViewModel
 
     @State private var showSheet = false
-    @State private var playerName = ""
-    @State private var isPlayerNameValid = false
 
     var body: some View {
         Button {
-            playerName = ""
-            isPlayerNameValid = false
             showSheet = true
         } label: {
             Label("player.add".localized(), systemImage: "person.badge.plus")
@@ -63,13 +59,6 @@ struct AddPlayerToolbarButton: View {
         .help("player.add".localized())
         .sheet(isPresented: $showSheet) {
             AddPlayerSheetView(
-                playerName: $playerName,
-                isPlayerNameValid: $isPlayerNameValid,
-                onAdd: {
-                    _ = playerListViewModel.addPlayer(name: playerName)
-                    isPlayerNameValid = true
-                    showSheet = false
-                },
                 onCancel: {
                     delayedDismiss($showSheet) {
                         container.system.minecraftAuthService.clearAuthenticationData()
@@ -91,7 +80,6 @@ struct AddPlayerToolbarButton: View {
                         container.system.yggdrasilAuthService.logout()
                     }
                 },
-                playerListViewModel: playerListViewModel,
             )
         }
     }

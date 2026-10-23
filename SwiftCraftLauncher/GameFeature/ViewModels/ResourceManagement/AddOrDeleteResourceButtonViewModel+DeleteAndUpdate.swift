@@ -13,7 +13,7 @@ extension AddOrDeleteResourceButtonViewModel {
         deleteFile(fileName: effectiveFileName)
     }
 
-    func deleteFile(fileName: String?, isUpdate: Bool = false) {
+    func deleteFile(fileName: String?) {
         let queryLowercased = query.lowercased()
 
         if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
@@ -54,9 +54,6 @@ extension AddOrDeleteResourceButtonViewModel {
         let fileURL = resourceDir.appendingPathComponent(fileName)
         Task {
             await performDelete(fileURL: fileURL)
-            if !isUpdate {
-                onResourceChanged?()
-            }
         }
     }
 
@@ -70,7 +67,7 @@ extension AddOrDeleteResourceButtonViewModel {
         let oldF = oldFileNameForUpdate
 
         if let old = oldF {
-            deleteFile(fileName: old, isUpdate: true)
+            deleteFile(fileName: old)
             oldFileNameForUpdate = nil
         }
 

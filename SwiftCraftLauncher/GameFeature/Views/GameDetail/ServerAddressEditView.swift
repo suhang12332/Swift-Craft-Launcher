@@ -71,6 +71,9 @@ struct ServerAddressEditView: View {
                 )
             },
         )
+        .onDisappear {
+            actionViewModel.cancelInFlight()
+        }
     }
 
     private var headerView: some View {

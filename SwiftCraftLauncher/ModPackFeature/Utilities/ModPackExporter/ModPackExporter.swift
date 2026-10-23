@@ -42,7 +42,11 @@ enum ModPackExporter {
         do {
             try Task.checkCancellation()
 
-            progressCallback?(ExportProgress())
+            // The identifier cache is only useful for the duration of one export.
+            // Clearing it afterwards prevents memory from growing across exports.
+            defer {
+                Task { await ModrinthResourceIdentifier.clearCache() }
+            }
 
             let (tempDir, overridesDir) = try prepareDirectories()
             defer {
@@ -53,13 +57,19 @@ enum ModPackExporter {
 
             let resolvedFiles = resolveSelectedFiles(from: selectedFiles)
             let gameDirectory = AppPaths.profileDirectory(gameName: gameInfo.gameName)
-            let shouldScan: (URL) -> Bool = switch exportFormat {
-            case .modrinth:
-                { shouldScanForModrinth($0, gameDirectory: gameDirectory) }
-            case .curseforge:
-                { shouldScanForCurseForge($0, gameDirectory: gameDirectory) }
+
+            // Only the four resource folders participate in scanning. Every other
+            // selected file is copied to overrides and must not affect scan totals.
+            var filesToScan: [URL] = []
+            var filesOutsideScanScope: [URL] = []
+            for file in resolvedFiles {
+                if shouldScanResource(file, gameDirectory: gameDirectory) {
+                    filesToScan.append(file)
+                } else {
+                    filesOutsideScanScope.append(file)
+                }
             }
-            let totalScanResources = resolvedFiles.filter(shouldScan).count
+            let totalScanResources = filesToScan.count
             var initialProgress = ExportProgress()
             if totalScanResources > 0 {
                 initialProgress.scanProgress = ExportProgress.ProgressItem(
@@ -75,9 +85,9 @@ enum ModPackExporter {
             let progressUpdater = ProgressUpdater()
 
             let selectedResourcesResult = await identifySelectedResources(
-                gameInfo: gameInfo,
-                selectedFiles: resolvedFiles,
-                totalResources: totalScanResources,
+                gameDirectory: gameDirectory,
+                filesToScan: filesToScan,
+                filesOutsideScanScope: filesOutsideScanScope,
                 exportFormat: exportFormat,
                 progressUpdater: progressUpdater,
                 progressCallback: progressCallback,
@@ -85,14 +95,11 @@ enum ModPackExporter {
 
             try Task.checkCancellation()
 
-            let copyCounter = CopyCounter(total: selectedResourcesResult.filesToCopy.count)
-
             try await copyFiles(
                 params: CopyFilesParams(
                     filesToCopy: selectedResourcesResult.filesToCopy,
                     overridesDir: overridesDir,
                 ),
-                copyCounter: copyCounter,
                 progressUpdater: progressUpdater,
                 progressCallback: progressCallback,
             )
@@ -105,15 +112,10 @@ enum ModPackExporter {
                     modPackName: modPackName,
                     modPackVersion: modPackVersion,
                     summary: summary,
-                    indexFiles: selectedResourcesResult.indexFiles,
-                    curseForgeFiles: selectedResourcesResult.curseForgeFiles,
-                    curseForgeModListItems: selectedResourcesResult.curseForgeModListItems,
-                    exportFormat: exportFormat,
+                    manifest: selectedResourcesResult.manifest,
                 ),
                 tempDir: tempDir,
                 outputPath: outputPath,
-                progressUpdater: progressUpdater,
-                progressCallback: progressCallback,
             )
 
             return ExportResult(
@@ -142,11 +144,15 @@ enum ModPackExporter {
     }
 
     static func createTempDirectory() throws -> URL {
-        let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("modpack_export")
-            .appendingPathComponent(UUID().uuidString)
-        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        return tempDir
+        try TemporaryDirectory(purpose: .modpackExport).url
+    }
+
+    enum ModPackManifestData {
+        case modrinth([ModrinthIndexFile])
+        case curseForge(
+            files: [CurseForgeManifestBuilder.ManifestFile],
+            modListItems: [CurseForgeModListItem],
+        )
     }
 
     struct IndexBuildParams {
@@ -154,24 +160,16 @@ enum ModPackExporter {
         let modPackName: String
         let modPackVersion: String
         let summary: String?
-        let indexFiles: [ModrinthIndexFile]
-        let curseForgeFiles: [CurseForgeManifestBuilder.ManifestFile]
-        let curseForgeModListItems: [CurseForgeModListItem]
-        let exportFormat: ModPackExportFormat
+        let manifest: ModPackManifestData
     }
 
     struct CurseForgeModListItem {
         let projectID: Int
-        let fileID: Int
         let fileName: String
-        let projectName: String?
-        let authorsText: String?
     }
 
     struct SelectedResourcesResult {
-        let indexFiles: [ModrinthIndexFile]
-        let curseForgeFiles: [CurseForgeManifestBuilder.ManifestFile]
-        let curseForgeModListItems: [CurseForgeModListItem]
+        let manifest: ModPackManifestData
         let filesToCopy: [(file: URL, relativePath: String)]
     }
 
@@ -179,4 +177,7 @@ enum ModPackExporter {
         let filesToCopy: [(file: URL, relativePath: String)]
         let overridesDir: URL
     }
+
+    /// Caps concurrent export work so memory and thread usage stay predictable.
+    static let maxConcurrentExportOperations = 8
 }

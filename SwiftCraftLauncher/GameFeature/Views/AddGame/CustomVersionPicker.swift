@@ -96,18 +96,7 @@ struct CustomVersionPicker: View {
     private var versionPopoverContent: some View {
         VersionGroupedView(
             items: versionItems,
-            selectedItem: Binding<String?>(
-                get: { selected.isEmpty ? nil : selected },
-                set: { newValue in
-                    if let newValue {
-                        selected = newValue
-                        showMenu = false
-                        Task {
-                            time = await onVersionSelected(newValue)
-                        }
-                    }
-                },
-            ),
+            selectedItem: selected.isEmpty ? nil : selected,
         ) { version in
             selected = version
             showMenu = false

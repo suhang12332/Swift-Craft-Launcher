@@ -45,6 +45,14 @@ extension FailedResourcesPresenting {
         DIContainer.shared.ui.windowManager.openWindow(id: .failedResources)
     }
 
+    func abortFailedResources() {
+        guard let continuation = failedResourcesContinuation else { return }
+        failedResources = []
+        failedResourcesContinuation = nil
+        continuation(false)
+        DIContainer.shared.ui.windowManager.closeWindow(id: .failedResources)
+    }
+
     private func finishFailedResources(allHandled: Bool) {
         failedResources = []
         failedResourcesContinuation?(allHandled)

@@ -26,7 +26,16 @@ public struct SidebarView: View {
     private var openSettings
 
     public var body: some View {
-        List(selection: detailState.selectedItemOptionalBinding) {
+        @Bindable var detailState = detailState
+        let selection = Binding<SidebarItem?>(
+            get: { detailState.selectedItem },
+            set: { newValue in
+                if let newValue {
+                    detailState.selectedItem = newValue
+                }
+            },
+        )
+        List(selection: selection) {
             Section(header: Text("sidebar.resources.title".localized())) {
                 ForEach(ResourceType.allCases, id: \.self) { type in
                     NavigationLink(value: SidebarItem.resource(type)) {

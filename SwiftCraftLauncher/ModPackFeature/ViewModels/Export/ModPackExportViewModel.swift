@@ -21,7 +21,6 @@ class ModPackExportViewModel {
 
     var exportState: ExportState = .idle
     var exportProgress = ModPackExporter.ExportProgress()
-    var modPackName: String = ""
     var modPackVersion: String = "1.0.0"
     var summary: String = ""
     var exportError: String?
@@ -30,14 +29,19 @@ class ModPackExportViewModel {
     var currentExportFormat: ModPackExportFormat = .modrinth
 
     private var exportTask: Task<Void, Never>?
+    private var exportRunID = UUID()
     private var hasShownSaveDialog = false
 
     var isExporting: Bool {
         exportState == .exporting
     }
 
+    var completedExportPath: URL? {
+        exportState == .completed ? tempExportPath : nil
+    }
+
     var shouldShowSaveDialog: Bool {
-        tempExportPath != nil && !hasShownSaveDialog
+        completedExportPath != nil && !hasShownSaveDialog
     }
 
     /// Starts the export for the given game asynchronously.
@@ -45,16 +49,29 @@ class ModPackExportViewModel {
     func startExport(gameInfo: GameVersionInfo) {
         guard exportState == .idle else { return }
 
-        modPackName = gameInfo.gameName
+        cleanupTempFile()
+
+        let runID = UUID()
+        exportRunID = runID
 
         exportState = .exporting
         exportProgress = ModPackExporter.ExportProgress()
         exportError = nil
-        tempExportPath = nil
         hasShownSaveDialog = false
 
-        let tempPath = FileManager.default.temporaryDirectory
+        let runDirectory: URL
+        do {
+            runDirectory = try ModPackExporter.createTempDirectory()
+        } catch {
+            exportState = .idle
+            exportError = error.localizedDescription
+            return
+        }
+
+        let tempPath = runDirectory
             .appendingPathComponent("\(gameInfo.gameName).\(currentExportFormat.fileExtension)")
+
+        tempExportPath = tempPath
 
         exportTask = Task {
             let result = await ModPackExporter.exportModPack(
@@ -67,17 +84,18 @@ class ModPackExportViewModel {
                 selectedFiles: selectedFileURLs,
             ) { progress in
                 Task { @MainActor in
+                    guard self.exportRunID == runID else { return }
                     self.exportProgress = progress
                 }
             }
 
             await MainActor.run {
-                if Task.isCancelled || result.error is CancellationError || result.message == "Cancelled" {
+                guard self.exportRunID == runID else { return }
+                if Task.isCancelled || result.error is CancellationError {
                     return
                 }
                 if result.success {
                     self.exportState = .completed
-                    self.tempExportPath = result.outputPath
                     AppLog.modPack.info("Modpack exported to temp location successfully: \(result.outputPath?.path ?? "unknown path")")
                 } else {
                     self.cleanupTempFile()
@@ -90,14 +108,13 @@ class ModPackExportViewModel {
         }
     }
 
-    /// Cancels the current export and cleans up.
+    /// Cancels the current export and removes all transient export state.
+    /// Form values such as version, summary, format, and file selection are kept.
     func cancelExport() {
+        exportRunID = UUID()
         exportTask?.cancel()
-        cleanupTempFile()
-        exportState = .idle
-        exportProgress = ModPackExporter.ExportProgress()
-        exportError = nil
-        hasShownSaveDialog = false
+        exportTask = nil
+        finishSaving(error: nil)
     }
 
     /// Records that the save dialog has been shown.
@@ -107,10 +124,7 @@ class ModPackExportViewModel {
 
     /// Handles a successful save operation and resets state.
     func handleSaveSuccess() {
-        cleanupTempFile()
-        hasShownSaveDialog = false
-        exportState = .idle
-        exportProgress = ModPackExporter.ExportProgress()
+        finishSaving(error: nil)
     }
 
     /// Handles a save failure and routes the error through the global error handler.
@@ -121,70 +135,63 @@ class ModPackExportViewModel {
             level: .silent,
             message: error,
         ))
+        finishSaving(error: error)
+    }
+
+    /// Handles a save cancellation by discarding the prepared archive so the
+    /// next Export action starts a fresh export.
+    func handleSaveCancellation() {
+        finishSaving(error: nil)
+    }
+
+    private func finishSaving(error: String?) {
         cleanupTempFile()
         hasShownSaveDialog = false
+        exportState = .idle
+        exportProgress = ModPackExporter.ExportProgress()
+        exportError = error
     }
 
     /// Cleans up all export data and resets to the idle state.
     func cleanupAllData() {
-        exportTask?.cancel()
-        exportTask = nil
-        cleanupTempFile()
-        cleanupTempDirectories()
-        exportState = .idle
-        exportProgress = ModPackExporter.ExportProgress()
-        exportError = nil
-        tempExportPath = nil
-        hasShownSaveDialog = false
-        modPackName = ""
-        modPackVersion = "1.0.0"
-        summary = ""
-        currentExportFormat = DIContainer.shared.ui.gameSettingsManager.defaultModPackExportFormat
+        resetExportState(resetFormat: true)
     }
 
-    /// Resets the view model back to its initial state for the given game.
-    /// - Parameter gameInfo: The game version to reset for.
-    func resetToInitial(gameInfo: GameVersionInfo) {
-        exportTask?.cancel()
-        exportTask = nil
-        cleanupTempFile()
-        cleanupTempDirectories()
-
-        exportState = .idle
-        exportProgress = ModPackExporter.ExportProgress()
-        exportError = nil
-        tempExportPath = nil
-        hasShownSaveDialog = false
-
-        modPackName = gameInfo.gameName
+    private func resetExportState(resetFormat: Bool) {
+        cancelExport()
         modPackVersion = "1.0.0"
         summary = ""
         selectedFileURLs = []
+        if resetFormat {
+            currentExportFormat = DIContainer.shared.ui.gameSettingsManager.defaultModPackExportFormat
+        }
     }
 
     private func cleanupTempFile() {
         guard let tempPath = tempExportPath else { return }
-        do {
-            if FileManager.default.fileExists(atPath: tempPath.path) {
-                try FileManager.default.removeItem(at: tempPath)
-                AppLog.modPack.info("Cleaned up temp file: \(tempPath.path)")
-            }
-        } catch {
-            AppLog.modPack.error("Failed to clean up temp file: \(error.localizedDescription)")
-        }
-        tempExportPath = nil
-    }
 
-    private func cleanupTempDirectories() {
-        let exportDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("modpack_export")
-        guard FileManager.default.fileExists(atPath: exportDir.path) else { return }
-        do {
-            try FileManager.default.removeItem(at: exportDir)
-            AppLog.modPack.info("Cleaned up temp export directory: \(exportDir.path)")
-        } catch {
-            AppLog.modPack.error("Failed to clean up temp export directory: \(error.localizedDescription)")
+        let fileManager = FileManager.default
+        let runDirectory = tempPath.deletingLastPathComponent()
+
+        if fileManager.fileExists(atPath: tempPath.path) {
+            do {
+                try fileManager.removeItem(at: tempPath)
+                AppLog.modPack.info("Cleaned up temp file: \(tempPath.path)")
+            } catch {
+                AppLog.modPack.error("Failed to clean up temp file: \(error.localizedDescription)")
+            }
         }
+
+        if fileManager.fileExists(atPath: runDirectory.path) {
+            do {
+                try fileManager.removeItem(at: runDirectory)
+                AppLog.modPack.info("Cleaned up temp export directory: \(runDirectory.path)")
+            } catch {
+                AppLog.modPack.error("Failed to clean up temp export directory: \(error.localizedDescription)")
+            }
+        }
+
+        tempExportPath = nil
     }
 
     init() {

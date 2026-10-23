@@ -11,7 +11,6 @@ import Foundation
 enum ResourceProcessor {
     struct ProcessResult {
         let indexFile: ModrinthIndexFile?
-        let shouldCopyToOverrides: Bool
         let sourceFile: URL
         let relativePath: String
     }
@@ -38,7 +37,6 @@ enum ResourceProcessor {
         if let indexFile {
             return ProcessResult(
                 indexFile: indexFile,
-                shouldCopyToOverrides: false,
                 sourceFile: file,
                 relativePath: relativePath,
             )
@@ -46,7 +44,6 @@ enum ResourceProcessor {
 
         return ProcessResult(
             indexFile: nil,
-            shouldCopyToOverrides: true,
             sourceFile: file,
             relativePath: relativePath,
         )
@@ -131,6 +128,11 @@ enum ModrinthResourceIdentifier {
 
     private static let infoCache = ModrinthInfoCache()
 
+    /// Clears cached lookups, releasing memory retained from previous exports.
+    static func clearCache() async {
+        await infoCache.clear()
+    }
+
     /// Looks up Modrinth information for a mod file by its SHA-1 hash.
     ///
     /// Results are cached in memory to avoid redundant network requests.
@@ -182,5 +184,9 @@ private actor ModrinthInfoCache {
 
     func set(info: ModrinthResourceIdentifier.ModrinthModInfo, for hash: String) {
         cache[hash] = info
+    }
+
+    func clear() {
+        cache.removeAll(keepingCapacity: false)
     }
 }

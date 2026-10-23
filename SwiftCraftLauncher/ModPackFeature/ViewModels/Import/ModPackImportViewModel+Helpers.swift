@@ -8,16 +8,6 @@
 import Foundation
 
 extension ModPackImportViewModel {
-    func createProfileDirectories(for gameName: String) async -> Bool {
-        await MinecraftFileManager.createProfileDirectories(for: gameName)
-    }
-
-    func calculateInstallationCounts(
-        from indexInfo: ModrinthIndexInfo,
-    ) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
-        MinecraftFileManager.calculateInstallationCounts(from: indexInfo)
-    }
-
     var shouldShowProgress: Bool {
         gameSetupService.downloadState.isDownloading
             || modPackViewModel.modPackInstallState.isInstalling

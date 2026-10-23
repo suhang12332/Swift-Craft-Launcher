@@ -47,7 +47,7 @@ struct GameLocalResourceListContent: View {
                         newHash: newHash,
                     )
                 },
-                scannedDetailIds: .constant([]),
+                scannedDetailIds: [],
             )
             .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
             .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))

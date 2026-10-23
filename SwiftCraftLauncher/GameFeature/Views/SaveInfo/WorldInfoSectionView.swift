@@ -40,6 +40,12 @@ struct WorldInfoSectionView: View {
                 WorldDetailSheetView(viewModel: viewModel)
             }
         }
+        .onDisappear {
+            loadTask?.cancel()
+            loadTask = nil
+            currentLoadToken = nil
+            preparedViewModel = nil
+        }
     }
 
     private func worldChip(for world: WorldInfo) -> some View {
@@ -53,7 +59,7 @@ struct WorldInfoSectionView: View {
                 loadTask = Task {
                     let viewModel = WorldDetailSheetViewModel(world: selected, gameName: gameName)
                     await viewModel.loadMetadata()
-                    guard currentLoadToken == token else { return }
+                    guard !Task.isCancelled, currentLoadToken == token else { return }
                     preparedViewModel = viewModel
                     currentLoadToken = nil
                 }

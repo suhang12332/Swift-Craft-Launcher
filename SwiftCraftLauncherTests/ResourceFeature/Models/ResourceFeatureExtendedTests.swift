@@ -49,7 +49,7 @@ final class ResourceFeatureExtendedTests: XCTestCase {
     }
 
     func testModrinthConstants_UIConstants() {
-        XCTAssertEqual(ModrinthConstants.UIConstants.pageSize, 20)
+        XCTAssertEqual(SearchPagination.pageSize, 20)
         XCTAssertEqual(ModrinthConstants.UIConstants.maxTags, 3)
         XCTAssertEqual(ModrinthConstants.UIConstants.descriptionLineLimit, 1)
     }

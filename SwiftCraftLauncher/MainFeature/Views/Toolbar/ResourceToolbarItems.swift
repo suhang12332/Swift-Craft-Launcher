@@ -119,6 +119,7 @@ struct ResourceToolbarItems: View {
     }
 
     var body: some View {
+        @Bindable var detailState = detailState
         if detailState.selectedProjectId != nil {
             Button {
                 if let id = detailState.gameId {
@@ -139,7 +140,7 @@ struct ResourceToolbarItems: View {
                 Label("resource.add".localized(), systemImage: "arrow.down.circle")
             }
             .help("resource.add".localized())
-            .sheet(isPresented: detailState.showInstallSheetBinding) {
+            .sheet(isPresented: $detailState.showInstallSheet) {
                 if let project = detailState.currentProject,
                    let detail = detailState.loadedProjectDetail {
                     if detailState.gameResourcesType == ResourceType.modpack.rawValue {
@@ -153,7 +154,7 @@ struct ResourceToolbarItems: View {
                         GlobalResourceSheet(
                             project: project,
                             resourceType: detailState.gameResourcesType,
-                            isPresented: detailState.showInstallSheetBinding,
+                            isPresented: $detailState.showInstallSheet,
                             preloadedDetail: detail,
                             preloadedCompatibleGames: detailState.compatibleGames,
                         )

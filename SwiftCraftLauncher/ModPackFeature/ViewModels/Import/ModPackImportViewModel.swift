@@ -16,11 +16,8 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     var extractedModPackPath: URL?
     var modPackIndexInfo: ModrinthIndexInfo?
     var isProcessingModPack = false
-    var failedResources: [FailedModPackResource] = []
-    var failedResourcesContinuation: ((Bool) -> Void)?
 
     let onProcessingStateChanged: (Bool) -> Void
-    var gameRepository: GameRepository?
 
     init(
         configuration: GameFormConfiguration,
@@ -48,59 +45,56 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         updateParentState()
     }
 
-    override func performConfirmAction() async {
-        startDownloadTask {
-            await self.importModPack()
-        }
-    }
-
-    override func handleCancel() {
-        if computeIsDownloading() {
-            downloadTask?.cancel()
-            downloadTask = nil
-            gameSetupService.downloadState.cancel()
-            modPackViewModel.modPackInstallState.reset()
-            isProcessingModPack = false
-            onProcessingStateChanged(false)
-
-            Task {
-                await performCancelCleanup()
-            }
-        } else {
-            configuration.actions.onCancel()
-        }
+    override func performInstallation() async {
+        await importModPack()
     }
 
     override func performCancelCleanup() async {
-        let gameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
+        modPackViewModel.modPackInstallState.reset()
+        isProcessingModPack = false
+        onProcessingStateChanged(false)
+        modPackViewModel.clearParsedIndexInfo()
+        modPackViewModel.abortFailedResources()
+
+        await removeTemporaryArtifacts()
+
+        await super.performCancelCleanup()
+    }
+
+    /// Clears preview state and temporary files when the sheet closes without
+    /// an active installation. An already installed game is left untouched.
+    func cleanupPreviewState() async {
+        modPackViewModel.modPackInstallState.reset()
+        modPackViewModel.clearParsedIndexInfo()
+        modPackViewModel.abortFailedResources()
+        isProcessingModPack = false
+        onProcessingStateChanged(false)
+
+        await removeTemporaryArtifacts()
+    }
+
+    /// Deletes the copied archive and the extracted preview directory.
+    private func removeTemporaryArtifacts() async {
         let extractedPath = extractedModPackPath
+        let archiveURL = selectedModPackFile
+
+        extractedModPackPath = nil
+        selectedModPackFile = nil
+        modPackIndexInfo = nil
 
         await Task.detached(priority: .utility) {
-            let fm = FileManager.default
-            if !gameName.isEmpty {
-                let profileDir = AppPaths.profileDirectory(gameName: gameName)
-                if fm.fileExists(atPath: profileDir.path) {
-                    do {
-                        try fm.removeItem(at: profileDir)
-                        AppLog.modPack.info("Deleted cancelled ModPack game folder: \(profileDir.path)")
-                    } catch {
-                        AppLog.modPack.error("Failed to delete ModPack game folder: \(error.localizedDescription)")
-                    }
-                }
+            let fileManager = FileManager.default
+
+            if let extractedPath {
+                try? fileManager.removeItem(at: extractedPath)
             }
-            if let path = extractedPath, fm.fileExists(atPath: path.path) {
-                do {
-                    try fm.removeItem(at: path)
-                    AppLog.modPack.info("Deleted ModPack temp extracted files: \(path.path)")
-                } catch {
-                    AppLog.modPack.error("Failed to delete ModPack temp files: \(error.localizedDescription)")
-                }
+
+            // The archive always lives in a launcher temp purpose directory;
+            // delete its per-import folder as well.
+            if let archiveURL, TemporaryFile.isTemporary(archiveURL) {
+                try? fileManager.removeItem(at: archiveURL.deletingLastPathComponent())
             }
         }.value
-
-        gameSetupService.downloadState.reset()
-        modPackViewModel.modPackInstallState.reset()
-        configuration.actions.onCancel()
     }
 
     override func computeIsDownloading() -> Bool {
@@ -119,6 +113,19 @@ class ModPackImportViewModel: BaseGameFormViewModel {
 }
 
 extension ModPackImportViewModel: FailedResourcesPresenting {
+    /// Failed resource state lives on the composed sheet view model so that
+    /// `abortFailedResources()` resumes the continuation the coordinator is
+    /// actually waiting on.
+    var failedResources: [FailedModPackResource] {
+        get { modPackViewModel.failedResources }
+        set { modPackViewModel.failedResources = newValue }
+    }
+
+    var failedResourcesContinuation: ((Bool) -> Void)? {
+        get { modPackViewModel.failedResourcesContinuation }
+        set { modPackViewModel.failedResourcesContinuation = newValue }
+    }
+
     var modPackInstallState: ModPackInstallState {
         modPackViewModel.modPackInstallState
     }

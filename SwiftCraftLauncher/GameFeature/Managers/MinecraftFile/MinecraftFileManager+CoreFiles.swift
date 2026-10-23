@@ -199,14 +199,10 @@ extension MinecraftFileManager {
         excludePatterns: [String],
     ) async throws {
         let fm = FileManager.default
-        let tempDir = fm.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString)
+        let temporary = try TemporaryDirectory(purpose: .minecraftNativeExtraction)
+        defer { temporary.remove() }
 
-        try fm.createDirectory(at: tempDir, withIntermediateDirectories: true)
-
-        defer {
-            try? fm.removeItem(at: tempDir)
-        }
+        let tempDir = temporary.url
 
         try fm.unzipItem(at: jarURL, to: tempDir)
 

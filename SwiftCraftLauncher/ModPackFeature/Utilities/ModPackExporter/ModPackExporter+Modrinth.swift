@@ -19,13 +19,15 @@ extension ModPackExporter {
         relativePath: String,
     ) async -> SelectedResourceProcessResult {
         let result = await ResourceProcessor.identify(file: file, relativePath: relativePath)
+        let outcome: SelectedResourceProcessResult.Outcome = if let indexFile = result.indexFile {
+            .indexed(indexFile)
+        } else {
+            .copy
+        }
         return SelectedResourceProcessResult(
-            indexFile: result.indexFile,
-            curseForgeFile: nil,
-            curseForgeModListItem: nil,
-            shouldCopyToOverrides: result.shouldCopyToOverrides,
             sourceFile: result.sourceFile,
             relativePath: result.relativePath,
+            outcome: outcome,
         )
     }
 
@@ -33,10 +35,12 @@ extension ModPackExporter {
     ///
     /// - Parameters:
     ///   - params: The parameters used to build the index.
+    ///   - files: The indexed files.
     ///   - tempDir: The temporary directory for the export.
     /// - Returns: The list of filenames written to the temporary directory.
     static func writeModrinthManifest(
         params: IndexBuildParams,
+        files: [ModrinthIndexFile],
         tempDir: URL,
     ) async throws -> [String] {
         let indexJson = try await ModrinthIndexBuilder.build(
@@ -44,7 +48,7 @@ extension ModPackExporter {
             modPackName: params.modPackName,
             modPackVersion: params.modPackVersion,
             summary: params.summary,
-            files: params.indexFiles,
+            files: files,
         )
 
         let indexPath = tempDir.appendingPathComponent(AppConstants.modrinthIndexFileName)
