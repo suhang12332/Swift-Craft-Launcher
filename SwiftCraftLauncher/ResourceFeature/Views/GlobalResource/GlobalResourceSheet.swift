@@ -81,7 +81,6 @@ struct GlobalResourceSheet: View {
                         )
                         if let game = viewModel.selectedGame {
                             if resourceType != ResourceType.minecraftJavaServer.rawValue {
-                                spacerView()
                                 VersionPickerForSheet(
                                     project: project,
                                     resourceType: resourceType,

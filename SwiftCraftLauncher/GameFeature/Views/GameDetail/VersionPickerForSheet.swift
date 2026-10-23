@@ -23,6 +23,7 @@ struct VersionPickerForSheet: View {
         VStack {
             if !isLoading {
                 if !availableVersions.isEmpty {
+                    spacerView()
                     Text(project.title)
                         .font(.headline)
                         .frame(maxWidth: .infinity, alignment: .leading)

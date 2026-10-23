@@ -68,7 +68,7 @@ struct GameResourceInstallSheet: View {
                     VStack {
                         ModrinthProjectTitleView(
                             projectDetail: detail,
-                        ).padding(.bottom, 18)
+                        )
                         VersionPickerForSheet(
                             project: project,
                             resourceType: resourceType,
