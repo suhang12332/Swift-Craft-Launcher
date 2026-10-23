@@ -5,24 +5,14 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-// Tracks the loading and selection state of resource dependencies.
 import SwiftUI
-
-struct DependencyState {
-    var dependencies: [ModrinthProjectDetail] = []
-    var versions: [String: [ModrinthProjectDetailVersion]] = [:]
-    var selected: [String: ModrinthProjectDetailVersion?] = [:]
-    var isLoading = false
-}
 
 /// Displays a list of dependency version pickers for a resource.
 struct DependencySectionView: View {
     @Binding var state: DependencyState
 
     var body: some View {
-        if state.isLoading {
-            ProgressView().controlSize(.small)
-        } else if !state.dependencies.isEmpty {
+        if !state.dependencies.isEmpty {
             spacerView()
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(state.dependencies, id: \.id) { dep in

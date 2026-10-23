@@ -14,40 +14,40 @@ struct VersionPickerForSheet: View {
     let selectedGame: GameVersionInfo?
     @Binding var selectedVersion: ModrinthProjectDetailVersion?
     @Binding var availableVersions: [ModrinthProjectDetailVersion]
+    @Binding var isLoading: Bool
     @Binding var mainVersionId: String
     var onVersionChange: ((ModrinthProjectDetailVersion?) -> Void)?
-    @State private var isLoading = false
     @State private var error: GlobalError?
 
     var body: some View {
         VStack {
-            if isLoading {
-                ProgressView().controlSize(.small)
-            } else if !availableVersions.isEmpty {
-                Text(project.title)
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                CommonMenuPicker(
-                    selection: $selectedVersion,
-                ) {
-                    Text("global_resource.select_version".localized())
-                } content: {
-                    ForEach(availableVersions, id: \.id) { version in
-                        if resourceType == ResourceType.shader.rawValue {
-                            let loaders = version.loaders.joined(
-                                separator: ", ",
-                            )
-                            Text(version.name + loaders).tag(
-                                Optional(version),
-                            )
-                        } else {
-                            Text(version.name).tag(Optional(version))
+            if !isLoading {
+                if !availableVersions.isEmpty {
+                    Text(project.title)
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    CommonMenuPicker(
+                        selection: $selectedVersion,
+                    ) {
+                        Text("global_resource.select_version".localized())
+                    } content: {
+                        ForEach(availableVersions, id: \.id) { version in
+                            if resourceType == ResourceType.shader.rawValue {
+                                let loaders = version.loaders.joined(
+                                    separator: ", ",
+                                )
+                                Text(version.name + loaders).tag(
+                                    Optional(version),
+                                )
+                            } else {
+                                Text(version.name).tag(Optional(version))
+                            }
                         }
                     }
+                } else {
+                    Text("global_resource.no_version_available".localized())
+                        .foregroundColor(.secondary)
                 }
-            } else {
-                Text("global_resource.no_version_available".localized())
-                    .foregroundColor(.secondary)
             }
         }
         .onAppear(perform: loadVersions)

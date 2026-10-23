@@ -11,12 +11,8 @@ import SwiftUI
 struct FailedResourceInstallSection: View {
     let resource: FailedModPackResource
     var onSkip: () -> Void
-    var onDownloadSuccess: ((String?, String?) -> Void)?
 
-    @Environment(GameRepository.self)
-    private var gameRepository
-
-    @State private var viewModel: GameResourceInstallSheetViewModel
+    @State private var viewModel: ResourceInstallViewModel
 
     init(
         resource: FailedModPackResource,
@@ -25,28 +21,29 @@ struct FailedResourceInstallSection: View {
     ) {
         self.resource = resource
         self.onSkip = onSkip
-        self.onDownloadSuccess = onDownloadSuccess
         _viewModel = State(
-            wrappedValue: GameResourceInstallSheetViewModel(
+            wrappedValue: ResourceInstallViewModel(
                 project: ModrinthProject.from(detail: resource.projectDetail),
                 resourceType: resource.resourceType,
-                gameInfo: resource.gameInfo,
-                isUpdateMode: false,
+                fixedGame: resource.gameInfo,
+                configuration: .init(onSuccess: onDownloadSuccess),
             ),
         )
     }
 
     var body: some View {
-        VStack(spacing: 18) {
+        @Bindable var viewModel = viewModel
+        return VStack(spacing: 18) {
             ModrinthProjectTitleView(
                 projectDetail: resource.projectDetail,
             )
             VersionPickerForSheet(
                 project: viewModel.project,
                 resourceType: viewModel.resourceType,
-                selectedGame: viewModel.gameInfo,
+                selectedGame: resource.gameInfo,
                 selectedVersion: $viewModel.selectedVersion,
                 availableVersions: $viewModel.availableVersions,
+                isLoading: $viewModel.isLoadingVersions,
                 mainVersionId: $viewModel.mainVersionId,
             ) { version in
                 viewModel.onVersionChanged(version)
@@ -55,14 +52,10 @@ struct FailedResourceInstallSection: View {
                 projectDetail: resource.projectDetail,
                 viewModel: viewModel,
                 onSkip: onSkip,
-                onDownloadSuccess: onDownloadSuccess,
             )
         }
         .padding()
         .padding(.horizontal)
-        .onAppear {
-            viewModel.setDependencies(gameRepository: gameRepository)
-        }
         .onDisappear {
             viewModel.cleanup()
         }
