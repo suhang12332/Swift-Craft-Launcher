@@ -55,7 +55,7 @@ struct OfflineAuthView: View {
                 text: $playerName,
             )
             .textFieldStyle(.roundedBorder)
-            .popover(isPresented: $showErrorPopover, arrowEdge: .trailing) {
+            .popover(isPresented: $showErrorPopover, arrowEdge: .top) {
                 if let errorMessage = playerNameError {
                     Text(errorMessage)
                         .padding()
