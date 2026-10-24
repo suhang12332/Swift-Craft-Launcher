@@ -15,7 +15,7 @@ enum PlayerUtils {
     private static let offlineNameAllowedCharacters =
         CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_")
     /// The inclusive length range for offline player names.
-    static let offlineNameLengthRange = 3...16
+    static let offlineNameLengthRange = 3 ... 16
 
     /// Returns whether the given name has a valid offline player name length.
     ///
