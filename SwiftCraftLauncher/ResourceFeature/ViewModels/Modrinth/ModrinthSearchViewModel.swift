@@ -33,6 +33,9 @@ final class ModrinthSearchViewModel {
     ///   - page: The page of results to fetch.
     ///   - append: Whether to append results to the existing list.
     ///   - dataSource: The search backend to use.
+    ///   - favoriteIds: When provided, restricts the search to these favorited
+    ///     project IDs, sorted by ID. An empty array yields an empty result
+    ///     without a request.
     func search(
         query: String,
         projectType: String,
@@ -40,6 +43,7 @@ final class ModrinthSearchViewModel {
         page: Int = 1,
         append: Bool = false,
         dataSource: DataSource = .modrinth,
+        favoriteIds: [String]? = nil,
     ) async {
         searchTask?.cancel()
 
@@ -55,15 +59,31 @@ final class ModrinthSearchViewModel {
                 try Task.checkCancellation()
 
                 let offset = (page - 1) * pageSize
-                let facets = buildFacets(
-                    projectType: projectType,
-                    filterOptions: filterOptions,
-                )
 
                 try Task.checkCancellation()
 
                 let result: ModrinthResult
-                if dataSource == .modrinth {
+                if let favoriteIds {
+                    let projects = try await favoriteProjects(
+                        favoriteIds: favoriteIds,
+                        projectType: projectType,
+                        filterOptions: filterOptions,
+                        query: query,
+                        dataSource: dataSource,
+                    )
+                    let start = min(offset, projects.count)
+                    let end = min(start + pageSize, projects.count)
+                    result = ModrinthResult(
+                        hits: Array(projects[start ..< end]),
+                        offset: offset,
+                        limit: pageSize,
+                        totalHits: projects.count,
+                    )
+                } else if dataSource == .modrinth {
+                    let facets = buildFacets(
+                        projectType: projectType,
+                        filterOptions: filterOptions,
+                    )
                     result = try await ModrinthService.searchProjectsThrowing(
                         facets: facets,
                         index: AppConstants.modrinthIndex,

@@ -307,6 +307,11 @@ enum URLConfig {
                 mirrorBaseURL.appendingPathComponent("mods/\(modId)")
             }
 
+            /// The endpoint for fetching multiple projects by ID.
+            static var mods: URL {
+                mirrorBaseURL.appendingPathComponent("mods")
+            }
+
             static func modDescription(modId: Int) -> URL {
                 mirrorBaseURL.appendingPathComponent("mods/\(modId)/description")
             }

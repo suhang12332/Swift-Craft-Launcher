@@ -19,5 +19,6 @@ extension Category: @retroactive @unchecked Sendable { }
 extension GameVersion: @retroactive @unchecked Sendable { }
 extension Loader: @retroactive @unchecked Sendable { }
 extension CurseForgeSearchResult: @retroactive @unchecked Sendable { }
+extension CurseForgeMod: @retroactive @unchecked Sendable { }
 extension CurseForgeModDetail: @retroactive @unchecked Sendable { }
 extension ModrinthVersionDependency: @retroactive @unchecked Sendable { }

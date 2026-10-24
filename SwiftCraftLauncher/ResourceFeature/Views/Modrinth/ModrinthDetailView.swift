@@ -118,13 +118,25 @@ struct ModrinthDetailView: View {
         .onChange(of: dataSource) { _, _ in
             viewModel.clearResults()
             coordinator.resetPagination()
-            coordinator.clearError()
             coordinator.hasLoaded = false
             coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
         }
+        // Favorites-only mode searches by the stored favorite IDs, so toggling
+        // the filter must run a new query instead of re-filtering loaded pages.
+        .onChange(of: filterState.showFavoritesOnly) { _, _ in
+            reloadSearchResults()
+        }
+        // Adding or removing a favorite while favorites-only mode is active
+        // invalidates the current results. Drop them and re-query so unfavorited
+        // projects are not retained in memory.
+        .onChange(of: favoriteStore.favoriteIds) { oldValue, newValue in
+            guard filterState.showFavoritesOnly,
+                  oldValue[query] != newValue[query]
+            else { return }
+            reloadSearchResults()
+        }
         .onChange(of: query) { _, _ in
-            viewModel.clearResults()
-            coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
+            reloadSearchResults()
             searchText = ""
         }
         .searchable(
@@ -148,17 +160,17 @@ struct ModrinthDetailView: View {
         }
     }
 
-    private func applyFavoritesFilter<S: Sequence>(to results: S) -> [S.Element] where S.Element == ModrinthProject {
-        if filterState.showFavoritesOnly {
-            return results.filter { favoriteStore.isFavorite(id: $0.projectId, type: query) }
-        }
-        return Array(results)
+    /// Clears the current results and searches again with the latest context.
+    private func reloadSearchResults() {
+        viewModel.clearResults()
+        coordinator.cancelDebounce()
+        coordinator.resetPagination()
+        coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
     }
 
     private func cleanupOnDisappear() {
         coordinator.cancelDebounce()
         coordinator.resetPagination()
-        coordinator.clearError()
         coordinator.hasLoaded = false
         viewModel.clearResults()
     }
@@ -167,8 +179,7 @@ struct ModrinthDetailView: View {
         if viewModel.isLoading {
             ModrinthDetailListSkeletonRows()
         } else {
-            let displayedResults = applyFavoritesFilter(to: viewModel.results)
-            ForEach(displayedResults, id: \.projectId) { mod in
+            ForEach(viewModel.results, id: \.projectId) { mod in
                 ModrinthDetailCardView(
                     project: mod,
                     selectedVersions: selectedVersions,
@@ -216,7 +227,23 @@ struct ModrinthDetailView: View {
             gameType: gameType,
             dataSource: dataSource,
             searchText: searchText,
+            favoriteIds: filterState.showFavoritesOnly
+                ? favoriteIdsForActiveDataSource
+                : nil,
         )
+    }
+
+    /// Favorite IDs that belong to the active data source, sorted by project ID.
+    ///
+    /// Modrinth IDs are unprefixed; CurseForge IDs use the `cf-` prefix. Splitting
+    /// them keeps provider-specific requests small and avoids sending irrelevant
+    /// IDs to the other backend. The stable ID order keeps pagination consistent
+    /// across repeated requests.
+    private var favoriteIdsForActiveDataSource: [String] {
+        let wantsCurseForge = filterState.dataSource == .curseforge
+        return favoriteStore.favoriteIdsForType(query)
+            .filter { $0.asProjectId.isCurseForge == wantsCurseForge }
+            .sorted()
     }
 
     private var loadingMoreIndicator: some View {
