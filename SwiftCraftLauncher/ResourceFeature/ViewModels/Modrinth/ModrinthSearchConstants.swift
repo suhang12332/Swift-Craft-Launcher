@@ -28,6 +28,7 @@ enum ModrinthConstants {
     enum API {
         enum FacetType {
             static let projectType = "project_type"
+            static let projectId = "project_id"
             static let versions = "versions"
             static let categories = "categories"
             static let clientSide = "client_side"

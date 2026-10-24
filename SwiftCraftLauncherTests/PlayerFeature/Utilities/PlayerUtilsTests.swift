@@ -64,4 +64,59 @@ final class PlayerUtilsTests: XCTestCase {
         let name = PlayerUtils.avatarName(for: uuid)
         XCTAssertNotNil(name)
     }
+
+    func testIsValidOfflineName_lettersDigitsUnderscore_returnsTrue() {
+        XCTAssertTrue(PlayerUtils.isValidOfflineName("Steve_123"))
+        XCTAssertTrue(PlayerUtils.isValidOfflineName("abc"))
+        XCTAssertTrue(PlayerUtils.isValidOfflineName("a_1"))
+        XCTAssertTrue(PlayerUtils.isValidOfflineName("0123456789"))
+        XCTAssertTrue(PlayerUtils.isValidOfflineName("AZaz_09"))
+    }
+
+    func testIsValidOfflineNameLength_boundaries() {
+        XCTAssertFalse(PlayerUtils.isValidOfflineNameLength(""))
+        XCTAssertFalse(PlayerUtils.isValidOfflineNameLength("ab"))
+        XCTAssertTrue(PlayerUtils.isValidOfflineNameLength("abc"))
+        XCTAssertTrue(PlayerUtils.isValidOfflineNameLength(String(repeating: "a", count: 16)))
+        XCTAssertFalse(PlayerUtils.isValidOfflineNameLength(String(repeating: "a", count: 17)))
+    }
+
+    func testIsValidOfflineName_tooShort_returnsFalse() {
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("ab"))
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("A1"))
+    }
+
+    func testIsValidOfflineName_tooLong_returnsFalse() {
+        XCTAssertFalse(PlayerUtils.isValidOfflineName(String(repeating: "a", count: 17)))
+    }
+
+    func testIsValidOfflineName_empty_returnsFalse() {
+        XCTAssertFalse(PlayerUtils.isValidOfflineName(""))
+    }
+
+    func testIsValidOfflineName_chinese_returnsFalse() {
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("史蒂夫"))
+    }
+
+    func testIsValidOfflineName_space_returnsFalse() {
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("Steve 1"))
+        XCTAssertFalse(PlayerUtils.isValidOfflineName(" Steve"))
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("Steve "))
+    }
+
+    func testIsValidOfflineName_specialCharacters_returnsFalse() {
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("Steve!"))
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("steve-1"))
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("steve.1"))
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("steve@example"))
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("steve\n"))
+    }
+
+    func testIsValidOfflineName_fullWidthLetters_returnsFalse() {
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("Ｓｔｅｖｅ"))
+    }
+
+    func testIsValidOfflineName_accentedLetters_returnsFalse() {
+        XCTAssertFalse(PlayerUtils.isValidOfflineName("Stevé"))
+    }
 }

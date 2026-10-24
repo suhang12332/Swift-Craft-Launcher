@@ -14,16 +14,26 @@ extension ModrinthSearchViewModel {
     /// - Parameters:
     ///   - projectType: The project type facet value.
     ///   - filterOptions: The user's current filter selections.
+    ///   - favoriteIds: When provided, restricts the search to these project IDs.
     /// - Returns: An array of facet groups suitable for the Modrinth API.
     func buildFacets(
         projectType: String,
         filterOptions: FilterOptions,
+        favoriteIds: [String]? = nil,
     ) -> [[String]] {
         var facets: [[String]] = []
 
         facets.append([
             "\(ModrinthConstants.API.FacetType.projectType):\(projectType)",
         ])
+
+        if let favoriteIds, !favoriteIds.isEmpty {
+            facets.append(
+                favoriteIds.map {
+                    "\(ModrinthConstants.API.FacetType.projectId):\($0)"
+                },
+            )
+        }
 
         if !filterOptions.versions.isEmpty {
             facets.append(

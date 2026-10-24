@@ -20,9 +20,15 @@ struct ModrinthSearchContext: Equatable {
     let gameType: Bool
     let dataSource: DataSource
     let searchText: String
+    /// When non-nil, restricts the search to these favorite project IDs, sorted by ID.
+    let favoriteIds: [String]?
 
     func paramsKey(page: Int) -> String {
-        [
+        // Favorite changes explicitly reset pagination, so only the mode needs
+        // to participate in the key; the full ID list would duplicate state.
+        let favoritesKey = favoriteIds == nil ? "favorites:off" : "favorites:on"
+
+        return [
             query,
             selectedVersions.joined(separator: ","),
             selectedCategories.joined(separator: ","),
@@ -32,6 +38,7 @@ struct ModrinthSearchContext: Equatable {
             selectedLoader.joined(separator: ","),
             String(gameType),
             searchText,
+            favoritesKey,
             "page:\(page)",
             dataSource.rawValue,
         ].joined(separator: "|")
@@ -50,19 +57,11 @@ final class ModrinthDetailCoordinatorViewModel {
 
     init() { }
 
-    /// Whether more pages of results are available.
-    var hasMoreResults: Bool {
-        false
-    }
-
     /// Resets pagination back to page one.
     func resetPagination() {
         currentPage = 1
         lastSearchParams = ""
     }
-
-    /// Clears the current error.
-    func clearError() { }
 
     /// Cancels any pending debounced search.
     func cancelDebounce() {
@@ -223,6 +222,7 @@ final class ModrinthDetailCoordinatorViewModel {
             page: page,
             append: append,
             dataSource: context.dataSource,
+            favoriteIds: context.favoriteIds,
         )
     }
 

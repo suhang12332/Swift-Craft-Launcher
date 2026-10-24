@@ -89,6 +89,12 @@ final class FavoriteStore {
         return favoriteIds[type]?.contains(id) ?? false
     }
 
+    /// Returns all favorite project IDs for a type, loading the store if needed.
+    func favoriteIdsForType(_ type: String) -> Set<String> {
+        try? ensureInitialized()
+        return favoriteIds[type] ?? []
+    }
+
     /// Removes all favorite entries and clears the in-memory map.
     func clearAll() throws {
         try ensureInitialized()

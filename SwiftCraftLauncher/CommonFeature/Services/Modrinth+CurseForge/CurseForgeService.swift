@@ -39,6 +39,22 @@ enum CurseForgeService {
         return try await tryFetch(CurseForgeModDetailResponse.self, from: url.absoluteString)
     }
 
+    /// Fetches multiple CurseForge projects by their numeric IDs.
+    /// - Parameter ids: The numeric project identifiers.
+    /// - Returns: The matching project summaries.
+    /// - Throws: A network or parsing error.
+    static func fetchModsByIdsThrowing(ids: [Int]) async throws -> [CurseForgeMod] {
+        guard !ids.isEmpty else { return [] }
+
+        let body = try JSONEncoder().encode(CurseForgeModsRequest(modIds: ids))
+        let data = try await APIClient.post(
+            url: URLConfig.API.CurseForge.mods,
+            body: body,
+            headers: getHeaders(),
+        )
+        return try JSONDecoder().decode(CurseForgeModsResponse.self, from: data).data
+    }
+
     /// Fetches the HTML description for a CurseForge mod, throwing on failure.
     /// - Parameter modId: The mod identifier.
     /// - Returns: The HTML-formatted description content.
@@ -72,4 +88,14 @@ enum CurseForgeService {
         let result = try JSONDecoder().decode(CurseForgeFilesResult.self, from: data)
         return result.data
     }
+}
+
+/// Request body for the CurseForge batch project endpoint.
+private struct CurseForgeModsRequest: Encodable {
+    let modIds: [Int]
+}
+
+/// Response wrapper for the CurseForge batch project endpoint.
+private struct CurseForgeModsResponse: Decodable {
+    let data: [CurseForgeMod]
 }

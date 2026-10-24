@@ -179,4 +179,32 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         let loaderFacets = facets.first { $0.contains("categories:minecraft") }
         XCTAssertNotNil(loaderFacets)
     }
+
+    @MainActor
+    func testBuildFacets_withFavoriteIds() {
+        let vm = ModrinthSearchViewModel()
+        let options = FilterOptions(versions: [], categories: [], features: [], resolutions: [], performanceImpact: [], loaders: [])
+        let facets = vm.buildFacets(
+            projectType: "mod",
+            filterOptions: options,
+            favoriteIds: ["AANobbMI", "P7dR8mSH"],
+        )
+        XCTAssertEqual(facets.count, 2)
+        XCTAssertEqual(
+            Set(facets[1]),
+            ["project_id:AANobbMI", "project_id:P7dR8mSH"],
+        )
+    }
+
+    @MainActor
+    func testBuildFacets_emptyFavoriteIdsAddsNoFacet() {
+        let vm = ModrinthSearchViewModel()
+        let options = FilterOptions(versions: [], categories: [], features: [], resolutions: [], performanceImpact: [], loaders: [])
+        let facets = vm.buildFacets(
+            projectType: "mod",
+            filterOptions: options,
+            favoriteIds: [],
+        )
+        XCTAssertEqual(facets, [["project_type:mod"]])
+    }
 }
