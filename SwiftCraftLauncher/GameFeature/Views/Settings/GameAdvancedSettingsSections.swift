@@ -15,26 +15,27 @@ struct GameAdvancedSettingsJavaPathSection: View {
 
     var body: some View {
         LabeledContent("settings.game.java.path".localized()) {
-            HStack(alignment: .top, spacing: 8) {
-                DirectorySettingRow(
-                    title: "settings.game.java.path".localized(),
-                    path: viewModel.effectiveJavaPath,
-                    description: "settings.game.java.path.description".localized(),
-                    onChoose: { showJavaPathPicker = true },
-                    onReset: {
-                        viewModel.resetJavaPathSafely()
-                    },
-                ).fixedSize()
-                    .fileImporter(
-                        isPresented: $showJavaPathPicker,
-                        allowedContentTypes: [.item],
-                        allowsMultipleSelection: false,
-                    ) { result in
-                        viewModel.handleJavaPathSelection(result)
-                    }
-                InfoIconWithPopover(
-                    text: viewModel.javaDetailsDescription,
-                )
+            DirectorySettingRow(
+                title: "settings.game.java.path".localized(),
+                path: viewModel.effectiveJavaPath,
+                description: "settings.game.java.path.description".localized(),
+                onChoose: { showJavaPathPicker = true },
+                onReset: {
+                    viewModel.resetJavaPathSafely()
+                },
+                content: {
+                    InfoIconWithPopover(
+                        text: viewModel.javaDetailsDescription,
+                    )
+                },
+            )
+            .fixedSize()
+            .fileImporter(
+                isPresented: $showJavaPathPicker,
+                allowedContentTypes: [.item],
+                allowsMultipleSelection: false,
+            ) { result in
+                viewModel.handleJavaPathSelection(result)
             }
         }
     }
