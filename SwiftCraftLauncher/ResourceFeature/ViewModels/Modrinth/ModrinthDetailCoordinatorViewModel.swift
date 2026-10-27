@@ -203,6 +203,14 @@ final class ModrinthDetailCoordinatorViewModel {
             )
         }
 
+        // Favorites-only mode with no favorites resolves to an empty list
+        // locally. Skip the search (and its loading state) so the list does not
+        // flash placeholder rows before it goes empty.
+        if let favoriteIds = context.favoriteIds, favoriteIds.isEmpty {
+            searchViewModel.clearResults()
+            return
+        }
+
         lastSearchParams = params
         if !append {
             searchViewModel.beginNewSearch()
