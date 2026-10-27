@@ -66,7 +66,7 @@ class ModCacheDatabase {
     private func createTable() throws {
         try db.execute(createTableSQL)
         try? db.execute(
-            "CREATE INDEX IF NOT EXISTS idx_mod_cache_updated_at ON \(tableName)(updated_at);",
+            "DROP INDEX IF EXISTS idx_mod_cache_updated_at;",
         )
         AppLog.game.debug("Mod cache table created or already exists")
     }
