@@ -15,10 +15,15 @@ final class ModrinthSearchViewModel {
     private(set) var isLoading: Bool = false
     private(set) var isLoadingMore: Bool = false
     private(set) var error: GlobalError?
-    private(set) var totalHits: Int = 0
+    /// Whether another page of results can be loaded.
+    private(set) var hasMoreResults: Bool = false
 
     var searchTask: Task<Void, Never>?
     let pageSize: Int = SearchPagination.pageSize
+
+    /// Keyset cursor for favorites-only pagination: the last favorite ID that
+    /// has been scanned. `nil` means the next request starts from the beginning.
+    private var favoriteCursor: String?
 
     init() { }
 
@@ -30,12 +35,13 @@ final class ModrinthSearchViewModel {
     ///   - query: The search query string.
     ///   - projectType: The type of project to search for.
     ///   - filterOptions: The filters to apply to the search.
-    ///   - page: The page of results to fetch.
+    ///   - page: The page of results to fetch. Ignored for favorites, which
+    ///     advance through the local database with a keyset cursor.
     ///   - append: Whether to append results to the existing list.
     ///   - dataSource: The search backend to use.
-    ///   - favoriteIds: When provided, restricts the search to these favorited
-    ///     project IDs, sorted by ID. An empty array yields an empty result
-    ///     without a request.
+    ///   - favoritesOnly: When `true`, searches the favorite projects stored in
+    ///     the local database. IDs are paged with a keyset cursor, so only the
+    ///     current page's project details are fetched from the provider.
     func search(
         query: String,
         projectType: String,
@@ -43,7 +49,7 @@ final class ModrinthSearchViewModel {
         page: Int = 1,
         append: Bool = false,
         dataSource: DataSource = .modrinth,
-        favoriteIds: [String]? = nil,
+        favoritesOnly: Bool = false,
     ) async {
         searchTask?.cancel()
 
@@ -63,21 +69,23 @@ final class ModrinthSearchViewModel {
                 try Task.checkCancellation()
 
                 let result: ModrinthResult
-                if let favoriteIds {
-                    let projects = try await favoriteProjects(
-                        favoriteIds: favoriteIds,
+                var favoriteHasMore = false
+                var favoriteNextCursor: String?
+                if favoritesOnly {
+                    let favoritePage = try await loadFavoritePage(
                         projectType: projectType,
                         filterOptions: filterOptions,
                         query: query,
                         dataSource: dataSource,
+                        append: append,
                     )
-                    let start = min(offset, projects.count)
-                    let end = min(start + pageSize, projects.count)
+                    favoriteHasMore = favoritePage.hasMore
+                    favoriteNextCursor = favoritePage.nextCursor
                     result = ModrinthResult(
-                        hits: Array(projects[start ..< end]),
-                        offset: offset,
+                        hits: favoritePage.hits,
+                        offset: 0,
                         limit: pageSize,
-                        totalHits: projects.count,
+                        totalHits: favoritePage.hits.count,
                     )
                 } else if dataSource == .modrinth {
                     let facets = buildFacets(
@@ -124,7 +132,12 @@ final class ModrinthSearchViewModel {
                     } else {
                         results = result.hits
                     }
-                    totalHits = result.totalHits
+                    if favoritesOnly {
+                        favoriteCursor = favoriteNextCursor
+                        hasMoreResults = favoriteHasMore
+                    } else {
+                        hasMoreResults = results.count < result.totalHits
+                    }
                 }
 
                 try Task.checkCancellation()
@@ -151,20 +164,86 @@ final class ModrinthSearchViewModel {
         }
     }
 
+    /// Loads one page of favorites from the local database.
+    ///
+    /// Favorite IDs are paged with a keyset cursor so only the current page's
+    /// projects are fetched from the provider. Filters are applied by the
+    /// provider, so IDs that do not match are skipped by scanning further
+    /// database pages until the page is full or no IDs remain.
+    private func loadFavoritePage(
+        projectType: String,
+        filterOptions: FilterOptions,
+        query: String,
+        dataSource: DataSource,
+        append: Bool,
+    ) async throws -> (hits: [ModrinthProject], hasMore: Bool, nextCursor: String?) {
+        let store = DIContainer.shared.core.favoriteStore
+        var cursor = append ? favoriteCursor : nil
+
+        var hits: [ModrinthProject] = []
+        var hasMore = false
+
+        while hits.count < pageSize {
+            try Task.checkCancellation()
+
+            let remaining = pageSize - hits.count
+            let ids = store.favoriteIdsPage(
+                type: projectType,
+                dataSource: dataSource,
+                after: cursor,
+                limit: remaining,
+            )
+            guard !ids.isEmpty else {
+                hasMore = false
+                break
+            }
+
+            let projects = try await favoriteProjects(
+                favoriteIds: ids,
+                projectType: projectType,
+                filterOptions: filterOptions,
+                query: query,
+                dataSource: dataSource,
+            )
+            hits.append(contentsOf: projects)
+            cursor = ids.last
+
+            hasMore = !store.favoriteIdsPage(
+                type: projectType,
+                dataSource: dataSource,
+                after: cursor,
+                limit: 1,
+            ).isEmpty
+            if !hasMore {
+                break
+            }
+        }
+
+        return (hits, hasMore, cursor)
+    }
+
     /// Cancels any ongoing search and clears all results.
     func clearResults() {
         searchTask?.cancel()
         results.removeAll()
-        totalHits = 0
         error = nil
         isLoading = false
         isLoadingMore = false
+        hasMoreResults = false
+        favoriteCursor = nil
+    }
+
+    /// Removes the given projects from the currently displayed results without
+    /// issuing a new search.
+    func removeProjects(withIds ids: Set<String>) {
+        guard !ids.isEmpty else { return }
+        results.removeAll { ids.contains($0.projectId) }
     }
 
     /// Prepares the view model for a new search by resetting state.
     @MainActor
     func beginNewSearch() {
+        clearResults()
         isLoading = true
-        results.removeAll()
     }
 }
