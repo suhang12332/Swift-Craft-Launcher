@@ -18,6 +18,7 @@ extension ModrinthSearchViewModel {
     /// Fetches the given favorited projects that match the active filters.
     /// - Parameters:
     ///   - favoriteIds: Favorite project IDs to resolve (one page at a time).
+    ///     Must not be empty.
     ///   - projectType: The resource type being displayed.
     ///   - filterOptions: The active filter selections.
     ///   - query: The current search text.
@@ -30,8 +31,6 @@ extension ModrinthSearchViewModel {
         query: String,
         dataSource: DataSource,
     ) async throws -> [ModrinthProject] {
-        guard !favoriteIds.isEmpty else { return [] }
-
         switch dataSource {
         case .modrinth:
             return try await fetchModrinthFavoriteProjects(
@@ -102,10 +101,7 @@ extension ModrinthSearchViewModel {
         try Task.checkCancellation()
         let mods = try await CurseForgeService.fetchModsByIdsThrowing(ids: modIds)
 
-        var seenModIds = Set<Int>()
-        let matchingMods = mods.filter {
-            seenModIds.insert($0.id).inserted && matches($0, params: params)
-        }
+        let matchingMods = mods.filter { matches($0, params: params) }
         let hits = CFToModrinthAdapter.convertSearchResult(
             CurseForgeSearchResult(data: matchingMods, pagination: nil),
         ).hits

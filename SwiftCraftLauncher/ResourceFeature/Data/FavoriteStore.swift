@@ -25,7 +25,7 @@ final class FavoriteStore {
     private let createTableSQL: String
     private let insertSQL: String
     private let deleteSQL: String
-    private let selectAllIdsByTypeSQL: String
+    private let selectAllIdsSQL: String
 
     /// All favorite project IDs grouped by type, kept in sync with the database.
     var favoriteIds: [String: Set<String>] = [:]
@@ -49,7 +49,7 @@ final class FavoriteStore {
             ?)
         """
         deleteSQL = "DELETE FROM \(tableName) WHERE id = ? AND type = ?"
-        selectAllIdsByTypeSQL = "SELECT id, type FROM \(tableName)"
+        selectAllIdsSQL = "SELECT id, type FROM \(tableName)"
     }
 
     /// Adds a favorite entry and updates the in-memory map.
@@ -81,6 +81,9 @@ final class FavoriteStore {
             }
         }
         favoriteIds[type]?.remove(id)
+        if favoriteIds[type]?.isEmpty == true {
+            favoriteIds.removeValue(forKey: type)
+        }
     }
 
     /// Checks whether a project is favorited for a given type using the in-memory map.
@@ -99,7 +102,7 @@ final class FavoriteStore {
     ///   - dataSource: The provider whose project IDs should be returned.
     ///   - after: The last ID of the previously loaded page, or `nil` for the
     ///     first page.
-    ///   - limit: The maximum number of IDs to return.
+    ///   - limit: The maximum number of IDs to return. Must be greater than zero.
     /// - Returns: The next page of favorite IDs, ordered ascending.
     func favoriteIdsPage(
         type: String,
@@ -107,7 +110,6 @@ final class FavoriteStore {
         after: String?,
         limit: Int,
     ) -> [String] {
-        guard limit > 0 else { return [] }
         try? ensureInitialized()
 
         let sourceFilter = dataSource == .curseforge
@@ -150,7 +152,7 @@ final class FavoriteStore {
         guard isInitialized else { return }
         let pairs: [(id: String, type: String)]
         do {
-            pairs = try withPreparedStatement(selectAllIdsByTypeSQL) { statement -> [(String, String)] in
+            pairs = try withPreparedStatement(selectAllIdsSQL) { statement -> [(String, String)] in
                 var result: [(String, String)] = []
                 while sqlite3_step(statement) == SQLITE_ROW {
                     if let id = SQLiteDatabase.stringColumn(statement, index: 0),

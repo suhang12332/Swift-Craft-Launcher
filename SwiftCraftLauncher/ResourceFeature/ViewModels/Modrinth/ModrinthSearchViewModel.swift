@@ -236,7 +236,6 @@ final class ModrinthSearchViewModel {
     /// Removes the given projects from the currently displayed results without
     /// issuing a new search.
     func removeProjects(withIds ids: Set<String>) {
-        guard !ids.isEmpty else { return }
         results.removeAll { ids.contains($0.projectId) }
     }
 
