@@ -20,6 +20,8 @@ struct GameMoreMenu: View {
     private var detailState
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
+    @Environment(GameLaunchUseCase.self)
+    private var gameLaunchUseCase
 
     private var currentUserId: String {
         playerListViewModel.currentPlayer?.id ?? ""
@@ -43,7 +45,7 @@ struct GameMoreMenu: View {
                 }
                 .disabled(
                     container.core.gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: currentUserId)
-                        || container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId),
+                        || gameLaunchUseCase.isLaunching(gameId: game.id, userId: currentUserId),
                 )
             }
 
@@ -54,7 +56,7 @@ struct GameMoreMenu: View {
             }
             .disabled(
                 container.core.gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: currentUserId)
-                    || container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId),
+                    || gameLaunchUseCase.isLaunching(gameId: game.id, userId: currentUserId),
             )
 
             Button {

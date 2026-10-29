@@ -13,19 +13,11 @@ struct MinecraftLaunchCommand {
     let player: Player
     let game: GameVersionInfo
 
-    func launchGame() async {
-        do {
-            try await launchGameThrowing()
-        } catch {
-            await handleLaunchError(error)
-        }
-    }
-
     func stopGame() async {
         _ = await DIContainer.shared.core.gameProcessManager.stopProcess(for: game.id, userId: player.id)
     }
 
-    func launchGameThrowing() async throws {
+    func launchGame() async throws {
         if let integrityError = GameIntegrityChecker.check(game: game) {
             throw integrityError
         }
@@ -277,12 +269,5 @@ struct MinecraftLaunchCommand {
                 message: "Failed to start process for game=\(game.gameName), javaPath=\(javaExecutable): \(error.localizedDescription)",
             )
         }
-    }
-
-    private func handleLaunchError(_ error: Error) async {
-        AppLog.game.error("Failed to launch game: \(error.localizedDescription)")
-
-        let globalError = GlobalError.from(error)
-        DIContainer.shared.core.errorHandler.handle(globalError)
     }
 }

@@ -26,7 +26,7 @@ struct MenuBarExtraContentView: View {
     private func gameStatusSymbolName(for game: GameVersionInfo) -> String {
         let userId = playerListViewModel.currentPlayer?.id ?? ""
         let isRunning = container.core.gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: userId)
-        let isLaunching = container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: userId)
+        let isLaunching = gameLaunchUseCase.isLaunching(gameId: game.id, userId: userId)
 
         if isLaunching, !isRunning {
             return "progress.indicator"

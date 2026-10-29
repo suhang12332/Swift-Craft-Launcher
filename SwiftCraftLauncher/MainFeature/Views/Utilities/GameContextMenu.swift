@@ -38,7 +38,6 @@ struct GameContextMenu: View {
     private var gameRepository
     @Environment(GameLaunchUseCase.self)
     private var gameLaunchUseCase
-    @State private var actionViewModel = GameContextMenuActionViewModel()
 
     /// Whether the game is currently running, determined by cached process state.
     private var isRunning: Bool {
@@ -122,11 +121,11 @@ struct GameContextMenu: View {
 
     /// Toggles the game between running and stopped states.
     private func toggleGameState() {
-        actionViewModel.toggleGameState(
-            isRunning: isRunning,
-            player: playerListViewModel.currentPlayer,
-            game: game,
-            gameLaunchUseCase: gameLaunchUseCase,
-        )
+        Task {
+            await gameLaunchUseCase.toggleGameState(
+                player: playerListViewModel.currentPlayer,
+                game: game,
+            )
+        }
     }
 }
