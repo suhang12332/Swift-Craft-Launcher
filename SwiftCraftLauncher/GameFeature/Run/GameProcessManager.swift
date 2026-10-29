@@ -68,60 +68,53 @@ final class GameProcessManager {
     }
 
     /// Runs off the main actor because it performs database and file-system I/O.
+    /// Crash reports are checked first because the JVM may write one even when
+    /// it exits with status 0.
     nonisolated private func checkIfCrash(gameId: String, process: Process) async -> Bool {
-        let exitCode = process.terminationStatus
-        if exitCode == 0 {
-            AppLog.game.debug("Game exit code is 0: \(gameId)")
-        } else {
-            AppLog.game.info("Game exit code non-zero (\(exitCode)), possible crash: \(gameId)")
+        if let crashReport = recentCrashReport(for: gameId) {
+            AppLog.game.info("Game crashed, found crash report \(crashReport): \(gameId)")
             return true
         }
 
-        do {
-            try? gameDatabase.initialize()
-            guard let game = try gameDatabase.getGame(by: gameId) else {
-                AppLog.game.error("Unable to find game in database, unable to check crash reports: \(gameId)")
-                return exitCode != 0
-            }
-
-            let gameDirectory = AppPaths.profileDirectory(gameName: game.gameName)
-            let crashReportsDir = gameDirectory.appendingPathComponent(AppConstants.DirectoryNames.crashReports, isDirectory: true)
-            let fileManager = FileManager.default
-
-            if fileManager.fileExists(atPath: crashReportsDir.path) {
-                do {
-                    let crashFiles = try fileManager
-                        .contentsOfDirectory(
-                            at: crashReportsDir,
-                            includingPropertiesForKeys: [.isRegularFileKey, .creationDateKey],
-                            options: [.skipsHiddenFiles],
-                        )
-                        .filter { url in
-                            guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey]) else {
-                                return false
-                            }
-                            return resourceValues.isRegularFile ?? false
-                        }
-
-                    let now = Date()
-                    let fiveMinutesAgo = now.addingTimeInterval(-300)
-
-                    for crashFile in crashFiles {
-                        if let creationDate = try? crashFile.resourceValues(forKeys: [.creationDateKey]).creationDate,
-                           creationDate >= fiveMinutesAgo {
-                            AppLog.game.info("Found recently generated crash report: \(crashFile.lastPathComponent)")
-                            return true
-                        }
-                    }
-                } catch {
-                    AppLog.game.error("Failed to read crash report folder: \(error.localizedDescription)")
-                }
-            }
+        let exitCode = process.terminationStatus
+        if exitCode == 0 {
+            AppLog.game.debug("Game exited normally with no recent crash report: \(gameId)")
             return false
-        } catch {
-            AppLog.game.error("Failed to query game from database: \(error.localizedDescription)")
-            return exitCode != 0
         }
+
+        let reason = process.terminationReason == .uncaughtSignal
+            ? "uncaught signal \(exitCode)"
+            : "exit status \(exitCode)"
+        AppLog.game.info("Game exited abnormally (\(reason)), treating as crash: \(gameId)")
+        return true
+    }
+
+    /// Returns the name of a crash report created in the last five minutes, if any.
+    nonisolated private func recentCrashReport(for gameId: String) -> String? {
+        try? gameDatabase.initialize()
+        guard let game = try? gameDatabase.getGame(by: gameId) else {
+            AppLog.game.error("Unable to find game in database, unable to check crash reports: \(gameId)")
+            return nil
+        }
+
+        let crashReportsDir = AppPaths.profileDirectory(gameName: game.gameName)
+            .appendingPathComponent(AppConstants.DirectoryNames.crashReports, isDirectory: true)
+        let files = (try? FileManager.default.contentsOfDirectory(
+            at: crashReportsDir,
+            includingPropertiesForKeys: [.isRegularFileKey, .creationDateKey],
+            options: [.skipsHiddenFiles],
+        )) ?? []
+
+        let cutoff = Date().addingTimeInterval(-300)
+        return files.first { url in
+            guard let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .creationDateKey]),
+                  values.isRegularFile ?? false,
+                  let created = values.creationDate
+            else {
+                return false
+            }
+            return created >= cutoff
+        }?.lastPathComponent
     }
 
     /// Runs off the main actor because it performs database I/O.
