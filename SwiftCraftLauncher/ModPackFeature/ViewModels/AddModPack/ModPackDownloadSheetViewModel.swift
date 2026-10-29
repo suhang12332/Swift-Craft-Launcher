@@ -243,29 +243,33 @@ class ModPackDownloadSheetViewModel {
         isLoadingProjectDetails = false
     }
 
-    func loadModPackVersions(for gameVersion: String) async {
+    func loadModPackVersions(for gameVersion: String) {
         guard let projectDetail else { return }
 
         isLoadingModPackVersions = true
-        defer { isLoadingModPackVersions = false }
-
         allModPackVersions = []
         filteredModPackVersions = []
 
-        do {
-            let versions = try await ModrinthService.fetchProjectVersionsThrowing(
-                id: projectDetail.id,
-            )
-            allModPackVersions = versions
-            filteredModPackVersions = versions
-                .filter { version in
-                    version.gameVersions.contains(gameVersion)
-                }
-                .sorted { version1, version2 in
-                    version1.datePublished > version2.datePublished
-                }
-        } catch {
-            DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+        Task { [weak self] in
+            guard let self else { return }
+
+            defer { self.isLoadingModPackVersions = false }
+
+            do {
+                let versions = try await ModrinthService.fetchProjectVersionsThrowing(
+                    id: projectDetail.id,
+                )
+                self.allModPackVersions = versions
+                self.filteredModPackVersions = versions
+                    .filter { version in
+                        version.gameVersions.contains(gameVersion)
+                    }
+                    .sorted { version1, version2 in
+                        version1.datePublished > version2.datePublished
+                    }
+            } catch {
+                DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+            }
         }
     }
 

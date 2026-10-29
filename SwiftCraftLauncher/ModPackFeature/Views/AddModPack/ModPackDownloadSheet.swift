@@ -169,9 +169,8 @@ struct ModPackDownloadSheet: View {
 
     private func handleGameVersionChange(_ newValue: String) {
         guard !newValue.isEmpty else { return }
-        Task {
-            await viewModel.loadModPackVersions(for: newValue)
-        }
+
+        viewModel.loadModPackVersions(for: newValue)
         setDefaultGameName()
     }
 
