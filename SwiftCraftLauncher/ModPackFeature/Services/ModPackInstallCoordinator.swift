@@ -75,6 +75,8 @@ final class ModPackInstallCoordinator {
     /// - Returns: Whether installation succeeded.
     func run(_ input: RunInput) async -> Bool {
         input.setProcessing(true)
+        // Single owner for install temp cleanup: runs for success, failure, and cancellation.
+        defer { downloadService.cleanupTempFiles() }
         if Task.isCancelled {
             await handleCancelledInstallation(
                 gameName: input.gameName,
@@ -160,7 +162,6 @@ final class ModPackInstallCoordinator {
             modPackInstallState: input.modPackInstallState,
         )
 
-        downloadService.cleanupTempFiles()
         return gameSuccess
     }
 

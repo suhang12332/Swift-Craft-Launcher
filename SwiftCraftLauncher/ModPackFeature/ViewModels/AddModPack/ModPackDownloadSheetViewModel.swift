@@ -53,11 +53,6 @@ class ModPackDownloadSheetViewModel {
         modPackInstallState.reset()
         modPackDownloadProgress = 0
         modPackTotalSize = 0
-        cleanupTempFiles()
-    }
-
-    func cleanupTempFiles() {
-        downloadService.cleanupTempFiles()
     }
 
     private var allModPackVersions: [ModrinthProjectDetailVersion] = []
@@ -123,7 +118,6 @@ class ModPackDownloadSheetViewModel {
         abortFailedResources()
         cancelDownloadAndResetStates(gameInstaller: gameInstaller)
         clearParsedIndexInfo()
-        cleanupTempFiles()
 
         let trimmedName = gameName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else { return }
