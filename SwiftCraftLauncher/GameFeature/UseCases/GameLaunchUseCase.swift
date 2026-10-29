@@ -12,13 +12,21 @@ import Observation
 ///
 /// UI surfaces call ``toggleGameState(player:game:)`` and read
 /// ``isLaunching(gameId:userId:)``; they never mutate the launching state or
-/// present the missing-player error themselves.
+/// present launch errors themselves.
 @MainActor
 @Observable
 final class GameLaunchUseCase {
+    private let authService = LaunchAuthService()
+    private let commandPreparer = LaunchCommandPreparer()
+    private let processLauncher = GameProcessLauncher()
+
+    private var statusManager: GameStatusManager {
+        DIContainer.shared.core.gameStatusManager
+    }
+
     /// Whether the game is currently launching for the given player.
     func isLaunching(gameId: String, userId: String) -> Bool {
-        DIContainer.shared.core.gameStatusManager.isGameLaunching(gameId: gameId, userId: userId)
+        statusManager.isGameLaunching(gameId: gameId, userId: userId)
     }
 
     /// Launches the game when it is stopped, or stops it when it is running.
@@ -31,12 +39,12 @@ final class GameLaunchUseCase {
         }
 
         let userId = player.id
-        guard !DIContainer.shared.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: userId) else {
+        guard !statusManager.isGameLaunching(gameId: game.id, userId: userId) else {
             return
         }
 
-        if DIContainer.shared.core.gameStatusManager.isGameRunning(gameId: game.id, userId: userId) {
-            await stopGame(player: player, game: game)
+        if statusManager.isGameRunning(gameId: game.id, userId: userId) {
+            await processLauncher.stop(player: player, game: game)
         } else {
             await launchGame(player: player, game: game)
         }
@@ -44,23 +52,51 @@ final class GameLaunchUseCase {
 
     private func launchGame(player: Player, game: GameVersionInfo) async {
         let userId = player.id
-        DIContainer.shared.core.gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
+        statusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
         defer {
-            DIContainer.shared.core.gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false)
+            statusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false)
         }
 
-        let command = MinecraftLaunchCommand(player: player, game: game)
         do {
-            try await command.launchGame()
+            if let integrityError = await GameIntegrityChecker.check(game: game) {
+                throw integrityError
+            }
+
+            let validation = try await authService.validatePlayer(player)
+            for error in validation.nonFatalErrors {
+                DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+            }
+
+            guard await canLaunchUnderMemoryPressure(for: game) else {
+                return
+            }
+
+            let credentials = try await authService.makeCredentials(for: validation.player)
+            let command = commandPreparer.prepare(
+                command: game.launchCommand,
+                game: game,
+                credentials: credentials,
+            )
+            try await processLauncher.launch(command: command, player: player, game: game)
         } catch {
             AppLog.game.error("Failed to launch game: \(error.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
         }
     }
 
-    private func stopGame(player: Player, game: GameVersionInfo) async {
-        let command = MinecraftLaunchCommand(player: player, game: game)
-        await command.stopGame()
+    private func canLaunchUnderMemoryPressure(for game: GameVersionInfo) async -> Bool {
+        guard DIContainer.shared.ui.gameSettingsManager.enableMemoryPressureWarning else {
+            return true
+        }
+
+        let level = MemoryPressureChecker.check()
+        guard level.isElevated else {
+            return true
+        }
+
+        AppLog.game.warning("Memory pressure is \(String(describing: level)) before launching \(game.gameName)")
+        let choice = await DIContainer.shared.ui.memoryPressureAlertPresenter.requestUserChoice(for: level)
+        return choice == .continueAnyway
     }
 
     private func presentMissingPlayerError() {

@@ -9,11 +9,13 @@ import Foundation
 
 /// Performs the minimum pre-launch integrity check and repair.
 enum GameIntegrityChecker {
-    static func check(game: GameVersionInfo) -> GlobalError? {
-        guard DIContainer.shared.system.javaManager.canJavaRun(at: game.javaPath) else {
-            return .gameLaunch(i18nKey: "game_launch.integrity.java_unusable")
-        }
+    static func check(game: GameVersionInfo) async -> GlobalError? {
+        let javaPath = game.javaPath
+        let canRunJava = await Task.detached(priority: .userInitiated) {
+            DIContainer.shared.system.javaManager.canJavaRun(at: javaPath)
+        }.value
 
-        return nil
+        guard !canRunJava else { return nil }
+        return .gameLaunch(i18nKey: "game_launch.integrity.java_unusable")
     }
 }
