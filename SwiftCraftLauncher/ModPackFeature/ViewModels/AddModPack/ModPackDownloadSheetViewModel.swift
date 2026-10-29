@@ -15,8 +15,8 @@ import SwiftUI
 class ModPackDownloadSheetViewModel {
     var projectDetail: ModrinthProjectDetail?
     var availableGameVersions: [String] = []
-    var filteredModPackVersions: [ModrinthProjectDetailVersion] = []
-    var isLoadingModPackVersions = false
+    private(set) var filteredModPackVersions: [ModrinthProjectDetailVersion] = []
+    private(set) var isLoadingModPackVersions = false
     var isLoadingProjectDetails = true
     var lastParsedIndexInfo: ModrinthIndexInfo?
     var modPackInstallState = ModPackInstallState()
@@ -48,9 +48,9 @@ class ModPackDownloadSheetViewModel {
         clearParsedIndexInfo()
         projectDetail = nil
         availableGameVersions = []
+        isLoadingModPackVersions = false
         filteredModPackVersions = []
         allModPackVersions = []
-        modPackInstallState.reset()
         modPackDownloadProgress = 0
         modPackTotalSize = 0
     }
@@ -247,13 +247,17 @@ class ModPackDownloadSheetViewModel {
         guard let projectDetail else { return }
 
         isLoadingModPackVersions = true
+        defer { isLoadingModPackVersions = false }
+
+        allModPackVersions = []
+        filteredModPackVersions = []
 
         do {
-            allModPackVersions =
-                try await ModrinthService.fetchProjectVersionsThrowing(
-                    id: projectDetail.id,
-                )
-            filteredModPackVersions = allModPackVersions
+            let versions = try await ModrinthService.fetchProjectVersionsThrowing(
+                id: projectDetail.id,
+            )
+            allModPackVersions = versions
+            filteredModPackVersions = versions
                 .filter { version in
                     version.gameVersions.contains(gameVersion)
                 }
@@ -261,11 +265,8 @@ class ModPackDownloadSheetViewModel {
                     version1.datePublished > version2.datePublished
                 }
         } catch {
-            let globalError = GlobalError.from(error)
-            DIContainer.shared.core.errorHandler.handle(globalError)
+            DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
         }
-
-        isLoadingModPackVersions = false
     }
 
     private func handleDownloadError(_: String, _ i18nKey: String) {

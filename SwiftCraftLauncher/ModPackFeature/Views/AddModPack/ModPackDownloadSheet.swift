@@ -94,16 +94,16 @@ struct ModPackDownloadSheet: View {
                     availableGameVersions: viewModel.availableGameVersions,
                     filteredModPackVersions: viewModel.filteredModPackVersions,
                     isLoadingModPackVersions: viewModel.isLoadingModPackVersions,
-                    isProcessing: viewModel.isProcessing,
                     onGameVersionChange: handleGameVersionChange,
                     onModPackVersionAppear: selectFirstModPackVersion,
                 )
+                .disabled(isDownloading)
 
-                if !selectedGameVersion.isEmpty, selectedModPackVersion != nil {
+                if !selectedGameVersion.isEmpty, !viewModel.isLoadingModPackVersions {
                     ModPackInstallSharedSections(
                         gameName: $gameNameValidator.gameName,
                         isGameNameDuplicate: $gameNameValidator.isGameNameDuplicate,
-                        isGameNameInputDisabled: viewModel.isProcessing,
+                        isGameNameInputDisabled: isDownloading,
                         showGameNameInput: true,
                         gameInstaller: gameInstaller,
                         modPackInstallState: viewModel.modPackInstallState,
@@ -137,6 +137,10 @@ struct ModPackDownloadSheet: View {
             || viewModel.modPackInstallState.isInstalling
     }
 
+    private var isButtonLoading: Bool {
+        isDownloading || viewModel.isLoadingProjectDetails || viewModel.isLoadingModPackVersions
+    }
+
     private var cancelButton: some View {
         Button(isDownloading ? "common.stop".localized() : "common.cancel".localized()) {
             handleCancel()
@@ -151,7 +155,7 @@ struct ModPackDownloadSheet: View {
             }
         } label: {
             HStack {
-                if isDownloading {
+                if isButtonLoading {
                     ProgressView()
                         .controlSize(.small)
                 } else {
@@ -160,35 +164,30 @@ struct ModPackDownloadSheet: View {
             }
         }
         .keyboardShortcut(.defaultAction)
-        .disabled(!canDownload || isDownloading)
+        .disabled(!canDownload || isButtonLoading)
     }
 
     private func handleGameVersionChange(_ newValue: String) {
-        if !newValue.isEmpty {
-            Task {
-                await viewModel.loadModPackVersions(for: newValue)
-            }
-            setDefaultGameName()
-        } else {
-            viewModel.filteredModPackVersions = []
+        guard !newValue.isEmpty else { return }
+        Task {
+            await viewModel.loadModPackVersions(for: newValue)
         }
+        setDefaultGameName()
     }
 
     private func selectFirstModPackVersion() {
         if !viewModel.filteredModPackVersions.isEmpty,
            selectedModPackVersion == nil {
             selectedModPackVersion = viewModel.filteredModPackVersions[0]
-            setDefaultGameName()
         }
     }
 
     private func setDefaultGameName() {
-        let defaultName = GameNameGenerator.generateModPackName(
+        gameNameValidator.gameName = GameNameGenerator.generateModPackName(
             projectTitle: viewModel.projectDetail?.title,
             gameVersion: selectedGameVersion,
             includeTimestamp: true,
         )
-        gameNameValidator.setDefaultName(defaultName)
     }
 
     private func handleCancel() {

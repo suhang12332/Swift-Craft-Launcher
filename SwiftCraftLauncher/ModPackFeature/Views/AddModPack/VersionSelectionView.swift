@@ -15,7 +15,6 @@ struct VersionSelectionView: View {
     let availableGameVersions: [String]
     let filteredModPackVersions: [ModrinthProjectDetailVersion]
     let isLoadingModPackVersions: Bool
-    let isProcessing: Bool
 
     let onGameVersionChange: (String) -> Void
     let onModPackVersionAppear: () -> Void
@@ -23,7 +22,7 @@ struct VersionSelectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             gameVersionPicker
-            if !selectedGameVersion.isEmpty {
+            if !selectedGameVersion.isEmpty, !isLoadingModPackVersions {
                 modPackVersionPicker
             }
         }
@@ -50,8 +49,9 @@ struct VersionSelectionView: View {
                     }
                 }
             }
-            .disabled(availableGameVersions.isEmpty)
+            .disabled(availableGameVersions.isEmpty || isLoadingModPackVersions)
             .onChange(of: selectedGameVersion) { _, newValue in
+                selectedModPackVersion = nil
                 onGameVersionChange(newValue)
             }
         }
@@ -59,35 +59,22 @@ struct VersionSelectionView: View {
 
     private var modPackVersionPicker: some View {
         VStack(alignment: .leading, spacing: 8) {
-            if isLoadingModPackVersions {
-                Text("modpack.version".localized())
-                    .font(.headline)
-                HStack {
-                    ProgressView()
-                        .controlSize(.small)
-                        .frame(maxWidth: .infinity)
-                }
-            } else if !selectedGameVersion.isEmpty {
-                Text("modpack.version".localized())
-                    .font(.headline)
-                CommonMenuPicker(
-                    selection: $selectedModPackVersion,
-                ) {
-                    Text("global_resource.select_version".localized())
-                } content: {
-                    ForEach(filteredModPackVersions, id: \.id) { version in
-                        Text(version.name).tag(
-                            version as ModrinthProjectDetailVersion?,
-                        )
-                    }
-                }
-                .onAppear {
-                    onModPackVersionAppear()
+            Text("modpack.version".localized())
+                .font(.headline)
+            CommonMenuPicker(
+                selection: $selectedModPackVersion,
+            ) {
+                Text("global_resource.select_version".localized())
+            } content: {
+                ForEach(filteredModPackVersions, id: \.id) { version in
+                    Text(version.name).tag(
+                        version as ModrinthProjectDetailVersion?,
+                    )
                 }
             }
-        }
-        .onChange(of: selectedGameVersion) { _, _ in
-            selectedModPackVersion = nil
+            .onAppear {
+                onModPackVersionAppear()
+            }
         }
     }
 }
