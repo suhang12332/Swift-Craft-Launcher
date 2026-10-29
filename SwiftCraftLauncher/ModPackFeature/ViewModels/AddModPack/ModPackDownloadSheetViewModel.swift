@@ -43,8 +43,8 @@ class ModPackDownloadSheetViewModel {
         lastParsedIndexInfo = nil
     }
 
-    func cleanupAllData(gameSetupService: GameSetupUtil? = nil) {
-        cancelDownloadAndResetStates(gameSetupService: gameSetupService)
+    func cleanupAllData(gameInstaller: GameInstaller? = nil) {
+        cancelDownloadAndResetStates(gameInstaller: gameInstaller)
         clearParsedIndexInfo()
         projectDetail = nil
         availableGameVersions = []
@@ -90,7 +90,7 @@ class ModPackDownloadSheetViewModel {
         projectDetail: ModrinthProjectDetail,
         gameName: String,
         selectedGameVersion: String,
-        gameSetupService: GameSetupUtil,
+        gameInstaller: GameInstaller,
         onFinished: @escaping @MainActor (_ success: Bool) -> Void,
     ) {
         installTasks.start { [weak self] in
@@ -100,28 +100,28 @@ class ModPackDownloadSheetViewModel {
                 projectDetail: projectDetail,
                 gameName: gameName,
                 selectedGameVersion: selectedGameVersion,
-                gameSetupService: gameSetupService,
+                gameInstaller: gameInstaller,
             )
             onFinished(success)
         }
     }
 
-    func cancelDownloadAndResetStates(gameSetupService: GameSetupUtil? = nil) {
+    func cancelDownloadAndResetStates(gameInstaller: GameInstaller? = nil) {
         installTasks.cancel()
         isProcessing = false
         modPackInstallState.reset()
-        if let gameSetupService {
-            gameSetupService.downloadState.reset()
+        if let gameInstaller {
+            gameInstaller.progress.reset()
         }
     }
 
     /// Cancels an in-flight installation and removes the partially created instance.
     /// - Parameters:
     ///   - gameName: The name of the game being installed.
-    ///   - gameSetupService: The setup service whose download state should be reset.
-    func cancelInstallation(gameName: String, gameSetupService: GameSetupUtil) async {
+    ///   - gameInstaller: The installer whose progress should be reset.
+    func cancelInstallation(gameName: String, gameInstaller: GameInstaller) async {
         abortFailedResources()
-        cancelDownloadAndResetStates(gameSetupService: gameSetupService)
+        cancelDownloadAndResetStates(gameInstaller: gameInstaller)
         clearParsedIndexInfo()
         cleanupTempFiles()
 
@@ -147,7 +147,7 @@ class ModPackDownloadSheetViewModel {
         projectDetailForIcon: ModrinthProjectDetail? = nil,
         gameName: String,
         selectedGameVersion: String,
-        gameSetupService: GameSetupUtil,
+        gameInstaller: GameInstaller,
         prepared: ModPackInstallCoordinator.PreparedModPack? = nil,
     ) async -> Bool {
         guard let gameRepository else { return false }
@@ -161,7 +161,7 @@ class ModPackDownloadSheetViewModel {
             projectDetailForIcon: projectDetailForIcon,
             gameName: gameName,
             selectedGameVersion: selectedGameVersion,
-            gameSetupService: gameSetupService,
+            gameInstaller: gameInstaller,
             gameRepository: gameRepository,
             modPackInstallState: modPackInstallState,
             setProcessing: { [weak self] processing in
@@ -182,7 +182,7 @@ class ModPackDownloadSheetViewModel {
         projectDetail: ModrinthProjectDetail,
         gameName: String,
         selectedGameVersion: String,
-        gameSetupService: GameSetupUtil,
+        gameInstaller: GameInstaller,
     ) async -> Bool {
         guard gameRepository != nil else {
             return false
@@ -218,7 +218,7 @@ class ModPackDownloadSheetViewModel {
             projectDetailForIcon: projectDetail,
             gameName: gameName,
             selectedGameVersion: selectedGameVersion,
-            gameSetupService: gameSetupService,
+            gameInstaller: gameInstaller,
         )
 
         clearParsedIndexInfo()

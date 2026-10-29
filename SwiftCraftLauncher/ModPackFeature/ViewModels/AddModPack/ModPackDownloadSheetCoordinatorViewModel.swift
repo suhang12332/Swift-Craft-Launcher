@@ -50,14 +50,14 @@ final class ModPackDownloadSheetCoordinatorViewModel {
     ///
     /// - Parameters:
     ///   - sheetViewModel: The view model driving the download sheet UI.
-    ///   - gameSetupService: The service used to set up game instances.
+    ///   - gameInstaller: The service used to set up game instances.
     func onDisappear(
         sheetViewModel: ModPackDownloadSheetViewModel,
-        gameSetupService: GameSetupUtil,
+        gameInstaller: GameInstaller,
     ) {
         loadTask?.cancel()
         loadTask = nil
 
-        sheetViewModel.cleanupAllData(gameSetupService: gameSetupService)
+        sheetViewModel.cleanupAllData(gameInstaller: gameInstaller)
     }
 }

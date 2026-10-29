@@ -28,7 +28,7 @@ extension GameCreationViewModel {
             gameNameValidator.gameName = finalGameName
         }
 
-        await gameSetupService.saveGame(
+        await gameInstaller.saveGame(
             input: .init(
                 gameName: finalGameName,
                 selectedGameVersion: selectedGameVersion,

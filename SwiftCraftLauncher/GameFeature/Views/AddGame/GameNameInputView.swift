@@ -14,7 +14,6 @@ struct GameNameInputView: View {
     @FocusState private var isGameNameFocused: Bool
     @State private var showErrorPopover: Bool = false
     let isDisabled: Bool
-    let gameSetupService: GameSetupUtil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -36,19 +35,15 @@ struct GameNameInputView: View {
                 }
             }
             .onChange(of: gameName) { _, newName in
-                Task {
-                    // Trim first: the installation creates profiles/<trimmed name>, so checking
-                    // the raw input would miss an existing instance and let it be overwritten.
-                    let isDuplicate = await gameSetupService.checkGameNameDuplicate(
-                        newName.trimmingCharacters(in: .whitespacesAndNewlines),
-                    )
-                    await MainActor.run {
-                        if isDuplicate != isGameNameDuplicate {
-                            isGameNameDuplicate = isDuplicate
-                        }
-                        showErrorPopover = isDuplicate
-                    }
+                // Trim first: the installation creates profiles/<trimmed name>, so checking
+                // the raw input would miss an existing instance and let it be overwritten.
+                let isDuplicate = GameInstaller.isGameNameTaken(
+                    newName.trimmingCharacters(in: .whitespacesAndNewlines),
+                )
+                if isDuplicate != isGameNameDuplicate {
+                    isGameNameDuplicate = isDuplicate
                 }
+                showErrorPopover = isDuplicate
             }
         }
     }

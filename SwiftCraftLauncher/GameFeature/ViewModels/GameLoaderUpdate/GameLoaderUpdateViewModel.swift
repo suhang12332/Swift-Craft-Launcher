@@ -24,7 +24,7 @@ enum GameLoaderUpdateMode {
 ///
 /// When the existing game is vanilla, the user can choose a mod loader type and
 /// version to add. The game version is never changed.
-/// Downloads are tracked through the shared ``GameSetupUtil`` pipeline, whose file
+/// Downloads are tracked through the shared ``GameInstaller`` pipeline, whose file
 /// downloads are idempotent (SHA1-verified files are skipped), so re-running it on
 /// an installed game only fetches what changed.
 @MainActor
@@ -37,7 +37,7 @@ final class GameLoaderUpdateViewModel {
     let mode: GameLoaderUpdateMode
 
     /// The installation pipeline reused for loader version changes.
-    let gameSetupService = GameSetupUtil()
+    let gameInstaller = GameInstaller()
 
     /// The selected mod loader type.
     ///
@@ -101,7 +101,7 @@ final class GameLoaderUpdateViewModel {
 
     /// Whether a loader update is currently in progress.
     var isUpdating: Bool {
-        gameSetupService.downloadState.isDownloading
+        gameInstaller.progress.isDownloading
     }
 
     /// A human-readable description of the loader currently installed on the game.
@@ -185,7 +185,7 @@ final class GameLoaderUpdateViewModel {
     func cancel() {
         guard isUpdating else { return }
         updateTask?.cancel()
-        gameSetupService.downloadState.cancel()
+        gameInstaller.progress.cancel()
     }
 
     /// Cancels any pending task when the view disappears.
@@ -202,7 +202,7 @@ final class GameLoaderUpdateViewModel {
             return
         }
 
-        let input: GameSetupUtil.GameLoaderUpdateInput
+        let input: GameInstaller.GameLoaderUpdateInput
         switch mode {
         case .adjust:
             input = .init(
@@ -216,7 +216,7 @@ final class GameLoaderUpdateViewModel {
             )
         }
 
-        await gameSetupService.updateGameLoader(
+        await gameInstaller.updateGameLoader(
             input: input,
             existingGame: existingGame,
             gameRepository: gameRepository,

@@ -9,7 +9,7 @@ import SwiftUI
 
 /// Displays download and installation progress for game core files, mod loader, and modpack.
 struct DownloadProgressView: View {
-    var gameSetupService: GameSetupUtil
+    var gameInstaller: GameInstaller
     var modPackInstallState: ModPackInstallState
     let lastParsedIndexInfo: ModrinthIndexInfo?
 
@@ -24,43 +24,22 @@ struct DownloadProgressView: View {
     @ViewBuilder private var gameDownloadProgress: some View {
         progressRow(
             title: "download.core.title".localized(),
-            state: gameSetupService.downloadState,
-            type: .core,
+            phase: gameInstaller.progress.core,
         )
         progressRow(
             title: "download.resources.title".localized(),
-            state: gameSetupService.downloadState,
-            type: .resources,
+            phase: gameInstaller.progress.resources,
         )
     }
 
     @ViewBuilder private var modLoaderDownloadProgress: some View {
-        if let indexInfo = lastParsedIndexInfo {
-            let loaderType = indexInfo.loaderType.lowercased()
-            let title = getLoaderTitle(for: indexInfo.loaderType)
-
-            if loaderType == GameLoader.fabric.displayName || loaderType == GameLoader.quilt.rawValue {
-                progressRow(
-                    title: title,
-                    state: gameSetupService.fabricDownloadState,
-                    type: .core,
-                    version: indexInfo.loaderVersion,
-                )
-            } else if loaderType == GameLoader.forge.displayName {
-                progressRow(
-                    title: title,
-                    state: gameSetupService.forgeDownloadState,
-                    type: .core,
-                    version: indexInfo.loaderVersion,
-                )
-            } else if loaderType == GameLoader.neoforge.displayName {
-                progressRow(
-                    title: title,
-                    state: gameSetupService.neoForgeDownloadState,
-                    type: .core,
-                    version: indexInfo.loaderVersion,
-                )
-            }
+        if let indexInfo = lastParsedIndexInfo,
+           let title = loaderTitle(for: indexInfo.loaderType) {
+            progressRow(
+                title: title,
+                phase: gameInstaller.progress.loader,
+                version: indexInfo.loaderVersion,
+            )
         }
     }
 
@@ -92,15 +71,16 @@ struct DownloadProgressView: View {
 
     private func progressRow(
         title: String,
-        state: DownloadState,
-        type: ProgressType,
+        phase: InstallProgressReporter.PhaseProgress,
         version: String? = nil,
     ) -> some View {
         FormSection {
-            ProgressRowWrapper(
+            DownloadProgressRow(
                 title: title,
-                state: state,
-                type: type,
+                progress: phase.progress,
+                currentFile: phase.currentFile,
+                completed: phase.completed,
+                total: phase.total,
                 version: version,
             )
         }
@@ -159,7 +139,7 @@ struct DownloadProgressView: View {
         }
     }
 
-    private func getLoaderTitle(for loaderType: String) -> String {
+    private func loaderTitle(for loaderType: String) -> String? {
         switch loaderType.lowercased() {
         case GameLoader.fabric.displayName:
             return "fabric.loader.title".localized()
@@ -170,37 +150,11 @@ struct DownloadProgressView: View {
         case GameLoader.neoforge.displayName:
             return "neoforge.loader.title".localized()
         default:
-            return ""
+            return nil
         }
     }
 }
 
-private enum ProgressType {
-    case core, resources
-}
-
 private enum InstallProgressType {
     case files, dependencies, overrides
-}
-
-private struct ProgressRowWrapper: View {
-    let title: String
-    var state: DownloadState
-    let type: ProgressType
-    let version: String?
-
-    var body: some View {
-        DownloadProgressRow(
-            title: title,
-            progress: type == .core
-                ? state.coreProgress : state.resourcesProgress,
-            currentFile: type == .core
-                ? state.currentCoreFile : state.currentResourceFile,
-            completed: type == .core
-                ? state.coreCompletedFiles : state.resourcesCompletedFiles,
-            total: type == .core
-                ? state.coreTotalFiles : state.resourcesTotalFiles,
-            version: version,
-        )
-    }
 }

@@ -25,7 +25,7 @@ extension View {
                 viewModel.updateParentState()
             }
         }
-        .onChange(of: viewModel.gameSetupService.downloadState.isDownloading) { oldValue, newValue in
+        .onChange(of: viewModel.gameInstaller.progress.isDownloading) { oldValue, newValue in
             if oldValue != newValue {
                 viewModel.updateParentState()
             }

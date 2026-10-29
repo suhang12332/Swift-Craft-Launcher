@@ -98,7 +98,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     }
 
     override func computeIsDownloading() -> Bool {
-        gameSetupService.downloadState.isDownloading
+        gameInstaller.progress.isDownloading
             || modPackViewModel.modPackInstallState.isInstalling
             || isProcessingModPack
     }

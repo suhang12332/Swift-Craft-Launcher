@@ -9,7 +9,7 @@ import Foundation
 
 extension ModPackImportViewModel {
     var shouldShowProgress: Bool {
-        gameSetupService.downloadState.isDownloading
+        gameInstaller.progress.isDownloading
             || modPackViewModel.modPackInstallState.isInstalling
     }
 

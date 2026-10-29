@@ -68,7 +68,7 @@ struct GameLoaderUpdateView: View {
                 }
             } else {
                 DownloadProgressSection(
-                    gameSetupService: viewModel.gameSetupService,
+                    gameInstaller: viewModel.gameInstaller,
                     selectedModLoader: viewModel.selectedModLoader,
                 )
             }

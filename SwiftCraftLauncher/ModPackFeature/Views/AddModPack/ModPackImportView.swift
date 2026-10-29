@@ -207,7 +207,7 @@ struct ModPackImportView: View {
             ),
             isGameNameInputDisabled: viewModel.isProcessingModPack || viewModel.isDownloading,
             showGameNameInput: true,
-            gameSetupService: viewModel.gameSetupService,
+            gameInstaller: viewModel.gameInstaller,
             modPackInstallState: viewModel.modPackViewModelForProgress.modPackInstallState,
             lastParsedIndexInfo: viewModel.modPackIndexInfo,
             shouldShowProgress: viewModel.shouldShowProgress,

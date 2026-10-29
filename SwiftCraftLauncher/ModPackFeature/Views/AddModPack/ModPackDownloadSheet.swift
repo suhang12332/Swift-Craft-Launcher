@@ -22,7 +22,7 @@ struct ModPackDownloadSheet: View {
     @State private var coordinator = ModPackDownloadSheetCoordinatorViewModel()
     @State private var selectedGameVersion: String = ""
     @State private var selectedModPackVersion: ModrinthProjectDetailVersion?
-    @State private var gameSetupService = GameSetupUtil()
+    @State private var gameInstaller = GameInstaller()
     @State private var gameNameValidator: GameNameValidator
 
     init(
@@ -62,7 +62,7 @@ struct ModPackDownloadSheet: View {
         selectedModPackVersion = nil
         coordinator.onDisappear(
             sheetViewModel: viewModel,
-            gameSetupService: gameSetupService,
+            gameInstaller: gameInstaller,
         )
     }
 
@@ -105,7 +105,7 @@ struct ModPackDownloadSheet: View {
                         isGameNameDuplicate: $gameNameValidator.isGameNameDuplicate,
                         isGameNameInputDisabled: viewModel.isProcessing,
                         showGameNameInput: true,
-                        gameSetupService: gameSetupService,
+                        gameInstaller: gameInstaller,
                         modPackInstallState: viewModel.modPackInstallState,
                         lastParsedIndexInfo: viewModel.lastParsedIndexInfo,
                         shouldShowProgress: shouldShowProgress,
@@ -124,7 +124,7 @@ struct ModPackDownloadSheet: View {
     }
 
     private var shouldShowProgress: Bool {
-        gameSetupService.downloadState.isDownloading
+        gameInstaller.progress.isDownloading
             || viewModel.modPackInstallState.isInstalling
     }
 
@@ -133,7 +133,7 @@ struct ModPackDownloadSheet: View {
     }
 
     private var isDownloading: Bool {
-        viewModel.isProcessing || gameSetupService.downloadState.isDownloading
+        viewModel.isProcessing || gameInstaller.progress.isDownloading
             || viewModel.modPackInstallState.isInstalling
     }
 
@@ -196,7 +196,7 @@ struct ModPackDownloadSheet: View {
             Task {
                 await viewModel.cancelInstallation(
                     gameName: gameNameValidator.gameName,
-                    gameSetupService: gameSetupService,
+                    gameInstaller: gameInstaller,
                 )
             }
         }
@@ -214,7 +214,7 @@ struct ModPackDownloadSheet: View {
             projectDetail: projectDetail,
             gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
             selectedGameVersion: selectedGameVersion,
-            gameSetupService: gameSetupService,
+            gameInstaller: gameInstaller,
         ) { success in
             if success {
                 dismiss()

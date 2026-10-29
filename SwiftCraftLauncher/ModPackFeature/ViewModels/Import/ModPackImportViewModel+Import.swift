@@ -26,7 +26,7 @@ extension ModPackImportViewModel {
             archivePath: archiveURL,
             gameName: gameName,
             selectedGameVersion: indexInfo.gameVersion,
-            gameSetupService: gameSetupService,
+            gameInstaller: gameInstaller,
             prepared: .init(
                 extractedPath: extractedPath,
                 indexInfo: indexInfo,
