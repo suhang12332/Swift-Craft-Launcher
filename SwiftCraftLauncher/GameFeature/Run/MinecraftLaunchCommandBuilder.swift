@@ -31,7 +31,7 @@ enum MinecraftLaunchCommandBuilder {
             "assets_index_name": gameInfo.assetIndex,
             "clientid": AppConstants.minecraftClientId,
             "user_type": "msa",
-            "version_type": Bundle.main.appName,
+            "version_type": manifest.type,
             "launcher_name": Bundle.main.appName,
             "launcher_version": launcherVersion,
             "classpath": classpath,

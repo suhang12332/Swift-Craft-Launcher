@@ -90,6 +90,7 @@ class MinecraftFileManager: @unchecked Sendable {
     func downloadVersionFilesThrowing(
         manifest: MinecraftVersionManifest,
         gameName: String,
+        assetIndex: DownloadedAssetIndex,
     ) async throws {
         try createDirectories(manifestId: manifest.id, gameName: gameName)
 
@@ -98,7 +99,7 @@ class MinecraftFileManager: @unchecked Sendable {
                 try await self?.downloadCoreFiles(manifest: manifest)
             }
             group.addTask { [weak self] in
-                try await self?.downloadAssets(manifest: manifest)
+                try await self?.downloadAssets(assetIndex: assetIndex)
             }
 
             try await group.waitForAll()
@@ -122,7 +123,7 @@ class MinecraftFileManager: @unchecked Sendable {
             return library
         }.count
 
-        return 1 + applicableLibraries.count + nativeLibraries + 2
+        return 2 + applicableLibraries.count + nativeLibraries
     }
 
     func isNativeClassifier(_ key: String, minecraftVersion: String? = nil) -> Bool {

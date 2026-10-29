@@ -30,7 +30,7 @@ struct GameActionButtons: View {
     }
 
     private func cachedIsGameRunning(userId: String = "") -> Bool {
-        container.core.gameStatusManager.cachedIsGameRunning(
+        container.core.gameSessionStore.cachedIsGameRunning(
             gameId: game.id,
             userId: userId.isEmpty ? currentUserId : userId,
         )
@@ -90,10 +90,10 @@ struct GameActionButtons: View {
             GameMoreMenu(game: game)
         }
         .onAppear {
-            container.core.gameStatusManager.refreshGameStatus(gameId: game.id, userId: currentUserId)
+            container.core.gameSessionStore.refreshGameStatus(gameId: game.id, userId: currentUserId)
         }
         .onChange(of: currentUserId) { _, newUserId in
-            container.core.gameStatusManager.refreshGameStatus(gameId: game.id, userId: newUserId)
+            container.core.gameSessionStore.refreshGameStatus(gameId: game.id, userId: newUserId)
         }
     }
 }

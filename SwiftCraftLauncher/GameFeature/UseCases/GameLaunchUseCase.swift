@@ -20,13 +20,13 @@ final class GameLaunchUseCase {
     private let commandPreparer = LaunchCommandPreparer()
     private let processLauncher = GameProcessLauncher()
 
-    private var statusManager: GameStatusManager {
-        DIContainer.shared.core.gameStatusManager
+    private var sessionStore: GameSessionStore {
+        DIContainer.shared.core.gameSessionStore
     }
 
     /// Whether the game is currently launching for the given player.
     func isLaunching(gameId: String, userId: String) -> Bool {
-        statusManager.isGameLaunching(gameId: gameId, userId: userId)
+        sessionStore.isGameLaunching(gameId: gameId, userId: userId)
     }
 
     /// Launches the game when it is stopped, or stops it when it is running.
@@ -39,11 +39,11 @@ final class GameLaunchUseCase {
         }
 
         let userId = player.id
-        guard !statusManager.isGameLaunching(gameId: game.id, userId: userId) else {
+        guard !sessionStore.isGameLaunching(gameId: game.id, userId: userId) else {
             return
         }
 
-        if statusManager.isGameRunning(gameId: game.id, userId: userId) {
+        if sessionStore.refreshGameStatus(gameId: game.id, userId: userId) {
             await processLauncher.stop(player: player, game: game)
         } else {
             await launchGame(player: player, game: game)
@@ -52,9 +52,9 @@ final class GameLaunchUseCase {
 
     private func launchGame(player: Player, game: GameVersionInfo) async {
         let userId = player.id
-        statusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
+        sessionStore.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
         defer {
-            statusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false)
+            sessionStore.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false)
         }
 
         do {

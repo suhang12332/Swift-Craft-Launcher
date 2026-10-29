@@ -31,12 +31,7 @@ struct SaveInfoView: View {
 
     private var currentGameRunningState: Bool {
         let userId = playerListViewModel.currentPlayer?.id ?? ""
-        let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
-        if let isRunning = container.core.gameStatusManager.allGameStates[key] {
-            return isRunning
-        } else {
-            return false
-        }
+        return container.core.gameSessionStore.cachedIsGameRunning(gameId: gameId, userId: userId)
     }
 
     var body: some View {

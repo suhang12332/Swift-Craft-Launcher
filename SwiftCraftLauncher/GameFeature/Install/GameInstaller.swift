@@ -254,7 +254,7 @@ final class GameInstaller {
         let assetIndex = try await downloadAssetIndex(manifest: manifest)
 
         progress.start(
-            coreTotalFiles: 1 + manifest.libraries.count + 1,
+            coreTotalFiles: fileManager.calculateTotalFiles(manifest),
             resourcesTotalFiles: assetIndex.objects.count,
         )
 
@@ -264,7 +264,11 @@ final class GameInstaller {
             }
         }
 
-        try await fileManager.downloadVersionFilesThrowing(manifest: manifest, gameName: gameName)
+        try await fileManager.downloadVersionFilesThrowing(
+            manifest: manifest,
+            gameName: gameName,
+            assetIndex: assetIndex,
+        )
     }
 
     private func downloadAssetIndex(manifest: MinecraftVersionManifest) async throws -> DownloadedAssetIndex {

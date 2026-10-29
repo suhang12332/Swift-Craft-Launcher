@@ -42,7 +42,7 @@ struct GameContextMenu: View {
     /// Whether the game is currently running, determined by cached process state.
     private var isRunning: Bool {
         let userId = playerListViewModel.currentPlayer?.id ?? ""
-        return container.core.gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: userId)
+        return container.core.gameSessionStore.cachedIsGameRunning(gameId: game.id, userId: userId)
     }
 
     var body: some View {

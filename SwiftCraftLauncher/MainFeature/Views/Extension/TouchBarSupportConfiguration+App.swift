@@ -46,7 +46,7 @@ extension TouchBarSupportConfiguration {
             isRunning: {
                 guard let gameId = selectedGame()?.id else { return false }
                 let userId = playerListViewModel.currentPlayer?.id ?? ""
-                return container.core.gameStatusManager.cachedIsGameRunning(gameId: gameId, userId: userId)
+                return container.core.gameSessionStore.cachedIsGameRunning(gameId: gameId, userId: userId)
             },
             isLaunching: {
                 guard let gameId = selectedGame()?.id else { return false }

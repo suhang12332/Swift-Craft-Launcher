@@ -24,12 +24,12 @@ final class GameLaunchUseCaseTests: XCTestCase {
     }
 
     func testToggleIgnoresLaunchWhileAlreadyLaunching() async throws {
-        let statusManager = DIContainer.shared.core.gameStatusManager
+        let sessionStore = DIContainer.shared.core.gameSessionStore
         let player = try Player(name: "ReentryTest")
         let game = makeGame()
-        statusManager.setGameLaunching(gameId: game.id, userId: player.id, isLaunching: true)
+        sessionStore.setGameLaunching(gameId: game.id, userId: player.id, isLaunching: true)
         defer {
-            statusManager.setGameLaunching(gameId: game.id, userId: player.id, isLaunching: false)
+            sessionStore.setGameLaunching(gameId: game.id, userId: player.id, isLaunching: false)
         }
 
         let useCase = GameLaunchUseCase()

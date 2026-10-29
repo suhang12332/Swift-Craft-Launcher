@@ -41,7 +41,7 @@ struct GameProcessLauncher {
             process.environment = environment
         }
 
-        await DIContainer.shared.core.gameProcessManager.storeProcess(
+        await DIContainer.shared.core.gameSessionStore.storeProcess(
             gameId: game.id,
             userId: player.id,
             process: process,
@@ -51,7 +51,7 @@ struct GameProcessLauncher {
             try process.run()
 
             await MainActor.run {
-                DIContainer.shared.core.gameStatusManager.setGameRunning(
+                DIContainer.shared.core.gameSessionStore.setGameRunning(
                     gameId: game.id,
                     userId: player.id,
                     isRunning: true,
@@ -60,12 +60,12 @@ struct GameProcessLauncher {
         } catch {
             AppLog.game.error("Failed to launch process: \(error.localizedDescription)")
 
-            _ = await DIContainer.shared.core.gameProcessManager.stopProcess(
+            await DIContainer.shared.core.gameSessionStore.stopProcess(
                 for: game.id,
                 userId: player.id,
             )
             await MainActor.run {
-                DIContainer.shared.core.gameStatusManager.setGameRunning(
+                DIContainer.shared.core.gameSessionStore.setGameRunning(
                     gameId: game.id,
                     userId: player.id,
                     isRunning: false,
@@ -81,7 +81,7 @@ struct GameProcessLauncher {
     }
 
     func stop(player: Player, game: GameVersionInfo) async {
-        _ = await DIContainer.shared.core.gameProcessManager.stopProcess(
+        await DIContainer.shared.core.gameSessionStore.stopProcess(
             for: game.id,
             userId: player.id,
         )

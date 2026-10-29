@@ -45,11 +45,10 @@ class GameActionManager {
         let gameName = game.gameName
         Task { @MainActor in
             do {
-                let gameProcessManager = DIContainer.shared.core.gameProcessManager
-                let gameStatusManager = DIContainer.shared.core.gameStatusManager
+                let sessionStore = DIContainer.shared.core.gameSessionStore
                 let modScanner = DIContainer.shared.core.modScanner
 
-                if gameProcessManager.isGameRunningForAnyUser(gameId: gameId) {
+                if sessionStore.isGameRunningForAnyUser(gameId: gameId) {
                     let error = GlobalError.validation(
                         i18nKey: "error.validation.game_running_cannot_delete",
                         level: .notification,
@@ -71,8 +70,7 @@ class GameActionManager {
                     }
                 }
 
-                gameProcessManager.removeGameState(gameId: gameId)
-                gameStatusManager.removeGameState(gameId: gameId)
+                sessionStore.removeGameState(gameId: gameId)
 
                 let profileDir = AppPaths.profileDirectory(gameName: gameName)
                 if FileManager.default.fileExists(atPath: profileDir.path) {

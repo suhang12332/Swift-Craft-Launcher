@@ -1,5 +1,5 @@
 //
-//  GameProcessManager.swift
+//  GameSessionStore.swift
 //  GameFeature
 //
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
@@ -7,21 +7,81 @@
 
 import Foundation
 
-/// Manages running game processes and tracks their lifecycle.
+/// Owns game processes and their running/launching states, plus crash detection.
 @MainActor
 @Observable
-final class GameProcessManager {
-    static func processKey(gameId: String, userId: String) -> String {
-        "\(gameId)_\(userId)"
+final class GameSessionStore {
+    private struct Session {
+        var process: Process?
+        var isRunning = false
+        var isLaunching = false
+        var isManuallyStopped = false
     }
 
-    private var gameProcesses: [String: Process] = [:]
-    private var manuallyStoppedGames: Set<String> = []
+    private var sessions: [String: Session] = [:]
 
     /// `nonisolated` so database lookups can run off the main actor.
     nonisolated private let gameDatabase = GameVersionDatabase(dbPath: AppPaths.gameVersionDatabase.path)
 
     init() { }
+
+    private static func processKey(gameId: String, userId: String) -> String {
+        "\(gameId)_\(userId)"
+    }
+
+    // MARK: - Queries
+
+    func cachedIsGameRunning(gameId: String, userId: String) -> Bool {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        return sessions[key]?.isRunning ?? false
+    }
+
+    /// Refreshes the cached running state from the process and returns the actual state.
+    @discardableResult
+    func refreshGameStatus(gameId: String, userId: String) -> Bool {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        let actuallyRunning = sessions[key]?.process?.isRunning ?? false
+        updateRunningState(actuallyRunning, forKey: key)
+        return actuallyRunning
+    }
+
+    func isGameRunningForAnyUser(gameId: String) -> Bool {
+        let prefix = "\(gameId)_"
+        return sessions.contains { key, session in
+            key.hasPrefix(prefix) && session.process?.isRunning == true
+        }
+    }
+
+    func isGameLaunching(gameId: String, userId: String) -> Bool {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        return sessions[key]?.isLaunching ?? false
+    }
+
+    // MARK: - State updates
+
+    func setGameRunning(gameId: String, userId: String, isRunning: Bool) {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        updateRunningState(isRunning, forKey: key)
+    }
+
+    func setGameLaunching(gameId: String, userId: String, isLaunching: Bool) {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        guard sessions[key]?.isLaunching != isLaunching else { return }
+        guard sessions[key] != nil || isLaunching else { return }
+
+        sessions[key, default: Session()].isLaunching = isLaunching
+        AppLog.game.debug("Game launch state updated: \(key) -> \(isLaunching ? "Launching" : "Not launching")")
+    }
+
+    private func updateRunningState(_ isRunning: Bool, forKey key: String) {
+        guard sessions[key]?.isRunning != isRunning else { return }
+        guard sessions[key] != nil || isRunning else { return }
+
+        sessions[key, default: Session()].isRunning = isRunning
+        AppLog.game.debug("Game state updated: \(key) -> \(isRunning ? "Running" : "Stopped")")
+    }
+
+    // MARK: - Process lifecycle
 
     func storeProcess(gameId: String, userId: String, process: Process) {
         let key = Self.processKey(gameId: gameId, userId: userId)
@@ -31,13 +91,57 @@ final class GameProcessManager {
             }
         }
 
-        gameProcesses[key] = process
+        var session = sessions[key, default: Session()]
+        session.process = process
+        session.isRunning = false
+        session.isManuallyStopped = false
+        sessions[key] = session
         AppLog.game.debug("Stored game process: \(key)")
+    }
+
+    func stopProcess(for gameId: String, userId: String) {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        guard var session = sessions[key], let process = session.process else { return }
+
+        if process.isRunning {
+            session.isManuallyStopped = true
+            sessions[key] = session
+            process.terminate()
+            Task.detached(priority: .utility) {
+                process.waitUntilExit()
+            }
+        } else {
+            sessions.removeValue(forKey: key)
+        }
+
+        AppLog.game.debug("Stopping game process: \(key)")
+    }
+
+    func removeGameState(gameId: String) {
+        let prefix = "\(gameId)_"
+        for key in sessions.keys.filter({ $0.hasPrefix(prefix) }) {
+            guard var session = sessions[key] else { continue }
+
+            session.isRunning = false
+            session.isLaunching = false
+            guard let process = session.process, process.isRunning else {
+                sessions.removeValue(forKey: key)
+                continue
+            }
+
+            session.process = nil
+            session.isManuallyStopped = true
+            sessions[key] = session
+            process.terminate()
+            Task.detached(priority: .utility) {
+                process.waitUntilExit()
+            }
+        }
     }
 
     private func handleProcessTermination(gameId: String, userId: String, process: Process) async {
         let key = Self.processKey(gameId: gameId, userId: userId)
-        let wasManuallyStopped = manuallyStoppedGames.contains(key)
+        let wasManuallyStopped = sessions[key]?.isManuallyStopped ?? false
 
         handleProcessExit(gameId: gameId, wasManuallyStopped: wasManuallyStopped)
 
@@ -62,9 +166,7 @@ final class GameProcessManager {
             }
         }
 
-        DIContainer.shared.core.gameStatusManager.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
-        gameProcesses.removeValue(forKey: key)
-        manuallyStoppedGames.remove(key)
+        sessions.removeValue(forKey: key)
     }
 
     /// Runs off the main actor because it performs database and file-system I/O.
@@ -118,7 +220,7 @@ final class GameProcessManager {
     }
 
     /// Runs off the main actor because it performs database I/O.
-    nonisolated func collectLogsForGameImmediately(gameId: String) async {
+    nonisolated private func collectLogsForGameImmediately(gameId: String) async {
         do {
             try? gameDatabase.initialize()
             guard let game = try gameDatabase.getGame(by: gameId) else {
@@ -137,62 +239,6 @@ final class GameProcessManager {
             AppLog.game.debug("Game stopped by user: \(gameId)")
         } else {
             AppLog.game.info("Game process exited: \(gameId)")
-        }
-    }
-
-    func stopProcess(for gameId: String, userId: String) -> Bool {
-        let key = Self.processKey(gameId: gameId, userId: userId)
-        guard let process = gameProcesses[key] else { return false }
-        manuallyStoppedGames.insert(key)
-
-        if process.isRunning {
-            process.terminate()
-            Task.detached(priority: .utility) {
-                process.waitUntilExit()
-            }
-        }
-
-        AppLog.game.debug("Stopping game process: \(key)")
-        return true
-    }
-
-    func isGameRunning(gameId: String, userId: String) -> Bool {
-        let key = Self.processKey(gameId: gameId, userId: userId)
-        return gameProcesses[key]?.isRunning ?? false
-    }
-
-    func isGameRunningForAnyUser(gameId: String) -> Bool {
-        let prefix = "\(gameId)_"
-        return gameProcesses.contains { key, proc in key.hasPrefix(prefix) && proc.isRunning }
-    }
-
-    func removeGameState(gameId: String) {
-        let prefix = "\(gameId)_"
-        let toRemove = gameProcesses.filter { key, _ in key.hasPrefix(prefix) }
-        for (key, process) in toRemove {
-            gameProcesses.removeValue(forKey: key)
-            if process.isRunning {
-                manuallyStoppedGames.insert(key)
-            }
-        }
-
-        for (key, process) in toRemove where process.isRunning {
-            process.terminate()
-            Task { @MainActor [weak self] in
-                await Task.detached(priority: .utility) {
-                    process.waitUntilExit()
-                }.value
-                self?.gameProcesses.removeValue(forKey: key)
-                self?.manuallyStoppedGames.remove(key)
-            }
-        }
-
-        for (key, process) in toRemove where !process.isRunning {
-            if let idx = key.firstIndex(of: "_") {
-                let gameId = String(key[..<idx])
-                let userId = String(key[key.index(after: idx)...])
-                DIContainer.shared.core.gameStatusManager.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
-            }
         }
     }
 }
