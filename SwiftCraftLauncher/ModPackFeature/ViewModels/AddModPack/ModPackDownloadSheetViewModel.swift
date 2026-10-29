@@ -259,8 +259,8 @@ class ModPackDownloadSheetViewModel {
                 let versions = try await ModrinthService.fetchProjectVersionsThrowing(
                     id: projectDetail.id,
                 )
-                self.allModPackVersions = versions
-                self.filteredModPackVersions = versions
+                allModPackVersions = versions
+                filteredModPackVersions = versions
                     .filter { version in
                         version.gameVersions.contains(gameVersion)
                     }
