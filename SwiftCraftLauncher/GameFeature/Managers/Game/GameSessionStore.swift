@@ -29,8 +29,6 @@ final class GameSessionStore {
         "\(gameId)_\(userId)"
     }
 
-    // MARK: - Queries
-
     func cachedIsGameRunning(gameId: String, userId: String) -> Bool {
         let key = Self.processKey(gameId: gameId, userId: userId)
         return sessions[key]?.isRunning ?? false
@@ -57,8 +55,6 @@ final class GameSessionStore {
         return sessions[key]?.isLaunching ?? false
     }
 
-    // MARK: - State updates
-
     func setGameRunning(gameId: String, userId: String, isRunning: Bool) {
         let key = Self.processKey(gameId: gameId, userId: userId)
         updateRunningState(isRunning, forKey: key)
@@ -80,8 +76,6 @@ final class GameSessionStore {
         sessions[key, default: Session()].isRunning = isRunning
         AppLog.game.debug("Game state updated: \(key) -> \(isRunning ? "Running" : "Stopped")")
     }
-
-    // MARK: - Process lifecycle
 
     func storeProcess(gameId: String, userId: String, process: Process) {
         let key = Self.processKey(gameId: gameId, userId: userId)
