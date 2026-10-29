@@ -109,7 +109,6 @@ struct GameFinalizer {
             updated.launchCommand = try MinecraftLaunchCommandBuilder.buildThrowing(
                 manifest: manifest,
                 gameInfo: updated,
-                launcherBrand: Bundle.main.appName,
                 launcherVersion: Bundle.main.fullVersion,
             )
         } catch {
