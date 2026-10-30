@@ -12,26 +12,13 @@ extension SkinToolDetailViewModel {
     ///
     /// - Parameter resolvedPlayer: The player whose skin should be reset.
     func resetSkin(resolvedPlayer: Player?) {
-        guard let resolved = resolvedPlayer else { return }
-        let player = playerWithCredentialIfNeeded(resolved) ?? resolved
+        guard !operationInProgress,
+              let player = playerWithCredentialIfNeeded(resolvedPlayer) else { return }
 
-        operationInProgress = true
         isResettingSkin = true
-        resetSkinTask?.cancel()
         resetSkinTask = Task {
-            defer {
-                self.operationInProgress = false
-                self.isResettingSkin = false
-            }
-
-            do {
-                _ = await PlayerSkinService.resetSkinAndRefresh(player: player)
-                try Task.checkCancellation()
-            } catch is CancellationError {
-                AppLog.player.debug("Skin reset cancelled")
-            } catch {
-                AppLog.player.error("Skin reset failed: \(error)")
-            }
+            defer { self.isResettingSkin = false }
+            _ = await PlayerSkinService.resetSkinAndRefresh(player: player)
         }
     }
 
@@ -41,31 +28,21 @@ extension SkinToolDetailViewModel {
     ///   - resolvedPlayer: The player to update.
     ///   - onAllSuccess: A closure called when both skin and cape changes succeed.
     func applyChanges(resolvedPlayer: Player?, onAllSuccess: @escaping () -> Void) {
-        guard let resolved = resolvedPlayer else { return }
-        let player = playerWithCredentialIfNeeded(resolved) ?? resolved
+        guard !operationInProgress,
+              let player = playerWithCredentialIfNeeded(resolvedPlayer) else { return }
 
-        operationInProgress = true
         isApplyingChanges = true
-        applyChangesTask?.cancel()
         applyChangesTask = Task {
-            defer {
-                self.operationInProgress = false
-                self.isApplyingChanges = false
-            }
+            defer { self.isApplyingChanges = false }
 
-            do {
-                let skinSuccess = await self.handleSkinChanges(player: player)
-                try Task.checkCancellation()
-                let capeSuccess = await self.handleCapeChanges(player: player)
-                try Task.checkCancellation()
+            let skinSuccess = await self.handleSkinChanges(player: player)
+            guard !Task.isCancelled else { return }
 
-                if skinSuccess, capeSuccess {
-                    onAllSuccess()
-                }
-            } catch is CancellationError {
-                AppLog.player.debug("Skin apply cancelled")
-            } catch {
-                AppLog.player.error("Skin apply failed: \(error)")
+            let capeSuccess = await self.handleCapeChanges(player: player)
+            guard !Task.isCancelled else { return }
+
+            if skinSuccess, capeSuccess {
+                onAllSuccess()
             }
         }
     }
@@ -75,6 +52,13 @@ extension SkinToolDetailViewModel {
     /// - Parameter player: The player whose skin should be updated.
     /// - Returns: `true` if the skin change was applied successfully.
     func handleSkinChanges(player: Player) async -> Bool {
+        let hasSkinChanges = PlayerSkinService.hasSkinChanges(
+            selectedSkinData: selectedSkinData,
+            currentModel: currentModel,
+            originalModel: originalModel,
+        )
+        guard hasSkinChanges else { return true }
+
         do {
             try Task.checkCancellation()
 
@@ -87,24 +71,12 @@ extension SkinToolDetailViewModel {
                 try Task.checkCancellation()
                 if result {
                     persistSelectedSkinToLibrary()
-                    let model = currentModel.rawValue
-                    AppLog.player.info("Skin upload successful with model: \(model)")
-                } else {
-                    AppLog.player.error("Skin upload failed")
                 }
                 return result
-            } else if let original = originalModel, currentModel != original {
-                if let currentSkinInfo = publicSkinInfo, let skinURL = currentSkinInfo.skinURL {
-                    let result = await uploadCurrentSkinWithNewModel(skinURL: skinURL, player: player)
-                    try Task.checkCancellation()
-                    return result
-                } else {
-                    return false
-                }
-            } else if originalModel == nil, currentModel != .classic {
-                return false
             }
-            return true
+
+            guard let skinURL = publicSkinInfo?.skinURL else { return false }
+            return await uploadCurrentSkinWithNewModel(skinURL: skinURL, player: player)
         } catch is CancellationError {
             return false
         } catch {
@@ -118,65 +90,57 @@ extension SkinToolDetailViewModel {
     /// - Parameter player: The player whose cape should be updated.
     /// - Returns: `true` if the cape change was applied successfully.
     func handleCapeChanges(player: Player) async -> Bool {
+        guard selectedCapeId != currentActiveCapeId else { return true }
+
         do {
             try Task.checkCancellation()
 
-            if selectedCapeId != currentActiveCapeId {
-                try Task.checkCancellation()
-                if let capeId = selectedCapeId {
-                    try await PlayerSkinService.showCapeThrowing(capeId: capeId, player: player)
-                    try Task.checkCancellation()
-                    if let newProfile = try? await PlayerSkinService.fetchPlayerProfileThrowing(player: player) {
-                        playerProfile = newProfile
-                        selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
-                        updateHasChanges()
-                    }
-                    return true
-                } else {
-                    try await PlayerSkinService.hideCapeThrowing(player: player)
-                    try Task.checkCancellation()
-                    if let newProfile = try? await PlayerSkinService.fetchPlayerProfileThrowing(player: player) {
-                        playerProfile = newProfile
-                        selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
-                        updateHasChanges()
-                    }
-                    return true
-                }
+            if let capeId = selectedCapeId {
+                try await PlayerSkinService.showCapeThrowing(capeId: capeId, player: player)
+            } else {
+                try await PlayerSkinService.hideCapeThrowing(player: player)
             }
+
+            try Task.checkCancellation()
+            await refreshProfileAfterCapeChange(player: player)
             return true
         } catch is CancellationError {
             return false
         } catch {
+            AppLog.player.error("Cape changes error: \(error)")
             return false
         }
+    }
+
+    /// Refreshes the cached profile and cape selection after a cape change.
+    private func refreshProfileAfterCapeChange(player: Player) async {
+        guard let newProfile = try? await PlayerSkinService.fetchPlayerProfileThrowing(player: player) else {
+            return
+        }
+
+        playerProfile = newProfile
+        selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
+        updateHasChanges()
     }
 
     /// Downloads the current skin and re-uploads it with a new model variant.
     func uploadCurrentSkinWithNewModel(skinURL: String, player: Player) async -> Bool {
         do {
             try Task.checkCancellation()
-            let p = playerWithCredentialIfNeeded(player) ?? player
+            guard let url = URL(string: skinURL.httpToHttps()) else { return false }
 
-            let httpsURL = skinURL.httpToHttps()
-
-            guard let url = URL(string: httpsURL) else {
-                return false
-            }
-            var headers: [String: String]?
-            if !p.authAccessToken.isEmpty {
-                headers = [APIClient.Header.authorization: APIClient.bearer(p.authAccessToken)]
-            } else {
-                headers = nil
-            }
+            let accessToken = player.authAccessToken
+            let headers: [String: String]? = accessToken.isEmpty
+                ? nil
+                : [APIClient.Header.authorization: APIClient.bearer(accessToken)]
             let data = try await APIClient.get(url: url, headers: headers)
             try Task.checkCancellation()
 
             try await PlayerSkinService.uploadSkinThrowing(
                 imageData: data,
                 model: currentModel,
-                player: p,
+                player: player,
             )
-            try Task.checkCancellation()
             return true
         } catch is CancellationError {
             return false

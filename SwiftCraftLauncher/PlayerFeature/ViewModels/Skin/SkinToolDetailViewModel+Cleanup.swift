@@ -42,7 +42,6 @@ extension SkinToolDetailViewModel {
 
         currentModel = .classic
         hasChanges = false
-        operationInProgress = false
         isApplyingChanges = false
         isResettingSkin = false
 
