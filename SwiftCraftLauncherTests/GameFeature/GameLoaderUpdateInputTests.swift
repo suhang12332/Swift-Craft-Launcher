@@ -10,7 +10,7 @@ import XCTest
 
 final class GameLoaderUpdateInputTests: XCTestCase {
     func testGameLoaderUpdateInput_init() {
-        let input = GameSetupUtil.GameLoaderUpdateInput(
+        let input = GameInstaller.GameLoaderUpdateInput(
             selectedModLoader: "fabric",
             specifiedLoaderVersion: "0.16.0",
         )
@@ -20,7 +20,7 @@ final class GameLoaderUpdateInputTests: XCTestCase {
     }
 
     func testGameLoaderUpdateInput_vanilla() {
-        let input = GameSetupUtil.GameLoaderUpdateInput(
+        let input = GameInstaller.GameLoaderUpdateInput(
             selectedModLoader: GameLoader.vanilla.displayName,
             specifiedLoaderVersion: GameLoader.vanilla.displayName,
         )

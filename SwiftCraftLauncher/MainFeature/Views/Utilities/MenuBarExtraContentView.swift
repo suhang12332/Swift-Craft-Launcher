@@ -25,8 +25,8 @@ struct MenuBarExtraContentView: View {
     /// Returns the SF Symbol name reflecting the game's current launch or running state.
     private func gameStatusSymbolName(for game: GameVersionInfo) -> String {
         let userId = playerListViewModel.currentPlayer?.id ?? ""
-        let isRunning = container.core.gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: userId)
-        let isLaunching = container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: userId)
+        let isRunning = container.core.gameSessionStore.cachedIsGameRunning(gameId: game.id, userId: userId)
+        let isLaunching = gameLaunchUseCase.isLaunching(gameId: game.id, userId: userId)
 
         if isLaunching, !isRunning {
             return "progress.indicator"
@@ -110,9 +110,9 @@ struct MenuBarExtraContentView: View {
 
     /// Synchronizes cached running states for all games.
     private func syncMenuBarGameStatuses() {
-        container.core.gameStatusManager.syncRunningStates(
-            for: gameRepository.games,
-            userId: playerListViewModel.currentPlayer?.id ?? "",
-        )
+        let userId = playerListViewModel.currentPlayer?.id ?? ""
+        for game in gameRepository.games {
+            container.core.gameSessionStore.refreshGameStatus(gameId: game.id, userId: userId)
+        }
     }
 }

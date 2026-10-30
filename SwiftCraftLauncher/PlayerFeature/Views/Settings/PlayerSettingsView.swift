@@ -33,16 +33,18 @@ public struct PlayerSettingsView: View {
             PlayerSettingsEphemeralLoginRow()
             if canAddOffline {
                 PlayerSettingsOfflineLoginRow()
+                PlayerSettingsDefaultSkinServerRow()
+                spacerView()
             }
-            PlayerSettingsDefaultSkinServerRow()
-            spacerView()
             if isMinecraftAccount {
                 PlayerSettingsHistorySkinLibraryRow()
                 PlayerSettingsFriendsPresenceNotificationsRow()
                 PlayerSettingsMinecraftFriendsAccountSection(viewModel: viewModel)
                 spacerView()
             }
-            PlayerSettingsAuthlibInjectorRow(viewModel: viewModel)
+            if canAddOffline {
+                PlayerSettingsAuthlibInjectorRow(viewModel: viewModel)
+            }
         }
         .environment(playerSettingsManager)
         .task(id: currentPlayer?.id) {

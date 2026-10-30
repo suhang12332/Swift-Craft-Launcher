@@ -12,14 +12,12 @@ enum ResourceButtonAlertType: Identifiable {
     case noGame
     case noCompatibleGame
     case noPlayer
-    case noPlayerForLaunch
 
     var id: String {
         switch self {
         case .noGame: return "noGame"
         case .noCompatibleGame: return "noCompatibleGame"
         case .noPlayer: return "noPlayer"
-        case .noPlayerForLaunch: return "noPlayerForLaunch"
         }
     }
 
@@ -42,12 +40,6 @@ enum ResourceButtonAlertType: Identifiable {
             return Alert(
                 title: Text("sidebar.alert.no_player.title".localized()),
                 message: Text("sidebar.alert.no_player.message".localized()),
-                dismissButton: .default(Text("common.confirm".localized())),
-            )
-        case .noPlayerForLaunch:
-            return Alert(
-                title: Text("sidebar.alert.no_player.title".localized()),
-                message: Text("sidebar.alert.no_player_for_launch.message".localized()),
                 dismissButton: .default(Text("common.confirm".localized())),
             )
         }

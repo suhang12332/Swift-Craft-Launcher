@@ -129,19 +129,19 @@ struct GameCreationView: View {
             iconContainer
                 .applyPointerHandIfAvailable()
                 .onTapGesture {
-                    if !viewModel.gameSetupService.downloadState.isDownloading {
+                    if !viewModel.gameInstaller.progress.isDownloading {
                         onRequestImagePicker()
                     }
                 }
                 .onDrop(of: [UTType.image.identifier], isTargeted: nil) { providers in
-                    if !viewModel.gameSetupService.downloadState.isDownloading {
+                    if !viewModel.gameInstaller.progress.isDownloading {
                         return viewModel.handleImageDrop(providers)
                     } else {
                         return false
                     }
                 }
         }
-        .disabled(viewModel.gameSetupService.downloadState.isDownloading)
+        .disabled(viewModel.gameInstaller.progress.isDownloading)
     }
 
     private var iconContainer: some View {
@@ -210,7 +210,7 @@ struct GameCreationView: View {
         ) { version in
             await ModrinthService.queryVersionTime(from: version)
         }
-        .disabled(viewModel.gameSetupService.downloadState.isDownloading)
+        .disabled(viewModel.gameInstaller.progress.isDownloading)
     }
 
     private var modLoaderPicker: some View {
@@ -225,7 +225,7 @@ struct GameCreationView: View {
                     Text(loader.labelName).tag(loader.rawValue)
                 }
             }
-            .disabled(viewModel.gameSetupService.downloadState.isDownloading)
+            .disabled(viewModel.gameInstaller.progress.isDownloading)
         }
         .onChange(of: viewModel.selectedModLoader) { _, _ in
             viewModel.availableLoaderVersions = []
@@ -252,7 +252,7 @@ struct GameCreationView: View {
                     Text(version).tag(version)
                 }
             }
-            .disabled(viewModel.gameSetupService.downloadState.isDownloading || viewModel.availableLoaderVersions.isEmpty)
+            .disabled(viewModel.gameInstaller.progress.isDownloading || viewModel.availableLoaderVersions.isEmpty)
         }
     }
 
@@ -267,15 +267,14 @@ struct GameCreationView: View {
                     get: { viewModel.gameNameValidator.isGameNameDuplicate },
                     set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 },
                 ),
-                isDisabled: viewModel.gameSetupService.downloadState.isDownloading,
-                gameSetupService: viewModel.gameSetupService,
+                isDisabled: viewModel.gameInstaller.progress.isDownloading,
             )
         }
     }
 
     private var downloadProgressSection: some View {
         DownloadProgressSection(
-            gameSetupService: viewModel.gameSetupService,
+            gameInstaller: viewModel.gameInstaller,
             selectedModLoader: viewModel.selectedModLoader,
         )
     }

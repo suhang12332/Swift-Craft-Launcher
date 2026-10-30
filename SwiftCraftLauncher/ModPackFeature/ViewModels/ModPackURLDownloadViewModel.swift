@@ -75,9 +75,10 @@ final class ModPackURLDownloadViewModel {
     }
 
     func cancel() {
+        let wasDownloading = installTasks.isRunning
         installTasks.cancel()
         isDownloading = false
-        guard !hasCompletedDownload else { return }
+        guard wasDownloading, !hasCompletedDownload else { return }
         downloadService.cleanupTempFiles()
     }
 

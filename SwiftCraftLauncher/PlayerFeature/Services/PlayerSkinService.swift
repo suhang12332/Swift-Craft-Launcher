@@ -81,6 +81,15 @@ enum PlayerSkinService {
         enum SkinModel: String, Codable, CaseIterable { case classic, slim }
     }
 
+    /// The outcome of a skin operation that also refreshes local skin information.
+    struct SkinRefreshResult {
+        /// Whether the remote skin operation succeeded.
+        let success: Bool
+
+        /// The refreshed skin info, or `nil` if the player has no custom skin.
+        let skinInfo: PublicSkinInfo?
+    }
+
     /// Updates the player's skin information in the data manager.
     ///
     /// - Parameters:
@@ -151,10 +160,14 @@ enum PlayerSkinService {
     /// Refreshes the skin information for the given player.
     ///
     /// - Parameter player: The player whose skin information should be refreshed.
-    private static func refreshSkinInfo(player: Player) async {
-        if let newSkinInfo = try? await fetchCurrentPlayerSkinFromServicesThrowing(player: player) {
-            _ = await updatePlayerSkinInfo(uuid: player.id, skinInfo: newSkinInfo)
+    /// - Returns: The refreshed skin info, or `nil` if it could not be fetched.
+    @discardableResult
+    private static func refreshSkinInfo(player: Player) async -> PublicSkinInfo? {
+        guard let newSkinInfo = try? await fetchCurrentPlayerSkinFromServicesThrowing(player: player) else {
+            return nil
         }
+        _ = await updatePlayerSkinInfo(uuid: player.id, skinInfo: newSkinInfo)
+        return newSkinInfo
     }
 
     /// Uploads a skin and refreshes the local skin information on success.
@@ -182,15 +195,15 @@ enum PlayerSkinService {
     /// Resets the player's skin to the default and refreshes local information.
     ///
     /// - Parameter player: The player whose skin should be reset.
-    /// - Returns: `true` if the reset and refresh succeeded.
-    static func resetSkinAndRefresh(player: Player) async -> Bool {
+    /// - Returns: Whether the reset succeeded and the refreshed skin info, if any.
+    static func resetSkinAndRefresh(player: Player) async -> SkinRefreshResult {
         do {
             try await resetSkinThrowing(player: player)
-            await refreshSkinInfo(player: player)
-            return true
+            let skinInfo = await refreshSkinInfo(player: player)
+            return SkinRefreshResult(success: true, skinInfo: skinInfo)
         } catch {
             handleError(error, operation: "Reset skin")
-            return false
+            return SkinRefreshResult(success: false, skinInfo: nil)
         }
     }
 

@@ -12,7 +12,6 @@ enum MinecraftLaunchCommandBuilder {
     static func buildThrowing(
         manifest: MinecraftVersionManifest,
         gameInfo: GameVersionInfo,
-        launcherBrand _: String,
         launcherVersion: String,
     ) throws -> [String] {
         let paths = try validateAndGetPaths(gameInfo: gameInfo, manifest: manifest)

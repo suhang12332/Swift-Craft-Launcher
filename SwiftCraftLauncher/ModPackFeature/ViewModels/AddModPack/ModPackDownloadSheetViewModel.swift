@@ -15,8 +15,8 @@ import SwiftUI
 class ModPackDownloadSheetViewModel {
     var projectDetail: ModrinthProjectDetail?
     var availableGameVersions: [String] = []
-    var filteredModPackVersions: [ModrinthProjectDetailVersion] = []
-    var isLoadingModPackVersions = false
+    private(set) var filteredModPackVersions: [ModrinthProjectDetailVersion] = []
+    private(set) var isLoadingModPackVersions = false
     var isLoadingProjectDetails = true
     var lastParsedIndexInfo: ModrinthIndexInfo?
     var modPackInstallState = ModPackInstallState()
@@ -43,21 +43,16 @@ class ModPackDownloadSheetViewModel {
         lastParsedIndexInfo = nil
     }
 
-    func cleanupAllData(gameSetupService: GameSetupUtil? = nil) {
-        cancelDownloadAndResetStates(gameSetupService: gameSetupService)
+    func cleanupAllData(gameInstaller: GameInstaller? = nil) {
+        cancelDownloadAndResetStates(gameInstaller: gameInstaller)
         clearParsedIndexInfo()
         projectDetail = nil
         availableGameVersions = []
+        isLoadingModPackVersions = false
         filteredModPackVersions = []
         allModPackVersions = []
-        modPackInstallState.reset()
         modPackDownloadProgress = 0
         modPackTotalSize = 0
-        cleanupTempFiles()
-    }
-
-    func cleanupTempFiles() {
-        downloadService.cleanupTempFiles()
     }
 
     private var allModPackVersions: [ModrinthProjectDetailVersion] = []
@@ -90,7 +85,7 @@ class ModPackDownloadSheetViewModel {
         projectDetail: ModrinthProjectDetail,
         gameName: String,
         selectedGameVersion: String,
-        gameSetupService: GameSetupUtil,
+        gameInstaller: GameInstaller,
         onFinished: @escaping @MainActor (_ success: Bool) -> Void,
     ) {
         installTasks.start { [weak self] in
@@ -100,30 +95,29 @@ class ModPackDownloadSheetViewModel {
                 projectDetail: projectDetail,
                 gameName: gameName,
                 selectedGameVersion: selectedGameVersion,
-                gameSetupService: gameSetupService,
+                gameInstaller: gameInstaller,
             )
             onFinished(success)
         }
     }
 
-    func cancelDownloadAndResetStates(gameSetupService: GameSetupUtil? = nil) {
+    func cancelDownloadAndResetStates(gameInstaller: GameInstaller? = nil) {
         installTasks.cancel()
         isProcessing = false
         modPackInstallState.reset()
-        if let gameSetupService {
-            gameSetupService.downloadState.reset()
+        if let gameInstaller {
+            gameInstaller.progress.reset()
         }
     }
 
     /// Cancels an in-flight installation and removes the partially created instance.
     /// - Parameters:
     ///   - gameName: The name of the game being installed.
-    ///   - gameSetupService: The setup service whose download state should be reset.
-    func cancelInstallation(gameName: String, gameSetupService: GameSetupUtil) async {
+    ///   - gameInstaller: The installer whose progress should be reset.
+    func cancelInstallation(gameName: String, gameInstaller: GameInstaller) async {
         abortFailedResources()
-        cancelDownloadAndResetStates(gameSetupService: gameSetupService)
+        cancelDownloadAndResetStates(gameInstaller: gameInstaller)
         clearParsedIndexInfo()
-        cleanupTempFiles()
 
         let trimmedName = gameName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else { return }
@@ -147,7 +141,7 @@ class ModPackDownloadSheetViewModel {
         projectDetailForIcon: ModrinthProjectDetail? = nil,
         gameName: String,
         selectedGameVersion: String,
-        gameSetupService: GameSetupUtil,
+        gameInstaller: GameInstaller,
         prepared: ModPackInstallCoordinator.PreparedModPack? = nil,
     ) async -> Bool {
         guard let gameRepository else { return false }
@@ -161,7 +155,7 @@ class ModPackDownloadSheetViewModel {
             projectDetailForIcon: projectDetailForIcon,
             gameName: gameName,
             selectedGameVersion: selectedGameVersion,
-            gameSetupService: gameSetupService,
+            gameInstaller: gameInstaller,
             gameRepository: gameRepository,
             modPackInstallState: modPackInstallState,
             setProcessing: { [weak self] processing in
@@ -182,7 +176,7 @@ class ModPackDownloadSheetViewModel {
         projectDetail: ModrinthProjectDetail,
         gameName: String,
         selectedGameVersion: String,
-        gameSetupService: GameSetupUtil,
+        gameInstaller: GameInstaller,
     ) async -> Bool {
         guard gameRepository != nil else {
             return false
@@ -218,7 +212,7 @@ class ModPackDownloadSheetViewModel {
             projectDetailForIcon: projectDetail,
             gameName: gameName,
             selectedGameVersion: selectedGameVersion,
-            gameSetupService: gameSetupService,
+            gameInstaller: gameInstaller,
         )
 
         clearParsedIndexInfo()
@@ -249,29 +243,34 @@ class ModPackDownloadSheetViewModel {
         isLoadingProjectDetails = false
     }
 
-    func loadModPackVersions(for gameVersion: String) async {
+    func loadModPackVersions(for gameVersion: String) {
         guard let projectDetail else { return }
 
         isLoadingModPackVersions = true
+        allModPackVersions = []
+        filteredModPackVersions = []
 
-        do {
-            allModPackVersions =
-                try await ModrinthService.fetchProjectVersionsThrowing(
+        Task { [weak self] in
+            guard let self else { return }
+
+            defer { self.isLoadingModPackVersions = false }
+
+            do {
+                let versions = try await ModrinthService.fetchProjectVersionsThrowing(
                     id: projectDetail.id,
                 )
-            filteredModPackVersions = allModPackVersions
-                .filter { version in
-                    version.gameVersions.contains(gameVersion)
-                }
-                .sorted { version1, version2 in
-                    version1.datePublished > version2.datePublished
-                }
-        } catch {
-            let globalError = GlobalError.from(error)
-            DIContainer.shared.core.errorHandler.handle(globalError)
+                allModPackVersions = versions
+                filteredModPackVersions = versions
+                    .filter { version in
+                        version.gameVersions.contains(gameVersion)
+                    }
+                    .sorted { version1, version2 in
+                        version1.datePublished > version2.datePublished
+                    }
+            } catch {
+                DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+            }
         }
-
-        isLoadingModPackVersions = false
     }
 
     private func handleDownloadError(_: String, _ i18nKey: String) {

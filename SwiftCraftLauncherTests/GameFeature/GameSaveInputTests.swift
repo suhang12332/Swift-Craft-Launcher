@@ -10,7 +10,7 @@ import XCTest
 
 final class GameSaveInputTests: XCTestCase {
     func testGameSaveInput_init() {
-        let input = GameSetupUtil.GameSaveInput(
+        let input = GameInstaller.GameSaveInput(
             gameName: "TestGame",
             selectedGameVersion: "1.20.1",
             selectedModLoader: "fabric",
@@ -26,7 +26,7 @@ final class GameSaveInputTests: XCTestCase {
     }
 
     func testGameSaveInput_nilIconData() {
-        let input = GameSetupUtil.GameSaveInput(
+        let input = GameInstaller.GameSaveInput(
             gameName: "TestGame",
             selectedGameVersion: "1.20.1",
             selectedModLoader: "vanilla",

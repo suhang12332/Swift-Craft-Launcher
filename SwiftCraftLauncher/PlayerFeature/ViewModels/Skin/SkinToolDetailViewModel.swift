@@ -32,7 +32,13 @@ final class SkinToolDetailViewModel {
 
     var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
     var showingFileImporter = false
-    var operationInProgress = false
+    var isApplyingChanges = false
+    var isResettingSkin = false
+
+    /// Whether a skin apply or reset operation is currently running.
+    var operationInProgress: Bool {
+        isApplyingChanges || isResettingSkin
+    }
 
     var selectedSkinData: Data?
     var selectedSkinImage: NSImage?

@@ -46,35 +46,24 @@ extension TouchBarSupportConfiguration {
             isRunning: {
                 guard let gameId = selectedGame()?.id else { return false }
                 let userId = playerListViewModel.currentPlayer?.id ?? ""
-                return container.core.gameStatusManager.cachedIsGameRunning(gameId: gameId, userId: userId)
+                return container.core.gameSessionStore.cachedIsGameRunning(gameId: gameId, userId: userId)
             },
             isLaunching: {
                 guard let gameId = selectedGame()?.id else { return false }
                 let userId = playerListViewModel.currentPlayer?.id ?? ""
-                return container.core.gameStatusManager.isGameLaunching(gameId: gameId, userId: userId)
+                return gameLaunchUseCase.isLaunching(gameId: gameId, userId: userId)
             },
             canExportModPack: {
                 selectedGame()?.modLoader != GameLoader.vanilla.displayName
             },
             onPlayStop: {
-                guard let player = playerListViewModel.currentPlayer,
-                      let game = selectedGame() else {
-                    return
-                }
+                guard let game = selectedGame() else { return }
 
-                let userId = player.id
-                if container.core.gameStatusManager.isGameRunning(gameId: game.id, userId: userId) {
-                    Task { @MainActor in
-                        await gameLaunchUseCase.stopGame(player: player, game: game)
-                    }
-                } else {
-                    container.core.gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
-                    Task { @MainActor in
-                        defer {
-                            container.core.gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false)
-                        }
-                        await gameLaunchUseCase.launchGame(player: player, game: game)
-                    }
+                Task { @MainActor in
+                    await gameLaunchUseCase.toggleGameState(
+                        player: playerListViewModel.currentPlayer,
+                        game: game,
+                    )
                 }
             },
             onOpenSettings: {

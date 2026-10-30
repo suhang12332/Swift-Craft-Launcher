@@ -109,14 +109,28 @@ struct SkinToolDetailView: View {
 
             HStack(spacing: 12) {
                 if resolvedPlayer?.isOnlineAccount == true {
-                    Button("skin.reset".localized()) {
+                    Button {
                         viewModel.resetSkin(resolvedPlayer: resolvedPlayer)
+                    } label: {
+                        if viewModel.isResettingSkin {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Text("skin.reset".localized())
+                        }
                     }
                     .disabled(viewModel.operationInProgress)
                 }
-                Button("skin.apply".localized()) {
+                Button {
                     viewModel.applyChanges(resolvedPlayer: resolvedPlayer) {
                         dismiss()
+                    }
+                } label: {
+                    if viewModel.isApplyingChanges {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Text("skin.apply".localized())
                     }
                 }
                 .keyboardShortcut(.defaultAction)

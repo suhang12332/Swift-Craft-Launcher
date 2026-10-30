@@ -42,7 +42,8 @@ extension SkinToolDetailViewModel {
 
         currentModel = .classic
         hasChanges = false
-        operationInProgress = false
+        isApplyingChanges = false
+        isResettingSkin = false
 
         lastSelectedSkinData = nil
         lastCurrentModel = .classic
@@ -52,29 +53,34 @@ extension SkinToolDetailViewModel {
 
     /// Deletes temporary skin and cape files that were written to the system temporary directory.
     func deleteTemporaryFiles() {
-        let fileManager = FileManager.default
+        deleteTemporarySkinFile()
+        deleteTemporaryCapeFile()
+    }
 
-        if let skinPath = selectedSkinPath, !skinPath.isEmpty {
-            let skinURL = URL(fileURLWithPath: skinPath)
-            if TemporaryFile.isTemporary(skinURL) {
-                do {
-                    try fileManager.removeItem(at: skinURL)
-                    AppLog.player.info("Deleted temporary skin file: \(skinPath)")
-                } catch {
-                    AppLog.player.error("Failed to delete temporary skin file: \(error.localizedDescription)")
-                }
-            }
+    /// Deletes the selected skin's temporary file, if it is a temporary file.
+    func deleteTemporarySkinFile() {
+        guard let skinPath = selectedSkinPath, !skinPath.isEmpty else { return }
+        let skinURL = URL(fileURLWithPath: skinPath)
+        guard TemporaryFile.isTemporary(skinURL) else { return }
+
+        do {
+            try FileManager.default.removeItem(at: skinURL)
+            AppLog.player.info("Deleted temporary skin file: \(skinPath)")
+        } catch {
+            AppLog.player.error("Failed to delete temporary skin file: \(error.localizedDescription)")
         }
+    }
 
-        if let capePath = selectedCapeLocalPath, !capePath.isEmpty {
-            let capeURL = URL(fileURLWithPath: capePath)
-            if TemporaryFile.isTemporary(capeURL) {
-                do {
-                    try fileManager.removeItem(at: capeURL)
-                } catch {
-                    AppLog.player.error("Failed to delete temporary cape file: \(error.localizedDescription)")
-                }
-            }
+    /// Deletes the selected cape's temporary file, if it is a temporary file.
+    func deleteTemporaryCapeFile() {
+        guard let capePath = selectedCapeLocalPath, !capePath.isEmpty else { return }
+        let capeURL = URL(fileURLWithPath: capePath)
+        guard TemporaryFile.isTemporary(capeURL) else { return }
+
+        do {
+            try FileManager.default.removeItem(at: capeURL)
+        } catch {
+            AppLog.player.error("Failed to delete temporary cape file: \(error.localizedDescription)")
         }
     }
 }

@@ -9,18 +9,18 @@
 import SwiftUI
 
 struct DownloadProgressSection: View {
-    var gameSetupService: GameSetupUtil
+    var gameInstaller: GameInstaller
     var modPackViewModel: ModPackDownloadSheetViewModel?
     let modPackIndexInfo: ModrinthIndexInfo?
     let selectedModLoader: String
 
     init(
-        gameSetupService: GameSetupUtil,
+        gameInstaller: GameInstaller,
         selectedModLoader: String = GameLoader.vanilla.displayName,
         modPackViewModel: ModPackDownloadSheetViewModel? = nil,
         modPackIndexInfo: ModrinthIndexInfo? = nil,
     ) {
-        self.gameSetupService = gameSetupService
+        self.gameInstaller = gameInstaller
         self.selectedModLoader = selectedModLoader
         self.modPackViewModel = modPackViewModel
         self.modPackIndexInfo = modPackIndexInfo
@@ -40,101 +40,52 @@ struct DownloadProgressSection: View {
         VStack(spacing: 24) {
             progressSection(
                 title: "download.core.title".localized(),
-                state: gameSetupService.downloadState,
-                type: .core,
+                phase: gameInstaller.progress.core,
             )
             progressSection(
                 title: "download.resources.title".localized(),
-                state: gameSetupService.downloadState,
-                type: .resources,
+                phase: gameInstaller.progress.resources,
             )
         }
     }
 
     @ViewBuilder private var modLoaderProgressView: some View {
-        if let loaderProgressInfo = getLoaderProgressInfo() {
+        if let loaderProgressInfo {
             progressSection(
                 title: loaderProgressInfo.title,
-                state: loaderProgressInfo.state,
-                type: .core,
+                phase: gameInstaller.progress.loader,
                 version: loaderProgressInfo.version,
             )
         }
     }
 
-    private enum ProgressType {
-        case core
-        case resources
+    private var loaderProgressInfo: (title: String, version: String?)? {
+        if let indexInfo = modPackIndexInfo {
+            guard let title = Self.loaderTitle(for: indexInfo.loaderType) else { return nil }
+            return (title, indexInfo.loaderVersion)
+        }
+        guard let title = Self.loaderTitle(for: selectedModLoader) else { return nil }
+        return (title, nil)
     }
 
     private func progressSection(
         title: String,
-        state: DownloadState,
-        type: ProgressType,
+        phase: InstallProgressReporter.PhaseProgress,
         version: String? = nil,
     ) -> some View {
         FormSection {
             DownloadProgressRow(
                 title: title,
-                progress: type == .core ? state.coreProgress : state.resourcesProgress,
-                currentFile: type == .core ? state.currentCoreFile : state.currentResourceFile,
-                completed: type == .core ? state.coreCompletedFiles : state.resourcesCompletedFiles,
-                total: type == .core ? state.coreTotalFiles : state.resourcesTotalFiles,
+                progress: phase.progress,
+                currentFile: phase.currentFile,
+                completed: phase.completed,
+                total: phase.total,
                 version: version,
             )
         }
     }
 
-    private struct LoaderProgressInfo {
-        let title: String
-        let state: DownloadState
-        let version: String?
-    }
-
-    private func getLoaderProgressInfo() -> LoaderProgressInfo? {
-        let loaderType = selectedModLoader.lowercased()
-
-        if let indexInfo = modPackIndexInfo {
-            let loaderState = getLoaderDownloadState(for: indexInfo.loaderType)
-            let title = getLoaderTitle(for: indexInfo.loaderType)
-
-            if let state = loaderState {
-                return LoaderProgressInfo(
-                    title: title,
-                    state: state,
-                    version: indexInfo.loaderVersion,
-                )
-            }
-        } else {
-            let state = getLoaderDownloadState(for: loaderType)
-            let title = getLoaderTitle(for: loaderType)
-
-            if let state {
-                return LoaderProgressInfo(
-                    title: title,
-                    state: state,
-                    version: nil,
-                )
-            }
-        }
-
-        return nil
-    }
-
-    private func getLoaderDownloadState(for loaderType: String) -> DownloadState? {
-        switch loaderType.lowercased() {
-        case GameLoader.fabric.displayName, GameLoader.quilt.rawValue:
-            return gameSetupService.fabricDownloadState
-        case GameLoader.forge.displayName:
-            return gameSetupService.forgeDownloadState
-        case GameLoader.neoforge.displayName:
-            return gameSetupService.neoForgeDownloadState
-        default:
-            return nil
-        }
-    }
-
-    private func getLoaderTitle(for loaderType: String) -> String {
+    private static func loaderTitle(for loaderType: String) -> String? {
         switch loaderType.lowercased() {
         case GameLoader.fabric.displayName:
             return "fabric.loader.title".localized()
@@ -145,7 +96,7 @@ struct DownloadProgressSection: View {
         case GameLoader.neoforge.displayName:
             return "neoforge.loader.title".localized()
         default:
-            return ""
+            return nil
         }
     }
 }

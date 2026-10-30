@@ -84,7 +84,7 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
     func testIsFormValid_updating_returnsFalse() {
         let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: "fabric", modVersion: "0.16.0"))
         vm.selectedLoaderVersion = "0.16.0"
-        vm.gameSetupService.downloadState.isDownloading = true
+        vm.gameInstaller.progress.isDownloading = true
         XCTAssertFalse(vm.isFormValid)
     }
 
@@ -112,10 +112,10 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         XCTAssertEqual(vm.currentLoaderDescription, "NeoForge 21.0.1")
     }
 
-    func testIsUpdating_reflectsDownloadState() {
+    func testIsUpdating_reflectsProgress() {
         let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: "fabric", modVersion: "0.16.0"))
         XCTAssertFalse(vm.isUpdating)
-        vm.gameSetupService.downloadState.isDownloading = true
+        vm.gameInstaller.progress.isDownloading = true
         XCTAssertTrue(vm.isUpdating)
     }
 

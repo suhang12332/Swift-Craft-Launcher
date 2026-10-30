@@ -22,7 +22,7 @@ struct ModPackDownloadSheet: View {
     @State private var coordinator = ModPackDownloadSheetCoordinatorViewModel()
     @State private var selectedGameVersion: String = ""
     @State private var selectedModPackVersion: ModrinthProjectDetailVersion?
-    @State private var gameSetupService = GameSetupUtil()
+    @State private var gameInstaller = GameInstaller()
     @State private var gameNameValidator: GameNameValidator
 
     init(
@@ -62,7 +62,7 @@ struct ModPackDownloadSheet: View {
         selectedModPackVersion = nil
         coordinator.onDisappear(
             sheetViewModel: viewModel,
-            gameSetupService: gameSetupService,
+            gameInstaller: gameInstaller,
         )
     }
 
@@ -94,18 +94,18 @@ struct ModPackDownloadSheet: View {
                     availableGameVersions: viewModel.availableGameVersions,
                     filteredModPackVersions: viewModel.filteredModPackVersions,
                     isLoadingModPackVersions: viewModel.isLoadingModPackVersions,
-                    isProcessing: viewModel.isProcessing,
                     onGameVersionChange: handleGameVersionChange,
                     onModPackVersionAppear: selectFirstModPackVersion,
                 )
+                .disabled(isDownloading)
 
-                if !selectedGameVersion.isEmpty, selectedModPackVersion != nil {
+                if !selectedGameVersion.isEmpty, !viewModel.isLoadingModPackVersions {
                     ModPackInstallSharedSections(
                         gameName: $gameNameValidator.gameName,
                         isGameNameDuplicate: $gameNameValidator.isGameNameDuplicate,
-                        isGameNameInputDisabled: viewModel.isProcessing,
+                        isGameNameInputDisabled: isDownloading,
                         showGameNameInput: true,
-                        gameSetupService: gameSetupService,
+                        gameInstaller: gameInstaller,
                         modPackInstallState: viewModel.modPackInstallState,
                         lastParsedIndexInfo: viewModel.lastParsedIndexInfo,
                         shouldShowProgress: shouldShowProgress,
@@ -124,7 +124,7 @@ struct ModPackDownloadSheet: View {
     }
 
     private var shouldShowProgress: Bool {
-        gameSetupService.downloadState.isDownloading
+        gameInstaller.progress.isDownloading
             || viewModel.modPackInstallState.isInstalling
     }
 
@@ -133,8 +133,12 @@ struct ModPackDownloadSheet: View {
     }
 
     private var isDownloading: Bool {
-        viewModel.isProcessing || gameSetupService.downloadState.isDownloading
+        viewModel.isProcessing || gameInstaller.progress.isDownloading
             || viewModel.modPackInstallState.isInstalling
+    }
+
+    private var isButtonLoading: Bool {
+        isDownloading || viewModel.isLoadingProjectDetails || viewModel.isLoadingModPackVersions
     }
 
     private var cancelButton: some View {
@@ -151,7 +155,7 @@ struct ModPackDownloadSheet: View {
             }
         } label: {
             HStack {
-                if isDownloading {
+                if isButtonLoading {
                     ProgressView()
                         .controlSize(.small)
                 } else {
@@ -160,35 +164,29 @@ struct ModPackDownloadSheet: View {
             }
         }
         .keyboardShortcut(.defaultAction)
-        .disabled(!canDownload || isDownloading)
+        .disabled(!canDownload || isButtonLoading)
     }
 
     private func handleGameVersionChange(_ newValue: String) {
-        if !newValue.isEmpty {
-            Task {
-                await viewModel.loadModPackVersions(for: newValue)
-            }
-            setDefaultGameName()
-        } else {
-            viewModel.filteredModPackVersions = []
-        }
+        guard !newValue.isEmpty else { return }
+
+        viewModel.loadModPackVersions(for: newValue)
+        setDefaultGameName()
     }
 
     private func selectFirstModPackVersion() {
         if !viewModel.filteredModPackVersions.isEmpty,
            selectedModPackVersion == nil {
             selectedModPackVersion = viewModel.filteredModPackVersions[0]
-            setDefaultGameName()
         }
     }
 
     private func setDefaultGameName() {
-        let defaultName = GameNameGenerator.generateModPackName(
+        gameNameValidator.gameName = GameNameGenerator.generateModPackName(
             projectTitle: viewModel.projectDetail?.title,
             gameVersion: selectedGameVersion,
             includeTimestamp: true,
         )
-        gameNameValidator.setDefaultName(defaultName)
     }
 
     private func handleCancel() {
@@ -196,7 +194,7 @@ struct ModPackDownloadSheet: View {
             Task {
                 await viewModel.cancelInstallation(
                     gameName: gameNameValidator.gameName,
-                    gameSetupService: gameSetupService,
+                    gameInstaller: gameInstaller,
                 )
             }
         }
@@ -214,7 +212,7 @@ struct ModPackDownloadSheet: View {
             projectDetail: projectDetail,
             gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
             selectedGameVersion: selectedGameVersion,
-            gameSetupService: gameSetupService,
+            gameInstaller: gameInstaller,
         ) { success in
             if success {
                 dismiss()

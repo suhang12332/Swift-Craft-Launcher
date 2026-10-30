@@ -49,6 +49,12 @@ jobs:
         run: python3 .github/scripts/check_code_rules.py || { echo "::error::Code rules check failed — fix violations before pushing."; exit 1; }
 
       # =========================
+      # File Header Check
+      # =========================
+      - name: Check Swift file headers
+        run: python3 .github/scripts/check_file_headers.py || { echo "::error::File header check failed — fix violations before pushing."; exit 1; }
+
+      # =========================
       # Localization Check
       # =========================
       - name: Check localization completeness

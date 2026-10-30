@@ -69,7 +69,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
     }
 
     var shouldShowProgress: Bool {
-        gameSetupService.downloadState.isDownloading
+        gameInstaller.progress.isDownloading
     }
 
     var pendingIconURLForDisplay: URL? {

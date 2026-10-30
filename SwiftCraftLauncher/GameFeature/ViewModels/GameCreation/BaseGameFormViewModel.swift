@@ -17,7 +17,7 @@ class BaseGameFormViewModel {
     var triggerConfirm: Bool = false
     var triggerCancel: Bool = false
 
-    let gameSetupService = GameSetupUtil()
+    let gameInstaller = GameInstaller()
     let gameNameValidator: GameNameValidator
 
     var gameRepository: GameRepository?
@@ -62,7 +62,7 @@ class BaseGameFormViewModel {
         }
 
         installTasks.cancel()
-        gameSetupService.downloadState.cancel()
+        gameInstaller.progress.cancel()
         Task {
             await performCancelCleanup()
         }
@@ -96,7 +96,7 @@ class BaseGameFormViewModel {
         await removeGameArtifacts(
             gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
         )
-        gameSetupService.downloadState.reset()
+        gameInstaller.progress.reset()
         configuration.actions.onCancel()
     }
 
@@ -117,7 +117,7 @@ class BaseGameFormViewModel {
     }
 
     func computeIsDownloading() -> Bool {
-        gameSetupService.downloadState.isDownloading
+        gameInstaller.progress.isDownloading
     }
 
     func computeIsFormValid() -> Bool {
@@ -141,7 +141,7 @@ class BaseGameFormViewModel {
 
     func finishDownloadTask() {
         installTasks.finish()
-        gameSetupService.downloadState.reset()
+        gameInstaller.progress.reset()
         updateParentState()
     }
 

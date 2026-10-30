@@ -25,7 +25,7 @@ final class FavoriteStore {
     private let createTableSQL: String
     private let insertSQL: String
     private let deleteSQL: String
-    private let selectAllIdsByTypeSQL: String
+    private let selectAllIdsSQL: String
 
     /// All favorite project IDs grouped by type, kept in sync with the database.
     var favoriteIds: [String: Set<String>] = [:]
@@ -49,7 +49,7 @@ final class FavoriteStore {
             ?)
         """
         deleteSQL = "DELETE FROM \(tableName) WHERE id = ? AND type = ?"
-        selectAllIdsByTypeSQL = "SELECT id, type FROM \(tableName)"
+        selectAllIdsSQL = "SELECT id, type FROM \(tableName)"
     }
 
     /// Adds a favorite entry and updates the in-memory map.
@@ -81,6 +81,9 @@ final class FavoriteStore {
             }
         }
         favoriteIds[type]?.remove(id)
+        if favoriteIds[type]?.isEmpty == true {
+            favoriteIds.removeValue(forKey: type)
+        }
     }
 
     /// Checks whether a project is favorited for a given type using the in-memory map.
@@ -89,26 +92,67 @@ final class FavoriteStore {
         return favoriteIds[type]?.contains(id) ?? false
     }
 
-    /// Returns all favorite project IDs for a type, loading the store if needed.
-    func favoriteIdsForType(_ type: String) -> Set<String> {
+    /// Returns one page of favorite IDs for a type and data source.
+    ///
+    /// IDs are ordered ascending and paged with a keyset cursor (`after`), so
+    /// removing a favorite cannot shift the next page and cause skipped or
+    /// duplicated entries.
+    /// - Parameters:
+    ///   - type: The resource type (for example `mod`).
+    ///   - dataSource: The provider whose project IDs should be returned.
+    ///   - after: The last ID of the previously loaded page, or `nil` for the
+    ///     first page.
+    ///   - limit: The maximum number of IDs to return. Must be greater than zero.
+    /// - Returns: The next page of favorite IDs, ordered ascending.
+    func favoriteIdsPage(
+        type: String,
+        dataSource: DataSource,
+        after: String?,
+        limit: Int,
+    ) -> [String] {
         try? ensureInitialized()
-        return favoriteIds[type] ?? []
-    }
 
-    /// Removes all favorite entries and clears the in-memory map.
-    func clearAll() throws {
-        try ensureInitialized()
-        try db.transaction {
-            try db.execute("DELETE FROM \(tableName)")
+        let sourceFilter = dataSource == .curseforge
+            ? "substr(id, 1, 3) = 'cf-'"
+            : "substr(id, 1, 3) <> 'cf-'"
+        let afterClause = after == nil ? "" : "AND id > ?"
+        let sql = """
+        SELECT id FROM \(tableName)
+        WHERE type = ? AND \(sourceFilter) \(afterClause)
+        ORDER BY id ASC
+        LIMIT ?;
+        """
+
+        do {
+            return try withPreparedStatement(sql) { statement in
+                var index: Int32 = 1
+                SQLiteDatabase.bind(statement, index: index, value: type)
+                index += 1
+                if let after {
+                    SQLiteDatabase.bind(statement, index: index, value: after)
+                    index += 1
+                }
+                SQLiteDatabase.bind(statement, index: index, value: limit)
+
+                var ids: [String] = []
+                ids.reserveCapacity(limit)
+                while sqlite3_step(statement) == SQLITE_ROW {
+                    if let id = SQLiteDatabase.stringColumn(statement, index: 0) {
+                        ids.append(id)
+                    }
+                }
+                return ids
+            }
+        } catch {
+            return []
         }
-        favoriteIds.removeAll()
     }
 
     private func loadAllIds() {
         guard isInitialized else { return }
         let pairs: [(id: String, type: String)]
         do {
-            pairs = try withPreparedStatement(selectAllIdsByTypeSQL) { statement -> [(String, String)] in
+            pairs = try withPreparedStatement(selectAllIdsSQL) { statement -> [(String, String)] in
                 var result: [(String, String)] = []
                 while sqlite3_step(statement) == SQLITE_ROW {
                     if let id = SQLiteDatabase.stringColumn(statement, index: 0),
@@ -137,7 +181,10 @@ final class FavoriteStore {
         try db.open()
         try db.execute(createTableSQL)
         try? db.execute(
-            "CREATE INDEX IF NOT EXISTS idx_favorites_type ON \(tableName)(type);",
+            "DROP INDEX IF EXISTS idx_favorites_type;",
+        )
+        try? db.execute(
+            "CREATE INDEX IF NOT EXISTS idx_favorites_type_id ON \(tableName)(type, id);",
         )
         isInitialized = true
         loadAllIds()

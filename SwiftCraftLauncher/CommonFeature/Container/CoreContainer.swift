@@ -30,8 +30,7 @@ final class CoreContainer: @unchecked Sendable {
 
     // Game
 
-    @MainActorLazy var gameProcessManager: GameProcessManager = .init()
-    @MainActorLazy var gameStatusManager: GameStatusManager = .init()
+    @MainActorLazy var gameSessionStore: GameSessionStore = .init()
     @Lazy var gameLogCollector: GameLogCollector = .init()
     @MainActorLazy var gameActionManager: GameActionManager = .init()
 

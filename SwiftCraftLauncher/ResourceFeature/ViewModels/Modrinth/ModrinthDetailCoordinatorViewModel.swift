@@ -20,13 +20,11 @@ struct ModrinthSearchContext: Equatable {
     let gameType: Bool
     let dataSource: DataSource
     let searchText: String
-    /// When non-nil, restricts the search to these favorite project IDs, sorted by ID.
-    let favoriteIds: [String]?
+    /// Whether the search is restricted to locally stored favorite projects.
+    let favoritesOnly: Bool
 
     func paramsKey(page: Int) -> String {
-        // Favorite changes explicitly reset pagination, so only the mode needs
-        // to participate in the key; the full ID list would duplicate state.
-        let favoritesKey = favoriteIds == nil ? "favorites:off" : "favorites:on"
+        let favoritesKey = favoritesOnly ? "favorites:on" : "favorites:off"
 
         return [
             query,
@@ -139,7 +137,7 @@ final class ModrinthDetailCoordinatorViewModel {
         searchViewModel: ModrinthSearchViewModel,
         context: ModrinthSearchContext,
     ) {
-        guard searchViewModel.results.count < searchViewModel.totalHits,
+        guard searchViewModel.hasMoreResults,
               !searchViewModel.isLoading,
               !searchViewModel.isLoadingMore
         else { return }
@@ -203,6 +201,23 @@ final class ModrinthDetailCoordinatorViewModel {
             )
         }
 
+        // Favorites-only mode with no favorites resolves to an empty list
+        // locally. Skip the search (and its loading state) so the list does not
+        // flash placeholder rows before it goes empty.
+        if context.favoritesOnly, !append {
+            let store = DIContainer.shared.core.favoriteStore
+            let firstId = store.favoriteIdsPage(
+                type: context.query,
+                dataSource: context.dataSource,
+                after: nil,
+                limit: 1,
+            )
+            if firstId.isEmpty {
+                searchViewModel.clearResults()
+                return
+            }
+        }
+
         lastSearchParams = params
         if !append {
             searchViewModel.beginNewSearch()
@@ -222,7 +237,7 @@ final class ModrinthDetailCoordinatorViewModel {
             page: page,
             append: append,
             dataSource: context.dataSource,
-            favoriteIds: context.favoriteIds,
+            favoritesOnly: context.favoritesOnly,
         )
     }
 

@@ -25,7 +25,7 @@ final class ModPackInstallCoordinator {
         let projectDetailForIcon: ModrinthProjectDetail?
         let gameName: String
         let selectedGameVersion: String
-        let gameSetupService: GameSetupUtil
+        let gameInstaller: GameInstaller
         let gameRepository: GameRepository
         let modPackInstallState: ModPackInstallState
         let setProcessing: (Bool) -> Void
@@ -75,10 +75,12 @@ final class ModPackInstallCoordinator {
     /// - Returns: Whether installation succeeded.
     func run(_ input: RunInput) async -> Bool {
         input.setProcessing(true)
+        // Single owner for install temp cleanup: runs for success, failure, and cancellation.
+        defer { downloadService.cleanupTempFiles() }
         if Task.isCancelled {
             await handleCancelledInstallation(
                 gameName: input.gameName,
-                gameSetupService: input.gameSetupService,
+                gameInstaller: input.gameInstaller,
                 modPackInstallState: input.modPackInstallState,
             )
             return false
@@ -99,7 +101,7 @@ final class ModPackInstallCoordinator {
             await handleInstallationResult(
                 success: false,
                 gameName: input.gameName,
-                gameSetupService: input.gameSetupService,
+                gameInstaller: input.gameInstaller,
                 modPackInstallState: input.modPackInstallState,
             )
             return false
@@ -156,11 +158,10 @@ final class ModPackInstallCoordinator {
         await handleInstallationResult(
             success: gameSuccess,
             gameName: input.gameName,
-            gameSetupService: input.gameSetupService,
+            gameInstaller: input.gameInstaller,
             modPackInstallState: input.modPackInstallState,
         )
 
-        downloadService.cleanupTempFiles()
         return gameSuccess
     }
 
@@ -176,7 +177,7 @@ final class ModPackInstallCoordinator {
             if Task.isCancelled {
                 await handleCancelledInstallation(
                     gameName: input.gameName,
-                    gameSetupService: input.gameSetupService,
+                    gameInstaller: input.gameInstaller,
                     modPackInstallState: input.modPackInstallState,
                 )
             }
@@ -297,7 +298,7 @@ final class ModPackInstallCoordinator {
             return false
         }
 
-        let saveInput = GameSetupUtil.GameSaveInput(
+        let saveInput = GameInstaller.GameSaveInput(
             gameName: input.gameName,
             selectedGameVersion: input.selectedGameVersion,
             selectedModLoader: indexInfo.loaderType,
@@ -309,7 +310,7 @@ final class ModPackInstallCoordinator {
         let result = await withTaskCancellationHandler {
             await withCheckedContinuation { (continuation: CheckedContinuation<Bool, Never>) in
                 let saveTask = Task {
-                    await input.gameSetupService.saveGame(
+                    await input.gameInstaller.saveGame(
                         input: saveInput,
                         playerListViewModel: nil,
                         gameRepository: input.gameRepository,
@@ -348,7 +349,7 @@ final class ModPackInstallCoordinator {
         if Task.isCancelled {
             await handleCancelledInstallation(
                 gameName: input.gameName,
-                gameSetupService: input.gameSetupService,
+                gameInstaller: input.gameInstaller,
                 modPackInstallState: input.modPackInstallState,
             )
             return false
@@ -356,7 +357,7 @@ final class ModPackInstallCoordinator {
         await handleInstallationResult(
             success: false,
             gameName: input.gameName,
-            gameSetupService: input.gameSetupService,
+            gameInstaller: input.gameInstaller,
             modPackInstallState: input.modPackInstallState,
         )
         return false
@@ -420,13 +421,13 @@ final class ModPackInstallCoordinator {
     private func handleInstallationResult(
         success: Bool,
         gameName: String,
-        gameSetupService: GameSetupUtil,
+        gameInstaller: GameInstaller,
         modPackInstallState: ModPackInstallState,
     ) async {
         if Task.isCancelled {
             await handleCancelledInstallation(
                 gameName: gameName,
-                gameSetupService: gameSetupService,
+                gameInstaller: gameInstaller,
                 modPackInstallState: modPackInstallState,
             )
             return
@@ -444,19 +445,19 @@ final class ModPackInstallCoordinator {
                 ),
             )
             modPackInstallState.reset()
-            gameSetupService.downloadState.reset()
+            gameInstaller.progress.reset()
         }
     }
 
     private func handleCancelledInstallation(
         gameName: String,
-        gameSetupService: GameSetupUtil,
+        gameInstaller: GameInstaller,
         modPackInstallState: ModPackInstallState,
     ) async {
         AppLog.modPack.info("Modpack installation cancelled: \(gameName)")
         try? MinecraftFileManager.cleanupGameDirectories(gameName: gameName)
         modPackInstallState.reset()
-        gameSetupService.downloadState.reset()
+        gameInstaller.progress.reset()
     }
 }
 

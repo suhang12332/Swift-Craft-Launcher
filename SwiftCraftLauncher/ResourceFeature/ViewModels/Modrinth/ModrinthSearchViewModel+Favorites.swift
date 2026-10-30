@@ -9,13 +9,16 @@ import Foundation
 
 /// Provides favorites-only search support for both data sources.
 ///
-/// Favorite IDs are sent in small batches so a single request never carries the
-/// whole collection. Each provider returns all matching favorites, which are
-/// then merged, ordered by project ID, and paginated locally.
+/// Favorite IDs are read from the local favorites database one page at a time
+/// and sent to the provider as a single batch, so a request never carries the
+/// whole collection. Provider filters are applied per database page; IDs that
+/// do not match are skipped by scanning further pages until the result page is
+/// full or the database is exhausted.
 extension ModrinthSearchViewModel {
-    /// Fetches all favorited projects matching the active filters.
+    /// Fetches the given favorited projects that match the active filters.
     /// - Parameters:
-    ///   - favoriteIds: Favorite project IDs in project ID order.
+    ///   - favoriteIds: Favorite project IDs to resolve (one page at a time).
+    ///     Must not be empty.
     ///   - projectType: The resource type being displayed.
     ///   - filterOptions: The active filter selections.
     ///   - query: The current search text.
@@ -28,8 +31,6 @@ extension ModrinthSearchViewModel {
         query: String,
         dataSource: DataSource,
     ) async throws -> [ModrinthProject] {
-        guard !favoriteIds.isEmpty else { return [] }
-
         switch dataSource {
         case .modrinth:
             return try await fetchModrinthFavoriteProjects(
@@ -48,36 +49,32 @@ extension ModrinthSearchViewModel {
         }
     }
 
-    /// Fetches favorited Modrinth projects in ID batches, then merges the hits.
+    /// Fetches the favorited Modrinth projects for one ID page.
     private func fetchModrinthFavoriteProjects(
         favoriteIds: [String],
         projectType: String,
         filterOptions: FilterOptions,
         query: String,
     ) async throws -> [ModrinthProject] {
-        var projects: [ModrinthProject] = []
+        try Task.checkCancellation()
 
-        for chunk in favoriteIds.chunked(into: SearchPagination.pageSize) {
-            try Task.checkCancellation()
-            let facets = buildFacets(
-                projectType: projectType,
-                filterOptions: filterOptions,
-                favoriteIds: chunk,
-            )
-            let result = try await ModrinthService.searchProjectsThrowing(
-                facets: facets,
-                index: AppConstants.modrinthIndex,
-                offset: 0,
-                limit: SearchPagination.pageSize,
-                query: query,
-            )
-            projects.append(contentsOf: result.hits)
-        }
+        let facets = buildFacets(
+            projectType: projectType,
+            filterOptions: filterOptions,
+            favoriteIds: favoriteIds,
+        )
+        let result = try await ModrinthService.searchProjectsThrowing(
+            facets: facets,
+            index: AppConstants.modrinthIndex,
+            offset: 0,
+            limit: SearchPagination.pageSize,
+            query: query,
+        )
 
-        return sortedByProjectId(projects)
+        return sortedByProjectId(result.hits)
     }
 
-    /// Fetches favorited CurseForge projects in ID batches and filters them locally.
+    /// Fetches the favorited CurseForge projects for one ID page and filters them locally.
     private func fetchCurseForgeFavoriteProjects(
         favoriteIds: [String],
         projectType: String,
@@ -101,16 +98,10 @@ extension ModrinthSearchViewModel {
             query: query,
         )
 
-        var mods: [CurseForgeMod] = []
-        for chunk in modIds.chunked(into: SearchPagination.pageSize) {
-            try Task.checkCancellation()
-            mods.append(contentsOf: try await CurseForgeService.fetchModsByIdsThrowing(ids: chunk))
-        }
+        try Task.checkCancellation()
+        let mods = try await CurseForgeService.fetchModsByIdsThrowing(ids: modIds)
 
-        var seenModIds = Set<Int>()
-        let matchingMods = mods.filter {
-            seenModIds.insert($0.id).inserted && matches($0, params: params)
-        }
+        let matchingMods = mods.filter { matches($0, params: params) }
         let hits = CFToModrinthAdapter.convertSearchResult(
             CurseForgeSearchResult(data: matchingMods, pagination: nil),
         ).hits
@@ -163,15 +154,5 @@ extension ModrinthSearchViewModel {
         }
 
         return true
-    }
-}
-
-private extension Array {
-    /// Splits the array into chunks of at most `size` elements.
-    func chunked(into size: Int) -> [[Element]] {
-        guard size > 0 else { return [self] }
-        return stride(from: 0, to: count, by: size).map {
-            Array(self[$0 ..< Swift.min($0 + size, count)])
-        }
     }
 }

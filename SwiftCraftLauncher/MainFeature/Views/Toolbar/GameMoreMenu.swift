@@ -20,6 +20,8 @@ struct GameMoreMenu: View {
     private var detailState
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
+    @Environment(GameLaunchUseCase.self)
+    private var gameLaunchUseCase
 
     private var currentUserId: String {
         playerListViewModel.currentPlayer?.id ?? ""
@@ -42,8 +44,8 @@ struct GameMoreMenu: View {
                     Label("game.loader.update.title".localized(), systemImage: "arrow.triangle.2.circlepath")
                 }
                 .disabled(
-                    container.core.gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: currentUserId)
-                        || container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId),
+                    container.core.gameSessionStore.cachedIsGameRunning(gameId: game.id, userId: currentUserId)
+                        || gameLaunchUseCase.isLaunching(gameId: game.id, userId: currentUserId),
                 )
             }
 
@@ -53,8 +55,8 @@ struct GameMoreMenu: View {
                 Label("game.repair.title".localized(), systemImage: "wrench.and.screwdriver")
             }
             .disabled(
-                container.core.gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: currentUserId)
-                    || container.core.gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId),
+                container.core.gameSessionStore.cachedIsGameRunning(gameId: game.id, userId: currentUserId)
+                    || gameLaunchUseCase.isLaunching(gameId: game.id, userId: currentUserId),
             )
 
             Button {

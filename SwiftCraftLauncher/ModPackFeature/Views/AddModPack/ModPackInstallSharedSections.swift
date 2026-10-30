@@ -18,7 +18,7 @@ struct ModPackInstallSharedSections: View {
     let isGameNameInputDisabled: Bool
     let showGameNameInput: Bool
 
-    var gameSetupService: GameSetupUtil
+    var gameInstaller: GameInstaller
     var modPackInstallState: ModPackInstallState
 
     let lastParsedIndexInfo: ModrinthIndexInfo?
@@ -33,14 +33,13 @@ struct ModPackInstallSharedSections: View {
                         gameName: $gameName,
                         isGameNameDuplicate: $isGameNameDuplicate,
                         isDisabled: isGameNameInputDisabled,
-                        gameSetupService: gameSetupService,
                     )
                 }
             }
 
             if shouldShowProgress {
                 DownloadProgressView(
-                    gameSetupService: gameSetupService,
+                    gameInstaller: gameInstaller,
                     modPackInstallState: modPackInstallState,
                     lastParsedIndexInfo: lastParsedIndexInfo,
                 )

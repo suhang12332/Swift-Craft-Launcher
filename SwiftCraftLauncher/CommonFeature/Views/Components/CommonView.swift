@@ -47,14 +47,29 @@ struct CommonDescriptionText: View {
 }
 
 /// A row for configuring a directory path with choose and reset actions.
-struct DirectorySettingRow: View {
+struct DirectorySettingRow<Accessory: View>: View {
     let title: String
     let path: String
     let description: String
     let onChoose: () -> Void
     let onReset: () -> Void
+    let accessory: Accessory
 
-    @State private var showPopover = false
+    init(
+        title: String,
+        path: String,
+        description: String,
+        onChoose: @escaping () -> Void,
+        onReset: @escaping () -> Void,
+        @ViewBuilder content: () -> Accessory,
+    ) {
+        self.title = title
+        self.path = path
+        self.description = description
+        self.onChoose = onChoose
+        self.onReset = onReset
+        accessory = content()
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -68,10 +83,32 @@ struct DirectorySettingRow: View {
 
                 Button("common.reset".localized(), action: onReset)
                     .padding(.leading, 8)
+
+                accessory
             }
             Text(description)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+        }
+    }
+}
+
+extension DirectorySettingRow where Accessory == EmptyView {
+    init(
+        title: String,
+        path: String,
+        description: String,
+        onChoose: @escaping () -> Void,
+        onReset: @escaping () -> Void,
+    ) {
+        self.init(
+            title: title,
+            path: path,
+            description: description,
+            onChoose: onChoose,
+            onReset: onReset,
+        ) {
+            EmptyView()
         }
     }
 }
