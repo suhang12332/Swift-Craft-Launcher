@@ -40,4 +40,11 @@ final class ModLoaderHandlerConformanceTests: XCTestCase {
         ]
         XCTAssertEqual(handlers.count, 4)
     }
+
+    func testLoaderConfigs_useLoaderSpecificLabels() {
+        XCTAssertEqual(FabricLoaderService.config.labelName, "Fabric")
+        XCTAssertEqual(ForgeLoaderService.config.labelName, "Forge")
+        XCTAssertEqual(NeoForgeLoaderService.config.labelName, "NeoForge")
+        XCTAssertEqual(QuiltLoaderService.config.labelName, "Quilt")
+    }
 }

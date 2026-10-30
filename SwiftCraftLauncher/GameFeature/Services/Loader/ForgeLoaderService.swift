@@ -12,20 +12,15 @@ enum ForgeLoaderService {
     static let config = ForgeLikeLoaderService.Config(
         gameLoader: .forge,
         labelName: GameLoader.forge.labelName,
-        versionNotFoundErrorKey: "error.resource.forge_loader_version_not_found",
         missingVersionErrorKey: "error.resource.missing_forge_version",
     )
-
-    static func fetchAllForgeVersions(for minecraftVersion: String) async throws -> LoaderVersion {
-        try await ForgeLikeLoaderService.fetchAllVersions(config: config, for: minecraftVersion)
-    }
 
     static func setupWithSpecificVersion(
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
-    ) async -> (loaderVersion: String, classpath: String, mainClass: String)? {
+    ) async -> ModLoaderSetupResult? {
         await ForgeLikeLoaderService.setupWithSpecificVersion(
             config: config,
             for: gameVersion,
@@ -40,7 +35,7 @@ enum ForgeLoaderService {
         loaderVersion: String,
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
-    ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
+    ) async throws -> ModLoaderSetupResult {
         try await ForgeLikeLoaderService.setupWithSpecificVersionThrowing(
             config: config,
             for: gameVersion,

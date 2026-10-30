@@ -12,23 +12,7 @@ enum ForgeLikeLoaderService {
     struct Config {
         let gameLoader: GameLoader
         let labelName: String
-        let versionNotFoundErrorKey: String
         let missingVersionErrorKey: String
-    }
-
-    static func fetchAllVersions(config: Config, for minecraftVersion: String) async throws -> LoaderVersion {
-        do {
-            return try await CommonService.fetchAllLoaderVersionsThrowing(
-                type: config.gameLoader.modrinthLoaderId,
-                minecraftVersion: minecraftVersion,
-            )
-        } catch {
-            throw GlobalError.resource(
-                i18nKey: config.versionNotFoundErrorKey,
-                level: .notification,
-                message: "\(config.labelName) loader version not found for Minecraft \(minecraftVersion)",
-            )
-        }
     }
 
     static func fetchSpecificProfile(config: Config, for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
@@ -48,7 +32,7 @@ enum ForgeLikeLoaderService {
         loaderVersion: String,
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
-    ) async -> (loaderVersion: String, classpath: String, mainClass: String)? {
+    ) async -> ModLoaderSetupResult? {
         do {
             return try await setupWithSpecificVersionThrowing(
                 config: config,
@@ -71,7 +55,7 @@ enum ForgeLikeLoaderService {
         loaderVersion: String,
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
-    ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
+    ) async throws -> ModLoaderSetupResult {
         AppLog.game.info("Starting to set specified \(config.labelName) loader version: \(loaderVersion)")
 
         let profile = try await fetchSpecificProfile(config: config, for: gameVersion, loaderVersion: loaderVersion)
@@ -111,6 +95,14 @@ enum ForgeLikeLoaderService {
                 message: "\(config.labelName) profile missing version for game \(gameVersion), loaderVersion \(loaderVersion)",
             )
         }
-        return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)
+        return ModLoaderSetupResult(
+            loaderVersion: version,
+            classpath: classpathString,
+            mainClass: mainClass,
+            gameArguments: profile.arguments.game ?? [],
+            jvmArguments: (profile.arguments.jvm ?? []).map {
+                $0.replacingJVMPlaceholders(gameVersion: gameVersion)
+            },
+        )
     }
 }

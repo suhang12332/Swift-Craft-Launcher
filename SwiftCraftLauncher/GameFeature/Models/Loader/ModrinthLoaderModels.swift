@@ -30,6 +30,14 @@ struct Processor: Codable {
 struct LoaderVersion: Decodable {
     let id: String
     let stable: Bool
+    /// The version group this game version belongs to (Quilt v1 manifests only).
+    let versionGroup: String?
+    let loaders: [LoaderInfo]
+}
+
+/// A group of game versions sharing the same loader profiles (Quilt v1 manifests only).
+struct LoaderVersionGroup: Decodable {
+    let id: String
     let loaders: [LoaderInfo]
 }
 
@@ -43,6 +51,8 @@ struct LoaderInfo: Decodable {
 /// The Modrinth loader version response containing game version mappings.
 struct ModrinthLoaderVersion: Decodable {
     let gameVersions: [LoaderVersion]
+    /// Loader versions shared by a group of game versions (Quilt v1 manifests only).
+    let versionGroups: [LoaderVersionGroup]?
 }
 
 /// A Modrinth mod loader configuration with libraries and processors.

@@ -7,6 +7,15 @@
 
 import Foundation
 
+/// The launch configuration produced when a mod loader is set up for an instance.
+struct ModLoaderSetupResult {
+    let loaderVersion: String
+    let classpath: String
+    let mainClass: String
+    let gameArguments: [String]
+    let jvmArguments: [String]
+}
+
 /// Defines the common interface for mod loader setup operations.
 protocol ModLoaderHandler {
     static func setupWithSpecificVersionThrowing(
@@ -14,12 +23,12 @@ protocol ModLoaderHandler {
         loaderVersion: String,
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
-    ) async throws -> (loaderVersion: String, classpath: String, mainClass: String)
+    ) async throws -> ModLoaderSetupResult
 
     static func setupWithSpecificVersion(
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
-    ) async -> (loaderVersion: String, classpath: String, mainClass: String)?
+    ) async -> ModLoaderSetupResult?
 }

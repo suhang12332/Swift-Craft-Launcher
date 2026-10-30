@@ -210,42 +210,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertEqual(log.fileSize, 2048)
     }
 
-    func testFabricLoader_codable() throws {
-        let json = """
-        {"loader": {"version": "0.14.21"}}
-        """
-        let data = Data(json.utf8)
-        let loader = try JSONDecoder().decode(FabricLoader.self, from: data)
-
-        XCTAssertEqual(loader.loader.version, "0.14.21")
-    }
-
-    func testFabricLoader_codable_roundTrip() throws {
-        let original = FabricLoader(loader: FabricLoader.LoaderInfo(version: "0.15.3"))
-        let encoded = try JSONEncoder().encode(original)
-        let decoded = try JSONDecoder().decode(FabricLoader.self, from: encoded)
-
-        XCTAssertEqual(decoded.loader.version, "0.15.3")
-    }
-
-    func testQuiltLoaderResponse_codable() throws {
-        let json = """
-        {"loader": {"version": "0.22.0"}}
-        """
-        let data = Data(json.utf8)
-        let response = try JSONDecoder().decode(QuiltLoaderResponse.self, from: data)
-
-        XCTAssertEqual(response.loader.version, "0.22.0")
-    }
-
-    func testQuiltLoaderResponse_codable_roundTrip() throws {
-        let original = QuiltLoaderResponse(loader: QuiltLoaderResponse.Loader(version: "0.23.0"))
-        let encoded = try JSONEncoder().encode(original)
-        let decoded = try JSONDecoder().decode(QuiltLoaderResponse.self, from: encoded)
-
-        XCTAssertEqual(decoded.loader.version, "0.23.0")
-    }
-
     func testModrinthLoader_codable() throws {
         let json = """
         {

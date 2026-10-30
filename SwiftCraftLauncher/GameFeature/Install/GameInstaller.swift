@@ -232,9 +232,6 @@ final class GameInstaller {
         var finalizedInfo = await finalizer.finalize(
             gameInfo: baseGameInfo,
             manifest: manifest,
-            modLoader: selectedModLoader,
-            gameVersion: selectedGameVersion,
-            loaderVersion: specifiedLoaderVersion,
             loaderResult: loaderResult,
         )
         finalizedInfo.javaPath = javaPath
@@ -310,16 +307,16 @@ final class GameInstaller {
     ) async throws -> GameFinalizer.LoaderResult? {
         let handler: (any ModLoaderHandler.Type)?
 
-        switch selectedModLoader.lowercased() {
-        case GameLoader.fabric.displayName:
+        switch GameLoader(rawValue: selectedModLoader.lowercased()) ?? .vanilla {
+        case .fabric:
             handler = FabricLoaderService.self
-        case GameLoader.forge.displayName:
+        case .forge:
             handler = ForgeLoaderService.self
-        case GameLoader.neoforge.displayName:
+        case .neoforge:
             handler = NeoForgeLoaderService.self
-        case GameLoader.quilt.rawValue:
+        case .quilt:
             handler = QuiltLoaderService.self
-        default:
+        case .vanilla:
             handler = nil
         }
 

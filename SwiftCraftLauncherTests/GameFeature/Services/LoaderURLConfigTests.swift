@@ -9,75 +9,60 @@
 import XCTest
 
 final class LoaderURLConfigTests: XCTestCase {
-    func testFabricLoaderURL() {
-        let url = URLConfig.API.Fabric.loader
-        XCTAssertEqual(url.absoluteString, "https://meta.fabricmc.net/v2/versions/loader")
-    }
-
-    func testFabricLoaderURL_withVersion() {
-        let url = URLConfig.API.Fabric.loader.appendingPathComponent("1.20.1")
-        XCTAssertTrue(url.absoluteString.hasSuffix("1.20.1"))
-    }
-
-    func testQuiltLoaderBaseURL() {
-        let url = URLConfig.API.Quilt.loaderBase
-        XCTAssertEqual(url.absoluteString, "https://meta.quiltmc.org/v3/versions/loader/")
-    }
-
-    func testQuiltLoaderBaseURL_withVersion() {
-        let url = URLConfig.API.Quilt.loaderBase.appendingPathComponent("1.20.1")
-        XCTAssertTrue(url.absoluteString.contains("1.20.1"))
-    }
-
-    func testModrinthLoaderProfile_fabric() {
-        let url = URLConfig.API.Modrinth.loaderProfile(loader: "fabric", version: "0.14.21")
-        XCTAssertTrue(url.absoluteString.contains("fabric"))
-        XCTAssertTrue(url.absoluteString.contains("0.14.21"))
-        XCTAssertTrue(url.absoluteString.contains("launcher-meta.modrinth.com"))
-    }
-
-    func testModrinthLoaderProfile_forge() {
-        let url = URLConfig.API.Modrinth.loaderProfile(loader: "forge", version: "47.2.0")
-        XCTAssertTrue(url.absoluteString.contains("forge"))
-        XCTAssertTrue(url.absoluteString.contains("47.2.0"))
-    }
-
-    func testModrinthLoaderProfile_neoForge() {
-        let url = URLConfig.API.Modrinth.loaderProfile(loader: "neo", version: "21.0.1")
-        XCTAssertTrue(url.absoluteString.contains("neo"))
-        XCTAssertTrue(url.absoluteString.contains("21.0.1"))
-    }
-
-    func testModrinthLoaderProfile_quilt() {
-        let url = URLConfig.API.Modrinth.loaderProfile(loader: "quilt", version: "0.26.0")
-        XCTAssertTrue(url.absoluteString.contains("quilt"))
-        XCTAssertTrue(url.absoluteString.contains("0.26.0"))
-    }
-
     func testModrinthLoaderManifest_fabric() {
         let url = URLConfig.API.Modrinth.loaderManifest(loader: "fabric")
-        XCTAssertTrue(url.absoluteString.contains("fabric"))
-        XCTAssertTrue(url.absoluteString.contains("manifest.json"))
+        XCTAssertEqual(url.absoluteString, "https://launcher-meta.modrinth.com/fabric/v0/manifest.json")
+    }
+
+    func testModrinthLoaderManifest_forge() {
+        let url = URLConfig.API.Modrinth.loaderManifest(loader: "forge")
+        XCTAssertEqual(url.absoluteString, "https://launcher-meta.modrinth.com/forge/v0/manifest.json")
     }
 
     func testModrinthLoaderManifest_neoForge() {
         let url = URLConfig.API.Modrinth.loaderManifest(loader: "neo")
-        XCTAssertTrue(url.absoluteString.contains("neo"))
-        XCTAssertTrue(url.absoluteString.contains("manifest.json"))
+        XCTAssertEqual(url.absoluteString, "https://launcher-meta.modrinth.com/neo/v0/manifest.json")
     }
 
-    func testLoaderProfileURL_hasCorrectScheme() {
+    func testModrinthLoaderManifest_quilt() {
+        let url = URLConfig.API.Modrinth.loaderManifest(loader: "quilt")
+        XCTAssertEqual(url.absoluteString, "https://launcher-meta.modrinth.com/quilt/v1/manifest.json")
+    }
+
+    func testModrinthLoaderProfile_fabric() {
         let url = URLConfig.API.Modrinth.loaderProfile(loader: "fabric", version: "0.14.21")
-        XCTAssertEqual(url.scheme, "https")
+        XCTAssertEqual(url.absoluteString, "https://launcher-meta.modrinth.com/fabric/v0/versions/0.14.21.json")
     }
 
-    func testFabricLoaderURL_hasCorrectScheme() {
-        let url = URLConfig.API.Fabric.loader
-        XCTAssertEqual(url.scheme, "https")
+    func testModrinthLoaderProfile_forge() {
+        let url = URLConfig.API.Modrinth.loaderProfile(loader: "forge", version: "47.2.0")
+        XCTAssertEqual(url.absoluteString, "https://launcher-meta.modrinth.com/forge/v0/versions/47.2.0.json")
     }
 
-    func testQuiltLoaderBaseURL_hasCorrectScheme() {
-        let url = URLConfig.API.Quilt.loaderBase
-        XCTAssertEqual(url.scheme, "https")
+    func testModrinthLoaderProfile_neoForge() {
+        let url = URLConfig.API.Modrinth.loaderProfile(loader: "neo", version: "21.0.1")
+        XCTAssertEqual(url.absoluteString, "https://launcher-meta.modrinth.com/neo/v0/versions/21.0.1.json")
+    }
+
+    func testModrinthQuiltLoaderProfile() {
+        let url = URLConfig.API.Modrinth.loaderProfile(loader: "quilt", version: "0.26.0", versionGroup: "v1")
+        XCTAssertEqual(
+            url.absoluteString,
+            "https://launcher-meta.modrinth.com/quilt/v1/version-group/v1/loader-version/0.26.0"
+        )
+    }
+
+    func testModrinthQuiltLoaderProfile_otherGroup() {
+        let url = URLConfig.API.Modrinth.loaderProfile(loader: "quilt", version: "0.30.0", versionGroup: "v2")
+        XCTAssertEqual(
+            url.absoluteString,
+            "https://launcher-meta.modrinth.com/quilt/v1/version-group/v2/loader-version/0.30.0"
+        )
+    }
+
+    func testModrinthLoaderURLs_useHTTPS() {
+        XCTAssertEqual(URLConfig.API.Modrinth.loaderManifest(loader: "quilt").scheme, "https")
+        XCTAssertEqual(URLConfig.API.Modrinth.loaderProfile(loader: "fabric", version: "0.14.21").scheme, "https")
+        XCTAssertEqual(URLConfig.API.Modrinth.loaderProfile(loader: "quilt", version: "0.26.0", versionGroup: "v1").scheme, "https")
     }
 }
