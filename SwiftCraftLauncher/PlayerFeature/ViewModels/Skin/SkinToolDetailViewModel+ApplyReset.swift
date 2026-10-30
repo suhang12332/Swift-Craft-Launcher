@@ -18,8 +18,29 @@ extension SkinToolDetailViewModel {
         isResettingSkin = true
         resetSkinTask = Task {
             defer { self.isResettingSkin = false }
-            _ = await PlayerSkinService.resetSkinAndRefresh(player: player)
+
+            let result = await PlayerSkinService.resetSkinAndRefresh(player: player)
+            guard result.success, !Task.isCancelled else { return }
+            self.applyResetState(skinInfo: result.skinInfo, player: player)
         }
+    }
+
+    /// Clears the pending selection and applies the refreshed skin state after a reset.
+    private func applyResetState(
+        skinInfo: PlayerSkinService.PublicSkinInfo?,
+        player: Player,
+    ) {
+        deleteTemporarySkinFile()
+        selectedSkinPath = nil
+        selectedSkinData = nil
+        selectedSkinImage = nil
+        currentSkinRenderImage = nil
+
+        publicSkinInfo = skinInfo
+        currentModel = skinInfo?.model ?? .classic
+        updateHasChanges()
+
+        loadCurrentSkinRenderImageIfNeeded(resolvedPlayer: player)
     }
 
     /// Applies all pending skin and cape changes to the player's Minecraft profile.
