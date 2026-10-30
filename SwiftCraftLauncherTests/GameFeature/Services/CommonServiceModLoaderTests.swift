@@ -290,4 +290,122 @@ final class CommonServiceModLoaderTests: XCTestCase {
 
         XCTAssertEqual(result.mainClass, "net.fabricmc.loader.impl.launch.knot.KnotClient")
     }
+
+    // MARK: - resolveLoaderVersions
+
+    private func loaderInfo(_ id: String, stable: Bool = false) -> [String: Any] {
+        [
+            "id": id,
+            "url": "https://launcher-meta.modrinth.com/test/\(id)",
+            "stable": stable,
+        ]
+    }
+
+    func testResolveLoaderVersions_quilt_resolvesVersionGroups() throws {
+        let manifestJSON: [String: Any] = [
+            "gameVersions": [
+                ["id": "1.21.1", "stable": true, "versionGroup": "v1", "loaders": []],
+                ["id": "26.4-snapshot-6", "stable": false, "versionGroup": "v2", "loaders": []],
+            ],
+            "versionGroups": [
+                [
+                    "id": "v1",
+                    "loaders": [
+                        loaderInfo("0.30.1"),
+                        loaderInfo("0.31.0-beta.1"),
+                        loaderInfo("0.29.0-pre1"),
+                    ],
+                ],
+                ["id": "v2", "loaders": [loaderInfo("0.30.1")]],
+            ],
+        ]
+        let manifest = try decode(ModrinthLoaderVersion.self, from: manifestJSON)
+
+        let versions = CommonService.resolveLoaderVersions(from: manifest, type: "quilt")
+
+        // Quilt keeps only concrete release numbers for both game and loader versions,
+        // because launcher-meta marks every Quilt entry as unstable.
+        XCTAssertEqual(versions.count, 1)
+        XCTAssertEqual(versions.first?.id, "1.21.1")
+        XCTAssertEqual(versions.first?.loaders.map(\.id), ["0.30.1"])
+    }
+
+    func testResolveLoaderVersions_fabric_appliesUniversalLoaders() throws {
+        let manifestJSON: [String: Any] = [
+            "gameVersions": [
+                [
+                    "id": "${modrinth.gameVersion}",
+                    "stable": true,
+                    "loaders": [loaderInfo("0.16.9", stable: true)],
+                ],
+                ["id": "1.21.1", "stable": true, "loaders": []],
+            ],
+        ]
+        let manifest = try decode(ModrinthLoaderVersion.self, from: manifestJSON)
+
+        let versions = CommonService.resolveLoaderVersions(from: manifest, type: "fabric")
+
+        // The placeholder entry is dropped, and the real version reuses its loaders.
+        XCTAssertEqual(versions.count, 1)
+        XCTAssertEqual(versions.first?.id, "1.21.1")
+        XCTAssertEqual(versions.first?.loaders.map(\.id), ["0.16.9"])
+    }
+
+    func testResolveLoaderVersions_filtersGameVersions() throws {
+        let manifestJSON: [String: Any] = [
+            "gameVersions": [
+                ["id": "1.21.1", "stable": true, "loaders": [loaderInfo("21.1.0", stable: true)]],
+                ["id": "26.4-snapshot-6", "stable": false, "loaders": [loaderInfo("21.2.0", stable: true)]],
+                ["id": "26.1-pre-3", "stable": true, "loaders": [loaderInfo("21.3.0", stable: true)]],
+            ],
+        ]
+        let manifest = try decode(ModrinthLoaderVersion.self, from: manifestJSON)
+
+        // Forge trusts `stable`, while NeoForge keeps release numbers only.
+        XCTAssertEqual(
+            CommonService.resolveLoaderVersions(from: manifest, type: "forge").map(\.id),
+            ["1.21.1", "26.1-pre-3"],
+        )
+        XCTAssertEqual(CommonService.resolveLoaderVersions(from: manifest, type: "neo").map(\.id), ["1.21.1"])
+    }
+
+    func testResolveLoaderVersions_neoforge_filtersLetterLoaderVersions() throws {
+        let manifestJSON: [String: Any] = [
+            "gameVersions": [
+                [
+                    "id": "1.21.1",
+                    "stable": true,
+                    "loaders": [
+                        loaderInfo("21.1.265", stable: false),
+                        loaderInfo("21.1.0-beta", stable: false),
+                        loaderInfo("0.25w14craftmine.3-beta", stable: false),
+                    ],
+                ],
+            ],
+        ]
+        let manifest = try decode(ModrinthLoaderVersion.self, from: manifestJSON)
+
+        let versions = CommonService.resolveLoaderVersions(from: manifest, type: "neo")
+
+        XCTAssertEqual(versions.first?.loaders.map(\.id), ["21.1.265"])
+    }
+
+    func testResolveLoaderVersions_quilt_dropsStableNonNumericGameVersions() throws {
+        let manifestJSON: [String: Any] = [
+            "gameVersions": [
+                ["id": "1.21.1", "stable": true, "versionGroup": "v1", "loaders": []],
+                ["id": "26.3-rc-3", "stable": true, "versionGroup": "v1", "loaders": []],
+            ],
+            "versionGroups": [
+                ["id": "v1", "loaders": [loaderInfo("0.30.1")]],
+            ],
+        ]
+        let manifest = try decode(ModrinthLoaderVersion.self, from: manifestJSON)
+
+        XCTAssertEqual(CommonService.resolveLoaderVersions(from: manifest, type: "quilt").map(\.id), ["1.21.1"])
+        XCTAssertEqual(
+            CommonService.resolveLoaderVersions(from: manifest, type: "forge").map(\.id),
+            ["1.21.1", "26.3-rc-3"],
+        )
+    }
 }

@@ -48,7 +48,7 @@ final class LoaderURLConfigTests: XCTestCase {
         let url = URLConfig.API.Modrinth.loaderProfile(loader: "quilt", version: "0.26.0", versionGroup: "v1")
         XCTAssertEqual(
             url.absoluteString,
-            "https://launcher-meta.modrinth.com/quilt/v1/version-group/v1/loader-version/0.26.0"
+            "https://launcher-meta.modrinth.com/quilt/v1/version-group/v1/loader-version/0.26.0",
         )
     }
 
@@ -56,7 +56,7 @@ final class LoaderURLConfigTests: XCTestCase {
         let url = URLConfig.API.Modrinth.loaderProfile(loader: "quilt", version: "0.30.0", versionGroup: "v2")
         XCTAssertEqual(
             url.absoluteString,
-            "https://launcher-meta.modrinth.com/quilt/v1/version-group/v2/loader-version/0.30.0"
+            "https://launcher-meta.modrinth.com/quilt/v1/version-group/v2/loader-version/0.30.0",
         )
     }
 

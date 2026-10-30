@@ -14,21 +14,11 @@ enum CommonService {
         includeSnapshots: Bool = false,
     ) async throws -> [String] {
         if let gameLoader = GameLoader(rawValue: loader.lowercased()),
-           gameLoader != .vanilla
-        {
+           gameLoader != .vanilla {
             let loaderVersions = try await fetchAllVersionThrowing(
                 type: gameLoader.modrinthLoaderId,
             )
-            let filteredVersions = loaderVersions.map(\.id)
-                .filter { version in
-                    let components = version.components(separatedBy: ".")
-                    return components.allSatisfy {
-                        $0.rangeOfCharacter(
-                            from: CharacterSet.decimalDigits.inverted,
-                        ) == nil
-                    }
-                }
-            let sortResult = CommonUtil.sortMinecraftVersions(filteredVersions)
+            let sortResult = CommonUtil.sortMinecraftVersions(loaderVersions.map(\.id))
             return CommonUtil.versionsAtLeast(sortResult)
         }
 
@@ -115,35 +105,44 @@ enum CommonService {
     /// The manifest formats differ per loader:
     /// - Fabric publishes a single universal loader list under the
     ///   `${modrinth.gameVersion}` placeholder entry; every game version reuses it.
+    ///   The placeholder itself is not a real game version and is dropped.
     /// - Quilt (v1) stores the loader list once per version group and only
     ///   references the group from each game version.
     /// - Forge and NeoForge embed the loaders directly.
     ///
-    /// NeoForge also exposes unstable game versions (snapshots); every other
-    /// loader is filtered down to stable game versions.
-    private static func resolveLoaderVersions(
+    /// At the exit, Quilt and NeoForge keep only concrete release numbers while
+    /// every other loader trusts the manifest's game-version stability flag.
+    static func resolveLoaderVersions(
         from manifest: ModrinthLoaderVersion,
         type: String,
     ) -> [LoaderVersion] {
         let type = type.lowercased()
 
-        // Fabric publishes the full loader list under the `${modrinth.gameVersion}` entry.
-        let universalLoaders = manifest.gameVersions.first { $0.id.contains("${") }?.loaders
+        // Fabric publishes the full loader list under the `${modrinth.gameVersion}`
+        // placeholder entry, which is not a real selectable game version.
+        let universalEntry = type == GameLoader.fabric.displayName
+            ? manifest.gameVersions.first { $0.id.contains("${") }
+            : nil
+        let gameVersions = universalEntry.map { entry in
+            manifest.gameVersions.filter { $0.id != entry.id }
+        } ?? manifest.gameVersions
         // Quilt stores the loader list once per version group.
         let versionGroups = Dictionary(
             (manifest.versionGroups ?? []).map { ($0.id, $0.loaders) },
-            uniquingKeysWith: { first, _ in first },
-        )
+        ) { first, _ in first }
 
-        let versions = manifest.gameVersions.map { version in
+        let versions = gameVersions.map { version in
             let loaders: [LoaderInfo]
             switch type {
             case GameLoader.fabric.displayName:
-                loaders = universalLoaders ?? version.loaders
+                loaders = universalEntry?.loaders ?? version.loaders
             case GameLoader.quilt.rawValue:
-                loaders = version.loaders.isEmpty
+                let groupLoaders = version.loaders.isEmpty
                     ? versionGroups[version.versionGroup ?? ""] ?? []
                     : version.loaders
+                loaders = groupLoaders.filter { CommonUtil.isReleaseVersionNumber($0.id) }
+            case GameLoader.neoforge.modrinthLoaderId:
+                loaders = version.loaders.filter { CommonUtil.isReleaseVersionNumber($0.id) }
             default:
                 loaders = version.loaders
             }
@@ -156,9 +155,8 @@ enum CommonService {
             )
         }
 
-        // NeoForge keeps snapshots; every other loader only exposes stable game versions.
         return type == GameLoader.neoforge.modrinthLoaderId
-            ? versions
+            ? versions.filter { CommonUtil.isReleaseVersionNumber($0.id) }
             : versions.filter(\.stable)
     }
 
@@ -411,10 +409,7 @@ enum CommonService {
                 type: gameLoader.modrinthLoaderId,
                 minecraftVersion: gameVersion,
             )
-            let loaders = gameLoader == .quilt
-                ? loaderVersion.loaders.filter(\.stable)
-                : loaderVersion.loaders
-            return loaders.map(\.id)
+            return loaderVersion.loaders.map(\.id)
         } catch {
             AppLog.game.error("Failed to get \(loader) versions: \(error.localizedDescription)")
             return []
