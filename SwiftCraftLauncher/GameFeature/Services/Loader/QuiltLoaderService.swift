@@ -19,21 +19,6 @@ enum QuiltLoaderService {
         try await FabricLikeLoaderService.fetchSpecificLoaderVersion(config: config, for: minecraftVersion, loaderVersion: loaderVersion)
     }
 
-    static func setupWithSpecificVersion(
-        for gameVersion: String,
-        loaderVersion: String,
-        gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
-    ) async -> ModLoaderSetupResult? {
-        await FabricLikeLoaderService.setupWithSpecificVersion(
-            config: config,
-            for: gameVersion,
-            loaderVersion: loaderVersion,
-            gameInfo: gameInfo,
-            onProgressUpdate: onProgressUpdate,
-        )
-    }
-
     static func setupWithSpecificVersionThrowing(
         for gameVersion: String,
         loaderVersion: String,

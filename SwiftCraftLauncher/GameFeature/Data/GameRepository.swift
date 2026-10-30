@@ -262,22 +262,6 @@ class GameRepository {
         AppLog.game.info("Successfully updated game: \(game.gameName) (working path: \(workingPath))")
     }
 
-    func loadGames() {
-        loadGamesSafely()
-    }
-
-    private func loadGamesSafely() {
-        Task {
-            do {
-                try await loadGamesThrowing()
-                await scanAllGamesModsDirectory()
-            } catch {
-                DIContainer.shared.core.errorHandler.handle(error)
-                gamesByWorkingPath = [:]
-            }
-        }
-    }
-
     private func scanAllGamesModsDirectory() async {
         let games = games
         AppLog.game.info("Starting scan of \(games.count) games mods directories")

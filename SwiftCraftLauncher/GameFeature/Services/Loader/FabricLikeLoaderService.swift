@@ -26,29 +26,6 @@ enum FabricLikeLoaderService {
         )
     }
 
-    static func setupWithSpecificVersion(
-        config: Config,
-        for gameVersion: String,
-        loaderVersion: String,
-        gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
-    ) async -> ModLoaderSetupResult? {
-        do {
-            return try await setupWithSpecificVersionThrowing(
-                config: config,
-                for: gameVersion,
-                loaderVersion: loaderVersion,
-                gameInfo: gameInfo,
-                onProgressUpdate: onProgressUpdate,
-            )
-        } catch {
-            let globalError = GlobalError.from(error)
-            AppLog.game.error("Failed to set \(config.labelName) specified version: \(globalError.localizedDescription)")
-            DIContainer.shared.core.errorHandler.handle(globalError)
-            return nil
-        }
-    }
-
     static func setupWithSpecificVersionThrowing(
         config: Config,
         for gameVersion: String,

@@ -15,21 +15,6 @@ enum NeoForgeLoaderService {
         missingVersionErrorKey: "error.resource.neoforge_missing_version",
     )
 
-    static func setupWithSpecificVersion(
-        for gameVersion: String,
-        loaderVersion: String,
-        gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
-    ) async -> ModLoaderSetupResult? {
-        await ForgeLikeLoaderService.setupWithSpecificVersion(
-            config: config,
-            for: gameVersion,
-            loaderVersion: loaderVersion,
-            gameInfo: gameInfo,
-            onProgressUpdate: onProgressUpdate,
-        )
-    }
-
     static func setupWithSpecificVersionThrowing(
         for gameVersion: String,
         loaderVersion: String,

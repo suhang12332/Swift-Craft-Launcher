@@ -24,11 +24,4 @@ protocol ModLoaderHandler {
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
     ) async throws -> ModLoaderSetupResult
-
-    static func setupWithSpecificVersion(
-        for gameVersion: String,
-        loaderVersion: String,
-        gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping @Sendable (String, Int, Int) -> Void,
-    ) async -> ModLoaderSetupResult?
 }
