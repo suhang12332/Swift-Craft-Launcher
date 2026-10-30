@@ -34,6 +34,7 @@ final class SkinToolDetailViewModel {
     var showingFileImporter = false
     var operationInProgress = false
     var isApplyingChanges = false
+    var isResettingSkin = false
 
     var selectedSkinData: Data?
     var selectedSkinImage: NSImage?

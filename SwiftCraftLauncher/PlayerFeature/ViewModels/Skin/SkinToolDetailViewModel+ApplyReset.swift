@@ -16,17 +16,21 @@ extension SkinToolDetailViewModel {
         let player = playerWithCredentialIfNeeded(resolved) ?? resolved
 
         operationInProgress = true
+        isResettingSkin = true
         resetSkinTask?.cancel()
         resetSkinTask = Task {
+            defer {
+                self.operationInProgress = false
+                self.isResettingSkin = false
+            }
+
             do {
                 _ = await PlayerSkinService.resetSkinAndRefresh(player: player)
                 try Task.checkCancellation()
-
-                self.operationInProgress = false
             } catch is CancellationError {
-                self.operationInProgress = false
+                AppLog.player.debug("Skin reset cancelled")
             } catch {
-                self.operationInProgress = false
+                AppLog.player.error("Skin reset failed: \(error)")
             }
         }
     }

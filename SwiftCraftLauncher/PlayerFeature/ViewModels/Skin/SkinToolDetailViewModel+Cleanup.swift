@@ -44,6 +44,7 @@ extension SkinToolDetailViewModel {
         hasChanges = false
         operationInProgress = false
         isApplyingChanges = false
+        isResettingSkin = false
 
         lastSelectedSkinData = nil
         lastCurrentModel = .classic
