@@ -366,10 +366,6 @@ enum URLConfig {
                 mirrorBaseURL.appendingPathComponent("categories")
             }
 
-            static var gameVersions: URL {
-                mirrorBaseURL.appendingPathComponent("minecraft/version")
-            }
-
             static var fingerprints: URL {
                 mirrorBaseURL.appendingPathComponent("fingerprints/432")
             }

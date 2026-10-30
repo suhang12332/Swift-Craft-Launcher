@@ -390,7 +390,7 @@ final class CommonServiceModLoaderTests: XCTestCase {
         XCTAssertEqual(versions.first?.loaders.map(\.id), ["21.1.265"])
     }
 
-    func testResolveLoaderVersions_quilt_dropsStableNonNumericGameVersions() throws {
+    func testResolveLoaderVersions_quilt_keepsStableVersionsWhileNeoUsesReleaseNumbers() throws {
         let manifestJSON: [String: Any] = [
             "gameVersions": [
                 ["id": "1.21.1", "stable": true, "versionGroup": "v1", "loaders": []],
@@ -402,10 +402,11 @@ final class CommonServiceModLoaderTests: XCTestCase {
         ]
         let manifest = try decode(ModrinthLoaderVersion.self, from: manifestJSON)
 
-        XCTAssertEqual(CommonService.resolveLoaderVersions(from: manifest, type: "quilt").map(\.id), ["1.21.1"])
+        // Quilt trusts the stability flag; NeoForge ignores it and keeps release numbers only.
         XCTAssertEqual(
-            CommonService.resolveLoaderVersions(from: manifest, type: "forge").map(\.id),
+            CommonService.resolveLoaderVersions(from: manifest, type: "quilt").map(\.id),
             ["1.21.1", "26.3-rc-3"],
         )
+        XCTAssertEqual(CommonService.resolveLoaderVersions(from: manifest, type: "neo").map(\.id), ["1.21.1"])
     }
 }

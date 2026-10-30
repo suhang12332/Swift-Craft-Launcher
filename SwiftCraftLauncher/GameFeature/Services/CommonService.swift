@@ -120,9 +120,7 @@ enum CommonService {
 
         // Fabric publishes the full loader list under the `${modrinth.gameVersion}`
         // placeholder entry, which is not a real selectable game version.
-        let universalEntry = type == GameLoader.fabric.displayName
-            ? manifest.gameVersions.first { $0.id.contains("${") }
-            : nil
+        let universalEntry = manifest.gameVersions.first { $0.id.contains("${") }
         let gameVersions = universalEntry.map { entry in
             manifest.gameVersions.filter { $0.id != entry.id }
         } ?? manifest.gameVersions

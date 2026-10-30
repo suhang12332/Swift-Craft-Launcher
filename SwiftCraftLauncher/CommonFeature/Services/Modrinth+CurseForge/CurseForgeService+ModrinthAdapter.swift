@@ -29,9 +29,7 @@ extension CurseForgeService {
                 message: "Failed to convert CurseForge project detail to Modrinth format for modId=\(modId)",
             )
         }
-        let releaseGameVersions = modrinthDetail.gameVersions.filter {
-            $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil
-        }
+        let releaseGameVersions = modrinthDetail.gameVersions.filter { CommonUtil.isReleaseVersionNumber($0) }
         let result = CommonUtil.sortMinecraftVersions(releaseGameVersions)
         modrinthDetail.gameVersions = CommonUtil.versionsAtLeast(result)
 
