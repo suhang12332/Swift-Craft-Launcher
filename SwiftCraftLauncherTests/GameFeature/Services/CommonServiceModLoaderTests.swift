@@ -291,8 +291,6 @@ final class CommonServiceModLoaderTests: XCTestCase {
         XCTAssertEqual(result.mainClass, "net.fabricmc.loader.impl.launch.knot.KnotClient")
     }
 
-    // MARK: - resolveLoaderVersions
-
     private func loaderInfo(_ id: String, stable: Bool = false) -> [String: Any] {
         [
             "id": id,

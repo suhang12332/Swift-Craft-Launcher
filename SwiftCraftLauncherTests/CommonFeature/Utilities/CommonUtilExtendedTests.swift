@@ -156,8 +156,6 @@ final class CommonUtilExtendedTests: XCTestCase {
         XCTAssertEqual(result.address, "")
     }
 
-    // MARK: - isReleaseVersionNumber
-
     func testIsReleaseVersionNumber_releases() {
         XCTAssertTrue(CommonUtil.isReleaseVersionNumber("1.21.1"))
         XCTAssertTrue(CommonUtil.isReleaseVersionNumber("20"))
