@@ -28,9 +28,7 @@ extension ModrinthService {
         decoder.configureForModrinth()
         var detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
 
-        let releaseGameVersions = detail.gameVersions.filter {
-            $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil
-        }
+        let releaseGameVersions = detail.gameVersions.filter { CommonUtil.isReleaseVersionNumber($0) }
         let result = CommonUtil.sortMinecraftVersions(releaseGameVersions)
         detail.gameVersions = CommonUtil.versionsAtLeast(result)
 

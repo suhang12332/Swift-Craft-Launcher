@@ -155,4 +155,27 @@ final class CommonUtilExtendedTests: XCTestCase {
         let result = CommonUtil.parseMinecraftJavaServerInfo(from: "   ")
         XCTAssertEqual(result.address, "")
     }
+
+    func testIsReleaseVersionNumber_releases() {
+        XCTAssertTrue(CommonUtil.isReleaseVersionNumber("1.21.1"))
+        XCTAssertTrue(CommonUtil.isReleaseVersionNumber("20"))
+        XCTAssertTrue(CommonUtil.isReleaseVersionNumber("1.20.1.0"))
+        XCTAssertTrue(CommonUtil.isReleaseVersionNumber(" 1.21.1 "))
+    }
+
+    func testIsReleaseVersionNumber_snapshotsAndPrereleases() {
+        XCTAssertFalse(CommonUtil.isReleaseVersionNumber("25w14craftmine"))
+        XCTAssertFalse(CommonUtil.isReleaseVersionNumber("26.3-rc-3"))
+        XCTAssertFalse(CommonUtil.isReleaseVersionNumber("26.3-pre-3"))
+        XCTAssertFalse(CommonUtil.isReleaseVersionNumber("1.20.1-beta"))
+        XCTAssertFalse(CommonUtil.isReleaseVersionNumber("26.3-snapshot-10"))
+    }
+
+    func testIsReleaseVersionNumber_malformed() {
+        XCTAssertFalse(CommonUtil.isReleaseVersionNumber(""))
+        XCTAssertFalse(CommonUtil.isReleaseVersionNumber("   "))
+        XCTAssertFalse(CommonUtil.isReleaseVersionNumber("1."))
+        XCTAssertFalse(CommonUtil.isReleaseVersionNumber(".1"))
+        XCTAssertFalse(CommonUtil.isReleaseVersionNumber("1..2"))
+    }
 }

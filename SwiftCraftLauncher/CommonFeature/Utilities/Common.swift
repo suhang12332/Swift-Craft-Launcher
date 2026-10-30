@@ -95,14 +95,31 @@ enum CommonUtil {
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 
+    /// Returns whether the version string is a concrete release number (digits and dots only).
+    ///
+    /// Implemented as a character scan rather than a regular expression so that
+    /// filtering hundreds of version strings stays cheap.
+    static func isReleaseVersionNumber(_ version: String) -> Bool {
+        let trimmed = version.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return false }
+
+        var expectsDigit = true
+        for scalar in trimmed.unicodeScalars {
+            if scalar == "." {
+                guard !expectsDigit else { return false }
+                expectsDigit = true
+            } else if scalar.value >= 48, scalar.value <= 57 {
+                expectsDigit = false
+            } else {
+                return false
+            }
+        }
+        return !expectsDigit
+    }
+
     /// Returns whether the version string represents a snapshot version.
     static func isMinecraftSnapshotVersion(_ version: String) -> Bool {
-        let trimmed = version.trimmingCharacters(in: .whitespacesAndNewlines)
-        let isPureNumericVersion = trimmed.range(
-            of: #"^\d+(\.\d+)*$"#,
-            options: [.regularExpression],
-        ) != nil
-        return !isPureNumericVersion
+        !isReleaseVersionNumber(version)
     }
 
     /// Generates the news slug for a release version (e.g., `1.26.1` → `minecraft-java-edition-26-1`).

@@ -246,16 +246,38 @@ enum URLConfig {
                 baseURL.appendingPathComponent("tag/category")
             }
 
+            /// Builds a launcher-meta URL for the given loader.
+            ///
+            /// Quilt has migrated to the v1 format; every other loader still uses v0.
+            private static func launcherMeta(loader: String, path: String) -> URL {
+                let apiVersion = loader.lowercased() == GameLoader.quilt.rawValue ? "v1" : "v0"
+                return URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/\(apiVersion)/\(path)")
+            }
+
             static func loaderManifest(loader: String) -> URL {
-                URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/manifest.json")
+                launcherMeta(loader: loader, path: "manifest.json")
             }
 
             static func versionInfo(version: String) -> URL {
                 URLConfig.url("https://launcher-meta.modrinth.com/minecraft/v0/versions/\(version).json")
             }
 
-            static func loaderProfile(loader: String, version: String) -> URL {
-                URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/versions/\(version).json")
+            /// Builds a launcher-meta loader profile URL.
+            ///
+            /// Quilt (v1) profiles live under `version-group/{group}/loader-version/{version}`
+            /// and require the version group resolved from the v1 manifest. Every other
+            /// loader uses the v0 `versions/{version}.json` path.
+            static func loaderProfile(
+                loader: String,
+                version: String,
+                versionGroup: String? = nil,
+            ) -> URL {
+                let path = if let versionGroup {
+                    "version-group/\(versionGroup)/loader-version/\(version)"
+                } else {
+                    "versions/\(version).json"
+                }
+                return launcherMeta(loader: loader, path: path)
             }
         }
 
@@ -265,14 +287,6 @@ enum URLConfig {
             static func seedMap(seed: Int64) -> URL? {
                 URL(string: "\(seedMapBase)#seed=\(seed)")
             }
-        }
-
-        enum Fabric {
-            static let loader = URLConfig.url("https://meta.fabricmc.net/v2/versions/loader")
-        }
-
-        enum Quilt {
-            static let loaderBase = URLConfig.url("https://meta.quiltmc.org/v3/versions/loader/")
         }
 
         enum CurseForge {
@@ -350,10 +364,6 @@ enum URLConfig {
 
             static var categories: URL {
                 mirrorBaseURL.appendingPathComponent("categories")
-            }
-
-            static var gameVersions: URL {
-                mirrorBaseURL.appendingPathComponent("minecraft/version")
             }
 
             static var fingerprints: URL {
