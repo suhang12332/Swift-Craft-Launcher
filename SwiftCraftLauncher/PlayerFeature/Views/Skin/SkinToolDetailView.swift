@@ -114,9 +114,16 @@ struct SkinToolDetailView: View {
                     }
                     .disabled(viewModel.operationInProgress)
                 }
-                Button("skin.apply".localized()) {
+                Button {
                     viewModel.applyChanges(resolvedPlayer: resolvedPlayer) {
                         dismiss()
+                    }
+                } label: {
+                    if viewModel.isApplyingChanges {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Text("skin.apply".localized())
                     }
                 }
                 .keyboardShortcut(.defaultAction)

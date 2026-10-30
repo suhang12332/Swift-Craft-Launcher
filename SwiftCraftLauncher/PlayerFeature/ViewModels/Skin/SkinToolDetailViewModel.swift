@@ -33,6 +33,7 @@ final class SkinToolDetailViewModel {
     var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
     var showingFileImporter = false
     var operationInProgress = false
+    var isApplyingChanges = false
 
     var selectedSkinData: Data?
     var selectedSkinImage: NSImage?

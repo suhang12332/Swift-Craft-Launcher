@@ -41,22 +41,27 @@ extension SkinToolDetailViewModel {
         let player = playerWithCredentialIfNeeded(resolved) ?? resolved
 
         operationInProgress = true
+        isApplyingChanges = true
         applyChangesTask?.cancel()
         applyChangesTask = Task {
+            defer {
+                self.operationInProgress = false
+                self.isApplyingChanges = false
+            }
+
             do {
                 let skinSuccess = await self.handleSkinChanges(player: player)
                 try Task.checkCancellation()
                 let capeSuccess = await self.handleCapeChanges(player: player)
                 try Task.checkCancellation()
 
-                self.operationInProgress = false
                 if skinSuccess, capeSuccess {
                     onAllSuccess()
                 }
             } catch is CancellationError {
-                self.operationInProgress = false
+                AppLog.player.debug("Skin apply cancelled")
             } catch {
-                self.operationInProgress = false
+                AppLog.player.error("Skin apply failed: \(error)")
             }
         }
     }
