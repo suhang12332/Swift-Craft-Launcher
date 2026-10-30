@@ -8,12 +8,24 @@
 import Foundation
 import SQLite3
 
+/// A single page of skin library items.
+struct SkinLibraryPage {
+    /// The items in this page, ordered from most recently used to least recently used.
+    let items: [SkinLibraryItem]
+
+    /// Whether more items remain after this page.
+    let hasMore: Bool
+}
+
 /// Manages a local SQLite-backed skin library.
 ///
 /// The library stores metadata about imported skin files and tracks their
 /// usage history. Skin image files are cached on disk, and the database
 /// records are automatically cleaned up when the corresponding file is missing.
 final class SkinLibraryStore {
+    /// The number of items fetched per page by the library UI.
+    static let pageSize = 24
+
     private let fileManager: FileManager
     private let db: SQLiteDatabase
     private let tableName = AppConstants.DatabaseTables.skinLibrary
@@ -23,7 +35,6 @@ final class SkinLibraryStore {
     private let createTableSQL: String
     private let upsertSQL: String
     private let deleteSQL: String
-    private let selectAllSQL: String
 
     init(fileManager: FileManager = .default) {
         self.fileManager = fileManager
@@ -42,28 +53,96 @@ final class SkinLibraryStore {
         VALUES (?, ?, ?, ?)
         """
         deleteSQL = "DELETE FROM \(AppConstants.DatabaseTables.skinLibrary) WHERE sha1 = ?"
-        selectAllSQL = """
-        SELECT \(selectColumns)
-        FROM \(tableName)
-        ORDER BY last_used_at DESC
-        """
     }
 
-    /// Loads all skin library items, omitting entries whose files are missing.
-    func loadItems() throws -> [SkinLibraryItem] {
+    /// Loads one page of skin library items, ordered from most recently used to least recently used.
+    ///
+    /// Pagination uses a keyset cursor on `(last_used_at, sha1)` instead of an
+    /// offset, so adding or deleting entries while scrolling cannot shift the
+    /// next page and cause skipped or duplicated rows. Entries whose files are
+    /// missing are omitted from the page and removed from the database.
+    ///
+    /// - Parameters:
+    ///   - cursor: The last item of the previously loaded page, or `nil` for the first page.
+    ///   - limit: The maximum number of items to return. Must be greater than zero.
+    /// - Returns: The next page of items and whether more items remain.
+    func loadPage(
+        after cursor: SkinLibraryItem? = nil,
+        limit: Int = SkinLibraryStore.pageSize,
+    ) throws -> SkinLibraryPage {
         try initializeIfNeeded()
+        guard limit > 0 else { return SkinLibraryPage(items: [], hasMore: false) }
+
         var items: [SkinLibraryItem] = []
-        try withPreparedStatement(selectAllSQL) { statement in
-            while sqlite3_step(statement) == SQLITE_ROW {
-                guard let item = decodeItem(from: statement) else { continue }
-                if fileManager.fileExists(atPath: item.fileURL.path) {
-                    items.append(item)
-                } else {
-                    try? deleteItemRecord(sha1: item.sha1)
+        var staleSHA1s: [String] = []
+        var nextCursor = cursor
+        var hasMore = false
+        let fetchLimit = limit + 1
+
+        // Missing files are filtered out after the query, so a page may come
+        // back short. Keep following the cursor until the page is filled or the
+        // table is exhausted, which guarantees a non-empty page while `hasMore`.
+        while true {
+            var fetchedRowCount = 0
+            var lastFetchedRow: SkinLibraryItem?
+
+            try withPreparedStatement(pageSQL(hasCursor: nextCursor != nil)) { statement in
+                var index: Int32 = 1
+                if let nextCursor {
+                    SQLiteDatabase.bind(statement, index: index, value: nextCursor.lastUsedAt)
+                    index += 1
+                    SQLiteDatabase.bind(statement, index: index, value: nextCursor.sha1)
+                    index += 1
+                }
+                SQLiteDatabase.bind(statement, index: index, value: fetchLimit)
+
+                while sqlite3_step(statement) == SQLITE_ROW {
+                    guard let row = decodeItem(from: statement) else { continue }
+                    fetchedRowCount += 1
+                    lastFetchedRow = row
+
+                    if fileManager.fileExists(atPath: row.fileURL.path) {
+                        items.append(row)
+                    } else {
+                        staleSHA1s.append(row.sha1)
+                    }
+
+                    if items.count > limit {
+                        break
+                    }
                 }
             }
+
+            if items.count > limit {
+                items.removeLast(items.count - limit)
+                hasMore = true
+                break
+            }
+
+            // A full fetch means the query was capped by `LIMIT`, so more rows
+            // may exist beyond the last fetched row.
+            guard fetchedRowCount == fetchLimit, let lastFetchedRow else { break }
+            nextCursor = lastFetchedRow
         }
-        return items
+
+        for sha1 in staleSHA1s {
+            try? deleteItemRecord(sha1: sha1)
+        }
+
+        return SkinLibraryPage(items: items, hasMore: hasMore)
+    }
+
+    private func pageSQL(hasCursor: Bool) -> String {
+        let cursorClause = hasCursor
+            ? "WHERE last_used_at < ? OR (last_used_at = ? AND sha1 > ?)"
+            : ""
+        return """
+        SELECT \(selectColumns)
+        FROM \(tableName)
+        \(cursorClause)
+        ORDER BY last_used_at DESC, sha1 ASC
+        LIMIT ?
+        """
     }
 
     /// Saves skin data to the library and writes the image file to disk.
@@ -176,7 +255,7 @@ final class SkinLibraryStore {
 
     private func createIndexesIfNeeded() throws {
         try? db.execute(
-            "CREATE INDEX IF NOT EXISTS idx_skin_library_last_used_at ON \(tableName)(last_used_at DESC);",
+            "CREATE INDEX IF NOT EXISTS idx_skin_library_last_used_sha1 ON \(tableName)(last_used_at DESC, sha1 ASC);",
         )
         try? db.execute(
             "CREATE INDEX IF NOT EXISTS idx_skin_library_sha1 ON \(tableName)(sha1);",

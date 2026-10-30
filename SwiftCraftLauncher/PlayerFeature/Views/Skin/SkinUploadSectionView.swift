@@ -24,6 +24,8 @@ struct SkinUploadSectionView: View {
     let showSkinLibrary: Bool
     @State private var showingSkinLibraryPopover = false
     @State private var skinLibraryItems: [SkinLibraryItem] = []
+    @State private var skinLibraryCursor: SkinLibraryItem?
+    @State private var skinLibraryHasMore = false
     @State private var pendingDeletion: SkinLibraryItem?
 
     let onSkinDropped: (NSImage) -> Void
@@ -85,6 +87,7 @@ struct SkinUploadSectionView: View {
                         SkinLibraryPopoverContentView(
                             items: skinLibraryItems,
                             isPresented: $showingSkinLibraryPopover,
+                            onLoadMore: loadNextSkinLibraryPage,
                             onSelectItem: { item in
                                 onSelectSkinLibraryItem(item)
                             },
@@ -106,7 +109,7 @@ struct SkinUploadSectionView: View {
         }
         .onAppear {
             if showSkinLibrary {
-                reloadSkinLibraryItems()
+                resetSkinLibraryPagination()
             }
         }
         .deleteConfirmationDialog(
@@ -117,7 +120,8 @@ struct SkinUploadSectionView: View {
             },
             delete: { item in
                 try? skinLibraryStore.deleteItem(item)
-                reloadSkinLibraryItems()
+                skinLibraryItems.removeAll { $0.sha1 == item.sha1 }
+                loadNextSkinLibraryPage()
             },
         )
     }
@@ -185,8 +189,35 @@ struct SkinUploadSectionView: View {
         container.ui.windowManager.openWindow(id: .skinPreview)
     }
 
-    private func reloadSkinLibraryItems() {
-        skinLibraryItems = (try? skinLibraryStore.loadItems()) ?? []
+    /// Clears the loaded pages and fetches the first page from the database.
+    private func resetSkinLibraryPagination() {
+        skinLibraryItems = []
+        skinLibraryCursor = nil
+        skinLibraryHasMore = true
+        loadNextSkinLibraryPage()
+    }
+
+    /// Fetches the next database page and appends it to the loaded items.
+    ///
+    /// Keyset pagination guarantees that pages never overlap, so appended items
+    /// need no de-duplication. The store returns a non-empty page while
+    /// `hasMore` is `true`, so the cursor always advances.
+    private func loadNextSkinLibraryPage() {
+        guard skinLibraryHasMore else { return }
+
+        guard let page = try? skinLibraryStore.loadPage(
+            after: skinLibraryCursor,
+            limit: SkinLibraryStore.pageSize,
+        ) else {
+            skinLibraryHasMore = false
+            return
+        }
+
+        skinLibraryItems.append(contentsOf: page.items)
+        if let lastItem = page.items.last {
+            skinLibraryCursor = lastItem
+        }
+        skinLibraryHasMore = page.hasMore
     }
 }
 
