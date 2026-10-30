@@ -15,6 +15,23 @@ class AppCacheManager: @unchecked Sendable {
 
     init() { }
 
+    /// Removes the entire application cache directory.
+    func clearAll() {
+        lock.withLock {
+            let cacheURL = AppPaths.appCache
+            let fileManager = FileManager.default
+            guard fileManager.fileExists(atPath: cacheURL.path) else { return }
+
+            do {
+                try fileManager.removeItem(at: cacheURL)
+            } catch {
+                AppLog.common.error(
+                    "Failed to clear app cache at \(cacheURL.path): \(error.localizedDescription)",
+                )
+            }
+        }
+    }
+
     private func fileURL(for namespace: String, in directory: URL = AppPaths.appCache) throws -> URL {
         do {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)

@@ -33,6 +33,12 @@ struct SwiftCraftLauncherAppCommands: Commands {
                     try? DIContainer.shared.core.modCacheManager.clearLocal()
                 }
             }
+
+            Button("settings.game.clear_app_cache.label".localized()) {
+                Task.detached(priority: .utility) {
+                    DIContainer.shared.core.appCacheManager.clearAll()
+                }
+            }
         }
 
         CommandGroup(after: .help) {
