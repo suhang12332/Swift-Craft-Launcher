@@ -73,14 +73,16 @@
     {
       "layers" : [
         {
-          "image-name" : "border.svg",
-          "name" : "border"
-        },
-        {
+          "glass" : false,
           "image-name" : "font.svg",
           "name" : "font"
         },
         {
+          "image-name" : "border.svg",
+          "name" : "border"
+        },
+        {
+          "glass" : true,
           "image-name" : "line.svg",
           "name" : "line"
         }
