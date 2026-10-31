@@ -78,6 +78,7 @@
           "name" : "font"
         },
         {
+          "hidden" : false,
           "image-name" : "border.svg",
           "name" : "border"
         },
