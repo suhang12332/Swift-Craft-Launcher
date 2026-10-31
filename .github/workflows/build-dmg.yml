@@ -304,7 +304,6 @@ jobs:
           # Use create-dmg for professional DMG creation
           create-dmg \
             --volname "Swift Craft Launcher" \
-            --volicon "dmg_background/volume_icon.png" \
             --background "dmg_background/background@2x.png" \
             --window-pos 200 120 \
             --window-size 600 430 \
