@@ -73,11 +73,11 @@ private struct ThemeWindowIcon: View {
     private var iconName: String {
         switch theme {
         case .system:
-            return "AppearanceAuto_Normal"
+            return "Auto"
         case .light:
-            return "AppearanceLight_Normal"
+            return "Light"
         case .dark:
-            return "AppearanceDark_Normal"
+            return "Dark"
         }
     }
 }

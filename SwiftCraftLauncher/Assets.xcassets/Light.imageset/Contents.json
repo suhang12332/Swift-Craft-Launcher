@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "AppearanceLight_Normal.png",
+      "filename" : "Light.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "AppearanceLight_Normal@2x.png",
+      "filename" : "Light@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

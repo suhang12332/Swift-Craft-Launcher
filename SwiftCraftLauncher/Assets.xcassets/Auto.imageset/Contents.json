@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "AppearanceDark_Normal.png",
+      "filename" : "Auto.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "AppearanceDark_Normal@2x.png",
+      "filename" : "Auto@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
