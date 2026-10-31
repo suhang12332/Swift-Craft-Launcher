@@ -127,40 +127,16 @@
           ]
         },
         {
-          "name": "pixels",
-          "image-name": "pixels.svg",
+          "name": "engraved-text",
+          "image-name": "engraved-text.png",
           "glass": false,
           "opacity-specializations": [
             {
-              "value": 0.3
+              "value": 0.9
             },
             {
               "appearance": "dark",
-              "value": 0.0
-            }
-          ],
-          "hidden-specializations": [
-            {
-              "appearance": "dark",
-              "value": true
-            },
-            {
-              "appearance": "tinted",
-              "value": true
-            }
-          ]
-        },
-        {
-          "name": "pixels-dark",
-          "image-name": "pixels-dark.svg",
-          "glass": false,
-          "opacity-specializations": [
-            {
-              "value": 0.0
-            },
-            {
-              "appearance": "dark",
-              "value": 0.26
+              "value": 0.9
             }
           ],
           "hidden-specializations": [
