@@ -287,7 +287,7 @@ jobs:
           else
             echo "⚠️  未找到背景图片，将使用默认背景"
           fi
-
+          
           echo "✅ DMG assets prepared"
 
       - name: Create DMG
