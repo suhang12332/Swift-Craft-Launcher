@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="836px" height="836px" viewBox="0 0 836 836" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>椭圆形</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#EEEEEE" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#D8D8D8" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="16.7322073%" x2="50%" y2="99.9590309%" id="linearGradient-2">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.527531704" offset="23.8964161%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.392564467" offset="29.5836976%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.446865154" offset="54.7038899%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.16996285" offset="88.9122596%"></stop>
+            <stop stop-color="#FFFFFF" offset="99.9863418%"></stop>
+        </linearGradient>
+        <linearGradient x1="100%" y1="50%" x2="0%" y2="50%" id="linearGradient-3">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.997814685" offset="49.5574738%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-4">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="50.2964415%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-5">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="50.2964415%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="66.3243007%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-6">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.800262238" offset="31.3538024%"></stop>
+            <stop stop-color="#FFFFFF" offset="49.3804714%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.782151442" offset="69.1433566%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="100%" y1="50%" x2="0%" y2="50%" id="linearGradient-7">
+            <stop stop-color="#FFFFFF" stop-opacity="0.2988691" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="52.92559%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.304223121" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="-3.24826971e-14%" y1="50.0001196%" x2="88.4642701%" y2="49.999908%" id="linearGradient-8">
+            <stop stop-color="#FFFFFF" stop-opacity="0.297585227" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="56.2199519%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.297011582" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="椭圆形">
+            <circle stroke="url(#linearGradient-2)" stroke-width="3" fill="url(#linearGradient-1)" cx="418" cy="418" r="416.5"></circle>
+            <g id="直线-2" transform="translate(86, 60)" stroke-dasharray="3,6" stroke-linecap="square" stroke-width="2">
+                <path d="M118.5,670.468204 L434.5,670.468204 L546.5,670.468204" stroke="url(#linearGradient-3)"></path>
+                <line x1="613.5" y1="635.443746" x2="613.5" y2="53.037037" id="直线-3" stroke="url(#linearGradient-4)"></line>
+                <line x1="52" y1="648.95318" x2="52" y2="66.546471" id="直线-3" stroke="url(#linearGradient-5)"></line>
+                <line x1="425" y1="0.500349406" x2="425" y2="714.999301" id="直线-6" stroke="url(#linearGradient-6)"></line>
+                <line x1="238.5" y1="1.00069881" x2="238.5" y2="715.499651" id="直线-6" stroke="url(#linearGradient-6)"></line>
+                <line x1="0.5" y1="114.079665" x2="662.5" y2="114.079665" id="直线-4" stroke="url(#linearGradient-7)"></line>
+                <line x1="8.5" y1="301.210342" x2="654.5" y2="301.210342" id="直线-5" stroke="url(#linearGradient-8)"></line>
+                <line x1="9" y1="394.775681" x2="655" y2="394.775681" id="直线-5" stroke="url(#linearGradient-8)"></line>
+            </g>
+        </g>
+    </g>
+</svg>

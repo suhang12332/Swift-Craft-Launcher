@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="566px" height="566px" viewBox="0 0 566 566" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>emoji_minecraft_simple-[#464]备份</title>
+    <defs>
+        <path d="M301.418165,454.749101 L256.334532,454.749101 C243.079698,454.749101 232.334532,465.494267 232.334532,478.749101 L232.334532,710 C232.334532,723.254834 243.079698,734 256.334532,734 L301.418165,734 C314.672999,734 325.418165,723.254834 325.418165,710 L325.418165,664.916367 C325.418165,651.661533 336.163331,640.916367 349.418165,640.916367 L487.585432,640.916367 C500.840266,640.916367 511.585432,651.661533 511.585432,664.916367 L511.585432,710 C511.585432,723.254834 522.330598,734 535.585432,734 L580.669065,734 C593.923899,734 604.669065,723.254834 604.669065,710 L604.669065,478.749101 C604.669065,465.494267 593.923899,454.749101 580.669065,454.749101 L535.585432,454.749101 C522.330598,454.749101 511.585432,444.003935 511.585432,430.749101 L511.585432,385.665468 C511.585432,372.410634 500.840266,361.665468 487.585432,361.665468 L349.418165,361.665468 C336.163331,361.665468 325.418165,372.410634 325.418165,385.665468 L325.418165,430.749101 C325.418165,444.003935 314.672999,454.749101 301.418165,454.749101 Z M535.334532,361.665468 L673,361.665468 C686.254834,361.665468 697,350.920302 697,337.665468 L697,200 C697,186.745166 686.254834,176 673,176 L535.334532,176 C522.079698,176 511.334532,186.745166 511.334532,200 L511.334532,337.665468 C511.334532,350.920302 522.079698,361.665468 535.334532,361.665468 Z M163,361.665468 L300.665468,361.665468 C313.920302,361.665468 324.665468,350.920302 324.665468,337.665468 L324.665468,200 C324.665468,186.745166 313.920302,176 300.665468,176 L163,176 C149.745166,176 139,186.745166 139,200 L139,337.665468 C139,350.920302 149.745166,361.665468 163,361.665468 Z" id="path-1"></path>
+        <filter x="-1.3%" y="-0.9%" width="102.5%" height="102.5%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <filter x="-1.3%" y="-0.9%" width="102.5%" height="102.5%" filterUnits="objectBoundingBox" id="filter-3">
+            <feGaussianBlur stdDeviation="2" in="SourceAlpha" result="shadowBlurInner1"></feGaussianBlur>
+            <feOffset dx="0" dy="2" in="shadowBlurInner1" result="shadowOffsetInner1"></feOffset>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" fill-opacity="1">
+        <g id="椭圆形" transform="translate(-135, -174)" fill="black" fill-rule="nonzero">
+            <g id="emoji_minecraft_simple-[#464]备份">
+                <use filter="url(#filter-2)" xlink:href="#path-1"></use>
+                <use filter="url(#filter-3)" xlink:href="#path-1"></use>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,106 @@
+{
+  "fill-specializations" : [
+    {
+      "value" : {
+        "linear-gradient" : [
+          "extended-srgb:0.00392,0.63529,1.00000,1.00000",
+          "extended-srgb:0.14510,0.43922,0.97647,1.00000"
+        ]
+      }
+    },
+    {
+      "appearance" : "dark",
+      "value" : {
+        "linear-gradient" : [
+          "extended-srgb:0.13725,0.13725,0.14902,1.00000",
+          "extended-srgb:0.04706,0.04706,0.05098,1.00000"
+        ]
+      }
+    }
+  ],
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "extended-gray:1.00000,1.00000"
+              }
+            },
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "extended-srgb:0.00000,0.47843,1.00000,1.00000"
+              }
+            }
+          ],
+          "image-name" : "face.svg",
+          "name" : "face",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              0,
+              38
+            ]
+          }
+        }
+      ],
+      "lighting" : "individual",
+      "name" : "face",
+      "shadow-specializations" : [
+        {
+          "value" : {
+            "kind" : "layer-color",
+            "opacity" : 0.5
+          }
+        },
+        {
+          "appearance" : "dark",
+          "value" : {
+            "kind" : "neutral",
+            "opacity" : 0.5
+          }
+        }
+      ],
+      "specular" : true,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.2
+      }
+    },
+    {
+      "layers" : [
+        {
+          "image-name" : "border.svg",
+          "name" : "border"
+        },
+        {
+          "image-name" : "font.svg",
+          "name" : "font"
+        },
+        {
+          "image-name" : "line.svg",
+          "name" : "line"
+        }
+      ],
+      "lighting" : "individual",
+      "name" : "item",
+      "shadow" : {
+        "kind" : "none",
+        "opacity" : 0
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : [
+      "macOS"
+    ]
+  }
+}
