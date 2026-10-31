@@ -48,7 +48,7 @@
         }
       ],
       "lighting" : "individual",
-      "name" : "脸",
+      "name" : "face",
       "shadow-specializations" : [
         {
           "value" : {
@@ -86,7 +86,7 @@
         }
       ],
       "lighting" : "individual",
-      "name" : "装饰",
+      "name" : "item",
       "shadow" : {
         "kind" : "none",
         "opacity" : 0
