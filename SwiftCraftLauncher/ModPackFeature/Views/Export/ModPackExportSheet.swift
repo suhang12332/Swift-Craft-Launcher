@@ -13,7 +13,6 @@ struct ModPackExportSheet: View {
     @Environment(\.dismiss)
     private var dismiss
     @State private var viewModel: ModPackExportViewModel
-    @State private var saveModel = ModPackExportSaveModel()
     @FocusState private var isSummaryFocused: Bool
 
     init(gameInfo: GameVersionInfo) {
@@ -27,19 +26,8 @@ struct ModPackExportSheet: View {
             body: { bodyView },
             footer: { footerView },
         )
-        .modifier(
-            ModPackFileExporter(
-                isPresented: $saveModel.isExporterPresented,
-                prepared: saveModel.prepared,
-                onCompletion: handleSaveCompletion,
-            ) {
-                saveModel.cleanup()
-                viewModel.handleSaveCancellation()
-            },
-        )
         .onDisappear {
             viewModel.cleanupAllData()
-            saveModel.cleanup()
         }
         .onChange(of: viewModel.shouldShowSaveDialog) { _, shouldShow in
             if shouldShow, let tempPath = viewModel.completedExportPath {
@@ -128,7 +116,6 @@ struct ModPackExportSheet: View {
                     dismiss()
                 } else {
                     viewModel.cancelExport()
-                    saveModel.cleanup()
                 }
             }
             .keyboardShortcut(.cancelAction)
@@ -202,29 +189,23 @@ struct ModPackExportSheet: View {
     }
 
     private func handleExportCompleted(tempFilePath: URL) {
-        if viewModel.shouldShowSaveDialog {
-            viewModel.markSaveDialogShown()
-        }
+        viewModel.markSaveDialogShown()
 
-        saveModel.prepare(
-            PreparedModPackArchive(
-                fileURL: tempFilePath,
-                format: viewModel.currentExportFormat,
-            ),
+        ModPackSavePanel.present(
+            fileURL: tempFilePath,
+            format: viewModel.currentExportFormat,
+            completion: handleSaveCompletion,
         )
     }
 
     private func handleSaveCompletion(_ result: Result<URL, Error>) {
-        saveModel.cleanup()
-
         switch result {
         case let .success(url):
             AppLog.modPack.info("Modpack saved to: \(url.path)")
             viewModel.handleSaveSuccess()
             dismiss()
         case let .failure(error):
-            let nsError = error as NSError
-            if error is CancellationError || nsError.code == NSUserCancelledError {
+            if error is CancellationError {
                 viewModel.handleSaveCancellation()
                 return
             }
