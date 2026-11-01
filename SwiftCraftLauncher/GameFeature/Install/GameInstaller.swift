@@ -214,12 +214,16 @@ final class GameInstaller {
             version: manifest.javaVersion.component,
         )
 
+        try Task.checkCancellation()
+
         let fileManager = try setupFileManager()
         try await startDownloadProcess(
             fileManager: fileManager,
             manifest: manifest,
             gameName: baseGameInfo.gameName,
         )
+
+        try Task.checkCancellation()
 
         let loaderResult = try await setupModLoaderIfNeeded(
             selectedModLoader: selectedModLoader,
@@ -228,6 +232,8 @@ final class GameInstaller {
             gameIcon: baseGameInfo.gameIcon,
             specifiedLoaderVersion: specifiedLoaderVersion,
         )
+
+        try Task.checkCancellation()
 
         var finalizedInfo = await finalizer.finalize(
             gameInfo: baseGameInfo,
