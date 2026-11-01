@@ -93,11 +93,12 @@ class BaseGameFormViewModel {
     }
 
     func performCancelCleanup() async {
+        configuration.actions.onCancel()
+
         await removeGameArtifacts(
             gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
         )
         gameInstaller.progress.reset()
-        configuration.actions.onCancel()
     }
 
     func removeGameArtifacts(gameName: String) async {

@@ -49,20 +49,6 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         await importModPack()
     }
 
-    override func performCancelCleanup() async {
-        modPackViewModel.modPackInstallState.reset()
-        isProcessingModPack = false
-        onProcessingStateChanged(false)
-        modPackViewModel.clearParsedIndexInfo()
-        modPackViewModel.abortFailedResources()
-
-        await removeTemporaryArtifacts()
-
-        await super.performCancelCleanup()
-    }
-
-    /// Clears preview state and temporary files when the sheet closes without
-    /// an active installation. An already installed game is left untouched.
     func cleanupPreviewState() async {
         modPackViewModel.modPackInstallState.reset()
         modPackViewModel.clearParsedIndexInfo()
