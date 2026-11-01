@@ -49,6 +49,10 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         await importModPack()
     }
 
+    override func performCancelCleanup() async {
+        configuration.actions.onCancel()
+    }
+
     func cleanupPreviewState() async {
         modPackViewModel.modPackInstallState.reset()
         modPackViewModel.clearParsedIndexInfo()

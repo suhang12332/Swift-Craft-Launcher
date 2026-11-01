@@ -82,6 +82,7 @@ final class ModPackInstallCoordinator {
                 gameName: input.gameName,
                 gameInstaller: input.gameInstaller,
                 modPackInstallState: input.modPackInstallState,
+                gameRepository: input.gameRepository,
             )
             return false
         }
@@ -103,6 +104,7 @@ final class ModPackInstallCoordinator {
                 gameName: input.gameName,
                 gameInstaller: input.gameInstaller,
                 modPackInstallState: input.modPackInstallState,
+                gameRepository: input.gameRepository,
             )
             return false
         }
@@ -160,6 +162,7 @@ final class ModPackInstallCoordinator {
             gameName: input.gameName,
             gameInstaller: input.gameInstaller,
             modPackInstallState: input.modPackInstallState,
+            gameRepository: input.gameRepository,
         )
 
         return gameSuccess
@@ -179,6 +182,7 @@ final class ModPackInstallCoordinator {
                     gameName: input.gameName,
                     gameInstaller: input.gameInstaller,
                     modPackInstallState: input.modPackInstallState,
+                    gameRepository: input.gameRepository,
                 )
             }
             return nil
@@ -339,7 +343,6 @@ final class ModPackInstallCoordinator {
         }
 
         if Task.isCancelled {
-            try? await input.gameRepository.deleteGamesByName(input.gameName)
             return false
         }
         return result
@@ -351,6 +354,7 @@ final class ModPackInstallCoordinator {
                 gameName: input.gameName,
                 gameInstaller: input.gameInstaller,
                 modPackInstallState: input.modPackInstallState,
+                gameRepository: input.gameRepository,
             )
             return false
         }
@@ -359,6 +363,7 @@ final class ModPackInstallCoordinator {
             gameName: input.gameName,
             gameInstaller: input.gameInstaller,
             modPackInstallState: input.modPackInstallState,
+            gameRepository: input.gameRepository,
         )
         return false
     }
@@ -423,12 +428,14 @@ final class ModPackInstallCoordinator {
         gameName: String,
         gameInstaller: GameInstaller,
         modPackInstallState: ModPackInstallState,
+        gameRepository: GameRepository,
     ) async {
         if Task.isCancelled {
             await handleCancelledInstallation(
                 gameName: gameName,
                 gameInstaller: gameInstaller,
                 modPackInstallState: modPackInstallState,
+                gameRepository: gameRepository,
             )
             return
         }
@@ -453,9 +460,13 @@ final class ModPackInstallCoordinator {
         gameName: String,
         gameInstaller: GameInstaller,
         modPackInstallState: ModPackInstallState,
+        gameRepository: GameRepository,
     ) async {
         AppLog.modPack.info("Modpack installation cancelled: \(gameName)")
-        try? MinecraftFileManager.cleanupGameDirectories(gameName: gameName)
+        await GameArtifactCleaner.cleanupCancelledGame(
+            gameName: gameName,
+            gameRepository: gameRepository,
+        )
         modPackInstallState.reset()
         gameInstaller.progress.reset()
     }

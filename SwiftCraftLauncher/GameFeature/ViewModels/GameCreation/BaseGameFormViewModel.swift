@@ -95,26 +95,11 @@ class BaseGameFormViewModel {
     func performCancelCleanup() async {
         configuration.actions.onCancel()
 
-        await removeGameArtifacts(
-            gameName: gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines),
+        await GameArtifactCleaner.cleanupCancelledGame(
+            gameName: gameNameValidator.gameName,
+            gameRepository: gameRepository,
         )
         gameInstaller.progress.reset()
-    }
-
-    func removeGameArtifacts(gameName: String) async {
-        guard !gameName.isEmpty else { return }
-        try? await gameRepository?.deleteGamesByName(gameName)
-
-        await Task.detached(priority: .utility) {
-            let profileDir = AppPaths.profileDirectory(gameName: gameName)
-            guard FileManager.default.fileExists(atPath: profileDir.path) else { return }
-            do {
-                try MinecraftFileManager.cleanupGameDirectories(gameName: gameName)
-                AppLog.game.info("Deleted cancelled game folder: \(profileDir.path)")
-            } catch {
-                AppLog.game.error("Failed to delete game folder: \(error.localizedDescription)")
-            }
-        }.value
     }
 
     func computeIsDownloading() -> Bool {

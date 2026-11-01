@@ -43,7 +43,7 @@ class ModPackDownloadSheetViewModel {
         lastParsedIndexInfo = nil
     }
 
-    func cleanupAllData(gameInstaller: GameInstaller? = nil) {
+    func cleanupAllData(gameInstaller: GameInstaller) {
         cancelDownloadAndResetStates(gameInstaller: gameInstaller)
         clearParsedIndexInfo()
         projectDetail = nil
@@ -101,27 +101,12 @@ class ModPackDownloadSheetViewModel {
         }
     }
 
-    func cancelDownloadAndResetStates(gameInstaller: GameInstaller? = nil) {
+    private func cancelDownloadAndResetStates(gameInstaller: GameInstaller) {
+        abortFailedResources()
         installTasks.cancel()
         isProcessing = false
         modPackInstallState.reset()
-        if let gameInstaller {
-            gameInstaller.progress.reset()
-        }
-    }
-
-    /// Cancels an in-flight installation and removes the partially created instance.
-    /// - Parameters:
-    ///   - gameName: The name of the game being installed.
-    ///   - gameInstaller: The installer whose progress should be reset.
-    func cancelInstallation(gameName: String, gameInstaller: GameInstaller) async {
-        abortFailedResources()
-        cancelDownloadAndResetStates(gameInstaller: gameInstaller)
-        clearParsedIndexInfo()
-
-        let trimmedName = gameName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedName.isEmpty else { return }
-        try? MinecraftFileManager.cleanupGameDirectories(gameName: trimmedName)
+        gameInstaller.progress.reset()
     }
 
     /// Prepares an archive for preview without installing it.

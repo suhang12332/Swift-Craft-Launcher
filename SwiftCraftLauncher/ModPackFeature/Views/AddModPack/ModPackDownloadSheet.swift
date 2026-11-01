@@ -143,7 +143,7 @@ struct ModPackDownloadSheet: View {
 
     private var cancelButton: some View {
         Button(isDownloading ? "common.stop".localized() : "common.cancel".localized()) {
-            handleCancel()
+            dismiss()
         }
         .keyboardShortcut(.cancelAction)
     }
@@ -187,18 +187,6 @@ struct ModPackDownloadSheet: View {
             gameVersion: selectedGameVersion,
             includeTimestamp: true,
         )
-    }
-
-    private func handleCancel() {
-        if isDownloading {
-            Task {
-                await viewModel.cancelInstallation(
-                    gameName: gameNameValidator.gameName,
-                    gameInstaller: gameInstaller,
-                )
-            }
-        }
-        dismiss()
     }
 
     @MainActor
