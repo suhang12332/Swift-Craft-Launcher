@@ -51,16 +51,16 @@ struct AddOrDeleteResourceButtonOverlays: ViewModifier {
                 .onDisappear { viewModel.onGlobalResourceSheetDismiss() }
             }
             .sheet(
-                isPresented: $viewModel.showModPackDownloadSheet,
-                onDismiss: viewModel.onModPackDownloadSheetDismiss,
+                isPresented: $viewModel.showModPackInstallSheet,
+                onDismiss: viewModel.onModPackInstallSheetDismiss,
             ) {
-                ModPackDownloadSheet(
-                    projectId: project.projectId,
-                    gameInfo: gameInfo,
-                    query: query,
-                    preloadedDetail: viewModel.preloadedDetail,
+                GameFormView(
+                    initialMode: .modPack(.project(
+                        projectId: project.projectId,
+                        preloadedDetail: viewModel.preloadedDetail,
+                    )),
                 )
-                .onDisappear { viewModel.onModPackDownloadSheetDismiss() }
+                .onDisappear { viewModel.onModPackInstallSheetDismiss() }
             }
             .sheet(
                 isPresented: $viewModel.showGameResourceInstallSheet,

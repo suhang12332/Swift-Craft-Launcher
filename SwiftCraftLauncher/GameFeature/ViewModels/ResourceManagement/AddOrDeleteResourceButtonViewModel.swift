@@ -20,7 +20,7 @@ final class AddOrDeleteResourceButtonViewModel {
 
     var activeAlert: ResourceButtonAlertType?
     var showGlobalResourceSheet = false
-    var showModPackDownloadSheet = false
+    var showModPackInstallSheet = false
     var showGameResourceInstallSheet = false
 
     var preloadedDetail: ModrinthProjectDetail?

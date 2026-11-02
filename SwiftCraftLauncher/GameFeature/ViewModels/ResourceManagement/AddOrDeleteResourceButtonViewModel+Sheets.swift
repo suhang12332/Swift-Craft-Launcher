@@ -50,7 +50,7 @@ extension AddOrDeleteResourceButtonViewModel {
         preloadedCompatibleGames = []
     }
 
-    func onModPackDownloadSheetDismiss() {
+    func onModPackInstallSheetDismiss() {
         addButtonState = .idle
         preloadedDetail = nil
     }
@@ -100,7 +100,7 @@ extension AddOrDeleteResourceButtonViewModel {
 
         guard let detail = await ResourceDetailLoader.loadModPackDetail(projectId: project.projectId) else { return }
         preloadedDetail = detail
-        showModPackDownloadSheet = true
+        showModPackInstallSheet = true
     }
 
     func loadGameResourceInstallDetailBeforeOpeningSheet() async {

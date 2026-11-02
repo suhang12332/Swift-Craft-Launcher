@@ -5,34 +5,25 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-// Displays download progress for game core files, mod loaders, and mod packs.
+// Displays download progress for game core files and mod loaders.
 import SwiftUI
 
 struct DownloadProgressSection: View {
     var gameInstaller: GameInstaller
-    var modPackViewModel: ModPackDownloadSheetViewModel?
-    let modPackIndexInfo: ModrinthIndexInfo?
     let selectedModLoader: String
 
     init(
         gameInstaller: GameInstaller,
         selectedModLoader: String = GameLoader.vanilla.displayName,
-        modPackViewModel: ModPackDownloadSheetViewModel? = nil,
-        modPackIndexInfo: ModrinthIndexInfo? = nil,
     ) {
         self.gameInstaller = gameInstaller
         self.selectedModLoader = selectedModLoader
-        self.modPackViewModel = modPackViewModel
-        self.modPackIndexInfo = modPackIndexInfo
     }
 
     var body: some View {
         VStack(spacing: 24) {
             gameDownloadProgressView
             modLoaderProgressView
-            if let modPackViewModel {
-                ModPackProgressView(modPackViewModel: modPackViewModel)
-            }
         }
     }
 
@@ -50,22 +41,12 @@ struct DownloadProgressSection: View {
     }
 
     @ViewBuilder private var modLoaderProgressView: some View {
-        if let loaderProgressInfo {
+        if let title = Self.loaderTitle(for: selectedModLoader) {
             progressSection(
-                title: loaderProgressInfo.title,
+                title: title,
                 phase: gameInstaller.progress.loader,
-                version: loaderProgressInfo.version,
             )
         }
-    }
-
-    private var loaderProgressInfo: (title: String, version: String?)? {
-        if let indexInfo = modPackIndexInfo {
-            guard let title = Self.loaderTitle(for: indexInfo.loaderType) else { return nil }
-            return (title, indexInfo.loaderVersion)
-        }
-        guard let title = Self.loaderTitle(for: selectedModLoader) else { return nil }
-        return (title, nil)
     }
 
     private func progressSection(
@@ -97,98 +78,6 @@ struct DownloadProgressSection: View {
             return "neoforge.loader.title".localized()
         default:
             return nil
-        }
-    }
-}
-
-/// Displays download progress for mod pack installation components.
-private struct ModPackProgressView: View {
-    var modPackViewModel: ModPackDownloadSheetViewModel
-
-    var body: some View {
-        if modPackViewModel.modPackInstallState.isInstalling {
-            VStack(spacing: 24) {
-                if modPackViewModel.modPackInstallState.overridesTotal > 0 {
-                    modPackProgressSection(
-                        title: "modpack.copying_files".localized(),
-                        state: modPackViewModel.modPackInstallState,
-                        type: .overrides,
-                    )
-                }
-
-                modPackProgressSection(
-                    title: "modpack.files.title".localized(),
-                    state: modPackViewModel.modPackInstallState,
-                    type: .files,
-                )
-
-                if modPackViewModel.modPackInstallState.dependenciesTotal > 0 {
-                    modPackProgressSection(
-                        title: "modpack.dependencies.title".localized(),
-                        state: modPackViewModel.modPackInstallState,
-                        type: .dependencies,
-                    )
-                }
-            }
-        }
-    }
-
-    private enum ModPackProgressType {
-        case files
-        case dependencies
-        case overrides
-    }
-
-    private func modPackProgressSection(
-        title: String,
-        state: ModPackInstallState,
-        type: ModPackProgressType,
-    ) -> some View {
-        FormSection {
-            DownloadProgressRow(
-                title: title,
-                progress: {
-                    switch type {
-                    case .files:
-                        return state.filesProgress
-                    case .dependencies:
-                        return state.dependenciesProgress
-                    case .overrides:
-                        return state.overridesProgress
-                    }
-                }(),
-                currentFile: {
-                    switch type {
-                    case .files:
-                        return state.currentFile
-                    case .dependencies:
-                        return state.currentDependency
-                    case .overrides:
-                        return state.currentOverride
-                    }
-                }(),
-                completed: {
-                    switch type {
-                    case .files:
-                        return state.filesCompleted
-                    case .dependencies:
-                        return state.dependenciesCompleted
-                    case .overrides:
-                        return state.overridesCompleted
-                    }
-                }(),
-                total: {
-                    switch type {
-                    case .files:
-                        return state.filesTotal
-                    case .dependencies:
-                        return state.dependenciesTotal
-                    case .overrides:
-                        return state.overridesTotal
-                    }
-                }(),
-                version: nil,
-            )
         }
     }
 }

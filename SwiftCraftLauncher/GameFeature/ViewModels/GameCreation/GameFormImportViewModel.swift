@@ -14,10 +14,11 @@ import Observation
 final class GameFormImportViewModel {
     init() { }
 
-    /// Prepares a mod pack file for import by copying it to a temporary directory.
+    /// Copies a selected mod pack file to a temporary directory so it can be
+    /// parsed and installed after the file picker's security scope is released.
     /// - Parameter result: The file picker result containing selected URLs.
-    /// - Returns: A `GameFormMode` for mod pack import, or `nil` if preparation fails.
-    func prepareModPackImportMode(from result: Result<[URL], Error>) async -> GameFormMode? {
+    /// - Returns: The temporary file URL, or `nil` if preparation fails.
+    func prepareModPackFile(from result: Result<[URL], Error>) async -> URL? {
         switch result {
         case let .success(urls):
             guard let url = urls.first else { return nil }
@@ -34,8 +35,7 @@ final class GameFormImportViewModel {
             defer { url.stopAccessingSecurityScopedResource() }
 
             do {
-                let tempFile = try await copyToTempDirectory(url: url)
-                return .modPackImport(file: tempFile, shouldProcess: true)
+                return try await copyToTempDirectory(url: url)
             } catch {
                 DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
                 return nil
