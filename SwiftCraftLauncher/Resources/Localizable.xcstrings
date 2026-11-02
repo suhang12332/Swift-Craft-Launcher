@@ -41215,7 +41215,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add For Game"
+            "value" : "Add resource for %@"
           }
         },
         "es" : {

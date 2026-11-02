@@ -52,11 +52,9 @@ struct GameResourceInstallSheet: View {
         @Bindable var viewModel = viewModel
         return CommonSheetView(
             header: {
-                Text(
-                    String(
-                        format: "global_resource.add_for_game".localized(),
-                        gameInfo.gameName,
-                    ),
+                GameNameTitleText(
+                    formatKey: "global_resource.add_for_game",
+                    gameName: gameInfo.gameName,
                 )
                 .font(.headline)
                 .lineLimit(1)
