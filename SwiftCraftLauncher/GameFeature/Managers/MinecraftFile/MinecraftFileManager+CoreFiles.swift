@@ -51,15 +51,12 @@ extension MinecraftFileManager {
     private func downloadLibraries(
         manifest: MinecraftVersionManifest,
     ) async throws {
-        let osxLibraries = manifest.libraries.filter {
-            shouldDownloadLibrary($0, minecraftVersion: manifest.id)
-        }
+        let osxLibraries = applicableLibraries(manifest: manifest)
 
         let semaphore = AsyncSemaphore(
             value: DIContainer.shared.ui.gameSettingsManager.concurrentDownloads,
         )
 
-        let metaDirectory = AppPaths.metaDirectory
         let minecraftVersion = manifest.id
 
         try await withThrowingTaskGroup(of: Void.self) { group in
@@ -70,7 +67,6 @@ extension MinecraftFileManager {
 
                     try await self?.downloadLibrary(
                         library,
-                        metaDirectory: metaDirectory,
                         minecraftVersion: minecraftVersion,
                     )
                 }
@@ -79,12 +75,47 @@ extension MinecraftFileManager {
         }
     }
 
+    /// Returns the libraries that apply to the current platform, keeping a single
+    /// entry per Maven coordinate. launcher-meta repeats some entries per
+    /// architecture (e.g. text2speech on 1.12.2); downloading them concurrently
+    /// would race on the same destination file.
+    func applicableLibraries(manifest: MinecraftVersionManifest) -> [Library] {
+        var libraries: [Library] = []
+        var indexByName: [String: Int] = [:]
+
+        for library in manifest.libraries where shouldDownloadLibrary(library, minecraftVersion: manifest.id) {
+            if let index = indexByName[library.name] {
+                // Prefer the entry that declares native classifiers.
+                if libraries[index].natives == nil, library.natives != nil {
+                    libraries[index] = library
+                }
+                continue
+            }
+            indexByName[library.name] = libraries.count
+            libraries.append(library)
+        }
+
+        return libraries
+    }
+
     private func downloadLibrary(
         _ library: Library,
-        metaDirectory: URL,
         minecraftVersion: String,
     ) async throws {
-        guard shouldDownloadLibrary(library, minecraftVersion: minecraftVersion) else {
+        // Native-only libraries (e.g. LWJGL 2 platforms) have nothing to download
+        // here, but still need their native classifiers extracted.
+        guard let artifactURL = library.downloads.artifact.url else {
+            guard library.natives != nil else {
+                throw GlobalError.download(
+                    i18nKey: "error.download.missing_library_url",
+                    level: .notification,
+                    message: "Library artifact URL is nil for \(library.name)",
+                )
+            }
+            try await handleLibraryDownloadComplete(
+                library: library,
+                minecraftVersion: minecraftVersion,
+            )
             return
         }
 
@@ -101,14 +132,6 @@ extension MinecraftFileManager {
             destinationURL = URL(fileURLWithPath: fullPath)
         }
 
-        guard let artifactURL = library.downloads.artifact.url else {
-            throw GlobalError.download(
-                i18nKey: "error.download.missing_library_url",
-                level: .notification,
-                message: "Library artifact URL is nil for \(library.name)",
-            )
-        }
-
         try await downloadAndSaveFile(
             from: artifactURL,
             to: destinationURL,
@@ -117,9 +140,8 @@ extension MinecraftFileManager {
             i18nKey: "error.download.library_failed",
             errorMessage: "Failed to download library \(library.name) from \(artifactURL.absoluteString)",
         )
-        await handleLibraryDownloadComplete(
+        try await handleLibraryDownloadComplete(
             library: library,
-            metaDirectory: metaDirectory,
             minecraftVersion: minecraftVersion,
         )
     }
@@ -127,7 +149,6 @@ extension MinecraftFileManager {
     func downloadNativeLibrary(
         library: Library,
         classifiers: [String: LibraryArtifact],
-        metaDirectory _: URL,
         minecraftVersion: String,
     ) async throws {
         guard let natives = library.natives else { return }
@@ -231,7 +252,7 @@ extension MinecraftFileManager {
             }
 
             let ext = fileURL.pathExtension.lowercased()
-            guard ext == "dylib" else {
+            guard ext == "dylib" || ext == "jnilib" else {
                 continue
             }
 
@@ -267,25 +288,19 @@ extension MinecraftFileManager {
 
     func handleLibraryDownloadComplete(
         library: Library,
-        metaDirectory: URL,
         minecraftVersion: String,
-    ) async {
+    ) async throws {
         await incrementCompletedFilesCount(
             fileName: library.name,
             type: .core,
         )
 
         if let classifiers = library.downloads.classifiers {
-            do {
-                try await downloadNativeLibrary(
-                    library: library,
-                    classifiers: classifiers,
-                    metaDirectory: metaDirectory,
-                    minecraftVersion: minecraftVersion,
-                )
-            } catch {
-                AppLog.game.error("Failed to download native libraries")
-            }
+            try await downloadNativeLibrary(
+                library: library,
+                classifiers: classifiers,
+                minecraftVersion: minecraftVersion,
+            )
         }
     }
 }

@@ -20,6 +20,9 @@ enum URLConfig {
     enum API {
         static let apiBaseURL = URLConfig.url("https://swift-craft-launcher-api.pages.dev/api")
 
+        /// The default Mojang Maven repository for libraries.
+        static let mavenLibraries = URLConfig.url("https://libraries.minecraft.net/")
+
         enum Authentication {
             static let authorize = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize")
             static let token = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/token")

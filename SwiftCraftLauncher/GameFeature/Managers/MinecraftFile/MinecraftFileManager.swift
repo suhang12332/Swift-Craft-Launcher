@@ -107,9 +107,7 @@ class MinecraftFileManager: @unchecked Sendable {
     }
 
     func calculateTotalFiles(_ manifest: MinecraftVersionManifest) -> Int {
-        let applicableLibraries = manifest.libraries.filter {
-            shouldDownloadLibrary($0, minecraftVersion: manifest.id)
-        }
+        let applicableLibraries = applicableLibraries(manifest: manifest)
 
         let nativeLibraries = applicableLibraries.compactMap { (library: Library) -> Library? in
             guard let classifiers = library.downloads.classifiers,

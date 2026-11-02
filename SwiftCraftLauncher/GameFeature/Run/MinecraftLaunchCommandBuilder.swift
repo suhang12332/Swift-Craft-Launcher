@@ -37,10 +37,18 @@ enum MinecraftLaunchCommandBuilder {
             "natives_directory": paths.nativesDir,
         ]
 
-        var jvmArgs = manifest.arguments.jvm?
-            .map { substituteVariables($0, with: variableMap) } ?? []
-        var gameArgs = manifest.arguments.game?
-            .map { substituteVariables($0, with: variableMap) } ?? []
+        let jvmArguments = manifest.arguments.jvm ?? legacyJvmArguments
+        var jvmArgs = jvmArguments.map { substituteVariables($0, with: variableMap) }
+
+        let gameArguments: [String]
+        if let arguments = manifest.arguments.game {
+            gameArguments = arguments
+        } else if gameInfo.gameArguments.isEmpty, let minecraftArguments = manifest.minecraftArguments {
+            gameArguments = Arguments(legacyArguments: minecraftArguments).game ?? []
+        } else {
+            gameArguments = []
+        }
+        var gameArgs = gameArguments.map { substituteVariables($0, with: variableMap) }
 
         let xmsArg = "-Xms${xms}M"
         let xmxArg = "-Xmx${xmx}M"
@@ -61,6 +69,13 @@ enum MinecraftLaunchCommandBuilder {
 
         return jvmArgs + [gameInfo.mainClass] + gameArgs
     }
+
+    /// JVM arguments used by versions that predate the `arguments` manifest field.
+    private static let legacyJvmArguments = [
+        "-Djava.library.path=${natives_directory}",
+        "-cp",
+        "${classpath}",
+    ]
 
     /// Ensures Forge receives the `libraryDirectory` JVM property.
     ///
@@ -186,6 +201,10 @@ enum MinecraftLaunchCommandBuilder {
 
     private static func processLibrary(_ library: Library, librariesDir: URL, existingModBasePaths: Set<String>, minecraftVersion _: String) -> [String]? {
         let artifact = library.downloads.artifact
+
+        // Native-only libraries declare classifiers without an artifact; don't
+        // add a nonexistent Maven path to the classpath.
+        guard artifact.path != nil || artifact.url != nil else { return nil }
 
         let libraryPath = getLibraryPath(artifact: artifact, libraryName: library.name, librariesDir: librariesDir)
 

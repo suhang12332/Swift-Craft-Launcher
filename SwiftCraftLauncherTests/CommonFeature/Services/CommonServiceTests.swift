@@ -44,6 +44,48 @@ final class CommonServiceTests: XCTestCase {
         XCTAssertNil(result)
     }
 
+    func testGenerateClasspath_fallsBackToMavenPathForLegacyProfiles() throws {
+        let loader = try decode(ModrinthLoader.self, from: [
+            "mainClass": "net.minecraft.launchwrapper.Launch",
+            "arguments": ["game": []],
+            "libraries": [
+                [
+                    "name": "net.minecraft:launchwrapper:1.12",
+                    "include_in_classpath": true,
+                    "downloadable": true,
+                ],
+                [
+                    "name": "org.ow2.asm:asm-all:5.0.3",
+                    "include_in_classpath": true,
+                    "downloadable": true,
+                ],
+            ],
+        ])
+        let librariesDir = URL(fileURLWithPath: "/libraries")
+
+        let result = CommonService.generateClasspath(from: loader, librariesDir: librariesDir)
+
+        XCTAssertEqual(
+            result,
+            "/libraries/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar:/libraries/org/ow2/asm/asm-all/5.0.3/asm-all-5.0.3.jar",
+        )
+    }
+
+    func testMavenCoordinateToURL_usesDefaultRepositoryWhenURLIsMissing() throws {
+        let library = try decode(ModrinthLoaderLibrary.self, from: [
+            "name": "net.minecraft:launchwrapper:1.12",
+            "include_in_classpath": true,
+            "downloadable": true,
+        ])
+
+        let result = CommonService.mavenCoordinateToURL(lib: library)
+
+        XCTAssertEqual(
+            result.absoluteString,
+            "https://libraries.minecraft.net/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar",
+        )
+    }
+
     func testParseMavenCoordinateWithAtSymbol_versionAtExtension() {
         let result = CommonService.parseMavenCoordinateWithAtSymbol("org.example:lib:1.0@lzma")
         XCTAssertTrue(result.contains("org/example/lib/1.0"))

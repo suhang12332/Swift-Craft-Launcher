@@ -20,19 +20,20 @@ struct MinecraftVersionManifest: Codable {
     let logging: Logging
     let mainClass: String
     let minimumLauncherVersion: Int
+    let minecraftArguments: String?
     let releaseTime: String
     let time: String
     let type: String
 
     enum CodingKeys: String, CodingKey {
-        case arguments, assetIndex, assets, downloads, id, javaVersion, libraries, logging, mainClass, minimumLauncherVersion, releaseTime, time, type
+        case arguments, assetIndex, assets, downloads, id, javaVersion, libraries, logging, mainClass, minimumLauncherVersion, minecraftArguments, releaseTime, time, type
         case complianceLevel
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        arguments = try container.decode(Arguments.self, forKey: .arguments)
+        arguments = try container.decodeIfPresent(Arguments.self, forKey: .arguments) ?? Arguments()
         assetIndex = try container.decode(AssetIndex.self, forKey: .assetIndex)
         assets = try container.decode(String.self, forKey: .assets)
         complianceLevel = try container.decodeIfPresent(Int.self, forKey: .complianceLevel)
@@ -43,6 +44,7 @@ struct MinecraftVersionManifest: Codable {
         logging = try container.decode(Logging.self, forKey: .logging)
         mainClass = try container.decode(String.self, forKey: .mainClass)
         minimumLauncherVersion = try container.decode(Int.self, forKey: .minimumLauncherVersion)
+        minecraftArguments = try container.decodeIfPresent(String.self, forKey: .minecraftArguments)
         releaseTime = try container.decode(String.self, forKey: .releaseTime)
         time = try container.decode(String.self, forKey: .time)
         type = try container.decode(String.self, forKey: .type)
@@ -53,6 +55,16 @@ struct MinecraftVersionManifest: Codable {
 struct Arguments: Codable {
     let game: [String]?
     let jvm: [String]?
+
+    init() {
+        game = nil
+        jvm = nil
+    }
+
+    init(legacyArguments: String) {
+        game = legacyArguments.split(separator: " ").map(String.init)
+        jvm = nil
+    }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -248,6 +260,13 @@ struct LibraryDownloads: Codable {
 
     enum CodingKeys: String, CodingKey {
         case artifact, classifiers
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        artifact = try container.decodeIfPresent(LibraryArtifact.self, forKey: .artifact)
+            ?? LibraryArtifact(path: nil, sha1: "", size: 0, url: nil)
+        classifiers = try container.decodeIfPresent([String: LibraryArtifact].self, forKey: .classifiers)
     }
 }
 
