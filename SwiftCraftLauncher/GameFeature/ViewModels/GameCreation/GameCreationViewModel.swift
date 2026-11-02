@@ -36,15 +36,12 @@ class GameCreationViewModel: BaseGameFormViewModel {
     var pendingIconURL: URL?
     var didInit = false
 
-    var playerListViewModel: PlayerListViewModel?
-
     override init(configuration: GameFormConfiguration) {
         super.init(configuration: configuration)
     }
 
-    func setup(gameRepository: GameRepository, playerListViewModel: PlayerListViewModel) {
+    func setup(gameRepository: GameRepository) {
         self.gameRepository = gameRepository
-        self.playerListViewModel = playerListViewModel
 
         if !didInit {
             didInit = true

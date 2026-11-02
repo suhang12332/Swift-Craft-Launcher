@@ -32,7 +32,7 @@ public struct ContentToolbarView: ToolbarContent {
 
     public var body: some ToolbarContent {
         ToolbarItemGroup(placement: .primaryAction) {
-            AddGameToolbarButton(currentPlayer: currentPlayer)
+            AddGameToolbarButton()
 
             Spacer()
 

@@ -40,6 +40,9 @@ struct GameLoaderUpdateView: View {
             viewModel.setup(gameRepository: gameRepository)
             viewModel.onSuccess = { dismiss() }
         }
+        .onChange(of: viewModel.gameInstaller.progress.isDownloading) { _, _ in
+            viewModel.updateParentState()
+        }
         .onDisappear {
             viewModel.cleanup()
         }

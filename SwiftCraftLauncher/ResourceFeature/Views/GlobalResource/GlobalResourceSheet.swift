@@ -43,15 +43,16 @@ struct GlobalResourceSheet: View {
     }
 
     /// Sheet title that changes based on resource type and game selection.
-    private var headerTitle: String {
+    @ViewBuilder private var headerTitle: some View {
         let isServer = resourceType == ResourceType.minecraftJavaServer.rawValue
-        let baseKey = isServer ? "saveinfo.server.add" : "global_resource.add"
-        let forGameKey = isServer ? "saveinfo.server.add_for_game" : "global_resource.add_for_game"
 
         if let game = viewModel.selectedGame {
-            return String(format: forGameKey.localized(), game.gameName)
+            GameNameTitleText(
+                formatKey: isServer ? "saveinfo.server.add_for_game" : "global_resource.add_for_game",
+                gameName: game.gameName,
+            )
         } else {
-            return baseKey.localized()
+            Text((isServer ? "saveinfo.server.add" : "global_resource.add").localized())
         }
     }
 
@@ -59,7 +60,7 @@ struct GlobalResourceSheet: View {
         @Bindable var viewModel = viewModel
         return CommonSheetView(
             header: {
-                Text(headerTitle)
+                headerTitle
                     .font(.headline)
                     .lineLimit(1)
                     .truncationMode(.tail)

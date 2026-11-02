@@ -56,9 +56,6 @@ struct SwiftCraftLauncherApp: App {
                 .preferredColorScheme(container.ui.themeManager.preferredColorScheme)
                 .errorAlert(container.core.errorHandler)
                 .windowOpener(container.ui.windowManager)
-                .onOpenURL { url in
-                    container.ui.openURLModPackImportPresenter.handle(url: url)
-                }
                 .task {
                     container.system.sparkleUpdateService.scheduleStartupCheckIfNeeded()
                     container.ui.minecraftFriendsPresencePollingCoordinator.start(

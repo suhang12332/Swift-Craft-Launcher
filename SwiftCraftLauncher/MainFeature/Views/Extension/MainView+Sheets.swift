@@ -21,7 +21,7 @@ struct ModPackImportSheetModifier: ViewModifier {
             onDismiss: { container.ui.openURLModPackImportPresenter.clear() },
             content: {
                 if let file = container.ui.openURLModPackImportPresenter.preselectedTempFile {
-                    GameFormView(initialMode: GameFormMode.modPackImport(file: file, shouldProcess: true))
+                    GameFormView(initialMode: .modPack(.local(file)))
                         .presentationBackgroundInteraction(.automatic)
                 }
             },

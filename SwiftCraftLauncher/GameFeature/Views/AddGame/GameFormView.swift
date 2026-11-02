@@ -11,15 +11,12 @@ import UniformTypeIdentifiers
 
 enum GameFormMode {
     case creation
-    case modPackImport(file: URL, shouldProcess: Bool)
-    case modPackURLDownload
+    case modPack(ModPackInstallSource)
 }
 
 struct GameFormView: View {
     @Environment(GameRepository.self)
     private var gameRepository
-    @Environment(PlayerListViewModel.self)
-    private var playerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 
@@ -36,7 +33,6 @@ struct GameFormView: View {
     @State private var showFilePicker = false
     @State private var filePickerType: FilePickerType = .modPack
     @State private var mode: GameFormMode
-    @State private var isModPackParsed = false
     @State private var imagePickerHandler: ((Result<[URL], Error>) -> Void)?
     @State private var importViewModel = GameFormImportViewModel()
 
@@ -73,39 +69,20 @@ struct GameFormView: View {
                                 imagePickerHandler = handler
                             },
                         )
-                    case let .modPackImport(file, shouldProcess):
-                        ModPackImportView(
+                    case let .modPack(source):
+                        ModPackInstallView(
+                            source: source,
                             configuration: GameFormConfiguration(
                                 isDownloading: $isDownloading,
                                 isFormValid: $isFormValid,
                                 triggerConfirm: $triggerConfirm,
                                 triggerCancel: $triggerCancel,
+                                isLoadingLoaderVersions: $isLoadingLoaderVersions,
                                 onCancel: { dismiss() },
                                 onConfirm: { dismiss() },
                             ),
-                            preselectedFile: file,
-                            shouldStartProcessing: shouldProcess,
-                        ) { isProcessing in
-                            if !isProcessing {
-                                if case let .modPackImport(file, _) = mode {
-                                    mode = .modPackImport(file: file, shouldProcess: false)
-                                }
-                                isModPackParsed = true
-                            }
-                        }
-                        .id(file)
-                    case .modPackURLDownload:
-                        ModPackURLDownloadView(
-                            onDownloadComplete: { fileURL in
-                                mode = .modPackImport(file: fileURL, shouldProcess: true)
-                                isModPackParsed = false
-                            },
-                            onCancel: { dismiss() },
-                            isFormValid: $isFormValid,
-                            triggerConfirm: $triggerConfirm,
-                            triggerCancel: $triggerCancel,
-                            isDownloading: $isDownloading,
                         )
+                        .id(source.id)
                     }
                 }
             },
@@ -130,9 +107,8 @@ struct GameFormView: View {
             switch filePickerType {
             case .modPack:
                 Task {
-                    if let newMode = await importViewModel.prepareModPackImportMode(from: result) {
-                        mode = newMode
-                        isModPackParsed = false
+                    if let file = await importViewModel.prepareModPackFile(from: result) {
+                        mode = .modPack(.local(file))
                     }
                 }
             case .gameIcon:
@@ -146,18 +122,32 @@ struct GameFormView: View {
             Text(currentModeTitle)
                 .font(.headline)
             Spacer()
-            importModePicker
+            if showsImportModePicker {
+                importModePicker
+            }
         }
+    }
+
+    private var showsImportModePicker: Bool {
+        if case .modPack(.project) = mode {
+            return false
+        }
+        return true
     }
 
     private var currentModeTitle: String {
         switch mode {
         case .creation:
             return "game.form.mode.manual".localized()
-        case .modPackImport:
-            return "modpack.import.title".localized()
-        case .modPackURLDownload:
-            return "global_resource.download".localized()
+        case let .modPack(source):
+            switch source {
+            case .local:
+                return "modpack.import.title".localized()
+            case .remoteURL:
+                return "global_resource.download".localized()
+            case .project:
+                return "modpack.download.title".localized()
+            }
         }
     }
 
@@ -171,7 +161,7 @@ struct GameFormView: View {
             filePickerType = .modPack
             showFilePicker = true
         case .download:
-            mode = .modPackURLDownload
+            mode = .modPack(.remoteURL)
         }
     }
 
@@ -221,12 +211,17 @@ struct GameFormView: View {
                 } else {
                     let buttonText: String = {
                         switch mode {
-                        case .modPackImport:
-                            return "modpack.import.button".localized()
                         case .creation:
                             return "common.confirm".localized()
-                        case .modPackURLDownload:
-                            return "common.confirm".localized()
+                        case let .modPack(source):
+                            switch source {
+                            case .local:
+                                return "modpack.import.button".localized()
+                            case .remoteURL:
+                                return "common.confirm".localized()
+                            case .project:
+                                return "global_resource.download".localized()
+                            }
                         }
                     }()
                     Text(buttonText)

@@ -19,14 +19,16 @@ private func delayedDismiss(_ binding: Binding<Bool>, execute work: @escaping @M
 }
 
 struct AddGameToolbarButton: View {
-    let currentPlayer: Player?
+    @Environment(DIContainer.self)
+    private var container
+    @Environment(PlayerListViewModel.self)
+    private var playerListViewModel
     @State private var showForm = false
-    @State private var activeAlert: ResourceButtonAlertType?
 
     var body: some View {
         Button {
-            if currentPlayer == nil {
-                activeAlert = .noPlayer
+            if playerListViewModel.currentPlayer == nil {
+                container.ui.gameDialogsPresenter.installAlert = .noPlayer
             } else {
                 showForm.toggle()
             }
@@ -38,7 +40,6 @@ struct AddGameToolbarButton: View {
             GameFormView()
                 .presentationBackgroundInteraction(.automatic)
         }
-        .alert(item: $activeAlert) { $0.alert }
     }
 }
 

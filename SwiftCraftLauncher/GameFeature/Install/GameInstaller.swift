@@ -40,26 +40,11 @@ final class GameInstaller {
 
     func saveGame(
         input: GameSaveInput,
-        playerListViewModel: PlayerListViewModel?,
         gameRepository: GameRepository,
         onSuccess: @escaping () -> Void,
         onError: @escaping (GlobalError, String) -> Void,
         onCancelled: @escaping () -> Void = { },
     ) async {
-        if let playerListViewModel {
-            guard playerListViewModel.currentPlayer != nil else {
-                AppLog.game.error("Unable to save game, no current player selected.")
-                onError(
-                    GlobalError.configuration(
-                        i18nKey: "error.configuration.no_current_player",
-                        level: .popup,
-                    ),
-                    "error.no.current.player.title".localized(),
-                )
-                return
-            }
-        }
-
         progress.reset()
         progress.isDownloading = true
 
@@ -117,7 +102,8 @@ final class GameInstaller {
                 return
             }
             cleanupGameDirectories(gameName: input.gameName)
-            DIContainer.shared.core.errorHandler.handle(error)
+            let globalError = GlobalError.from(error)
+            onError(globalError, globalError.localizedDescription)
         }
     }
 
@@ -229,7 +215,7 @@ final class GameInstaller {
             specifiedLoaderVersion: specifiedLoaderVersion,
         )
 
-        var finalizedInfo = await finalizer.finalize(
+        var finalizedInfo = try await finalizer.finalize(
             gameInfo: baseGameInfo,
             manifest: manifest,
             loaderResult: loaderResult,

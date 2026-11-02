@@ -197,7 +197,7 @@ final class ResourceInstallViewModel {
 
     /// Downloads only the selected resource, without dependencies.
     func installSingleResource(dismiss: @escaping () -> Void) {
-        guard selectedVersion != nil, let game = resolvedGame else { return }
+        guard let version = selectedVersion, let game = resolvedGame else { return }
 
         let projectId = project.projectId
         let resourceType = resourceType
@@ -205,9 +205,9 @@ final class ResourceInstallViewModel {
         startInstall(dismiss: dismiss) {
             let (success, fileName, hash) = await ModrinthDependencyDownloader.downloadMainResourceOnly(
                 mainProjectId: projectId,
+                version: version,
                 gameInfo: game,
                 query: resourceType,
-                filterLoader: true,
             )
             guard success else {
                 throw GlobalError.download(

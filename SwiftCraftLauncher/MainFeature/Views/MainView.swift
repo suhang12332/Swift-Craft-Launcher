@@ -62,6 +62,14 @@ struct MainView: View {
         }
         .mainViewPresentations(container: container, detailState: detailState)
         .gameCrashAlert()
+        .onOpenURL { url in
+            playerListViewModel.loadPlayersIfNeeded()
+            if playerListViewModel.currentPlayer == nil {
+                container.ui.gameDialogsPresenter.installAlert = .noPlayer
+            } else {
+                container.ui.openURLModPackImportPresenter.handle(url: url)
+            }
+        }
         .frame(minWidth: 900, minHeight: 500)
         .touchBarSupport(
             TouchBarSupportConfiguration.make(

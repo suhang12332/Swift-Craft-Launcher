@@ -23,6 +23,8 @@ struct ResourceToolbarItems: View {
     private var detailState
     @Environment(GameRepository.self)
     private var gameRepository
+    @Environment(DIContainer.self)
+    private var container
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
 
@@ -135,22 +137,26 @@ struct ResourceToolbarItems: View {
             .id(controlActiveState)
             Spacer()
             Button {
-                openInstallSheet()
+                if detailState.gameResourcesType == ResourceType.modpack.rawValue,
+                   playerListViewModel.currentPlayer == nil {
+                    container.ui.gameDialogsPresenter.installAlert = .noPlayer
+                } else {
+                    openInstallSheet()
+                }
             } label: {
                 Label("resource.add".localized(), systemImage: "arrow.down.circle")
             }
             .help("resource.add".localized())
             .sheet(isPresented: $detailState.showInstallSheet) {
-                if let project = detailState.currentProject,
-                   let detail = detailState.loadedProjectDetail {
+                if let detail = detailState.loadedProjectDetail {
                     if detailState.gameResourcesType == ResourceType.modpack.rawValue {
-                        ModPackDownloadSheet(
-                            projectId: project.projectId,
-                            gameInfo: nil,
-                            query: detailState.gameResourcesType,
-                            preloadedDetail: detail,
+                        GameFormView(
+                            initialMode: .modPack(.project(
+                                projectId: detail.id,
+                                preloadedDetail: detail,
+                            )),
                         )
-                    } else {
+                    } else if let project = detailState.currentProject {
                         GlobalResourceSheet(
                             project: project,
                             resourceType: detailState.gameResourcesType,

@@ -26,8 +26,6 @@ struct GameCreationView: View {
     @State private var viewModel: GameCreationViewModel
     @Environment(GameRepository.self)
     private var gameRepository
-    @Environment(PlayerListViewModel.self)
-    private var playerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 
@@ -66,7 +64,7 @@ struct GameCreationView: View {
     var body: some View {
         formContentView
             .onAppear {
-                viewModel.setup(gameRepository: gameRepository, playerListViewModel: playerListViewModel)
+                viewModel.setup(gameRepository: gameRepository)
                 onSetImagePickerHandler(viewModel.handleImagePickerResult)
             }
             .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)

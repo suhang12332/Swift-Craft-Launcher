@@ -57,7 +57,7 @@ struct GameFinalizer {
         gameInfo: GameVersionInfo,
         manifest: MinecraftVersionManifest,
         loaderResult: LoaderResult?,
-    ) async -> GameVersionInfo {
+    ) async throws -> GameVersionInfo {
         var updated = gameInfo
         updated.assetIndex = manifest.assetIndex.id
         updated.javaVersion = manifest.javaVersion.majorVersion
@@ -75,6 +75,8 @@ struct GameFinalizer {
             updated.modJvm = []
             updated.gameArguments = []
         }
+
+        try Task.checkCancellation()
 
         do {
             updated.launchCommand = try MinecraftLaunchCommandBuilder.buildThrowing(

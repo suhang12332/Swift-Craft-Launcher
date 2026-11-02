@@ -27,15 +27,16 @@ final class OpenURLModPackImportPresenter {
         guard supportedExtensions.contains(url.pathExtension.lowercased()) else { return }
 
         Task {
-            let mode = await importViewModel.prepareModPackImportMode(from: .success([url]))
-            guard case let .modPackImport(file, shouldProcess) = mode else { return }
-
+            guard let file = await importViewModel.prepareModPackFile(from: .success([url])) else { return }
             preselectedTempFile = file
-            showImportSheet = shouldProcess
+            showImportSheet = true
         }
     }
 
     func clear() {
+        if let file = preselectedTempFile, TemporaryFile.isTemporary(file) {
+            try? FileManager.default.removeItem(at: file.deletingLastPathComponent())
+        }
         preselectedTempFile = nil
     }
 }

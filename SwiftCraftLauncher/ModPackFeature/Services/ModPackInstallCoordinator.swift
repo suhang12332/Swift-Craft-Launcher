@@ -312,7 +312,6 @@ final class ModPackInstallCoordinator {
                 let saveTask = Task {
                     await input.gameInstaller.saveGame(
                         input: saveInput,
-                        playerListViewModel: nil,
                         gameRepository: input.gameRepository,
                         onSuccess: {
                             continuation.resume(returning: true)

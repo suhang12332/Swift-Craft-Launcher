@@ -29,27 +29,30 @@ enum GameLoaderUpdateMode {
 /// an installed game only fetches what changed.
 @MainActor
 @Observable
-final class GameLoaderUpdateViewModel {
+final class GameLoaderUpdateViewModel: BaseGameFormViewModel {
     /// The existing game instance being updated.
     let existingGame: GameVersionInfo
 
     /// The presentation mode of the sheet.
     let mode: GameLoaderUpdateMode
 
-    /// The installation pipeline reused for loader version changes.
-    let gameInstaller = GameInstaller()
-
     /// The selected mod loader type.
     ///
     /// Mutable only when the existing game is vanilla; fixed otherwise.
-    var selectedModLoader: String
+    var selectedModLoader: String {
+        didSet { updateParentState() }
+    }
 
     /// The newly selected loader version. Defaults to the game's current loader version.
-    var selectedLoaderVersion: String
+    var selectedLoaderVersion: String {
+        didSet { updateParentState() }
+    }
 
     /// Loader versions compatible with the selected loader and the game's Minecraft version.
     var availableLoaderVersions: [String] = []
-    var isLoadingLoaderVersions = false
+    var isLoadingLoaderVersions = false {
+        didSet { updateParentState() }
+    }
 
     /// Whether the user can change the loader type (only for vanilla games).
     var canChangeLoaderType: Bool {
@@ -60,35 +63,49 @@ final class GameLoaderUpdateViewModel {
     var availableLoaderTypes: [GameLoader] = []
     var isLoadingLoaderTypes = false
 
-    private var updateTask: Task<Void, Never>?
-    private var didInit = false
-    private var gameRepository: GameRepository?
-
     /// Invoked on the main actor once the updated record has been persisted.
     var onSuccess: (() -> Void)?
+
+    private var didInit = false
 
     init(existingGame: GameVersionInfo, mode: GameLoaderUpdateMode = .adjust) {
         self.existingGame = existingGame
         self.mode = mode
         selectedModLoader = existingGame.modLoader
         selectedLoaderVersion = existingGame.modLoader == GameLoader.vanilla.displayName ? "" : existingGame.modVersion
+
+        super.init(
+            configuration: GameFormConfiguration(
+                isDownloading: .constant(false),
+                isFormValid: .constant(false),
+                triggerConfirm: .constant(false),
+                triggerCancel: .constant(false),
+                onCancel: { },
+                onConfirm: { },
+            ),
+        )
     }
 
     /// Binds the repository and kicks off the initial loader-version fetch.
     func setup(gameRepository: GameRepository) {
         self.gameRepository = gameRepository
-        if !didInit {
-            didInit = true
-            guard mode == .adjust else { return }
-            Task {
-                await refreshAvailableLoaderTypes()
-                await refreshLoaderVersions()
-            }
+        guard !didInit else { return }
+        didInit = true
+        updateParentState()
+
+        guard mode == .adjust else { return }
+        Task {
+            await refreshAvailableLoaderTypes()
+            await refreshLoaderVersions()
         }
     }
 
-    /// Whether the form is ready to submit.
-    var isFormValid: Bool {
+    override func updateParentState() {
+        isDownloading = computeIsDownloading()
+        isFormValid = computeIsFormValid()
+    }
+
+    override func computeIsFormValid() -> Bool {
         if mode == .repair {
             return !isUpdating
         }
@@ -177,26 +194,23 @@ final class GameLoaderUpdateViewModel {
 
     /// Starts the loader update or repair through the installation pipeline.
     func confirm() {
-        updateTask?.cancel()
-        updateTask = Task { await run() }
+        handleConfirm()
     }
 
     /// Cancels an in-progress loader update. The existing game is left intact.
     func cancel() {
         guard isUpdating else { return }
-        updateTask?.cancel()
-        gameInstaller.progress.cancel()
+        handleCancel()
     }
 
     /// Cancels any pending task when the view disappears.
     func cleanup() {
         if isUpdating {
-            updateTask?.cancel()
+            cancel()
         }
     }
 
-    /// Runs the loader update or repair and persists the result.
-    private func run() async {
+    override func performInstallation() async {
         guard let gameRepository else {
             AppLog.game.error("GameRepository not set for loader update")
             return
@@ -223,5 +237,12 @@ final class GameLoaderUpdateViewModel {
         ) { [weak self] in
             self?.onSuccess?()
         }
+
+        finishDownloadTask()
+    }
+
+    override func performCancelCleanup() async {
+        gameInstaller.progress.reset()
+        updateParentState()
     }
 }

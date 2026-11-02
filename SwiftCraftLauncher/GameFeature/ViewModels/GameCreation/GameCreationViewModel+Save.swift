@@ -10,9 +10,8 @@ import Foundation
 /// Extension providing game save logic for `GameCreationViewModel`.
 extension GameCreationViewModel {
     func saveGame() async {
-        guard let gameRepository,
-              let playerListViewModel else {
-            AppLog.game.error("GameRepository or PlayerListViewModel not set")
+        guard let gameRepository else {
+            AppLog.game.error("GameRepository not set")
             return
         }
 
@@ -36,7 +35,6 @@ extension GameCreationViewModel {
                 specifiedLoaderVersion: loaderVersion,
                 pendingIconData: pendingIconData,
             ),
-            playerListViewModel: playerListViewModel,
             gameRepository: gameRepository,
             onSuccess: {
                 Task { @MainActor in
