@@ -434,6 +434,7 @@ final class ModPackInstallCoordinator {
 
         if success {
             AppLog.modPack.info("Modpack dependency installation completed: \(gameName)")
+            modPackInstallState.reset()
         } else {
             AppLog.modPack.error("Modpack dependency installation failed: \(gameName)")
             try? MinecraftFileManager.cleanupGameDirectories(gameName: gameName)

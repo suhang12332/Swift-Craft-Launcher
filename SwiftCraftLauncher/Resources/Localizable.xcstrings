@@ -40088,7 +40088,7 @@
       }
     },
     "game.repair.rules.rule.1" : {
-      "comment" : "Rule: the game name, version, and mod loader are preserved",
+      "comment" : "Rule: game identity and launch settings are preserved during repair",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
@@ -40112,7 +40112,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• The game name, version, and mod loader will not be changed"
+            "value" : "• Game name, version, loader, icon, memory, Java path, JVM arguments, and environment variables stay unchanged."
           }
         },
         "es" : {
@@ -40214,19 +40214,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 游戏名称、版本和加载器不会更改"
+            "value" : "• 游戏名称、版本、加载器、图标、内存、Java 路径、JVM 参数和环境变量保持不变。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 遊戲名稱、版本和載入器不會更改"
+            "value" : "• 遊戲名稱、版本、載入器、圖示、記憶體、Java 路徑、JVM 參數和環境變數保持不變。"
           }
         }
       }
     },
     "game.repair.rules.rule.2" : {
-      "comment" : "Rule: missing or corrupted files are re-downloaded",
+      "comment" : "Rule: missing or corrupted core, asset, loader, and Java files are repaired",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
@@ -40250,7 +40250,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Missing or corrupted game files will be re-downloaded"
+            "value" : "• Missing or corrupted client JAR, libraries, natives, logging config, asset index, assets, and loader files are re-downloaded; files that pass verification are skipped, and the required Java runtime is installed if missing."
           }
         },
         "es" : {
@@ -40352,19 +40352,19 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 将重新下载缺失或损坏的游戏文件"
+            "value" : "• 缺失或损坏的客户端 JAR、依赖库、native 库、日志配置、资源索引、资源和加载器文件会被重新下载；校验通过的文件会跳过，缺失的 Java 运行时会自动安装。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 將重新下載缺失或損壞的遊戲檔案"
+            "value" : "• 缺失或損壞的用戶端 JAR、依賴庫、native 庫、日誌設定、資源索引、資源和載入器檔案會被重新下載；校驗通過的檔案會跳過，缺失的 Java 執行環境會自動安裝。"
           }
         }
       }
     },
     "game.repair.rules.rule.3" : {
-      "comment" : "Rule: mods, saves, and settings are preserved",
+      "comment" : "Rule: user data in the existing profile directory is preserved",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
@@ -40388,7 +40388,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Mods, saves, and game settings will be preserved"
+            "value" : "• Mods, resource packs, shader packs, saves, and game settings stay in the existing profile; the profile is not deleted even if repair fails."
           }
         },
         "es" : {
@@ -40490,13 +40490,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 模组、存档和游戏设置将被保留"
+            "value" : "• 模组、资源包、光影包、存档和游戏设置会保留在原实例目录中；即使修复失败也不会删除该目录。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 模組、存檔和遊戲設定將被保留"
+            "value" : "• 模組、資源包、光影包、存檔和遊戲設定會保留在原執行個體目錄中；即使修復失敗也不會刪除該目錄。"
           }
         }
       }
