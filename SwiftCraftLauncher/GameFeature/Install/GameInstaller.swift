@@ -229,7 +229,7 @@ final class GameInstaller {
             specifiedLoaderVersion: specifiedLoaderVersion,
         )
 
-        var finalizedInfo = await finalizer.finalize(
+        var finalizedInfo = try await finalizer.finalize(
             gameInfo: baseGameInfo,
             manifest: manifest,
             loaderResult: loaderResult,
