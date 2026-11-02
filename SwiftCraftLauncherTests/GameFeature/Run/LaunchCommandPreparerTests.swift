@@ -51,6 +51,7 @@ final class LaunchCommandPreparerTests: XCTestCase {
             "-Xms${xms}M",
             "-Xmx${xmx}M",
             "${game_directory}",
+            "${user_properties}",
         ]
 
         let result = LaunchCommandPreparer().prepare(
@@ -65,6 +66,7 @@ final class LaunchCommandPreparerTests: XCTestCase {
             "-Xms1024M",
             "-Xmx4096M",
             AppPaths.profileDirectory(gameName: game.gameName).path,
+            "{}",
         ])
     }
 

@@ -58,7 +58,7 @@ final class AppConstantsTests: XCTestCase {
     }
 
     func testMinecraftVersions_featureBaseline() {
-        XCTAssertEqual(AppConstants.MinecraftVersions.featureBaseline, "1.13")
+        XCTAssertEqual(AppConstants.MinecraftVersions.featureBaseline, "1.8")
     }
 
     func testEnvironmentTypes_values() {

@@ -56,7 +56,7 @@ struct ModrinthLoaderVersion: Decodable {
 }
 
 /// A Modrinth mod loader configuration with libraries and processors.
-struct ModrinthLoader: Codable {
+struct ModrinthLoader: Decodable {
     let mainClass: String
     let arguments: Arguments
     var libraries: [ModrinthLoaderLibrary]
@@ -66,12 +66,17 @@ struct ModrinthLoader: Codable {
 
     enum CodingKeys: String, CodingKey {
         case mainClass, arguments, libraries, version, processors, data
+        case minecraftArguments
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         mainClass = try container.decode(String.self, forKey: .mainClass)
-        arguments = try container.decode(Arguments.self, forKey: .arguments)
+        if let modernArguments = try container.decodeIfPresent(Arguments.self, forKey: .arguments) {
+            arguments = modernArguments
+        } else {
+            arguments = Arguments(legacyArguments: try container.decode(String.self, forKey: .minecraftArguments))
+        }
         libraries = try container.decode(
             [ModrinthLoaderLibrary].self,
             forKey: .libraries,

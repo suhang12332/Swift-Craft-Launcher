@@ -208,13 +208,10 @@ final class CommonServiceModLoaderTests: XCTestCase {
 
         let result = CommonService.mavenCoordinateToURL(lib: libWithUrl)
 
-        guard let result else {
-            return XCTFail("Expected non-nil URL")
-        }
         XCTAssertTrue(result.path.contains("org/example/lib/1.0/lib-1.0.jar"))
     }
 
-    func testMavenCoordinateToURL_nilUrl() {
+    func testMavenCoordinateToURL_nilUrlUsesDefaultRepository() {
         let lib = ModrinthLoaderLibrary(
             downloads: nil,
             name: "org.example:lib:1.0",
@@ -224,7 +221,10 @@ final class CommonServiceModLoaderTests: XCTestCase {
 
         let result = CommonService.mavenCoordinateToURL(lib: lib)
 
-        XCTAssertNil(result)
+        XCTAssertEqual(
+            result.absoluteString,
+            "https://libraries.minecraft.net/org/example/lib/1.0/lib-1.0.jar",
+        )
     }
 
     func testProcessGameVersionPlaceholders_replacesMultiple() throws {
