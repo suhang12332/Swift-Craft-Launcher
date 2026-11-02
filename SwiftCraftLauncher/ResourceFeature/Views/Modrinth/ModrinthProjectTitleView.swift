@@ -141,18 +141,7 @@ struct ModrinthProjectTitleView: View {
     }
 
     private var tagsView: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack {
-                ForEach(tags, id: \.self) { tag in
-                    Text(tag)
-                        .font(.caption2)
-                        .padding(.horizontal, ModrinthConstants.UIConstants.tagHorizontalPadding)
-                        .padding(.vertical, ModrinthConstants.UIConstants.tagVerticalPadding)
-                        .background(Color.gray.opacity(0.15))
-                        .cornerRadius(ModrinthConstants.UIConstants.tagCornerRadius)
-                }
-            }
-        }
+        ModrinthTagsView(tags: tags)
     }
 }
 

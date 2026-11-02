@@ -171,25 +171,7 @@ struct ModrinthDetailCardView: View {
     }
 
     private var tagsView: some View {
-        HStack(spacing: ModrinthConstants.UIConstants.spacing) {
-            ForEach(
-                Array(
-                    project.displayCategories.prefix(
-                        ModrinthConstants.UIConstants.maxTags,
-                    ),
-                ),
-                id: \.self,
-            ) { tag in
-                ModrinthDetailCardTagView(text: tag)
-            }
-            if project.displayCategories.count > ModrinthConstants.UIConstants.maxTags {
-                Text(
-                    "+\(project.displayCategories.count - ModrinthConstants.UIConstants.maxTags)",
-                )
-                .font(.caption2)
-                .foregroundColor(.secondary)
-            }
-        }
+        ModrinthTagsView(tags: project.displayCategories)
     }
 
     private var infoView: some View {
