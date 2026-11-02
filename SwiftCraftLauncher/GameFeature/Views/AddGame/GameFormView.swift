@@ -124,8 +124,17 @@ struct GameFormView: View {
             Text(currentModeTitle)
                 .font(.headline)
             Spacer()
-            importModePicker
+            if showsImportModePicker {
+                importModePicker
+            }
         }
+    }
+
+    private var showsImportModePicker: Bool {
+        if case .modPack(.project) = mode {
+            return false
+        }
+        return true
     }
 
     private var currentModeTitle: String {
