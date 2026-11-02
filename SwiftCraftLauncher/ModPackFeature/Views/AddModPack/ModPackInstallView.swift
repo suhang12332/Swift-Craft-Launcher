@@ -93,8 +93,6 @@ struct ModPackInstallView: View {
         .padding()
     }
 
-    // MARK: - Local
-
     @ViewBuilder private var localContent: some View {
         if viewModel.prepared != nil {
             preparedContent
@@ -104,8 +102,6 @@ struct ModPackInstallView: View {
             processingView
         }
     }
-
-    // MARK: - Direct URL
 
     @ViewBuilder private var remoteURLContent: some View {
         if viewModel.prepared != nil {
@@ -161,8 +157,6 @@ struct ModPackInstallView: View {
         }
     }
 
-    // MARK: - Prepared archive
-
     @ViewBuilder private var preparedContent: some View {
         if viewModel.isPreparedGameVersionSupported {
             VStack(alignment: .leading, spacing: 16) {
@@ -207,8 +201,6 @@ struct ModPackInstallView: View {
         }
     }
 
-    // MARK: - Online project
-
     @ViewBuilder private var projectContent: some View {
         if let projectDetail = viewModel.projectDetail {
             VStack(alignment: .leading, spacing: 12) {
@@ -240,8 +232,6 @@ struct ModPackInstallView: View {
             onModPackVersionAppear: viewModel.selectFirstModPackVersion,
         )
     }
-
-    // MARK: - Shared
 
     private var sharedSections: some View {
         ModPackInstallSharedSections(

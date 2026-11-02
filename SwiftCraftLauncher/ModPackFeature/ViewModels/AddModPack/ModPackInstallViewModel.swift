@@ -97,8 +97,6 @@ final class ModPackInstallViewModel: BaseGameFormViewModel {
         }
     }
 
-    // MARK: - Lifecycle
-
     func setup(gameRepository: GameRepository) {
         self.gameRepository = gameRepository
 
@@ -158,8 +156,6 @@ final class ModPackInstallViewModel: BaseGameFormViewModel {
         cleanupPreviewState()
         await super.performCancelCleanup()
     }
-
-    // MARK: - Installation
 
     override func performInstallation() async {
         switch source {
@@ -281,8 +277,6 @@ final class ModPackInstallViewModel: BaseGameFormViewModel {
         )
     }
 
-    // MARK: - Online project
-
     func applyPreloadedDetail(_ detail: ModrinthProjectDetail) {
         projectDetail = detail
         availableGameVersions = detail.gameVersions
@@ -346,8 +340,6 @@ final class ModPackInstallViewModel: BaseGameFormViewModel {
             includeTimestamp: true,
         )
     }
-
-    // MARK: - Form state
 
     override func computeIsDownloading() -> Bool {
         gameInstaller.progress.isDownloading
