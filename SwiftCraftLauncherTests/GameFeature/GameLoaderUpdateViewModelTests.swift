@@ -85,6 +85,7 @@ final class GameLoaderUpdateViewModelTests: XCTestCase {
         let vm = GameLoaderUpdateViewModel(existingGame: makeGame(modLoader: "fabric", modVersion: "0.16.0"))
         vm.selectedLoaderVersion = "0.16.0"
         vm.gameInstaller.progress.isDownloading = true
+        vm.updateParentState()
         XCTAssertFalse(vm.isFormValid)
     }
 
