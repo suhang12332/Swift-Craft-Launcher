@@ -40,7 +40,7 @@ enum ForgeLikeLoaderService {
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
 
         let totalDownloads = profile.libraries.count {
-            $0.downloads != nil
+            $0.downloadable
         }
         let totalProcessors = (profile.processors ?? []).count {
             ($0.sides ?? [AppConstants.EnvironmentTypes.client]).contains(AppConstants.EnvironmentTypes.client)
