@@ -54,6 +54,7 @@ struct ModrinthProjectTitleView: View {
                 HStack {
                     Text(title)
                         .font(.headline)
+                        .lineLimit(1)
                     Spacer()
                     infoRowView
                 }
@@ -62,7 +63,7 @@ struct ModrinthProjectTitleView: View {
                     Text(description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                        .lineLimit(3)
+                        .lineLimit(2)
                 }
 
                 if !tags.isEmpty {
