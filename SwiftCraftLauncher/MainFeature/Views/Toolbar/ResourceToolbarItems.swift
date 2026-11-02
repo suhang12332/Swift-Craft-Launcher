@@ -23,6 +23,8 @@ struct ResourceToolbarItems: View {
     private var detailState
     @Environment(GameRepository.self)
     private var gameRepository
+    @Environment(DIContainer.self)
+    private var container
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
 
@@ -135,7 +137,12 @@ struct ResourceToolbarItems: View {
             .id(controlActiveState)
             Spacer()
             Button {
-                openInstallSheet()
+                if detailState.gameResourcesType == ResourceType.modpack.rawValue,
+                   playerListViewModel.currentPlayer == nil {
+                    container.ui.gameDialogsPresenter.installAlert = .noPlayer
+                } else {
+                    openInstallSheet()
+                }
             } label: {
                 Label("resource.add".localized(), systemImage: "arrow.down.circle")
             }

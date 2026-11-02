@@ -118,7 +118,7 @@ extension AddOrDeleteResourceButtonViewModel {
             if type {
                 if query == ResourceType.modpack.rawValue {
                     if playerListViewModel?.currentPlayer == nil {
-                        activeAlert = .noPlayer
+                        DIContainer.shared.ui.gameDialogsPresenter.installAlert = .noPlayer
                         return
                     }
                     addButtonState = .loading

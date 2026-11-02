@@ -17,8 +17,6 @@ enum GameFormMode {
 struct GameFormView: View {
     @Environment(GameRepository.self)
     private var gameRepository
-    @Environment(PlayerListViewModel.self)
-    private var playerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 

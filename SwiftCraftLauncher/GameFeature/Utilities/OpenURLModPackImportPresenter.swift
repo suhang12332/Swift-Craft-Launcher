@@ -34,6 +34,9 @@ final class OpenURLModPackImportPresenter {
     }
 
     func clear() {
+        if let file = preselectedTempFile, TemporaryFile.isTemporary(file) {
+            try? FileManager.default.removeItem(at: file.deletingLastPathComponent())
+        }
         preselectedTempFile = nil
     }
 }

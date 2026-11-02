@@ -16,6 +16,7 @@ final class GameDialogsPresenter {
     var gamePendingDeletion: GameVersionInfo?
     var gamePendingLoaderUpdate: GameVersionInfo?
     var pendingLoaderUpdateMode: GameLoaderUpdateMode = .adjust
+    var installAlert: ResourceButtonAlertType?
 
     init() { }
 

@@ -60,7 +60,6 @@ struct AddOrDeleteResourceButtonOverlays: ViewModifier {
                         preloadedDetail: viewModel.preloadedDetail,
                     )),
                 )
-                .onDisappear { viewModel.onModPackInstallSheetDismiss() }
             }
             .sheet(
                 isPresented: $viewModel.showGameResourceInstallSheet,

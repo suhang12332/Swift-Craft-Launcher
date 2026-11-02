@@ -60,6 +60,7 @@ struct MainViewPresentationModifier: ViewModifier {
             .sheet(isPresented: $showStartupInfo) {
                 StartupInfoSheetView(announcementData: startupAnnouncementViewModel.announcementData)
             }
+            .alert(item: $gameDialogsPresenter.installAlert) { $0.alert }
             .deleteConfirmationDialog(
                 pendingDeletion: $gameDialogsPresenter.gamePendingDeletion,
                 title: "delete.title".localized(),
