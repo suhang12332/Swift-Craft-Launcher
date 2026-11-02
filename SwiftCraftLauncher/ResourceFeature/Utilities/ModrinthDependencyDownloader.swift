@@ -213,13 +213,13 @@ enum ModrinthDependencyDownloader {
         }
     }
 
-    /// Downloads only the main resource without its dependencies.
+    /// Downloads only the selected resource without its dependencies.
     /// - Returns: A tuple of (success, fileName, hash). fileName and hash are non-nil on success.
     static func downloadMainResourceOnly(
         mainProjectId: String,
+        version: ModrinthProjectDetailVersion,
         gameInfo: GameVersionInfo,
         query: String,
-        filterLoader: Bool = true,
     ) async -> (Bool, fileName: String?, hash: String?) {
         do {
             guard
@@ -229,19 +229,8 @@ enum ModrinthDependencyDownloader {
                 AppLog.resource.error("Unable to get main project details (ID: \(mainProjectId))")
                 return (false, nil, nil)
             }
-            let selectedLoaders = filterLoader ? [gameInfo.modLoader] : []
-            let filteredVersions =
-                try await ModrinthService.fetchProjectVersionsFilter(
-                    id: mainProjectId,
-                    selectedVersions: [gameInfo.gameVersion],
-                    selectedLoaders: selectedLoaders,
-                    type: query,
-                )
-            guard let latestVersion = filteredVersions.first else {
-                return (false, nil, nil)
-            }
             guard let installed = try await ResourceInstaller.install(
-                version: latestVersion,
+                version: version,
                 projectDetail: mainProjectDetail,
                 gameInfo: gameInfo,
                 resourceType: query,
