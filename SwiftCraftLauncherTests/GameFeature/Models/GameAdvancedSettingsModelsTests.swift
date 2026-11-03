@@ -49,11 +49,10 @@ final class GameAdvancedSettingsModelsTests: XCTestCase {
     }
 
     func testOptimizationPreset_allCases() {
-        XCTAssertEqual(OptimizationPreset.allCases.count, 4)
+        XCTAssertEqual(OptimizationPreset.allCases, [.basic, .balanced, .maximum])
     }
 
     func testOptimizationPreset_rawValues() {
-        XCTAssertEqual(OptimizationPreset.disabled.rawValue, "disabled")
         XCTAssertEqual(OptimizationPreset.basic.rawValue, "basic")
         XCTAssertEqual(OptimizationPreset.balanced.rawValue, "balanced")
         XCTAssertEqual(OptimizationPreset.maximum.rawValue, "maximum")

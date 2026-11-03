@@ -20,6 +20,9 @@ enum URLConfig {
     enum API {
         static let apiBaseURL = URLConfig.url("https://swift-craft-launcher-api.pages.dev/api")
 
+        /// The default Mojang Maven repository for libraries.
+        static let mavenLibraries = URLConfig.url("https://libraries.minecraft.net")
+
         enum Authentication {
             static let authorize = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize")
             static let token = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/token")
@@ -33,7 +36,7 @@ enum URLConfig {
             static let minecraftLogin = URLConfig.url("https://api.minecraftservices.com/authentication/login_with_xbox")
             static let minecraftProfile = URLConfig.url("https://api.minecraftservices.com/minecraft/profile")
             static let minecraftEntitlements = URLConfig.url("https://api.minecraftservices.com/entitlements/mcstore")
-            static let minecraftRelyingParty = "rp://api.minecraftservices.com/"
+            static let minecraftRelyingParty = "rp://api.minecraftservices.com"
             static let minecraftProfileSkins = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins")
             static let minecraftProfileActiveSkin = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins/active")
             static let minecraftProfileActiveCape = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/capes/active")

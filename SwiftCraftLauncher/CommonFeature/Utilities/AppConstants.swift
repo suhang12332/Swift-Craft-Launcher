@@ -226,7 +226,7 @@ enum AppConstants {
     /// Minecraft version constants.
     enum MinecraftVersions {
         /// The minimum Minecraft version required for certain features.
-        static let featureBaseline = "1.13"
+        static let featureBaseline = "1.8"
     }
 
     /// Mojang runtime components excluded from game settings (Legacy, Alpha, Beta).

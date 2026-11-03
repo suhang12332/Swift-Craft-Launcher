@@ -43,6 +43,7 @@ struct LaunchCommandPreparer {
             "${xms}": "\(xms)",
             "${xmx}": "\(xmx)",
             "${game_directory}": AppPaths.profileDirectory(gameName: game.gameName).path,
+            "${user_properties}": "{}",
         ]
         var replacedCommand = command.map { argument in
             replacements.reduce(into: argument) { result, pair in

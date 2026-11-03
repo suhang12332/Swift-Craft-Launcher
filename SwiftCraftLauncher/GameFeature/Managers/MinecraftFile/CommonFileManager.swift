@@ -41,10 +41,9 @@ class CommonFileManager: @unchecked Sendable {
                 )
             }
 
-            guard let url = CommonService.mavenCoordinateToURL(lib: lib) else { return nil }
             return JarDownloadTask(
                 name: lib.name,
-                url: url,
+                url: CommonService.mavenCoordinateToURL(lib: lib),
                 destinationPath: CommonService.mavenCoordinateToRelativePathForURL(lib.name),
                 expectedSha1: nil,
             )
@@ -74,10 +73,9 @@ class CommonFileManager: @unchecked Sendable {
     func downloadFabricJarsThrowing(libraries: [ModrinthLoaderLibrary]) async throws {
         let tasks = libraries.compactMap { lib -> JarDownloadTask? in
             guard lib.downloadable else { return nil }
-            guard let url = CommonService.mavenCoordinateToURL(lib: lib) else { return nil }
             return JarDownloadTask(
                 name: lib.name,
-                url: url,
+                url: CommonService.mavenCoordinateToURL(lib: lib),
                 destinationPath: CommonService.mavenCoordinateToRelativePathForURL(lib.name),
                 expectedSha1: "",
             )

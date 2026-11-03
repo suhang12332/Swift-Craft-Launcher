@@ -31,7 +31,8 @@ final class CommonUtilTests: XCTestCase {
 
     func testIsVersionAtLeast_baseline() {
         XCTAssertTrue(CommonUtil.isVersionAtLeast("1.20"))
-        XCTAssertFalse(CommonUtil.isVersionAtLeast("1.12"))
+        XCTAssertTrue(CommonUtil.isVersionAtLeast("1.8"))
+        XCTAssertFalse(CommonUtil.isVersionAtLeast("1.7.10"))
     }
 
     func testSortMinecraftVersions_descending() {

@@ -51,10 +51,11 @@ enum CommonService {
     ) -> String {
         let jarPaths: [String] = loader.libraries.compactMap { lib in
             guard lib.includeInClasspath else { return nil }
-            guard let downloads = lib.downloads else { return nil }
-            let artifact = downloads.artifact
-            guard let artifactPath = artifact.path else { return nil }
-            return librariesDir.appendingPathComponent(artifactPath).path
+            if let artifactPath = lib.downloads?.artifact.path {
+                return librariesDir.appendingPathComponent(artifactPath).path
+            }
+            guard let relativePath = mavenCoordinateToRelativePath(lib.name) else { return nil }
+            return librariesDir.appendingPathComponent(relativePath).path
         }
         return jarPaths.joined(separator: ":")
     }
@@ -263,9 +264,10 @@ enum CommonService {
         return coordinate
     }
 
-    static func mavenCoordinateToURL(lib: ModrinthLoaderLibrary) -> URL? {
+    static func mavenCoordinateToURL(lib: ModrinthLoaderLibrary) -> URL {
         let relativePath = mavenCoordinateToRelativePathForURL(lib.name)
-        return lib.url?.appendingPathComponent(relativePath)
+        let baseURL = lib.url ?? URLConfig.API.mavenLibraries
+        return baseURL.appendingPathComponent(relativePath)
     }
 
     static func mavenCoordinateToURL(_ coordinate: String, baseURL: URL) -> URL {

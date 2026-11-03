@@ -30,6 +30,9 @@ struct FailedResourceInstallFooter: View {
                 }
                 .disabled(viewModel.isInstallLoading)
                 .keyboardShortcut(.defaultAction)
+            } else if projectDetail != nil {
+                Button("global_resource.no_version_available".localized()) { }
+                    .disabled(true)
             }
         }
     }

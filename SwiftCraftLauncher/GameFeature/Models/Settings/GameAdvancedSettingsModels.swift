@@ -67,7 +67,6 @@ enum GarbageCollector: String, CaseIterable {
 
 /// JVM optimization presets for game performance tuning.
 enum OptimizationPreset: String, CaseIterable {
-    case disabled
     case basic
     case balanced
     case maximum
@@ -75,7 +74,6 @@ enum OptimizationPreset: String, CaseIterable {
     /// The localized display name for this optimization preset.
     var displayName: String {
         switch self {
-        case .disabled: return "settings.game.java.optimization.none".localized()
         case .basic: return "settings.game.java.optimization.basic".localized()
         case .balanced: return "settings.game.java.optimization.balanced".localized()
         case .maximum: return "settings.game.java.optimization.maximum".localized()
@@ -85,7 +83,6 @@ enum OptimizationPreset: String, CaseIterable {
     /// The localized description for this optimization preset.
     var description: String {
         switch self {
-        case .disabled: return "settings.game.java.optimization.none.desc".localized()
         case .basic: return "settings.game.java.optimization.basic.desc".localized()
         case .balanced: return "settings.game.java.optimization.balanced.desc".localized()
         case .maximum: return "settings.game.java.optimization.maximum.desc".localized()

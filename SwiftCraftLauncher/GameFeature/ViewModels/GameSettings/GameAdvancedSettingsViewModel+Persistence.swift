@@ -32,6 +32,7 @@ extension GameAdvancedSettingsViewModel {
                 updatedGame.xmx = xmx
                 updatedGame.jvmArguments = self.generateJvmArguments()
                 updatedGame.environmentVariables = self.environmentVariables
+                    .replacingOccurrences(of: "\\n", with: "\n")
                 updatedGame.javaPath = self.javaPath
 
                 try await repository.updateGame(updatedGame)

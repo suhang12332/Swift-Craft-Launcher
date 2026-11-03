@@ -39,6 +39,33 @@ final class MinecraftManifestTests: XCTestCase {
         XCTAssertEqual(manifest.javaVersion.majorVersion, 17)
     }
 
+    func testMinecraftVersionManifest_decodesLegacyArguments() throws {
+        let json = """
+        {
+            "assetIndex": {"id": "1.12", "sha1": "a", "size": 1, "totalSize": 2, "url": "https://e.com/i.json"},
+            "assets": "1.12",
+            "downloads": {"client": {"sha1": "b", "size": 3, "url": "https://e.com/c.jar"}},
+            "id": "1.12",
+            "javaVersion": {"component": "jre-legacy", "majorVersion": 8},
+            "libraries": [],
+            "logging": {"client": {"argument": "", "file": {"id": "l", "sha1": "c", "size": 4, "url": "https://e.com/l.xml"}, "type": "t"}},
+            "mainClass": "net.minecraft.client.main.Main",
+            "minimumLauncherVersion": 18,
+            "minecraftArguments": "--username ${auth_player_name} --version ${version_name}",
+            "releaseTime": "2017-06-02T00:00:00+00:00",
+            "time": "2017-06-02T00:00:00+00:00",
+            "type": "release"
+        }
+        """
+        let data = Data(json.utf8)
+        let manifest = try JSONDecoder().decode(MinecraftVersionManifest.self, from: data)
+
+        XCTAssertNil(manifest.arguments.game)
+        XCTAssertNil(manifest.arguments.jvm)
+        XCTAssertEqual(manifest.minecraftArguments, "--username ${auth_player_name} --version ${version_name}")
+        XCTAssertEqual(manifest.javaVersion.component, "jre-legacy")
+    }
+
     func testMinecraftVersionManifest_optionalComplianceLevel() throws {
         let json = """
         {
