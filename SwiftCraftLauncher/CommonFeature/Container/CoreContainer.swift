@@ -17,8 +17,10 @@ final class CoreContainer: @unchecked Sendable {
     // Cache
 
     @Lazy var appCacheManager: AppCacheManager = .init()
-    @Lazy var cacheCalculator: CacheCalculator = .init()
-    @Lazy var cacheInfoManager: CacheInfoManager = .init()
+
+    // Profile storage
+
+    @Lazy var profileStorageManager: ProfileStorageManager = .init()
 
     // Mods
 

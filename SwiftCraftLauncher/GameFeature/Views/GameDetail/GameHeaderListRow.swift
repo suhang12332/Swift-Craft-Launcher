@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// A list row displaying the game icon, name, version info, and cache size.
+/// A list row displaying the game icon, name, version info, and profile storage usage.
 struct GameHeaderListRow: View {
     @Environment(DIContainer.self)
     private var container
@@ -18,7 +18,7 @@ struct GameHeaderListRow: View {
     private static let iconCornerRadiusRatio: CGFloat = 0.2
 
     let game: GameVersionInfo
-    let cacheInfo: CacheInfo
+    let storageInfo: ProfileStorageInfo
     let query: String
     var onIconTap: (() -> Void)?
 
@@ -28,12 +28,12 @@ struct GameHeaderListRow: View {
 
     init(
         game: GameVersionInfo,
-        cacheInfo: CacheInfo,
+        storageInfo: ProfileStorageInfo,
         query: String,
         onIconTap: (() -> Void)? = nil,
     ) {
         self.game = game
-        self.cacheInfo = cacheInfo
+        self.storageInfo = storageInfo
         self.query = query
         self.onIconTap = onIconTap
     }
@@ -84,10 +84,10 @@ struct GameHeaderListRow: View {
             }
             Spacer()
             HStack {
-                Label("\(cacheInfo.fileCount)", systemImage: "text.document")
+                Label("\(storageInfo.archiveCount)", systemImage: "text.document")
                 Divider()
                     .frame(height: 12)
-                Label(cacheInfo.formattedSize, systemImage: "externaldrive")
+                Label(storageInfo.formattedSize, systemImage: "externaldrive")
             }
             .foregroundStyle(.secondary)
             .font(.headline)

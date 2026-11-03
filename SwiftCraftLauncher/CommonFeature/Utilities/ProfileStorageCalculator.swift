@@ -1,5 +1,5 @@
 //
-//  CacheCalculator.swift
+//  ProfileStorageCalculator.swift
 //  CommonFeature
 //
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
@@ -7,14 +7,16 @@
 
 import Foundation
 
-/// Represents cache information including file count and total size.
-struct CacheInfo: Equatable {
-    let fileCount: Int
+/// Represents the storage usage of a game profile.
+struct ProfileStorageInfo: Equatable {
+    /// The number of `.zip`/`.jar` archives in the profile.
+    let archiveCount: Int
+    /// The total size of every file in the profile, in bytes.
     let totalSize: Int64
     let formattedSize: String
 
-    init(fileCount: Int, totalSize: Int64) {
-        self.fileCount = fileCount
+    init(archiveCount: Int, totalSize: Int64) {
+        self.archiveCount = archiveCount
         self.totalSize = totalSize
         formattedSize = Self.formatFileSize(totalSize)
     }
@@ -27,21 +29,23 @@ struct CacheInfo: Equatable {
     }
 }
 
-/// Calculates cache sizes for various application directories.
-class CacheCalculator {
+/// Measures the storage usage of game profile directories.
+class ProfileStorageCalculator {
     init() { }
 
-    /// Returns the file count and total size of a directory.
+    /// Returns the number of `.zip`/`.jar` files and the total size of a directory.
+    ///
+    /// Only archive files contribute to `archiveCount`; every file contributes to `size`.
     /// - Parameter directory: The directory to measure.
-    /// - Returns: A tuple containing the file count and total size in bytes.
+    /// - Returns: A tuple containing the archive count and total size in bytes.
     /// - Throws: A ``GlobalError`` if the operation fails.
-    private func calculateDirectorySize(_ directory: URL) throws -> (fileCount: Int, size: Int64) {
+    private func measureDirectory(_ directory: URL) throws -> (archiveCount: Int, size: Int64) {
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: directory.path) else {
             return (0, 0)
         }
 
-        var fileCount = 0
+        var archiveCount = 0
         var totalSize: Int64 = 0
 
         guard let enumerator = fileManager.enumerator(at: directory, includingPropertiesForKeys: [.fileSizeKey]) else {
@@ -60,7 +64,10 @@ class CacheCalculator {
             do {
                 let resourceValues = try fileURL.resourceValues(forKeys: [.fileSizeKey])
                 if let fileSize = resourceValues.fileSize {
-                    fileCount += 1
+                    let ext = fileURL.pathExtension.lowercased()
+                    if ext == "zip" || ext == "jar" {
+                        archiveCount += 1
+                    }
                     totalSize += Int64(fileSize)
                 }
             } catch {
@@ -68,25 +75,25 @@ class CacheCalculator {
             }
         }
 
-        return (fileCount, totalSize)
+        return (archiveCount, totalSize)
     }
 
-    /// Calculates cache information for a specific game profile.
+    /// Calculates the storage usage of a specific game profile.
     /// - Parameter gameName: The name of the game.
-    /// - Returns: Cache information for the profile.
+    /// - Returns: Storage information for the profile.
     /// - Throws: A ``GlobalError`` if the operation fails.
-    func calculateProfileCacheInfo(gameName: String) throws -> CacheInfo {
+    func calculateProfileStorage(gameName: String) throws -> ProfileStorageInfo {
         let subdirectories = AppPaths.profileSubdirectories
-        var totalFileCount = 0
+        var totalArchiveCount = 0
         var totalSize: Int64 = 0
 
         for subdir in subdirectories {
             let subdirPath = AppPaths.profileDirectory(gameName: gameName).appendingPathComponent(subdir)
-            let (fileCount, size) = try calculateDirectorySize(subdirPath)
-            totalFileCount += fileCount
+            let (archiveCount, size) = try measureDirectory(subdirPath)
+            totalArchiveCount += archiveCount
             totalSize += size
         }
 
-        return CacheInfo(fileCount: totalFileCount, totalSize: totalSize)
+        return ProfileStorageInfo(archiveCount: totalArchiveCount, totalSize: totalSize)
     }
 }
