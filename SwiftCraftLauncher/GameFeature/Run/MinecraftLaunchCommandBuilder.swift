@@ -35,6 +35,7 @@ enum MinecraftLaunchCommandBuilder {
             "launcher_version": launcherVersion,
             "classpath": classpath,
             "natives_directory": paths.nativesDir,
+            "user_properties": "{}",
         ]
 
         let jvmArguments = manifest.arguments.jvm ?? legacyJvmArguments
