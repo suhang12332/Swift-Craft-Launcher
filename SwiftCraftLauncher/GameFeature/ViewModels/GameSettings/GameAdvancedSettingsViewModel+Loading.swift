@@ -18,6 +18,7 @@ extension GameAdvancedSettingsViewModel {
         let xmx = game.xmx == 0 ? DIContainer.shared.ui.gameSettingsManager.globalXmx : game.xmx
         memoryRange = Double(xms) ... Double(xmx)
         environmentVariables = game.environmentVariables
+            .replacingOccurrences(of: "\n", with: "\\n")
         javaPath = game.javaPath
 
         let jvmArgs = game.jvmArguments.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -142,11 +142,10 @@ struct GameAdvancedSettingsEnvironmentVariablesSection: View {
 
     var body: some View {
         LabeledContent("settings.game.java.environment_variables".localized()) {
-            TextField("", text: $viewModel.environmentVariables, axis: .vertical)
+            TextField("", text: $viewModel.environmentVariables)
                 .focusable(false)
                 .labelsHidden()
                 .textFieldStyle(.roundedBorder)
-                .lineLimit(2 ... 4)
                 .frame(width: 300)
                 .onChange(of: viewModel.environmentVariables) { _, _ in viewModel.didChangeEnvironmentVariables() }
         }

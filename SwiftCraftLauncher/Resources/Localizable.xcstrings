@@ -71404,133 +71404,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "على سبيل المثال: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "على سبيل المثال: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nافصل بين المتغيرات المتعددة باستخدام \\n. لا حاجة إلى علامات اقتباس."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "For eksempel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "For eksempel: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nAdskil flere variabler med \\n. Anførselstegn er ikke nødvendige."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zum Beispiel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Zum Beispiel: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nMehrere Variablen mit \\n trennen. Anführungszeichen sind nicht erforderlich."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "For example: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "For example: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nSeparate multiple variables with \\n. No quotes are needed."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por ejemplo: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Por ejemplo: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nSepara varias variables con \\n. No se necesitan comillas."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esimerkiksi: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Esimerkiksi: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nErota useat muuttujat merkillä \\n. Lainausmerkkejä ei tarvita."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Par exemple : \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Par exemple : JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nSéparez plusieurs variables avec \\n. Les guillemets ne sont pas nécessaires."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "उदाहरण के लिए: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "उदाहरण के लिए: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nकई वेरिएबल्स को \\n से अलग करें। उद्धरण चिह्नों की आवश्यकता नहीं है।"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ad esempio: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Ad esempio: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nSepara più variabili con \\n. Non sono necessarie virgolette."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例： \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "例： JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\n複数の変数は \\n で区切ります。引用符は不要です。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "예시： \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "예시： JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\n여러 변수는 \\n으로 구분합니다. 따옴표는 필요하지 않습니다."
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "For eksempel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "For eksempel: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nSkill flere variabler med \\n. Anførselstegn er ikke nødvendig."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bijvoorbeeld: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Bijvoorbeeld: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nScheid meerdere variabelen met \\n. Aanhalingstekens zijn niet nodig."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na przykład: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Na przykład: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nOddziel wiele zmiennych znakiem \\n. Cudzysłowy nie są potrzebne."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por exemplo: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Por exemplo: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nSepare várias variáveis com \\n. Não são necessárias aspas."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Например: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Например: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nРазделяйте несколько переменных символом \\n. Кавычки не нужны."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Till exempel: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Till exempel: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nSeparera flera variabler med \\n. Citattecken behövs inte."
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ตัวอย่าง: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "ตัวอย่าง: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nแยกหลายตัวแปรด้วย \\n ไม่จำเป็นต้องใส่เครื่องหมายคำพูด"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Örneğin: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Örneğin: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nBirden fazla değişkeni \\n ile ayırın. Tırnak işareti gerekmez."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ví dụ: \nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "Ví dụ: JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\nPhân tách nhiều biến bằng \\n. Không cần dấu ngoặc kép."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例如：\nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "例如：JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\n多个变量之间用 \\n 分隔，无需添加引号。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例如：\nJAVA_OPTS=-Dfile.encoding=UTF-8\nMY_FLAG=1"
+            "value" : "例如：JAVA_OPTS=-Dfile.encoding=UTF-8\\nMY_FLAG=1\n多個變數之間用 \\n 分隔，無需新增引號。"
           }
         }
       }
