@@ -65,14 +65,14 @@ extension GameAdvancedSettingsViewModel {
 
     func applyOptimizationPreset(_ preset: OptimizationPreset) {
         switch preset {
-        case .disabled:
+        case .basic:
             enableOptimizations = false
             enableAikarFlags = false
             enableMemoryOptimizations = false
             enableThreadOptimizations = false
             enableNetworkOptimizations = false
 
-        case .basic, .balanced:
+        case .balanced:
             enableOptimizations = true
             enableAikarFlags = false
             enableMemoryOptimizations = true
@@ -90,13 +90,11 @@ extension GameAdvancedSettingsViewModel {
 
     func updateOptimizationPreset() {
         if !enableOptimizations {
-            optimizationPreset = .disabled
+            optimizationPreset = .basic
         } else if enableAikarFlags, enableNetworkOptimizations {
             optimizationPreset = .maximum
-        } else if enableMemoryOptimizations, enableThreadOptimizations {
-            optimizationPreset = .balanced
         } else {
-            optimizationPreset = .basic
+            optimizationPreset = .balanced
         }
     }
 
