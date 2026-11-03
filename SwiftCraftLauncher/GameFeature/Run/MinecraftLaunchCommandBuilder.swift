@@ -59,7 +59,7 @@ enum MinecraftLaunchCommandBuilder {
         }
 
         if !gameInfo.gameArguments.isEmpty {
-            gameArgs.append(contentsOf: gameInfo.gameArguments)
+            gameArgs.append(contentsOf: gameInfo.gameArguments.map { substituteVariables($0, with: variableMap) })
         }
 
         jvmArgs = injectingLibraryDirectoryIfNeeded(

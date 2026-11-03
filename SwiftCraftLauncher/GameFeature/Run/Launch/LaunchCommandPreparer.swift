@@ -44,6 +44,9 @@ struct LaunchCommandPreparer {
             "${xmx}": "\(xmx)",
             "${game_directory}": AppPaths.profileDirectory(gameName: game.gameName).path,
             "${user_properties}": "{}",
+            // Older instances may have saved unexpanded loader asset arguments.
+            "${assets_root}": AppPaths.assetsDirectory.path,
+            "${assets_index_name}": game.assetIndex,
         ]
         var replacedCommand = command.map { argument in
             replacements.reduce(into: argument) { result, pair in
