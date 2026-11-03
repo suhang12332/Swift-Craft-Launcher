@@ -41745,133 +41745,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "لا توجد إصدارات متاحة"
+            "value" : "لا يوجد إصدار"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen tilgængelig version"
+            "value" : "Ingen version"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keine Version verfügbar"
+            "value" : "Keine Version"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No Version Available"
+            "value" : "No Version"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No hay versión disponible"
+            "value" : "Sin versión"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ei versiota saatavilla"
+            "value" : "Ei versiota"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucune version disponible"
+            "value" : "Aucune version"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "कोई संस्करण उपलब्ध नहीं"
+            "value" : "कोई संस्करण नहीं"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nessuna versione disponibile"
+            "value" : "Nessuna versione"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "利用可能なバージョンがありません"
+            "value" : "バージョンなし"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사용 가능한 버전이 없습니다"
+            "value" : "버전 없음"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen tilgjengelig versjon"
+            "value" : "Ingen versjon"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geen versie beschikbaar"
+            "value" : "Geen versie"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Brak dostępnej wersji"
+            "value" : "Brak wersji"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nenhuma versão disponível"
+            "value" : "Sem versão"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Нет доступной версии"
+            "value" : "Нет версии"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen version tillgänglig"
+            "value" : "Ingen version"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ไม่มีเวอร์ชันที่ใช้ได้"
+            "value" : "ไม่มีเวอร์ชัน"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mevcut sürüm yok"
+            "value" : "Sürüm yok"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Không có phiên bản khả dụng"
+            "value" : "Không có phiên bản"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暂无可用版本"
+            "value" : "暂无版本"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "暫無可用版本"
+            "value" : "暫無版本"
           }
         }
       }

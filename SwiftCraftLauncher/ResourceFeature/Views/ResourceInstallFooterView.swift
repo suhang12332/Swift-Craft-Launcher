@@ -40,20 +40,21 @@ struct ResourceInstallFooterView: View {
                     }
                 }
             }
-        } else if viewModel.resourceType == ResourceType.mod.rawValue, !viewModel.isUpdateMode {
-            if viewModel.isLoadingVersions || viewModel.selectedVersion != nil {
-                installButton(titleKey: "global_resource.download") {
+        } else if viewModel.isLoadingVersions || viewModel.selectedVersion != nil {
+            installButton(titleKey: "global_resource.download") {
+                if viewModel.resourceType == ResourceType.mod.rawValue, !viewModel.isUpdateMode {
                     viewModel.installModWithDependencies {
+                        isPresented = false
+                    }
+                } else {
+                    viewModel.installSingleResource {
                         isPresented = false
                     }
                 }
             }
-        } else if viewModel.isLoadingVersions || viewModel.selectedVersion != nil {
-            installButton(titleKey: "global_resource.download") {
-                viewModel.installSingleResource {
-                    isPresented = false
-                }
-            }
+        } else if viewModel.resolvedGame != nil {
+            Button("global_resource.no_version_available".localized()) { }
+                .disabled(true)
         }
     }
 

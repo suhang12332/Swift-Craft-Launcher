@@ -21,33 +21,28 @@ struct VersionPickerForSheet: View {
 
     var body: some View {
         VStack {
-            if !isLoading {
-                if !availableVersions.isEmpty {
-                    spacerView()
-                    Text(project.title)
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    CommonMenuPicker(
-                        selection: $selectedVersion,
-                    ) {
-                        Text("global_resource.select_version".localized())
-                    } content: {
-                        ForEach(availableVersions, id: \.id) { version in
-                            if resourceType == ResourceType.shader.rawValue {
-                                let loaders = version.loaders.joined(
-                                    separator: ", ",
-                                )
-                                Text(version.name + loaders).tag(
-                                    Optional(version),
-                                )
-                            } else {
-                                Text(version.name).tag(Optional(version))
-                            }
+            if !isLoading, !availableVersions.isEmpty {
+                spacerView()
+                Text(project.title)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                CommonMenuPicker(
+                    selection: $selectedVersion,
+                ) {
+                    Text("global_resource.select_version".localized())
+                } content: {
+                    ForEach(availableVersions, id: \.id) { version in
+                        if resourceType == ResourceType.shader.rawValue {
+                            let loaders = version.loaders.joined(
+                                separator: ", ",
+                            )
+                            Text(version.name + loaders).tag(
+                                Optional(version),
+                            )
+                        } else {
+                            Text(version.name).tag(Optional(version))
                         }
                     }
-                } else {
-                    Text("global_resource.no_version_available".localized())
-                        .foregroundColor(.secondary)
                 }
             }
         }
