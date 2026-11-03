@@ -135,9 +135,9 @@ struct GameInfoDetailView: View {
         }
         .onAppear {
             updateHeaders()
-            container.core.cacheInfoManager.calculateGameCacheInfo(game.gameName)
+            container.core.profileStorageManager.calculateGameStorageInfo(game.gameName)
         }
-        .onChange(of: container.core.cacheInfoManager.cacheInfo) { _, _ in
+        .onChange(of: container.core.profileStorageManager.storageInfo) { _, _ in
             updateHeaders()
         }
         .onDisappear {
@@ -161,7 +161,7 @@ struct GameInfoDetailView: View {
 
     private func performRefresh() {
         updateHeaders()
-        container.core.cacheInfoManager.calculateGameCacheInfo(game.gameName)
+        container.core.profileStorageManager.calculateGameStorageInfo(game.gameName)
         if !gameType {
             triggerLocalRefresh()
         }
@@ -180,7 +180,7 @@ struct GameInfoDetailView: View {
         header = AnyView(
             GameHeaderListRow(
                 game: currentGame,
-                cacheInfo: container.core.cacheInfoManager.cacheInfo,
+                storageInfo: container.core.profileStorageManager.storageInfo,
                 query: query,
             ) {
                 showIconFilePicker = true
@@ -189,7 +189,7 @@ struct GameInfoDetailView: View {
     }
 
     private func clearAllData() {
-        container.core.cacheInfoManager.cacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
+        container.core.profileStorageManager.storageInfo = ProfileStorageInfo(archiveCount: 0, totalSize: 0)
         if !gameType {
             localRefreshToken = UUID()
         }
