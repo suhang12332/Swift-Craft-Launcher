@@ -9,7 +9,7 @@
 import XCTest
 
 final class LaunchCommandPreparerTests: XCTestCase {
-    func testPrepareRepairsAssetPlaceholdersInSavedCommand() throws {
+    func testPreparePreservesUnresolvedAssetPlaceholdersInSavedCommand() throws {
         var game = makeGame(xms: 1024, xmx: 4096)
         game.assetIndex = "1.8"
         game.launchCommand = [
@@ -35,8 +35,8 @@ final class LaunchCommandPreparerTests: XCTestCase {
         XCTAssertEqual(result, [
             "-Xms1024M", "-Xmx4096M",
             "net.minecraft.launchwrapper.Launch",
-            "--assetsDir", AppPaths.assetsDirectory.path,
-            "--assetIndex", "1.8",
+            "--assetsDir", "${assets_root}",
+            "--assetIndex", "${assets_index_name}",
             "--username", "Steve",
             "--tweakClass", "net.minecraftforge.fml.common.launcher.FMLTweaker",
         ])
@@ -121,7 +121,7 @@ final class LaunchCommandPreparerTests: XCTestCase {
             "-Xms1024M",
             "-Xmx4096M",
             AppPaths.profileDirectory(gameName: game.gameName).path,
-            "{}",
+            "${user_properties}",
         ])
     }
 
