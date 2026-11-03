@@ -35,6 +35,7 @@ enum MinecraftLaunchCommandBuilder {
             "launcher_version": launcherVersion,
             "classpath": classpath,
             "natives_directory": paths.nativesDir,
+            "user_properties": "{}",
         ]
 
         let jvmArguments = manifest.arguments.jvm ?? legacyJvmArguments
@@ -59,7 +60,7 @@ enum MinecraftLaunchCommandBuilder {
         }
 
         if !gameInfo.gameArguments.isEmpty {
-            gameArgs.append(contentsOf: gameInfo.gameArguments)
+            gameArgs.append(contentsOf: gameInfo.gameArguments.map { substituteVariables($0, with: variableMap) })
         }
 
         jvmArgs = injectingLibraryDirectoryIfNeeded(
