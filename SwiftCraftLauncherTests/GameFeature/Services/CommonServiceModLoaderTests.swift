@@ -123,7 +123,7 @@ final class CommonServiceModLoaderTests: XCTestCase {
         XCTAssertFalse(classpath.contains("d/e/f.jar"))
     }
 
-    func testGenerateClasspath_filtersNilDownloads() throws {
+    func testGenerateClasspath_derivesPathWhenDownloadsMissing() throws {
         let libJson: [String: Any] = [
             "name": "test:lib:1.0",
             "include_in_classpath": true,
@@ -139,10 +139,10 @@ final class CommonServiceModLoaderTests: XCTestCase {
 
         let classpath = CommonService.generateClasspath(from: loader, librariesDir: librariesDir)
 
-        XCTAssertTrue(classpath.isEmpty)
+        XCTAssertEqual(classpath, "/tmp/libraries/test/lib/1.0/lib-1.0.jar")
     }
 
-    func testGenerateClasspath_filtersNilArtifactPath() throws {
+    func testGenerateClasspath_derivesPathWhenArtifactPathMissing() throws {
         let libJson: [String: Any] = [
             "name": "test:lib:1.0",
             "include_in_classpath": true,
@@ -150,6 +150,25 @@ final class CommonServiceModLoaderTests: XCTestCase {
             "downloads": [
                 "artifact": ["sha1": "abc", "size": 100, "url": ""],
             ],
+        ]
+        let loaderJson: [String: Any] = [
+            "mainClass": "Main",
+            "arguments": [:],
+            "libraries": [libJson],
+        ]
+        let loader = try decode(ModrinthLoader.self, from: loaderJson)
+        let librariesDir = URL(fileURLWithPath: "/tmp/libraries")
+
+        let classpath = CommonService.generateClasspath(from: loader, librariesDir: librariesDir)
+
+        XCTAssertEqual(classpath, "/tmp/libraries/test/lib/1.0/lib-1.0.jar")
+    }
+
+    func testGenerateClasspath_filtersInvalidMavenCoordinateWhenDownloadsMissing() throws {
+        let libJson: [String: Any] = [
+            "name": "invalid",
+            "include_in_classpath": true,
+            "downloadable": true,
         ]
         let loaderJson: [String: Any] = [
             "mainClass": "Main",
