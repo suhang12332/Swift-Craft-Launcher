@@ -9,6 +9,100 @@
 import XCTest
 
 final class MinecraftLaunchCommandBuilderTests: XCTestCase {
+    func testBuildExpandsLegacyForgeAssetArguments() throws {
+        let arguments = [
+            "--username", "${auth_player_name}",
+            "--version", "${version_name}",
+            "--assetsDir", "${assets_root}",
+            "--assetIndex", "${assets_index_name}",
+            "--tweakClass", "net.minecraftforge.fml.common.launcher.FMLTweaker",
+        ]
+
+        let command = try buildCommand(loaderArguments: arguments)
+
+        XCTAssertEqual(Array(command.suffix(arguments.count)), [
+            "--username", "${auth_player_name}",
+            "--version", "1.8.9",
+            "--assetsDir", AppPaths.assetsDirectory.path,
+            "--assetIndex", "1.8",
+            "--tweakClass", "net.minecraftforge.fml.common.launcher.FMLTweaker",
+        ])
+        XCTAssertEqual(command.filter { $0 == "--assetsDir" }.count, 1)
+        XCTAssertTrue(command.contains("-Xms${xms}M"))
+        XCTAssertTrue(command.contains("net.minecraft.launchwrapper.Launch"))
+    }
+
+    func testBuildExpandsLoaderArgumentsAlongsideManifestArguments() throws {
+        let command = try buildCommand(
+            loaderArguments: ["--assetsDir", "${assets_root}", "--assetIndex", "${assets_index_name}"],
+            modernArguments: true,
+        )
+
+        XCTAssertEqual(Array(command.suffix(6)), [
+            "--width", "854",
+            "--assetsDir", AppPaths.assetsDirectory.path,
+            "--assetIndex", "1.8",
+        ])
+    }
+
+    func testBuildPreservesLegacyVanillaAssetArguments() throws {
+        let command = try buildCommand(loaderArguments: [])
+
+        XCTAssertEqual(Array(command.suffix(4)), [
+            "--assetsDir", AppPaths.assetsDirectory.path,
+            "--assetIndex", "1.8",
+        ])
+    }
+
+    private func buildCommand(
+        loaderArguments: [String],
+        modernArguments: Bool = false,
+    ) throws -> [String] {
+        let version = "asset-arguments-test-\(UUID().uuidString)"
+        let directory = AppPaths.versionsDirectory.appendingPathComponent(version)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try Data().write(to: directory.appendingPathComponent("\(version).jar"))
+
+        var json: [String: Any] = [
+            "id": version,
+            "assetIndex": ["id": "1.8", "sha1": "", "size": 0, "totalSize": 0, "url": "https://example.com/index.json"],
+            "assets": "1.8",
+            "downloads": ["client": ["sha1": "", "size": 0, "url": "https://example.com/client.jar"]],
+            "javaVersion": ["component": "jre-legacy", "majorVersion": 8],
+            "libraries": [],
+            "logging": ["client": ["argument": "", "file": ["id": "log.xml", "sha1": "", "size": 0, "url": "https://example.com/log.xml"], "type": "log4j2-xml"]],
+            "mainClass": "net.minecraft.client.main.Main",
+            "minimumLauncherVersion": 18,
+            "minecraftArguments": "--assetsDir ${assets_root} --assetIndex ${assets_index_name}",
+            "releaseTime": "2015-12-09T09:24:39+00:00",
+            "time": "2015-12-09T09:24:39+00:00",
+            "type": "release",
+        ]
+        if modernArguments {
+            json["arguments"] = ["game": ["--width", "854"]]
+        }
+        let manifest = try JSONDecoder().decode(
+            MinecraftVersionManifest.self,
+            from: JSONSerialization.data(withJSONObject: json),
+        )
+        let game = GameVersionInfo(
+            gameName: "Asset Arguments Test",
+            gameIcon: "",
+            gameVersion: "1.8.9",
+            assetIndex: "1.8",
+            modLoader: loaderArguments.isEmpty ? "vanilla" : "forge",
+            mainClass: loaderArguments.isEmpty ? manifest.mainClass : "net.minecraft.launchwrapper.Launch",
+            gameArguments: loaderArguments,
+        )
+
+        return try MinecraftLaunchCommandBuilder.buildThrowing(
+            manifest: manifest,
+            gameInfo: game,
+            launcherVersion: "test",
+        )
+    }
+
     private func makeGameInfo(
         id: String = "test-game-id",
         gameName: String = "TestGame",

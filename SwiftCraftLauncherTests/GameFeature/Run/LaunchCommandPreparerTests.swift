@@ -9,6 +9,61 @@
 import XCTest
 
 final class LaunchCommandPreparerTests: XCTestCase {
+    func testPrepareRepairsAssetPlaceholdersInSavedCommand() throws {
+        var game = makeGame(xms: 1024, xmx: 4096)
+        game.assetIndex = "1.8"
+        game.launchCommand = [
+            "-Xms${xms}M", "-Xmx${xmx}M",
+            "net.minecraft.launchwrapper.Launch",
+            "--assetsDir", "${assets_root}",
+            "--assetIndex", "${assets_index_name}",
+            "--username", "${auth_player_name}",
+            "--tweakClass", "net.minecraftforge.fml.common.launcher.FMLTweaker",
+        ]
+        let credentials = LaunchCredentials(
+            player: try Player(name: "Steve"),
+            accessToken: "test-token",
+            authlibAgentArgument: nil,
+        )
+
+        let result = LaunchCommandPreparer().prepare(
+            command: game.launchCommand,
+            game: game,
+            credentials: credentials,
+        )
+
+        XCTAssertEqual(result, [
+            "-Xms1024M", "-Xmx4096M",
+            "net.minecraft.launchwrapper.Launch",
+            "--assetsDir", AppPaths.assetsDirectory.path,
+            "--assetIndex", "1.8",
+            "--username", "Steve",
+            "--tweakClass", "net.minecraftforge.fml.common.launcher.FMLTweaker",
+        ])
+        XCTAssertEqual(game.launchCommand[4], "${assets_root}")
+    }
+
+    func testPreparePreservesResolvedAssetArgumentsWithSpaces() throws {
+        let game = makeGame()
+        let command = [
+            "--assetsDir", "/custom/Application Support/Minecraft Assets",
+            "--assetIndex", "custom-index",
+        ]
+        let credentials = LaunchCredentials(
+            player: try Player(name: "Steve"),
+            accessToken: "",
+            authlibAgentArgument: nil,
+        )
+
+        let result = LaunchCommandPreparer().prepare(
+            command: command,
+            game: game,
+            credentials: credentials,
+        )
+
+        XCTAssertEqual(result, command)
+    }
+
     func testPrepareReplacesAuthParametersAndPrependsAgent() throws {
         let game = makeGame()
         let player = try Player(name: "Steve", uuid: "player-id")
