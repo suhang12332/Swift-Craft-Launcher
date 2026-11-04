@@ -26,7 +26,6 @@ struct WorldInfoSectionView: View {
                     NSWorkspace.shared.open(world.path)
                 },
                 iconName: "folder.fill",
-                isLoading: false,
                 maxTextWidth: 150,
             )
         }

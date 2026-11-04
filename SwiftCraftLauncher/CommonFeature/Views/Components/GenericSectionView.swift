@@ -8,17 +8,16 @@
 import SwiftUI
 
 /// A section view that displays a collection of items as chips with overflow handling.
-struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
+struct GenericSectionView<Item: Identifiable, ChipContent: View, OverflowContent: View>: View {
     let title: String
     let items: [Item]
     let isLoading: Bool
     let maxItems: Int
     let iconName: String?
     let chipBuilder: (Item) -> ChipContent
-    let overflowContentBuilder: (([Item]) -> AnyView)?
+    let overflowContentBuilder: ([Item]) -> OverflowContent
     let clearAction: (() -> Void)?
     let shouldShowClearButton: () -> Bool
-    let isVersionSection: Bool
     let customVisibleItems: [Item]?
     let customOverflowItems: [Item]?
 
@@ -31,10 +30,9 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         maxItems: Int = SectionViewConstants.defaultMaxItems,
         iconName: String? = nil,
         @ViewBuilder chipBuilder: @escaping (Item) -> ChipContent,
-        overflowContentBuilder: (([Item]) -> AnyView)? = nil,
+        @ViewBuilder overflowContentBuilder: @escaping ([Item]) -> OverflowContent,
         clearAction: (() -> Void)? = nil,
         shouldShowClearButton: @escaping () -> Bool = { true },
-        isVersionSection: Bool = false,
         customVisibleItems: [Item]? = nil,
         customOverflowItems: [Item]? = nil,
     ) {
@@ -47,7 +45,6 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         self.overflowContentBuilder = overflowContentBuilder
         self.clearAction = clearAction
         self.shouldShowClearButton = shouldShowClearButton
-        self.isVersionSection = isVersionSection
         self.customVisibleItems = customVisibleItems
         self.customOverflowItems = customOverflowItems
     }
@@ -76,7 +73,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
                         count: overflowItems.count,
                         isPresented: $showOverflowPopover,
                     ) {
-                        overflowPopoverContent(overflowItems: overflowItems)
+                        overflowContentBuilder(overflowItems)
                     }
                 }
                 if let clearAction, shouldShowClearButton() {
@@ -108,21 +105,6 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         }
     }
 
-    @ViewBuilder
-    private func overflowPopoverContent(overflowItems: [Item]) -> some View {
-        if let customOverflowBuilder = overflowContentBuilder {
-            customOverflowBuilder(overflowItems)
-        } else {
-            OverflowPopoverContent(
-                items: overflowItems,
-                maxHeight: SectionViewConstants.defaultPopoverMaxHeight,
-                width: SectionViewConstants.defaultPopoverWidth,
-            ) { item in
-                chipBuilder(item)
-            }
-        }
-    }
-
     private func clearButton(action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: "xmark.circle.fill")
@@ -133,27 +115,40 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
     }
 }
 
-extension GenericSectionView {
-    /// Creates a section view from a configuration.
-    init<Config: SectionViewConfiguration>(
-        configuration: Config,
+extension GenericSectionView where OverflowContent == OverflowPopoverContent<Item, ChipContent> {
+    /// Creates a section that shows overflow items in the default popover.
+    init(
+        title: String,
+        items: [Item],
+        isLoading: Bool,
+        maxItems: Int = SectionViewConstants.defaultMaxItems,
+        iconName: String? = nil,
         @ViewBuilder chipBuilder: @escaping (Item) -> ChipContent,
-        overflowContentBuilder: (([Item]) -> AnyView)? = nil,
         clearAction: (() -> Void)? = nil,
         shouldShowClearButton: @escaping () -> Bool = { true },
-        isVersionSection: Bool = false,
-    ) where Config.Item == Item {
+        customVisibleItems: [Item]? = nil,
+        customOverflowItems: [Item]? = nil,
+    ) {
         self.init(
-            title: configuration.title,
-            items: configuration.items,
-            isLoading: configuration.isLoading,
-            maxItems: configuration.maxItems,
-            iconName: configuration.iconName,
+            title: title,
+            items: items,
+            isLoading: isLoading,
+            maxItems: maxItems,
+            iconName: iconName,
             chipBuilder: chipBuilder,
-            overflowContentBuilder: overflowContentBuilder,
+            overflowContentBuilder: { overflowItems in
+                OverflowPopoverContent(
+                    items: overflowItems,
+                    maxHeight: SectionViewConstants.defaultPopoverMaxHeight,
+                    width: SectionViewConstants.defaultPopoverWidth,
+                ) { item in
+                    chipBuilder(item)
+                }
+            },
             clearAction: clearAction,
             shouldShowClearButton: shouldShowClearButton,
-            isVersionSection: isVersionSection,
+            customVisibleItems: customVisibleItems,
+            customOverflowItems: customOverflowItems,
         )
     }
 }

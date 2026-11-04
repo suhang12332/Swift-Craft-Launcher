@@ -38,7 +38,6 @@ struct ScreenshotSectionView: View {
                 selectedScreenshot = screenshot
             },
             iconName: "photo.fill",
-            isLoading: false,
             maxTextWidth: 150,
         )
     }

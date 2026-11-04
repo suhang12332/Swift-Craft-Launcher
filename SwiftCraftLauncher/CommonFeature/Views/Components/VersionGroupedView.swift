@@ -8,12 +8,13 @@
 import SwiftUI
 
 /// A view that displays versions grouped by major version series.
+///
+/// `LazyVStack` creates each group only when it scrolls into view, and every
+/// group lays out its versions in a single pass.
 struct VersionGroupedView: View {
     let items: [FilterItem]
     let selectedIds: Set<String>
     let onItemTap: (String) -> Void
-    @State private var visibleItemCounts: [String: Int] = [:]
-    @State private var visibleGroupCount: Int = Constants.initialVisibleGroupCount
 
     /// Initializes the view for multi-select mode.
     init(items: [FilterItem], selectedItems: [String], onItemTap: @escaping (String) -> Void) {
@@ -33,24 +34,13 @@ struct VersionGroupedView: View {
         static let groupSpacing: CGFloat = 8
         static let itemSpacing: CGFloat = 4
         static let groupTitlePadding: CGFloat = 4
-        static let initialVisibleGroupCount = 6
-        static let incrementalGroupLoadBatchSize = 4
-        static let initialVisibleItemsPerGroup = 12
-        static let incrementalLoadBatchSize = 12
     }
 
     var body: some View {
-        let groups = groupVersions(items)
-        let groupKeys = orderedVersionKeys(from: items)
-        let visibleGroupKeys = Array(groupKeys.prefix(visibleGroupCount))
-
         ScrollView {
             LazyVStack(alignment: .leading, spacing: Constants.groupSpacing) {
-                ForEach(visibleGroupKeys, id: \.self) { key in
-                    versionGroupView(key: key, items: groups[key] ?? [])
-                        .onAppear {
-                            loadMoreGroupsIfNeeded(currentKey: key, groupKeys: groupKeys)
-                        }
+                ForEach(versionGroups) { group in
+                    versionGroupView(group)
                 }
             }
             .padding()
@@ -58,23 +48,20 @@ struct VersionGroupedView: View {
         }
     }
 
-    private func versionGroupView(key: String, items: [FilterItem]) -> some View {
+    private func versionGroupView(_ group: VersionGroup) -> some View {
         VStack(alignment: .leading, spacing: Constants.itemSpacing) {
-            Text(key)
+            Text(group.key)
                 .font(.headline.bold())
                 .foregroundColor(.primary)
                 .padding(.top, Constants.groupTitlePadding)
 
             FlowLayout {
-                ForEach(visibleItems(for: key, items: items)) { item in
+                ForEach(group.items) { item in
                     FilterChip(
                         title: item.name,
-                        isSelected: isSelected(item.id),
+                        isSelected: selectedIds.contains(item.id),
                     ) {
                         onItemTap(item.id)
-                    }
-                    .onAppear {
-                        loadMoreItemsIfNeeded(currentItem: item, in: key, allItems: items)
                     }
                 }
             }
@@ -82,54 +69,22 @@ struct VersionGroupedView: View {
         }
     }
 
-    private func isSelected(_ itemId: String) -> Bool {
-        selectedIds.contains(itemId)
-    }
+    /// Builds the ordered groups in a single pass over the items.
+    private var versionGroups: [VersionGroup] {
+        var groups: [VersionGroup] = []
+        var indexByKey: [String: Int] = [:]
 
-    private func visibleItems(for key: String, items: [FilterItem]) -> [FilterItem] {
-        let visibleCount = visibleItemCounts[key, default: Constants.initialVisibleItemsPerGroup]
-        return Array(items.prefix(visibleCount))
-    }
-
-    private func loadMoreGroupsIfNeeded(currentKey: String, groupKeys: [String]) {
-        guard currentKey == groupKeys.prefix(visibleGroupCount).last else {
-            return
-        }
-
-        guard visibleGroupCount < groupKeys.count else { return }
-
-        visibleGroupCount = min(
-            visibleGroupCount + Constants.incrementalGroupLoadBatchSize,
-            groupKeys.count,
-        )
-    }
-
-    private func loadMoreItemsIfNeeded(currentItem: FilterItem, in key: String, allItems: [FilterItem]) {
-        guard currentItem.id == visibleItems(for: key, items: allItems).last?.id else {
-            return
-        }
-
-        let currentVisibleCount = visibleItemCounts[key, default: Constants.initialVisibleItemsPerGroup]
-        guard currentVisibleCount < allItems.count else { return }
-
-        visibleItemCounts[key] = min(
-            currentVisibleCount + Constants.incrementalLoadBatchSize,
-            allItems.count,
-        )
-    }
-
-    private func groupVersions(_ items: [FilterItem]) -> [String: [FilterItem]] {
-        Dictionary(grouping: items) { item in
-            versionGroupKey(for: item.name)
-        }
-    }
-
-    private func orderedVersionKeys(from items: [FilterItem]) -> [String] {
-        var seen = Set<String>()
-        return items.compactMap { item in
+        for item in items {
             let key = versionGroupKey(for: item.name)
-            return seen.insert(key).inserted ? key : nil
+            if let index = indexByKey[key] {
+                groups[index].items.append(item)
+            } else {
+                indexByKey[key] = groups.count
+                groups.append(VersionGroup(key: key, items: [item]))
+            }
         }
+
+        return groups
     }
 
     private func versionGroupKey(for version: String) -> String {
@@ -168,4 +123,12 @@ struct VersionGroupedView: View {
         let snapshot = String(version[range]).lowercased()
         return String(snapshot.prefix(3))
     }
+}
+
+/// A version group ordered by first appearance in the input list.
+private struct VersionGroup: Identifiable {
+    let key: String
+    var items: [FilterItem]
+
+    var id: String { key }
 }

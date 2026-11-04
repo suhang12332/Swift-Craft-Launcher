@@ -35,7 +35,6 @@ struct LitematicaSectionView: View {
                 selectedFile = file
             },
             iconName: "square.stack.3d.up",
-            isLoading: false,
             verticalPadding: 6,
             maxTextWidth: 150,
         )
