@@ -56,7 +56,6 @@ struct SaveInfoView: View {
                 LitematicaSectionView(
                     litematicaFiles: manager.litematicaFiles,
                     isLoading: manager.isLoadingLitematica,
-                    gameName: gameName,
                 )
             }
 

@@ -114,13 +114,12 @@ final class SaveInfoManager {
     /// Checks which save types are available on disk, performing I/O off the main thread.
     private func checkTypesAvailability() async {
         let name = gameName
-        let (worlds, screenshots, litematica, logs) = await Task.detached(priority: .userInitiated) {
+        let (worlds, screenshots, logs) = await Task.detached(priority: .userInitiated) {
             let fm = FileManager.default
             let profileDir = AppPaths.profileDirectory(gameName: name)
             let savesPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
             let screenshotsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)
             let logsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
-            let schematicsDir = AppPaths.schematicsDirectory(gameName: name)
 
             var hasWorlds = false
             if fm.fileExists(atPath: savesPath.path) {
@@ -159,24 +158,6 @@ final class SaveInfoManager {
                 }
             }
 
-            var hasLitematicaFiles = false
-            if fm.fileExists(atPath: schematicsDir.path) {
-                do {
-                    let contents = try fm.contentsOfDirectory(
-                        at: schematicsDir,
-                        includingPropertiesForKeys: [.isRegularFileKey],
-                        options: [.skipsHiddenFiles],
-                    )
-                    hasLitematicaFiles = contents.contains { url in
-                        guard let isFile = try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
-                              isFile == true else { return false }
-                        return url.pathExtension.lowercased() == "litematic"
-                    }
-                } catch {
-                    hasLitematicaFiles = false
-                }
-            }
-
             var hasLogs = false
             if fm.fileExists(atPath: logsPath.path) {
                 do {
@@ -198,13 +179,11 @@ final class SaveInfoManager {
             return (
                 hasWorlds,
                 hasScreenshots,
-                hasLitematicaFiles,
                 hasLogs,
             )
         }.value
         hasWorldsType = worlds
         hasScreenshotsType = screenshots
-        hasLitematicaType = litematica
         hasLogsType = logs
     }
 
@@ -212,6 +191,7 @@ final class SaveInfoManager {
         await checkTypesAvailability()
 
         isLoading = true
+        let vanilla = isVanilla
 
         await withTaskGroup(of: Void.self) { group in
             if hasWorldsType {
@@ -230,7 +210,7 @@ final class SaveInfoManager {
                 await self?.loadResourceCounts()
             }
 
-            if hasLitematicaType {
+            if !vanilla {
                 group.addTask { [weak self] in
                     await self?.loadLitematicaFiles()
                 }
@@ -241,6 +221,20 @@ final class SaveInfoManager {
                     await self?.loadLogs()
                 }
             }
+        }
+
+        if vanilla {
+            hasLitematicaType = false
+            litematicaFiles = []
+        } else {
+            hasLitematicaType = !litematicaFiles.isEmpty
+            let litematicaCount = litematicaFiles.count
+            let schematicsDirectory = AppPaths.schematicsDirectory(gameName: gameName)
+            let insertionIndex = resourceCounts.firstIndex { $0.type == "worlds" } ?? resourceCounts.endIndex
+            resourceCounts.insert(
+                (type: "litematica", count: litematicaCount, directory: schematicsDirectory),
+                at: insertionIndex,
+            )
         }
 
         isLoading = false
@@ -314,12 +308,11 @@ final class SaveInfoManager {
                 (ResourceType.datapack.rawValue, AppPaths.datapacksDirectory(gameName: name)),
                 (ResourceType.resourcepack.rawValue, AppPaths.resourcepacksDirectory(gameName: name)),
                 (ResourceType.shader.rawValue, AppPaths.shaderpacksDirectory(gameName: name)),
-                ("litematica", AppPaths.schematicsDirectory(gameName: name)),
                 ("worlds", profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)),
                 ("screenshots", profileDir.appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)),
                 ("logs", profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)),
             ]
-            let hidden: Set<String> = vanilla ? [ResourceType.mod.rawValue, ResourceType.shader.rawValue, "litematica"] : []
+            let hidden: Set<String> = vanilla ? [ResourceType.mod.rawValue, ResourceType.shader.rawValue] : []
             let types = allTypes.filter { !hidden.contains($0.0) }
             return types.map { type, url in
                 (type: type, count: Self.countFiles(in: url, fm: fm), directory: url)

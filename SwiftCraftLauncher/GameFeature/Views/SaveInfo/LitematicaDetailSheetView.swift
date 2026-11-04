@@ -12,19 +12,14 @@ struct LitematicaDetailSheetView: View {
     @Environment(DIContainer.self)
     private var container
     let filePath: URL
-    let gameName: String
     @Environment(\.dismiss)
     private var dismiss
 
     @State private var metadata: LitematicMetadata?
     @State private var isLoading = true
 
-    init(
-        filePath: URL,
-        gameName: String,
-    ) {
+    init(filePath: URL) {
         self.filePath = filePath
-        self.gameName = gameName
     }
 
     var body: some View {
@@ -33,7 +28,7 @@ struct LitematicaDetailSheetView: View {
             body: { bodyView },
             footer: { footerView },
         )
-        .frame(minWidth: 500, minHeight: 400)
+        .frame(minWidth: 500)
         .task {
             await loadMetadata()
         }
@@ -64,10 +59,10 @@ struct LitematicaDetailSheetView: View {
     }
 
     private var loadingView: some View {
-        VStack {
-            ProgressView().controlSize(.small)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        ProgressView()
+            .controlSize(.small)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 40)
     }
 
     private var errorView: some View {
@@ -78,88 +73,78 @@ struct LitematicaDetailSheetView: View {
             Text("litematica.detail.load_failed".localized())
                 .font(.headline)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 40)
     }
 
     func metadataContentView(metadata: LitematicMetadata) -> some View {
-        ScrollView {
-            VStack {
-                HStack {
-                    infoSection(title: "litematica.detail.section.basic".localized()) {
-                        infoRow(label: "game.form.name".localized(), value: metadata.name)
-                        infoRow(label: "litematica.detail.field.author".localized(), value: metadata.author.isEmpty ? "common.unknown".localized() : metadata.author)
-                        if !metadata.description.isEmpty {
-                            infoRow(label: "litematica.detail.field.description".localized(), value: metadata.description, isMultiline: true)
-                        }
-                    }
+        let hasSize = metadata.enclosingSize.x > 0 || metadata.enclosingSize.y > 0 || metadata.enclosingSize.z > 0
+        let airBlocks = max(0, Int(metadata.totalVolume) - Int(metadata.totalBlocks))
+        let fillRatio = metadata.totalVolume > 0
+            ? min(max(Double(metadata.totalBlocks) / Double(metadata.totalVolume), 0), 1)
+            : 0
 
-                    infoSection(title: "litematica.detail.section.time".localized()) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            infoRow(label: "litematica.detail.field.created".localized(), value: formatTimestamp(metadata.timeCreated))
-                            infoRow(label: "litematica.detail.field.modified".localized(), value: formatTimestamp(metadata.timeModified))
-                        }
-                    }
+        return VStack(alignment: .leading, spacing: 16) {
+            LazyVGrid(columns: fieldColumns, alignment: .leading, spacing: 16) {
+                infoRow(label: "litematica.detail.field.name".localized(), value: metadata.name)
+                infoRow(label: "litematica.detail.field.author".localized(), value: metadata.author.isEmpty ? "common.unknown".localized() : metadata.author)
+                infoRow(label: "litematica.detail.field.created".localized(), value: formatTimestamp(metadata.timeCreated))
+                infoRow(label: "litematica.detail.field.modified".localized(), value: formatTimestamp(metadata.timeModified))
+
+                if hasSize {
+                    infoRow(
+                        label: "litematica.detail.field.enclosing_size".localized(),
+                        value: "\(metadata.enclosingSize.x) × \(metadata.enclosingSize.y) × \(metadata.enclosingSize.z)",
+                    )
+                } else {
+                    infoRow(label: "litematica.detail.field.enclosing_size".localized(), value: "common.unknown".localized())
                 }
-                .padding(.vertical, 8)
-                .padding(.bottom, 20)
 
-                infoSection(title: "litematica.detail.section.size".localized()) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        let hasSize = metadata.enclosingSize.x > 0 || metadata.enclosingSize.y > 0 || metadata.enclosingSize.z > 0
-                        if hasSize {
-                            infoRow(
-                                label: "litematica.detail.field.enclosing_size".localized(),
-                                value: "\(metadata.enclosingSize.x) × \(metadata.enclosingSize.y) × \(metadata.enclosingSize.z)",
-                            )
-                        } else {
-                            infoRow(label: "litematica.detail.field.enclosing_size".localized(), value: "common.unknown".localized())
-                        }
+                if metadata.totalVolume > 0 {
+                    infoRow(label: "litematica.detail.field.total_volume".localized(), value: formatNumber(Int(metadata.totalVolume)))
+                } else {
+                    infoRow(label: "litematica.detail.field.total_volume".localized(), value: "common.unknown".localized())
+                }
 
-                        if metadata.totalVolume > 0 {
-                            infoRow(label: "litematica.detail.field.total_volume".localized(), value: formatNumber(Int(metadata.totalVolume)))
-                        } else {
-                            infoRow(label: "litematica.detail.field.total_volume".localized(), value: "common.unknown".localized())
-                        }
+                if metadata.totalBlocks > 0 {
+                    infoRow(label: "litematica.detail.field.total_blocks".localized(), value: formatNumber(Int(metadata.totalBlocks)))
+                } else {
+                    infoRow(label: "litematica.detail.field.total_blocks".localized(), value: "common.unknown".localized())
+                }
 
-                        if metadata.totalBlocks > 0 {
-                            infoRow(label: "litematica.detail.field.total_blocks".localized(), value: formatNumber(Int(metadata.totalBlocks)))
-                        } else {
-                            infoRow(label: "litematica.detail.field.total_blocks".localized(), value: "common.unknown".localized())
-                        }
+                infoRow(label: "litematica.detail.field.region_count".localized(), value: "\(metadata.regionCount)")
 
-                        infoRow(label: "litematica.detail.field.region_count".localized(), value: "\(metadata.regionCount)")
-                    }
+                if metadata.totalVolume > 0 {
+                    infoRow(label: "litematica.detail.field.air_blocks".localized(), value: formatNumber(airBlocks))
+                    infoRow(label: "litematica.detail.field.fill_ratio".localized(), value: formatPercent(fillRatio))
+                } else {
+                    infoRow(label: "litematica.detail.field.air_blocks".localized(), value: "common.unknown".localized())
+                    infoRow(label: "litematica.detail.field.fill_ratio".localized(), value: "common.unknown".localized())
                 }
             }
+
+            if !metadata.description.isEmpty {
+                infoRow(label: "litematica.detail.field.description".localized(), value: metadata.description)
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 8)
     }
 
-    private func infoSection(title: String, @ViewBuilder content: () -> some View) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.headline)
-                .foregroundColor(.primary)
-                .padding(.bottom, 10)
-            content()
-        }
+    private var fieldColumns: [GridItem] {
+        [GridItem(.adaptive(minimum: 200), spacing: 24, alignment: .leading)]
     }
 
-    private func infoRow(label: String, value: String, isMultiline: Bool = false) -> some View {
-        HStack(alignment: isMultiline ? .top : .center, spacing: 12) {
+    private func infoRow(label: String, value: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
             Text(label + ":")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            if isMultiline {
-                Text(value)
-                    .font(.subheadline)
-                    .foregroundColor(.primary)
-                    .fixedSize(horizontal: false, vertical: true)
-            } else {
-                Text(value)
-                    .font(.subheadline)
-                    .foregroundColor(.primary)
-            }
+                .lineLimit(1)
+            Text(value)
+                .font(.subheadline)
+                .foregroundColor(.primary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -198,7 +183,7 @@ struct LitematicaDetailSheetView: View {
                     self.metadata = metadata
                 } else {
                     AppLog.game.error("Litematica metadata is nil: \(filePath.lastPathComponent)")
-                    DIContainer.shared.core.errorHandler.handle(GlobalError.fileSystem(
+                    container.core.errorHandler.handle(GlobalError.fileSystem(
                         i18nKey: "litematica.detail.error.parse_failed",
                         level: .notification,
                     ))
@@ -209,15 +194,29 @@ struct LitematicaDetailSheetView: View {
             AppLog.game.error("Failed to load litematica details: \(error.localizedDescription)")
             await MainActor.run {
                 isLoading = false
-                DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+                container.core.errorHandler.handle(GlobalError.from(error))
             }
         }
+    }
+
+    private var appLocale: Locale {
+        Locale(identifier: container.ui.languageManager.selectedLanguage)
     }
 
     private func formatNumber(_ number: Int) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
+        formatter.locale = appLocale
         return formatter.string(from: NSNumber(value: number)) ?? "\(number)"
+    }
+
+    private func formatPercent(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.maximumFractionDigits = 1
+        formatter.minimumFractionDigits = 0
+        formatter.locale = appLocale
+        return formatter.string(from: NSNumber(value: value)) ?? "\(value * 100)%"
     }
 
     private func formatTimestamp(_ timestamp: Int64) -> String {
@@ -229,7 +228,7 @@ struct LitematicaDetailSheetView: View {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
-        formatter.locale = Locale(identifier: "zh_CN")
+        formatter.locale = appLocale
         return formatter.string(from: date)
     }
 }
