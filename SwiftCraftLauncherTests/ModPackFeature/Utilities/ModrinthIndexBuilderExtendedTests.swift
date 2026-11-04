@@ -209,7 +209,8 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             files: [],
         )
 
-        XCTAssertTrue(json.contains("\"forge-loader\""))
+        XCTAssertTrue(json.contains("\"forge\""))
+        XCTAssertFalse(json.contains("\"forge-loader\""))
         XCTAssertTrue(json.contains("47.3.0"))
     }
 
@@ -222,7 +223,8 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             files: [],
         )
 
-        XCTAssertTrue(json.contains("\"neoforge-loader\""))
+        XCTAssertTrue(json.contains("\"neoforge\""))
+        XCTAssertFalse(json.contains("\"neoforge-loader\""))
         XCTAssertTrue(json.contains("21.1.0"))
     }
 
@@ -249,7 +251,8 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
         )
 
         XCTAssertTrue(json.contains("\"minecraft\""))
-        XCTAssertFalse(json.contains("\"forge-loader\""))
+        XCTAssertFalse(json.contains("\"forge\""))
+        XCTAssertFalse(json.contains("\"neoforge\""))
         XCTAssertFalse(json.contains("\"fabric-loader\""))
     }
 
