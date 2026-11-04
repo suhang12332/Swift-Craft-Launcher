@@ -7,14 +7,51 @@
 
 import SwiftUI
 
-/// A chip-style button for filtering options with optional icon and loading state.
+/// A chip-style button for filtering options with optional icon and custom styling.
 struct FilterChip: View {
-    let title: String
-    let isSelected: Bool
+    private let label: FilterChipLabel
     let action: () -> Void
 
+    init(
+        title: String,
+        isSelected: Bool = false,
+        action: @escaping () -> Void = { },
+        iconName: String? = nil,
+        customBackgroundColor: Color? = nil,
+        customBorderColor: Color? = nil,
+        verticalPadding: CGFloat = 4,
+        maxTextWidth: CGFloat? = nil,
+        iconColor: Color? = nil,
+    ) {
+        label = FilterChipLabel(
+            title: title,
+            isSelected: isSelected,
+            iconName: iconName,
+            customBackgroundColor: customBackgroundColor,
+            customBorderColor: customBorderColor,
+            verticalPadding: verticalPadding,
+            maxTextWidth: maxTextWidth,
+            iconColor: iconColor,
+        )
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            label.equatable()
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// The visual content of a chip.
+///
+/// Use this directly for display-only chips; wrap it in `FilterChip` when the
+/// chip needs to be clickable.
+struct FilterChipLabel: View, Equatable {
+    let title: String
+    let isSelected: Bool
     let iconName: String?
-    let isLoading: Bool
     let customBackgroundColor: Color?
     let customBorderColor: Color?
     let verticalPadding: CGFloat
@@ -24,9 +61,7 @@ struct FilterChip: View {
     init(
         title: String,
         isSelected: Bool = false,
-        action: @escaping () -> Void = { },
         iconName: String? = nil,
-        isLoading: Bool = false,
         customBackgroundColor: Color? = nil,
         customBorderColor: Color? = nil,
         verticalPadding: CGFloat = 4,
@@ -35,9 +70,7 @@ struct FilterChip: View {
     ) {
         self.title = title
         self.isSelected = isSelected
-        self.action = action
         self.iconName = iconName
-        self.isLoading = isLoading
         self.customBackgroundColor = customBackgroundColor
         self.customBorderColor = customBorderColor
         self.verticalPadding = verticalPadding
@@ -46,18 +79,7 @@ struct FilterChip: View {
     }
 
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: iconName != nil ? 4 : 0) {
-                if let iconName {
-                    Image(systemName: iconName)
-                        .font(.caption)
-                        .foregroundColor(iconColor ?? (isSelected ? .white : .primary))
-                }
-                Text(title)
-                    .font(.subheadline)
-                    .lineLimit(maxTextWidth != nil ? 1 : nil)
-                    .frame(maxWidth: maxTextWidth)
-            }
+        label
             .padding(.horizontal, 8)
             .padding(.vertical, verticalPadding)
             .background(
@@ -69,22 +91,33 @@ struct FilterChip: View {
                 RoundedRectangle(cornerRadius: 4)
                     .stroke(borderColor, lineWidth: 1),
             )
+    }
+
+    @ViewBuilder private var label: some View {
+        if let iconName {
+            HStack(spacing: 4) {
+                Image(systemName: iconName)
+                    .font(.caption)
+                    .foregroundColor(iconColor ?? (isSelected ? .white : .primary))
+                text
+            }
+        } else {
+            text
         }
-        .buttonStyle(.plain)
-        .disabled(isLoading)
+    }
+
+    private var text: some View {
+        Text(title)
+            .font(.subheadline)
+            .lineLimit(maxTextWidth != nil ? 1 : nil)
+            .frame(maxWidth: maxTextWidth)
     }
 
     private var backgroundColor: Color {
-        if let customBackgroundColor {
-            return customBackgroundColor
-        }
-        return isSelected ? Color.accentColor : Color.clear
+        customBackgroundColor ?? (isSelected ? Color.accentColor : Color.clear)
     }
 
     private var borderColor: Color {
-        if let customBorderColor {
-            return customBorderColor
-        }
-        return Color.secondary.opacity(0.2)
+        customBorderColor ?? Color.secondary.opacity(0.2)
     }
 }

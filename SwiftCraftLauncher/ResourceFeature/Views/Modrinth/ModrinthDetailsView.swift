@@ -67,10 +67,8 @@ private struct ModrinthDetailRow: View, Equatable {
                 .font(.callout.bold())
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 8)
-            FilterChip(
-                title: value,
-                isSelected: false,
-            ) { }
+            FilterChipLabel(title: value)
+                .equatable()
         }
         .frame(minHeight: 20)
     }

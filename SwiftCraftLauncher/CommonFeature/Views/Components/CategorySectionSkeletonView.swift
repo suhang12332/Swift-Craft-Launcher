@@ -36,13 +36,13 @@ struct CategorySectionSkeletonView: View {
         ScrollView {
             FlowLayout {
                 ForEach(0 ..< count, id: \.self) { _ in
-                    FilterChip(
+                    FilterChipLabel(
                         title: "common.loading".localized(),
                         iconName: iconName,
-                        isLoading: true,
                         verticalPadding: verticalPaddingForChip,
                         maxTextWidth: maxTextWidth,
                     )
+                    .equatable()
                     .redacted(reason: .placeholder)
                 }
             }

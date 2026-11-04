@@ -32,7 +32,6 @@ struct LogSectionView: View {
                 openLogInConsole(log: log)
             },
             iconName: log.isCrashLog ? "exclamationmark.triangle.fill" : "doc.text.fill",
-            isLoading: false,
             customBackgroundColor: log.isCrashLog ? Color.red.opacity(0.1) : nil,
             customBorderColor: log.isCrashLog ? Color.red.opacity(0.3) : nil,
             maxTextWidth: 150,
