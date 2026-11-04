@@ -86,12 +86,15 @@ enum KeychainManager {
 
         let status = SecItemDelete(query as CFDictionary)
 
-        if status == errSecSuccess || status == errSecItemNotFound {
+        if status == errSecSuccess {
             AppLog.common.debug("Keychain delete succeeded - account: \(account), key: \(key)")
             return true
-        } else {
-            AppLog.common.error("Keychain delete failed - account: \(account), key: \(key), status: \(status)")
-            return false
         }
+        if status == errSecItemNotFound {
+            return true
+        }
+
+        AppLog.common.error("Keychain delete failed - account: \(account), key: \(key), status: \(status)")
+        return false
     }
 }

@@ -115,11 +115,9 @@ class UserProfileStore {
         if profiles.count < initialCount {
             if isDeletingCurrentUser, !profiles.isEmpty {
                 profiles[0].isCurrent = true
-                AppLog.player.debug("Current user deleted, set first user as current: \(profiles[0].name)")
             }
 
             try saveProfilesThrowing(profiles)
-            AppLog.player.debug("User deleted (ID: \(id))")
         } else {
             throw GlobalError.player(
                 i18nKey: "error.player.not_found",

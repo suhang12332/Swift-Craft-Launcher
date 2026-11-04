@@ -185,9 +185,6 @@ class PlayerListViewModel {
     func deletePlayerThrowing(byID id: String) throws {
         try DIContainer.shared.ui.playerDataManager.deletePlayer(byID: id)
         try loadPlayersThrowing()
-        AppLog.player.debug("Player (ID: \(id)) deleted successfully, list updated.")
-        let playerName = currentPlayer?.name ?? "none"
-        AppLog.player.debug("Current player (after deletion): \(playerName)")
     }
 
     /// Deletes a player by identifier.
