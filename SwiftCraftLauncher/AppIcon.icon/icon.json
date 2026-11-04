@@ -24,14 +24,9 @@
         {
           "fill-specializations" : [
             {
-              "value" : {
-                "solid" : "extended-gray:1.00000,0.70000"
-              }
-            },
-            {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-gray:1.00000,0.70000"
+                "solid" : "extended-gray:1.00000,1.00000"
               }
             },
             {
