@@ -203,7 +203,7 @@ enum URLConfig {
                 URLConfig.url("https://qm.qq.com/cgi-bin/qm/qr?k=1057517524")
             }
 
-            static func aiDocumentation() -> URL {
+            static func documentation() -> URL {
                 URLConfig.url("https://zread.ai/suhang12332/Swift-Craft-Launcher")
             }
         }
@@ -393,15 +393,6 @@ enum URLConfig {
             static var all: [URL] {
                 allCases.map(\.url)
             }
-        }
-
-        enum AIService {
-            static let openAIBaseURL = "https://api.openai.com"
-            static let ollamaDefaultBaseURL = "http://localhost:11434"
-            static let defaultAvatarURL = "https://mcskins.top/assets/snippets/download/skin.php?n=7050"
-
-            static let openAIChatPath = "/v1/chat/completions"
-            static let ollamaChatPath = "/api/chat"
         }
 
         enum IPLocation {

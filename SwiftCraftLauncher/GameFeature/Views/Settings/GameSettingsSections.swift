@@ -66,25 +66,6 @@ struct GameSettingsIncludeSnapshotsRow: View {
     }
 }
 
-/// A row toggling AI crash analysis.
-struct GameSettingsAICrashAnalysisRow: View {
-    @Environment(GameSettingsManager.self)
-    private var gameSettingsManager
-
-    var body: some View {
-        @Bindable var gameSettingsManager = gameSettingsManager
-        LabeledContent("settings.ai_crash_analysis".localized()) {
-            HStack {
-                Toggle(
-                    "",
-                    isOn: $gameSettingsManager.enableAICrashAnalysis,
-                ).labelsHidden()
-                Text("settings.ai_crash_analysis.description".localized())
-            }
-        }
-    }
-}
-
 /// A row toggling the memory pressure warning.
 struct GameSettingsMemoryPressureWarningRow: View {
     @Environment(GameSettingsManager.self)

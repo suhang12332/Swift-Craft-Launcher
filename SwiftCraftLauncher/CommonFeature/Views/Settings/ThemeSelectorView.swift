@@ -64,20 +64,18 @@ private struct ThemeWindowIcon: View {
     let theme: ThemeMode
 
     var body: some View {
-        Image(iconName)
+        Image(iconName, bundle: AppPaths.appearanceBundle)
             .resizable()
             .frame(width: 60, height: 40)
             .cornerRadius(6)
     }
 
     private var iconName: String {
-        switch theme {
-        case .system:
-            return "Auto"
-        case .light:
-            return "Light"
-        case .dark:
-            return "Dark"
+        let name = switch theme {
+        case .system: "Auto"
+        case .light: "Light"
+        case .dark: "Dark"
         }
+        return "Appearance" + name
     }
 }

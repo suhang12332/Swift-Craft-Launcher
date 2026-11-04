@@ -72,12 +72,7 @@ struct SwiftCraftLauncherAppCommands: Commands {
 
             Divider()
 
-            Link("menu.ai.documentation".localized(), destination: URLConfig.API.Community.aiDocumentation())
-
-            Button("ai.assistant.title".localized()) {
-                DIContainer.shared.ui.aiChatManager.openChatWindow()
-            }
-            .keyboardShortcut("i", modifiers: [.command, .shift])
+            Link("menu.documentation".localized(), destination: URLConfig.API.Community.documentation())
         }
 
         CommandGroup(replacing: .saveItem) { }

@@ -30,15 +30,8 @@ enum AppConstants {
         static let hasAddedPremiumAccount = "hasAddedPremiumAccount"
         static let offlineUserServerMap = "offlineUserServerMap"
 
-        static let aiProvider = "aiProvider"
-        static let aiOllamaBaseURL = "aiOllamaBaseURL"
-        static let aiOpenAIBaseURL = "aiOpenAIBaseURL"
-        static let aiModelOverride = "aiModelOverride"
-        static let aiAvatarURL = "aiAvatarURL"
-
         static let globalXms = "globalXms"
         static let globalXmx = "globalXmx"
-        static let enableAICrashAnalysis = "enableAICrashAnalysis"
         static let enableMemoryPressureWarning = "enableMemoryPressureWarning"
         static let defaultAPISource = "defaultAPISource"
         static let includeSnapshotsForGameVersions = "includeSnapshotsForGameVersions"
@@ -54,12 +47,7 @@ enum AppConstants {
         static let authlibInjectorVersion = "authlibInjectorVersion"
     }
 
-    enum KeychainAccounts {
-        static let aiSettings = "aiSettings"
-    }
-
     enum KeychainKeys {
-        static let apiKey = "apiKey"
         static let authCredential = "authCredential"
     }
 

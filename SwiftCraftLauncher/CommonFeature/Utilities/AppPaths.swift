@@ -104,14 +104,10 @@ enum AppPaths {
         AppConstants.DirectoryNames.crashReports,
     ]
 
-    /// The application logs directory, preferring the system standard location.
-    static var logsDirectory: URL {
-        if let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first {
-            return libraryDirectory.appendingPathComponent("Logs", isDirectory: true)
-                .appendingPathComponent(Bundle.main.appName, isDirectory: true)
-        }
-        return launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
-    }
+    /// The system Appearance settings extension bundle that provides the theme thumbnails.
+    static let appearanceBundle = Bundle(
+        path: "/System/Library/ExtensionKit/Extensions/Appearance.appex",
+    )
 }
 
 extension AppPaths {
