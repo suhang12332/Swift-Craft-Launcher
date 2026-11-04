@@ -62,7 +62,18 @@ class PlayerListViewModel {
     /// - Throws: A `GlobalError` if loading fails.
     func loadPlayersThrowing() throws {
         players = try DIContainer.shared.ui.playerDataManager.loadPlayersThrowing()
-        currentPlayer = players.first { $0.isCurrent }
+
+        if let current = players.first(where: { $0.isCurrent }) {
+            currentPlayer = current
+        } else if !players.isEmpty {
+            players[0].isCurrent = true
+            currentPlayer = players[0]
+            try DIContainer.shared.ui.playerDataManager.savePlayersThrowing(players)
+            AppLog.player.debug("No current player found, selected first player: \(players[0].name)")
+        } else {
+            currentPlayer = nil
+        }
+
         let count = players.count
         let playerName = currentPlayer?.name ?? "none"
         AppLog.player.debug("Player list loaded, count: \(count)")

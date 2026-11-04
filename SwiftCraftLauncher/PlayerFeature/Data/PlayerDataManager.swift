@@ -135,32 +135,19 @@ class PlayerDataManager {
     /// - Parameter id: The identifier of the player to delete.
     /// - Throws: A `GlobalError` if the player cannot be found or deletion fails.
     func deletePlayer(byID id: String) throws {
-        let players = try loadPlayersThrowing()
-        let initialCount = players.count
-        let isDeletingCurrentPlayer = players.contains { $0.id == id && $0.isCurrent }
-
+        // UserProfileStore.deleteProfile already promotes the first remaining
+        // profile to current when the deleted profile was current.
         try profileStore.deleteProfile(byID: id)
         _ = credentialStore.deleteCredential(userId: id)
         OfflineUserServerMap.removeServer(for: id)
 
-        if initialCount > 0 {
-            if isDeletingCurrentPlayer {
-                let remainingPlayers = try loadPlayersThrowing()
-                if !remainingPlayers.isEmpty {
-                    var firstPlayer = remainingPlayers[0]
-                    firstPlayer.isCurrent = true
-                    try persistPlayer(firstPlayer)
-                    AppLog.player.debug("Current player deleted, set first player as current: \(firstPlayer.name)")
-                }
-            }
-            AppLog.player.debug("Player deleted (ID: \(id))")
-        }
+        AppLog.player.debug("Player deleted (ID: \(id))")
     }
 
     /// Saves an array of players, throwing on failure.
     ///
-    /// Profiles and credentials are persisted separately. Orphaned credentials
-    /// (those whose associated profile no longer exists) are cleaned up.
+    /// Profiles and credentials are persisted separately. Deleting a player's
+    /// credential is handled by ``deletePlayer(byID:)``.
     ///
     /// - Parameter players: The players to save.
     /// - Throws: A `GlobalError` if saving fails.
@@ -183,12 +170,6 @@ class PlayerDataManager {
                 level: .notification,
                 message: "Failed to save credential to Keychain for userId: \(credential.userId)",
             )
-        }
-
-        let existingProfileIds = Set(profiles.map(\.id))
-        let allCredentials = try loadPlayersThrowing().compactMap(\.credential)
-        for credential in allCredentials where !existingProfileIds.contains(credential.userId) {
-            _ = credentialStore.deleteCredential(userId: credential.userId)
         }
 
         AppLog.player.debug("Player data saved")
