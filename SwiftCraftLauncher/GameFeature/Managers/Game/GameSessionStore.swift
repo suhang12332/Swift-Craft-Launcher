@@ -20,6 +20,9 @@ final class GameSessionStore {
 
     private var sessions: [String: Session] = [:]
 
+    /// The game directory of the most recent abnormal exit waiting to be presented.
+    var pendingCrashDirectory: URL?
+
     init() { }
 
     private static func processKey(gameId: String, userId: String) -> String {
@@ -175,11 +178,7 @@ final class GameSessionStore {
         let reason = Self.terminationDescription(for: process)
         AppLog.game.info("Game exited abnormally (\(reason)): \(gameId)")
 
-        NotificationCenter.default.post(
-            name: .gameCrashed,
-            object: nil,
-            userInfo: ["directory": gameDirectory],
-        )
+        pendingCrashDirectory = gameDirectory
     }
 
     /// Determines whether a terminated process ended abnormally.

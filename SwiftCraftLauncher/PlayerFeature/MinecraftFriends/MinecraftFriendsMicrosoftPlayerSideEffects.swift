@@ -41,17 +41,13 @@ struct MinecraftFriendsMicrosoftPlayerSideEffects {
         )
     }
 
-    /// Persists the given player and posts a `playerUpdated` notification on success.
+    /// Persists the given player. `PlayerDataManager` posts the `playerUpdated`
+    /// notification after a successful save.
     ///
     /// - Parameter updated: The player to persist.
     func persistPlayerIfNeeded(_ updated: Player) {
         do {
             try dataManager.updatePlayer(updated)
-            NotificationCenter.default.post(
-                name: .playerUpdated,
-                object: nil,
-                userInfo: ["updatedPlayer": updated],
-            )
         } catch {
             reportGlobalError(error)
         }

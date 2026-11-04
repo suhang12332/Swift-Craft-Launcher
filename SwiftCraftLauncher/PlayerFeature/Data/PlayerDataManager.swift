@@ -213,6 +213,11 @@ class PlayerDataManager {
             AppLog.player.debug("No new credentials provided, keeping existing Keychain state - userId: \(updatedPlayer.id)")
         }
 
+        NotificationCenter.default.post(
+            name: .playerUpdated,
+            object: nil,
+            userInfo: ["updatedPlayer": updatedPlayer],
+        )
         AppLog.player.debug("Player info updated: \(updatedPlayer.name)")
     }
 }

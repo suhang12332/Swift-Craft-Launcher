@@ -57,11 +57,6 @@ final class ContentToolbarViewModel {
                 do {
                     try dataManager.updatePlayer(validatedPlayer)
                     AppLog.main.debug("Token info updated in player data manager")
-                    NotificationCenter.default.post(
-                        name: .playerUpdated,
-                        object: nil,
-                        userInfo: ["updatedPlayer": validatedPlayer],
-                    )
                 } catch {
                     AppLog.main.error("Failed to save updated token: \(error.localizedDescription)")
                     DIContainer.shared.core.errorHandler.handle(error)

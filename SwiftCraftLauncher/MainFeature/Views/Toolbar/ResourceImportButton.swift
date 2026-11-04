@@ -43,7 +43,11 @@ struct ResourceImportButton: View {
             .help("saveinfo.server.add".localized())
             .sheet(isPresented: $showAddServerSheet) {
                 ServerAddressEditView(gameName: game.gameName) {
-                    NotificationCenter.default.post(name: .localResourceImported, object: nil)
+                    NotificationCenter.default.post(
+                        name: .localResourceImported,
+                        object: nil,
+                        userInfo: ["gameName": game.gameName],
+                    )
                 }
             }
         } else {
