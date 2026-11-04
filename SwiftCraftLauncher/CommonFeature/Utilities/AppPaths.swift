@@ -106,7 +106,7 @@ enum AppPaths {
 
     /// The system Appearance settings extension bundle that provides the theme thumbnails.
     static let appearanceBundle = Bundle(
-        path: "/System/Library/ExtensionKit/Extensions/Appearance.appex"
+        path: "/System/Library/ExtensionKit/Extensions/Appearance.appex",
     )
 }
 
