@@ -41,7 +41,6 @@ struct SaveInfoView: View {
                 WorldInfoSectionView(
                     worlds: manager.worlds,
                     isLoading: manager.isLoadingWorlds,
-                    gameName: gameName,
                 )
             }
 

@@ -7,102 +7,18 @@
 
 import Foundation
 import Observation
-import SwiftNBT
 
 /// Loads and manages save information including worlds, screenshots,
 /// litematica files, and logs for a specific game instance.
 @MainActor
 @Observable
 final class SaveInfoManager {
-    private struct WorldParseResult {
-        let lastPlayed: Date?
-        let gameMode: String?
-        let difficulty: String?
-        let version: String?
-        let hardcore: Bool
-        let cheats: Bool
-        let seed: Int64?
-    }
-
-    nonisolated private static func parseLevelDat(at levelDatPath: URL) -> WorldParseResult? {
-        guard let data = try? Data(contentsOf: levelDatPath),
-              let document = try? NBTDecoder().decode(data),
-              let dataTag = document.root["Data"]?.compoundValue else {
-            return nil
-        }
-
-        var lastPlayed: Date?
-        if let ts = dataTag["LastPlayed"]?.int64Value {
-            lastPlayed = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
-        }
-
-        let gameMode: String? = {
-            if let v = dataTag["GameType"]?.int64Value {
-                return WorldNBTMapper.mapGameMode(Int(v))
-            }
-            return nil
-        }()
-
-        let difficulty: String? = {
-            if let v = dataTag["Difficulty"]?.int64Value {
-                return WorldNBTMapper.mapDifficulty(Int(v))
-            }
-            if let ds = dataTag["difficulty_settings"]?.compoundValue,
-               let diffStr = ds["difficulty"]?.stringValue {
-                return WorldNBTMapper.mapDifficultyString(diffStr)
-            }
-            return nil
-        }()
-
-        let version: String? = dataTag["Version"]?.compoundValue?["Name"]?.stringValue
-        let hardcore: Bool = {
-            if let ds = dataTag["difficulty_settings"]?.compoundValue {
-                return WorldNBTMapper.readBoolFlag(ds["hardcore"])
-            }
-            return WorldNBTMapper.readBoolFlag(dataTag["hardcore"])
-        }()
-        let cheats: Bool = WorldNBTMapper.readBoolFlag(dataTag["allowCommands"])
-        let seed: Int64? = WorldNBTMapper.readSeed(from: dataTag, worldPath: levelDatPath.deletingLastPathComponent())
-
-        return WorldParseResult(
-            lastPlayed: lastPlayed,
-            gameMode: gameMode,
-            difficulty: difficulty,
-            version: version,
-            hardcore: hardcore,
-            cheats: cheats,
-            seed: seed,
-        )
-    }
-
-    nonisolated private static func buildWorldInfo(worldPath: URL, parsed: WorldParseResult?) -> WorldInfo {
+    nonisolated private static func buildWorldInfo(worldPath: URL) -> WorldInfo {
         let worldName = worldPath.lastPathComponent
-        var fileLastPlayed: Date?
-        if let modDate = try? worldPath.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate {
-            fileLastPlayed = modDate
-        }
-        if let parsed {
-            return WorldInfo(
-                name: worldName,
-                path: worldPath,
-                lastPlayed: parsed.lastPlayed ?? fileLastPlayed,
-                gameMode: parsed.gameMode,
-                difficulty: parsed.difficulty,
-                hardcore: parsed.hardcore,
-                cheats: parsed.cheats,
-                version: parsed.version,
-                seed: parsed.seed,
-            )
-        }
-        return WorldInfo(
-            name: worldName,
-            path: worldPath,
-            lastPlayed: fileLastPlayed,
-            gameMode: nil,
-            difficulty: nil,
-            version: nil,
-            seed: nil,
-        )
+        let lastPlayed = (try? worldPath.resourceValues(
+            forKeys: [.contentModificationDateKey],
+        ))?.contentModificationDate
+        return WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed)
     }
 
     let gameName: String
@@ -468,9 +384,7 @@ final class SaveInfoManager {
         let loadedWorlds = contents.compactMap { worldPath -> WorldInfo? in
             guard let isDirectory = try? worldPath.resourceValues(forKeys: [.isDirectoryKey]).isDirectory,
                   isDirectory == true else { return nil }
-            let levelDatPath = worldPath.appendingPathComponent("level.dat")
-            let parsed = fm.fileExists(atPath: levelDatPath.path) ? Self.parseLevelDat(at: levelDatPath) : nil
-            return Self.buildWorldInfo(worldPath: worldPath, parsed: parsed)
+            return Self.buildWorldInfo(worldPath: worldPath)
         }
 
         return loadedWorlds.sorted { ($0.lastPlayed ?? .distantPast) > ($1.lastPlayed ?? .distantPast) }
