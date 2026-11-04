@@ -9,18 +9,15 @@
 import XCTest
 
 final class FileTreeViewModelTests: XCTestCase {
-    private var tempDirectory: URL!
+    private var tempDirectory = FileManager.default.temporaryDirectory
+        .appendingPathComponent("FileTreeViewModelTests-\(UUID().uuidString)", isDirectory: true)
 
     override func setUpWithError() throws {
-        tempDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("FileTreeViewModelTests-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: tempDirectory, withIntermediateDirectories: true)
     }
 
     override func tearDownWithError() throws {
-        if let tempDirectory {
-            try? FileManager.default.removeItem(at: tempDirectory)
-        }
+        try? FileManager.default.removeItem(at: tempDirectory)
     }
 
     func testDefaultSelectionDoesNotLoadChildDirectories() throws {
@@ -32,7 +29,7 @@ final class FileTreeViewModelTests: XCTestCase {
         viewModel.applyDefaultSelectionIfNeeded()
 
         let mods = try XCTUnwrap(child(named: "mods", of: viewModel.root))
-        XCTAssertTrue(mods.selection == .all)
+        XCTAssertEqual(mods.selection, .all)
         XCTAssertNil(mods.children, "默认选择不应递归加载子目录")
 
         let selectedPaths = Set(viewModel.selectedRootURLs().map(\.standardizedFileURL.path))
@@ -51,12 +48,12 @@ final class FileTreeViewModelTests: XCTestCase {
 
         viewModel.ensureChildrenLoaded(for: mods)
         let sub = try XCTUnwrap(child(named: "sub", of: mods))
-        XCTAssertTrue(sub.selection == .all)
+        XCTAssertEqual(sub.selection, .all)
         XCTAssertNil(sub.children)
 
         viewModel.ensureChildrenLoaded(for: sub)
         let file = try XCTUnwrap(child(named: "example.jar", of: sub))
-        XCTAssertTrue(file.selection == .all)
+        XCTAssertEqual(file.selection, .all)
     }
 
     func testTogglingChildProducesPartialParentState() throws {
@@ -71,9 +68,9 @@ final class FileTreeViewModelTests: XCTestCase {
 
         viewModel.toggleSelection(for: fileA)
 
-        XCTAssertTrue(fileA.selection == .all)
-        XCTAssertTrue(mods.selection == .some)
-        XCTAssertTrue(viewModel.root.selection == .some)
+        XCTAssertEqual(fileA.selection, .all)
+        XCTAssertEqual(mods.selection, .some)
+        XCTAssertEqual(viewModel.root.selection, .some)
     }
 
     func testTogglingDirectoryDoesNotLoadChildren() throws {
@@ -85,7 +82,7 @@ final class FileTreeViewModelTests: XCTestCase {
 
         viewModel.toggleSelection(for: mods)
 
-        XCTAssertTrue(mods.selection == .all)
+        XCTAssertEqual(mods.selection, .all)
         XCTAssertNil(mods.children)
         XCTAssertEqual(
             viewModel.selectedRootURLs().map(\.lastPathComponent),
