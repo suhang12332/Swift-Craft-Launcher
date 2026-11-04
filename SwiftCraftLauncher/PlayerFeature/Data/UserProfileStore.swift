@@ -77,7 +77,6 @@ class UserProfileStore {
         }
 
         try saveProfilesThrowing(profiles)
-        AppLog.player.debug("New user added: \(profile.name)")
     }
 
     /// Updates an existing user profile.

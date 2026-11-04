@@ -87,7 +87,6 @@ class PlayerListViewModel {
     func addPlayerThrowing(name: String) throws {
         try DIContainer.shared.ui.playerDataManager.addPlayer(name: name, isOnline: false, avatarName: "")
         try loadPlayersThrowing()
-        AppLog.player.debug("Player \(name) added successfully, list updated.")
         let playerName = currentPlayer?.name ?? "none"
         AppLog.player.debug("Current player (after adding): \(playerName)")
     }
@@ -125,7 +124,6 @@ class PlayerListViewModel {
             xuid: profile.authXuid,
         )
         try loadPlayersThrowing()
-        AppLog.player.debug("Player \(profile.name) added successfully, list updated.")
         let playerName = currentPlayer?.name ?? "none"
         AppLog.player.debug("Current player (after adding): \(playerName)")
     }
@@ -162,7 +160,6 @@ class PlayerListViewModel {
             xuid: "",
         )
         try loadPlayersThrowing()
-        AppLog.player.debug("Yggdrasil player \(profile.name) added successfully, list updated.")
     }
 
     /// Adds a Yggdrasil-authenticated player from a profile.
