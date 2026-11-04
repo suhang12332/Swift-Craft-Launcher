@@ -64,20 +64,27 @@ private struct ThemeWindowIcon: View {
     let theme: ThemeMode
 
     var body: some View {
-        Image(iconName)
+        // Preview thumbnail is loaded at runtime from the macOS Appearance
+        // settings extension. No image asset is bundled in the app.
+        Image(assetName, bundle: SystemAppearanceBundle.value)
             .resizable()
             .frame(width: 60, height: 40)
             .cornerRadius(6)
     }
 
-    private var iconName: String {
+    private var assetName: String {
         switch theme {
-        case .system:
-            return "Auto"
-        case .light:
-            return "Light"
-        case .dark:
-            return "Dark"
+        case .light: "AppearanceLight"
+        case .dark: "AppearanceDark"
+        case .system: "AppearanceAuto"
         }
     }
+}
+
+/// The system extension that ships the light/dark/auto preview images shown in
+/// System Settings → Appearance. Its asset catalog is read directly at runtime.
+private enum SystemAppearanceBundle {
+    static let value = Bundle(
+        path: "/System/Library/ExtensionKit/Extensions/Appearance.appex",
+    )
 }
