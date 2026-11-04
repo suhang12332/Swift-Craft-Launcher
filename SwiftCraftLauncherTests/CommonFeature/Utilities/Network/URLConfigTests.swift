@@ -110,12 +110,6 @@ final class URLConfigTests: XCTestCase {
         )
     }
 
-    func testChunkBase_seedMap() {
-        let url = URLConfig.API.ChunkBase.seedMap(seed: 12345)
-        XCTAssertNotNil(url)
-        XCTAssertTrue(url?.absoluteString.contains("seed=12345") ?? false)
-    }
-
     func testCommunity_urls() {
         let website = URLConfig.API.Community.website()
         XCTAssertTrue(website.absoluteString.contains("swift-craft-launcher-web.pages.dev"))

@@ -14,7 +14,5 @@ extension Notification.Name {
     /// Posted when the Minecraft friends account preferences are updated on the server.
     static let minecraftFriendsAccountPreferencesDidChange = Notification.Name("SwiftCraftLauncher.MinecraftFriendsAccountPreferencesDidChange")
 
-    static let gameCrashed = Notification.Name("SwiftCraftLauncher.GameCrashed")
-
     static let localResourceImported = Notification.Name("SwiftCraftLauncher.LocalResourceImported")
 }

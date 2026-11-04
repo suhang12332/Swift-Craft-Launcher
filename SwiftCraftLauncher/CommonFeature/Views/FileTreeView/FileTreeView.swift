@@ -14,6 +14,10 @@ public struct FileTreeView: NSViewRepresentable {
 
     private let rootURL: URL
     private let showHiddenFiles: Bool
+
+    /// Receives selected roots. Fully selected directories are returned as a
+    /// single URL; consumers should expand them on demand when individual files
+    /// are required.
     private let onSelectionChange: (([URL]) -> Void)?
 
     public init(
@@ -58,7 +62,6 @@ public struct FileTreeView: NSViewRepresentable {
 
         context.coordinator.outlineView = outlineView
         context.coordinator.reload()
-        outlineView.expandItem(nil, expandChildren: false)
 
         return scrollView
     }

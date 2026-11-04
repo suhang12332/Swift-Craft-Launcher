@@ -61,7 +61,7 @@ final class GameSettingsManager {
     }
 
     /// The default export format for mod packs.
-    var defaultModPackExportFormat: ModPackExportFormat = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat, defaultValue: .modrinth) {
+    var defaultModPackExportFormat: ModPackExportFormat = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat, defaultValue: .curseforge) {
         didSet { Defaults.save(defaultModPackExportFormat.rawValue, forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat) }
     }
 

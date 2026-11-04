@@ -13,22 +13,38 @@ enum KeychainManager {
     private static let service = Bundle.main.identifier
 
     /// Stores data in the Keychain.
+    ///
+    /// Existing items are updated in place, so a failed write does not delete
+    /// the previously stored data.
+    ///
     /// - Parameters:
     ///   - data: The data to store.
     ///   - account: The account identifier.
     ///   - key: The key name.
     /// - Returns: `true` if the operation succeeded.
     static func save(data: Data, account: String, key: String) -> Bool {
-        let query: [String: Any] = [
+        let matchQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: "\(account).\(key)",
+        ]
+        let updateAttributes: [String: Any] = [
             kSecValueData as String: data,
         ]
 
-        SecItemDelete(query as CFDictionary)
+        var status = SecItemUpdate(matchQuery as CFDictionary, updateAttributes as CFDictionary)
 
-        let status = SecItemAdd(query as CFDictionary, nil)
+        if status == errSecItemNotFound {
+            var addQuery = matchQuery
+            addQuery[kSecValueData as String] = data
+            status = SecItemAdd(addQuery as CFDictionary, nil)
+
+            // Another write may have inserted the item between the update and
+            // the add; retry as an update rather than losing the new data.
+            if status == errSecDuplicateItem {
+                status = SecItemUpdate(matchQuery as CFDictionary, updateAttributes as CFDictionary)
+            }
+        }
 
         if status == errSecSuccess {
             AppLog.common.debug("Keychain save succeeded - account: \(account), key: \(key)")
@@ -86,12 +102,15 @@ enum KeychainManager {
 
         let status = SecItemDelete(query as CFDictionary)
 
-        if status == errSecSuccess || status == errSecItemNotFound {
+        if status == errSecSuccess {
             AppLog.common.debug("Keychain delete succeeded - account: \(account), key: \(key)")
             return true
-        } else {
-            AppLog.common.error("Keychain delete failed - account: \(account), key: \(key), status: \(status)")
-            return false
         }
+        if status == errSecItemNotFound {
+            return true
+        }
+
+        AppLog.common.error("Keychain delete failed - account: \(account), key: \(key), status: \(status)")
+        return false
     }
 }

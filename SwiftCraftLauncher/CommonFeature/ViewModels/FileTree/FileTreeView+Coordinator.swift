@@ -43,7 +43,7 @@ public extension FileTreeView {
 
             if viewModel.applyDefaultSelectionIfNeeded() {
                 outlineView?.reloadData()
-                onSelectionChange?(viewModel.selectedFileURLs())
+                onSelectionChange?(viewModel.selectedRootURLs())
             }
         }
 
@@ -100,12 +100,12 @@ public extension FileTreeView {
 
             let refreshNodes = viewModel.toggleSelection(for: node)
 
-            outlineView.reloadItem(node, reloadChildren: true)
+            outlineView.reloadItem(node, reloadChildren: node.children != nil)
             for parent in refreshNodes.dropFirst() {
                 outlineView.reloadItem(parent, reloadChildren: false)
             }
 
-            onSelectionChange?(viewModel.selectedFileURLs())
+            onSelectionChange?(viewModel.selectedRootURLs())
         }
     }
 }

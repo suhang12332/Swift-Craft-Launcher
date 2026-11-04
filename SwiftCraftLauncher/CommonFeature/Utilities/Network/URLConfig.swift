@@ -284,14 +284,6 @@ enum URLConfig {
             }
         }
 
-        enum ChunkBase {
-            static let seedMapBase = "https://www.chunkbase.com/apps/seed-map"
-
-            static func seedMap(seed: Int64) -> URL? {
-                URL(string: "\(seedMapBase)#seed=\(seed)")
-            }
-        }
-
         enum CurseForge {
             static let mirrorBaseURL = URLConfig.url("https://api.curseforge.com/v1")
             static let fallbackDownloadBaseURL = URLConfig.url("https://edge.forgecdn.net/files")

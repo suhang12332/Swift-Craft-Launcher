@@ -68,7 +68,8 @@ struct GameLocalResourceView: View {
                 searchText: searchText,
             )
         }
-        .onReceive(NotificationCenter.default.publisher(for: .localResourceImported)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .localResourceImported)) { notification in
+            guard notification.userInfo?["gameName"] as? String == game.gameName else { return }
             viewModel.refreshResources()
         }
         .onChange(of: query) { oldValue, newValue in

@@ -17,8 +17,8 @@ final class GameHeaderViewModel {
 
     func isNameValid(newName: String, currentName: String, gameId: String) -> Bool {
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, trimmed != currentName else { return false }
-        if DIContainer.shared.core.gameSessionStore.isGameRunningForAnyUser(gameId: gameId) {
+        guard trimmed != currentName, GameNameValidator.isValidName(trimmed) else { return false }
+        if DIContainer.shared.core.gameSessionStore.isGameActiveForAnyUser(gameId: gameId) {
             return false
         }
         return !FileManager.default.fileExists(

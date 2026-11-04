@@ -5,17 +5,13 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-// Displays world save files as selectable chips with detail sheet support.
+// Displays world save folders as chips that open the world directory in Finder.
+import AppKit
 import SwiftUI
 
 struct WorldInfoSectionView: View {
     let worlds: [WorldInfo]
     let isLoading: Bool
-    let gameName: String
-
-    @State private var preparedViewModel: WorldDetailSheetViewModel?
-    @State private var loadTask: Task<Void, Never>?
-    @State private var currentLoadToken: UUID?
 
     var body: some View {
         GenericSectionView(
@@ -24,49 +20,15 @@ struct WorldInfoSectionView: View {
             isLoading: isLoading,
             iconName: "folder.fill",
         ) { world in
-            worldChip(for: world)
-        }
-        .sheet(
-            isPresented: Binding(
-                get: { preparedViewModel != nil },
-                set: { isPresented in
-                    if !isPresented {
-                        preparedViewModel = nil
-                    }
+            FilterChip(
+                title: world.name,
+                action: {
+                    NSWorkspace.shared.open(world.path)
                 },
-            ),
-        ) {
-            if let viewModel = preparedViewModel {
-                WorldDetailSheetView(viewModel: viewModel)
-            }
+                iconName: "folder.fill",
+                isLoading: false,
+                maxTextWidth: 150,
+            )
         }
-        .onDisappear {
-            loadTask?.cancel()
-            loadTask = nil
-            currentLoadToken = nil
-            preparedViewModel = nil
-        }
-    }
-
-    private func worldChip(for world: WorldInfo) -> some View {
-        FilterChip(
-            title: world.name,
-            action: {
-                let token = UUID()
-                currentLoadToken = token
-                loadTask?.cancel()
-                let selected = world
-                loadTask = Task {
-                    let viewModel = WorldDetailSheetViewModel(world: selected, gameName: gameName)
-                    await viewModel.loadMetadata()
-                    guard !Task.isCancelled, currentLoadToken == token else { return }
-                    preparedViewModel = viewModel
-                    currentLoadToken = nil
-                }
-            },
-            iconName: "folder.fill",
-            isLoading: false,
-            maxTextWidth: 150,
-        )
     }
 }

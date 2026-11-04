@@ -138,32 +138,18 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertEqual(world.id, "MyWorld")
         XCTAssertEqual(world.name, "My World")
         XCTAssertNil(world.lastPlayed)
-        XCTAssertNil(world.gameMode)
-        XCTAssertNil(world.difficulty)
-        XCTAssertFalse(world.hardcore)
-        XCTAssertFalse(world.cheats)
-        XCTAssertNil(world.version)
-        XCTAssertNil(world.seed)
     }
 
-    func testWorldInfo_init_allParams() {
+    func testWorldInfo_init_lastPlayed() {
         let url = URL(fileURLWithPath: "/tmp/TestWorld")
+        let lastPlayed = Date()
         let world = WorldInfo(
             name: "Test",
             path: url,
-            lastPlayed: Date(),
-            gameMode: "survival",
-            difficulty: "hard",
-            hardcore: true,
-            cheats: true,
-            version: "1.20.1",
-            seed: 12345,
+            lastPlayed: lastPlayed,
         )
 
-        XCTAssertTrue(world.hardcore)
-        XCTAssertTrue(world.cheats)
-        XCTAssertEqual(world.version, "1.20.1")
-        XCTAssertEqual(world.seed, 12345)
+        XCTAssertEqual(world.lastPlayed, lastPlayed)
     }
 
     func testWorldInfo_equatable() {

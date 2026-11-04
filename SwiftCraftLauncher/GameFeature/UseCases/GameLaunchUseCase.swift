@@ -19,6 +19,11 @@ final class GameLaunchUseCase {
     private let authService = LaunchAuthService()
     private let commandPreparer = LaunchCommandPreparer()
     private let processLauncher = GameProcessLauncher()
+    private let gameRepository: GameRepository
+
+    init(gameRepository: GameRepository) {
+        self.gameRepository = gameRepository
+    }
 
     private var sessionStore: GameSessionStore {
         DIContainer.shared.core.gameSessionStore
@@ -78,9 +83,20 @@ final class GameLaunchUseCase {
                 credentials: credentials,
             )
             try await processLauncher.launch(command: command, player: player, game: game)
+            await markGamePlayed(game)
         } catch {
             AppLog.game.error("Failed to launch game: \(error.localizedDescription)")
             DIContainer.shared.core.errorHandler.handle(GlobalError.from(error))
+        }
+    }
+
+    private func markGamePlayed(_ game: GameVersionInfo) async {
+        guard var updatedGame = gameRepository.getGame(by: game.id) else { return }
+        updatedGame.lastPlayed = Date()
+        do {
+            try await gameRepository.updateGame(updatedGame)
+        } catch {
+            AppLog.game.error("Failed to update last played time: \(error.localizedDescription)")
         }
     }
 

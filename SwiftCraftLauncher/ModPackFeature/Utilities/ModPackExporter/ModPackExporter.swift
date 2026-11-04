@@ -36,7 +36,7 @@ enum ModPackExporter {
         modPackVersion: String = "1.0.0",
         summary: String? = nil,
         exportFormat: ModPackExportFormat = .modrinth,
-        selectedFiles: [URL],
+        selectedURLs: [URL],
         progressCallback: (@Sendable (ExportProgress) -> Void)? = nil,
     ) async -> ExportResult {
         do {
@@ -55,7 +55,7 @@ enum ModPackExporter {
 
             try Task.checkCancellation()
 
-            let resolvedFiles = resolveSelectedFiles(from: selectedFiles)
+            let resolvedFiles = resolveSelectedFiles(from: selectedURLs)
             let gameDirectory = AppPaths.profileDirectory(gameName: gameInfo.gameName)
 
             // Only the four resource folders participate in scanning. Every other

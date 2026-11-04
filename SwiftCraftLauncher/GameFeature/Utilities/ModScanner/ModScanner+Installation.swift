@@ -43,10 +43,7 @@ extension ModScanner {
         hash: String,
         in modsDir: URL,
     ) async throws -> Bool {
-        guard let gameName = extractGameName(from: modsDir) else {
-            return false
-        }
-
+        let gameName = extractGameName(from: modsDir)
         return await checkModInstalledCore(hash: hash, gameName: gameName)
     }
 

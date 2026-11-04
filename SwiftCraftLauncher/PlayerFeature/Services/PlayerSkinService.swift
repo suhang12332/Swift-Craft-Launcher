@@ -12,14 +12,6 @@ import Foundation
 /// This service interacts with the Minecraft Services API to upload, reset,
 /// and retrieve skin and cape data for authenticated online players.
 enum PlayerSkinService {
-    private static func notifyPlayerUpdated(_ updatedPlayer: Player) {
-        NotificationCenter.default.post(
-            name: .playerUpdated,
-            object: nil,
-            userInfo: ["updatedPlayer": updatedPlayer],
-        )
-    }
-
     private static func handleError(_ error: Error, operation: String) {
         let globalError = GlobalError.from(error)
         AppLog.player.error("\(operation) failed: \(globalError.localizedDescription)")
@@ -119,8 +111,6 @@ enum PlayerSkinService {
             let updatedPlayer = Player(profile: updatedProfile, credential: updatedCredential)
 
             try dataManager.updatePlayer(updatedPlayer)
-
-            notifyPlayerUpdated(updatedPlayer)
 
             return true
         } catch {

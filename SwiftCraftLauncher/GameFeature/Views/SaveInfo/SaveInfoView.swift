@@ -41,7 +41,6 @@ struct SaveInfoView: View {
                 WorldInfoSectionView(
                     worlds: manager.worlds,
                     isLoading: manager.isLoadingWorlds,
-                    gameName: gameName,
                 )
             }
 
@@ -57,7 +56,6 @@ struct SaveInfoView: View {
                 LitematicaSectionView(
                     litematicaFiles: manager.litematicaFiles,
                     isLoading: manager.isLoadingLitematica,
-                    gameName: gameName,
                 )
             }
 
