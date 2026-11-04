@@ -27,14 +27,9 @@ final class UIContainer: @unchecked Sendable {
     @Lazy var playerDataManager: PlayerDataManager = .init()
     @MainActorLazy var themeManager: ThemeManager = .init()
     @Lazy var languageManager: LanguageManager = .init()
-    @Lazy var aiSettingsManager: AISettingsManager = .init()
 
     // Minecraft Friends
 
     @MainActorLazy var minecraftFriendsPresencePollingCoordinator: MinecraftFriendsPresencePollingCoordinator = .init()
     @Lazy var minecraftFriendsService: MinecraftFriendsService = .init()
-
-    // AI Chat
-
-    @MainActorLazy var aiChatManager: AIChatManager = .init()
 }

@@ -17,7 +17,6 @@ enum AppWindowID: String {
 enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
     case contributors
     case acknowledgements
-    case aiChat
     case javaDownload
     case skinPreview
     case failedResources
@@ -30,8 +29,6 @@ enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
             "about.contributors".localized()
         case .acknowledgements:
             "about.acknowledgements".localized()
-        case .aiChat:
-            "ai.assistant.title".localized()
         case .javaDownload:
             "global_resource.download".localized()
         case .skinPreview:
@@ -45,8 +42,6 @@ enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
         switch self {
         case .contributors, .acknowledgements:
             CGSize(width: 280, height: 600)
-        case .aiChat:
-            CGSize(width: 500, height: 600)
         case .javaDownload:
             CGSize(width: 400, height: 100)
         case .skinPreview:

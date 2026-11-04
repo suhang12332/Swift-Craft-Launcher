@@ -42,10 +42,6 @@ final class GameSettingsManager {
         didSet { Defaults.save(max(concurrentDownloads, 1), forKey: AppConstants.UserDefaultsKeys.concurrentDownloads) }
     }
 
-    var enableAICrashAnalysis: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableAICrashAnalysis) {
-        didSet { Defaults.save(enableAICrashAnalysis, forKey: AppConstants.UserDefaultsKeys.enableAICrashAnalysis) }
-    }
-
     var enableMemoryPressureWarning: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableMemoryPressureWarning, defaultValue: true) {
         didSet { Defaults.save(enableMemoryPressureWarning, forKey: AppConstants.UserDefaultsKeys.enableMemoryPressureWarning) }
     }

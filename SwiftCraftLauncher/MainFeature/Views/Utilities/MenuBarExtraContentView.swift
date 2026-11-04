@@ -43,9 +43,6 @@ struct MenuBarExtraContentView: View {
             Divider()
             playersSection
             Divider()
-            Button("ai.assistant.title".localized()) {
-                container.ui.aiChatManager.openChatWindow()
-            }
             Button("menu.quit".localized()) {
                 NSApplication.shared.terminate(nil)
             }
