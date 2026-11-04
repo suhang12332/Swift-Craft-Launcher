@@ -56,6 +56,7 @@ struct FilterChipLabel: View, Equatable {
     let customBorderColor: Color?
     let verticalPadding: CGFloat
     let maxTextWidth: CGFloat?
+    let lineLimit: Int?
     let iconColor: Color?
 
     init(
@@ -66,6 +67,7 @@ struct FilterChipLabel: View, Equatable {
         customBorderColor: Color? = nil,
         verticalPadding: CGFloat = 4,
         maxTextWidth: CGFloat? = nil,
+        lineLimit: Int? = nil,
         iconColor: Color? = nil,
     ) {
         self.title = title
@@ -75,6 +77,7 @@ struct FilterChipLabel: View, Equatable {
         self.customBorderColor = customBorderColor
         self.verticalPadding = verticalPadding
         self.maxTextWidth = maxTextWidth
+        self.lineLimit = lineLimit
         self.iconColor = iconColor
     }
 
@@ -109,7 +112,7 @@ struct FilterChipLabel: View, Equatable {
     private var text: some View {
         Text(title)
             .font(.subheadline)
-            .lineLimit(maxTextWidth != nil ? 1 : nil)
+            .lineLimit(lineLimit ?? (maxTextWidth != nil ? 1 : nil))
             .frame(maxWidth: maxTextWidth)
     }
 
