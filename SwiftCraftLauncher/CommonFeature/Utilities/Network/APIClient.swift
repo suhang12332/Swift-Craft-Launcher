@@ -232,11 +232,4 @@ enum APIClient {
         let httpResponse = try asHTTPResponse(response, for: request)
         return (data, httpResponse.statusCode)
     }
-
-    /// Executes a streaming request and returns the async bytes and response.
-    static func performStreamRequest(request: URLRequest) async throws -> (URLSession.AsyncBytes, HTTPURLResponse) {
-        let (asyncBytes, response) = try await sharedSession.bytes(for: request)
-        let httpResponse = try asHTTPResponse(response, for: request)
-        return (asyncBytes, httpResponse)
-    }
 }

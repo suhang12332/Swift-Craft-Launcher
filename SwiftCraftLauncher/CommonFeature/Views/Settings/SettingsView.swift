@@ -14,7 +14,6 @@ enum SettingsTab: Int {
     case player = 1
     case game = 2
     case advanced = 3
-    case ai = 4
 }
 
 /// The main settings view with tabbed navigation.
@@ -44,12 +43,6 @@ public struct SettingsView: View {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
                 .tag(SettingsTab.game)
-            AISettingsView()
-                .environment(container.ui.aiSettingsManager)
-                .tabItem {
-                    Label("settings.ai.tab".localized(), systemImage: "brain")
-                }
-                .tag(SettingsTab.ai)
             GameAdvancedSettingsView()
                 .tabItem {
                     Label(

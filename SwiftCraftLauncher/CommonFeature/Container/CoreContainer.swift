@@ -33,7 +33,6 @@ final class CoreContainer: @unchecked Sendable {
     // Game
 
     @MainActorLazy var gameSessionStore: GameSessionStore = .init()
-    @Lazy var gameLogCollector: GameLogCollector = .init()
     @MainActorLazy var gameActionManager: GameActionManager = .init()
 
     // Favorites

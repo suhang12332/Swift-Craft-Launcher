@@ -143,20 +143,14 @@ final class GameSessionStore {
             let isCrash = await checkIfCrash(gameId: gameId, process: process)
 
             if isCrash {
-                let gameSettings = DIContainer.shared.ui.gameSettingsManager
-                if gameSettings.enableAICrashAnalysis {
-                    AppLog.game.info("Detected game crash, enabling AI analysis: \(gameId)")
-                    await collectLogsForGameImmediately(gameId: gameId)
-                } else {
-                    let gameDirectory = CommonUtil.gameDirectory(for: gameId)
-                    NotificationCenter.default.post(
-                        name: .gameCrashed,
-                        object: nil,
-                        userInfo: ["directory": gameDirectory as Any],
-                    )
-                }
+                let gameDirectory = CommonUtil.gameDirectory(for: gameId)
+                NotificationCenter.default.post(
+                    name: .gameCrashed,
+                    object: nil,
+                    userInfo: ["directory": gameDirectory as Any],
+                )
             } else {
-                AppLog.game.debug("Game exited normally, not triggering AI analysis: \(gameId)")
+                AppLog.game.debug("Game exited normally: \(gameId)")
             }
         }
 
@@ -211,21 +205,6 @@ final class GameSessionStore {
             }
             return created >= cutoff
         }?.lastPathComponent
-    }
-
-    /// Runs off the main actor because it performs database I/O.
-    nonisolated private func collectLogsForGameImmediately(gameId: String) async {
-        do {
-            try? gameDatabase.initialize()
-            guard let game = try gameDatabase.getGame(by: gameId) else {
-                AppLog.game.error("Unable to find game in database: \(gameId)")
-                return
-            }
-
-            await DIContainer.shared.core.gameLogCollector.collectAndOpenAIWindow(gameName: game.gameName)
-        } catch {
-            AppLog.game.error("Failed to query game from database: \(error.localizedDescription)")
-        }
     }
 
     private func handleProcessExit(gameId: String, wasManuallyStopped: Bool) {

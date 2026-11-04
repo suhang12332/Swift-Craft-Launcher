@@ -42,18 +42,12 @@ final class AppConstantsTests: XCTestCase {
 
     func testUserDefaultsKeys_allExist() {
         XCTAssertFalse(AppConstants.UserDefaultsKeys.userProfiles.isEmpty)
-        XCTAssertFalse(AppConstants.UserDefaultsKeys.aiProvider.isEmpty)
         XCTAssertFalse(AppConstants.UserDefaultsKeys.globalXms.isEmpty)
         XCTAssertFalse(AppConstants.UserDefaultsKeys.globalXmx.isEmpty)
         XCTAssertFalse(AppConstants.UserDefaultsKeys.themeMode.isEmpty)
     }
 
-    func testKeychainAccounts_keys() {
-        XCTAssertEqual(AppConstants.KeychainAccounts.aiSettings, "aiSettings")
-    }
-
     func testKeychainKeys_keys() {
-        XCTAssertEqual(AppConstants.KeychainKeys.apiKey, "apiKey")
         XCTAssertEqual(AppConstants.KeychainKeys.authCredential, "authCredential")
     }
 
