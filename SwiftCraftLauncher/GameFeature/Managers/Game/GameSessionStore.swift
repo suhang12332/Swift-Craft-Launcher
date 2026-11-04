@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Owns game processes and their running/launching states, plus crash detection.
+/// Owns game processes and their running/launching states, plus abnormal-exit detection.
 @MainActor
 @Observable
 final class GameSessionStore {
@@ -19,9 +19,6 @@ final class GameSessionStore {
     }
 
     private var sessions: [String: Session] = [:]
-
-    /// `nonisolated` so database lookups can run off the main actor.
-    nonisolated private let gameDatabase = GameVersionDatabase(dbPath: AppPaths.gameVersionDatabase.path)
 
     init() { }
 
@@ -55,6 +52,13 @@ final class GameSessionStore {
         return sessions[key]?.isLaunching ?? false
     }
 
+    /// Marks the process as running only when it is still the session's current process.
+    func markProcessRunning(gameId: String, userId: String, process: Process) {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        guard sessions[key]?.process === process else { return }
+        updateRunningState(true, forKey: key)
+    }
+
     func setGameRunning(gameId: String, userId: String, isRunning: Bool) {
         let key = Self.processKey(gameId: gameId, userId: userId)
         updateRunningState(isRunning, forKey: key)
@@ -70,18 +74,23 @@ final class GameSessionStore {
     }
 
     private func updateRunningState(_ isRunning: Bool, forKey key: String) {
-        guard sessions[key]?.isRunning != isRunning else { return }
-        guard sessions[key] != nil || isRunning else { return }
+        guard let session = sessions[key] else { return }
+        guard session.isRunning != isRunning else { return }
 
         sessions[key, default: Session()].isRunning = isRunning
         AppLog.game.debug("Game state updated: \(key) -> \(isRunning ? "Running" : "Stopped")")
     }
 
-    func storeProcess(gameId: String, userId: String, process: Process) {
+    func storeProcess(gameId: String, userId: String, gameDirectory: URL, process: Process) {
         let key = Self.processKey(gameId: gameId, userId: userId)
         process.terminationHandler = { [weak self] process in
             Task { @MainActor in
-                await self?.handleProcessTermination(gameId: gameId, userId: userId, process: process)
+                self?.handleProcessTermination(
+                    gameId: gameId,
+                    userId: userId,
+                    gameDirectory: gameDirectory,
+                    process: process,
+                )
             }
         }
 
@@ -133,85 +142,61 @@ final class GameSessionStore {
         }
     }
 
-    private func handleProcessTermination(gameId: String, userId: String, process: Process) async {
+    private func handleProcessTermination(
+        gameId: String,
+        userId: String,
+        gameDirectory: URL,
+        process: Process,
+    ) {
         let key = Self.processKey(gameId: gameId, userId: userId)
-        let wasManuallyStopped = sessions[key]?.isManuallyStopped ?? false
 
-        handleProcessExit(gameId: gameId, wasManuallyStopped: wasManuallyStopped)
-
-        if !wasManuallyStopped {
-            let isCrash = await checkIfCrash(gameId: gameId, process: process)
-
-            if isCrash {
-                let gameDirectory = CommonUtil.gameDirectory(for: gameId)
-                NotificationCenter.default.post(
-                    name: .gameCrashed,
-                    object: nil,
-                    userInfo: ["directory": gameDirectory as Any],
-                )
-            } else {
-                AppLog.game.debug("Game exited normally: \(gameId)")
-            }
+        // Ignore stale callbacks from a process that has already been replaced by
+        // a newer launch for the same game and user.
+        guard let session = sessions[key], session.process === process else {
+            return
         }
 
+        let wasManuallyStopped = session.isManuallyStopped
         sessions.removeValue(forKey: key)
-    }
 
-    /// Runs off the main actor because it performs database and file-system I/O.
-    /// Crash reports are checked first because the JVM may write one even when
-    /// it exits with status 0.
-    nonisolated private func checkIfCrash(gameId: String, process: Process) async -> Bool {
-        if let crashReport = recentCrashReport(for: gameId) {
-            AppLog.game.info("Game crashed, found crash report \(crashReport): \(gameId)")
-            return true
-        }
-
-        let exitCode = process.terminationStatus
-        if exitCode == 0 {
-            AppLog.game.debug("Game exited normally with no recent crash report: \(gameId)")
-            return false
-        }
-
-        let reason = process.terminationReason == .uncaughtSignal
-            ? "uncaught signal \(exitCode)"
-            : "exit status \(exitCode)"
-        AppLog.game.info("Game exited abnormally (\(reason)), treating as crash: \(gameId)")
-        return true
-    }
-
-    /// Returns the name of a crash report created in the last five minutes, if any.
-    nonisolated private func recentCrashReport(for gameId: String) -> String? {
-        try? gameDatabase.initialize()
-        guard let game = try? gameDatabase.getGame(by: gameId) else {
-            AppLog.game.error("Unable to find game in database, unable to check crash reports: \(gameId)")
-            return nil
-        }
-
-        let crashReportsDir = AppPaths.profileDirectory(gameName: game.gameName)
-            .appendingPathComponent(AppConstants.DirectoryNames.crashReports, isDirectory: true)
-        let files = (try? FileManager.default.contentsOfDirectory(
-            at: crashReportsDir,
-            includingPropertiesForKeys: [.isRegularFileKey, .creationDateKey],
-            options: [.skipsHiddenFiles],
-        )) ?? []
-
-        let cutoff = Date().addingTimeInterval(-300)
-        return files.first { url in
-            guard let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .creationDateKey]),
-                  values.isRegularFile ?? false,
-                  let created = values.creationDate
-            else {
-                return false
-            }
-            return created >= cutoff
-        }?.lastPathComponent
-    }
-
-    private func handleProcessExit(gameId: String, wasManuallyStopped: Bool) {
         if wasManuallyStopped {
             AppLog.game.debug("Game stopped by user: \(gameId)")
-        } else {
-            AppLog.game.info("Game process exited: \(gameId)")
+            return
         }
+
+        guard Self.didExitAbnormally(
+            reason: process.terminationReason,
+            status: process.terminationStatus,
+        ) else {
+            AppLog.game.debug("Game exited normally: \(gameId)")
+            return
+        }
+
+        let reason = Self.terminationDescription(for: process)
+        AppLog.game.info("Game exited abnormally (\(reason)): \(gameId)")
+
+        NotificationCenter.default.post(
+            name: .gameCrashed,
+            object: nil,
+            userInfo: ["directory": gameDirectory],
+        )
+    }
+
+    /// Determines whether a terminated process ended abnormally.
+    ///
+    /// Crash reports are diagnostics, not reliable evidence of a crash, so this
+    /// relies only on the operating system's process termination status.
+    static func didExitAbnormally(reason: Process.TerminationReason, status: Int32) -> Bool {
+        if reason == .uncaughtSignal {
+            return true
+        }
+        return status != 0
+    }
+
+    private static func terminationDescription(for process: Process) -> String {
+        if process.terminationReason == .uncaughtSignal {
+            return "uncaught signal \(process.terminationStatus)"
+        }
+        return "exit status \(process.terminationStatus)"
     }
 }
