@@ -149,7 +149,7 @@ class PlayerDataManager {
                 if !remainingPlayers.isEmpty {
                     var firstPlayer = remainingPlayers[0]
                     firstPlayer.isCurrent = true
-                    try updatePlayer(firstPlayer)
+                    try persistPlayer(firstPlayer)
                     AppLog.player.debug("Current player deleted, set first player as current: \(firstPlayer.name)")
                 }
             }
@@ -199,6 +199,19 @@ class PlayerDataManager {
     /// - Parameter updatedPlayer: The player with updated values.
     /// - Throws: A `GlobalError` if the update fails.
     func updatePlayer(_ updatedPlayer: Player) throws {
+        try persistPlayer(updatedPlayer)
+
+        NotificationCenter.default.post(
+            name: .playerUpdated,
+            object: nil,
+            userInfo: ["updatedPlayer": updatedPlayer],
+        )
+    }
+
+    /// Persists a player without posting a `playerUpdated` notification.
+    ///
+    /// Use this for internal updates where the caller performs a full reload.
+    private func persistPlayer(_ updatedPlayer: Player) throws {
         try profileStore.updateProfile(updatedPlayer.profile)
 
         if let credential = updatedPlayer.credential {
@@ -213,11 +226,6 @@ class PlayerDataManager {
             AppLog.player.debug("No new credentials provided, keeping existing Keychain state - userId: \(updatedPlayer.id)")
         }
 
-        NotificationCenter.default.post(
-            name: .playerUpdated,
-            object: nil,
-            userInfo: ["updatedPlayer": updatedPlayer],
-        )
         AppLog.player.debug("Player info updated: \(updatedPlayer.name)")
     }
 }
