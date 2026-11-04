@@ -103,6 +103,11 @@ enum AppPaths {
         AppConstants.DirectoryNames.datapacks,
         AppConstants.DirectoryNames.crashReports,
     ]
+
+    /// The system Appearance settings extension bundle that provides the theme thumbnails.
+    static let appearanceBundle = Bundle(
+        path: "/System/Library/ExtensionKit/Extensions/Appearance.appex"
+    )
 }
 
 extension AppPaths {
