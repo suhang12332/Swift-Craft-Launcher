@@ -121,7 +121,7 @@ struct VersionGroupedView: View {
         }
 
         let snapshot = String(version[range]).lowercased()
-        return String(snapshot.prefix(5))
+        return String(snapshot.prefix(3))
     }
 }
 
