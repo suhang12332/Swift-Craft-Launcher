@@ -37753,6 +37753,143 @@
         }
       }
     },
+    "game.rename.placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أدخل اسم اللعبة الجديد"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indtast nyt spilnavn"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neuen Spielnamen eingeben"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter new game name"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingrese el nuevo nombre del juego"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syötä uusi pelinnimi"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrez le nouveau nom du jeu"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "नया गेम नाम दर्ज करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inserisci il nuovo nome del gioco"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいゲーム名を入力"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새 게임 이름 입력"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skriv inn nytt spillnavn"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voer een nieuwe spelnaam in"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wprowadź nową nazwę gry"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insira o novo nome do jogo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Введите новое название игры"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ange nytt spelnamn"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ป้อนชื่อเกมใหม่"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeni oyun adını girin"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nhập tên trò chơi mới"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入新的游戏名称"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輸入新的遊戲名稱"
+          }
+        }
+      }
+    },
     "game.repair.rules.header" : {
       "comment" : "Header text above the repair rules",
       "extractionState" : "manual",
@@ -37916,7 +38053,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Game name, version, loader, icon, memory, Java path, JVM arguments, and environment variables stay unchanged."
+            "value" : "• Game name, version, loader, icon, memory, JVM arguments, and environment variables stay unchanged."
           }
         },
         "es" : {
@@ -38018,13 +38155,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 游戏名称、版本、加载器、图标、内存、Java 路径、JVM 参数和环境变量保持不变。"
+            "value" : "• 游戏名称、版本、加载器、图标、内存、JVM 参数和环境变量保持不变。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 遊戲名稱、版本、載入器、圖示、記憶體、Java 路徑、JVM 參數和環境變數保持不變。"
+            "value" : "• 遊戲名稱、版本、載入器、圖示、記憶體、JVM 參數和環境變數保持不變。"
           }
         }
       }
@@ -38036,133 +38173,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• ستتم إعادة تنزيل ملفات اللعبة المفقودة أو التالفة"
+            "value" : "• ستتم إعادة تنزيل ملفات اللعبة المفقودة أو التالفة. ستُعاد تعيين مسار Java إلى وقت التشغيل المطابق لإصدار اللعبة، وسيتم تثبيت وقت تشغيل Java المطلوب إذا كان مفقودًا."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Manglende eller beskadigede spilfiler downloades igen"
+            "value" : "• Manglende eller beskadigede spilfiler downloades igen. Java-stien nulstilles til den runtime, der matcher spilversionen, og den påkrævede Java-runtime installeres, hvis den mangler."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Fehlende oder beschädigte Spieldateien werden erneut heruntergeladen"
+            "value" : "• Fehlende oder beschädigte Spieldateien werden erneut heruntergeladen. Der Java-Pfad wird auf die zur Spielversion passende Laufzeit zurückgesetzt; die erforderliche Java-Laufzeit wird installiert, falls sie fehlt."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Missing or corrupted client JAR, libraries, natives, logging config, asset index, assets, and loader files are re-downloaded; files that pass verification are skipped, and the required Java runtime is installed if missing."
+            "value" : "• Missing or corrupted client JAR, libraries, natives, logging config, asset index, assets, and loader files are re-downloaded; files that pass verification are skipped. The Java path is reset to the runtime matching the game version, and the required Java runtime is installed if missing."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Se volverán a descargar los archivos del juego faltantes o dañados"
+            "value" : "• Se volverán a descargar los archivos del juego faltantes o dañados. La ruta de Java se restablece al entorno de ejecución correspondiente a la versión del juego, y el entorno de Java requerido se instala si falta."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Puuttuvat tai vioittuneet pelitiedostot ladataan uudelleen"
+            "value" : "• Puuttuvat tai vioittuneet pelitiedostot ladataan uudelleen. Java-polku palautetaan peliversiota vastaavaan ajonaikaiseen ympäristöön, ja tarvittava Java-ympäristö asennetaan, jos se puuttuu."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Les fichiers du jeu manquants ou corrompus seront téléchargés à nouveau"
+            "value" : "• Les fichiers du jeu manquants ou corrompus seront téléchargés à nouveau. Le chemin Java est réinitialisé vers l'environnement d'exécution correspondant à la version du jeu, et l'environnement Java requis est installé s'il est absent."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• गुम या दूषित गेम फ़ाइलें फिर से डाउनलोड की जाएंगी"
+            "value" : "• गुम या दूषित गेम फ़ाइलें फिर से डाउनलोड की जाएंगी। Java पथ को गेम संस्करण से मेल खाने वाले रनटाइम पर रीसेट किया जाएगा, और आवश्यक Java रनटाइम अनुपस्थित होने पर इंस्टॉल किया जाएगा।"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• I file di gioco mancanti o corrotti verranno riscaricati"
+            "value" : "• I file di gioco mancanti o corrotti verranno riscaricati. Il percorso Java viene reimpostato sul runtime corrispondente alla versione del gioco e il runtime Java richiesto viene installato se mancante."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 不足または破損したゲームファイルが再ダウンロードされます"
+            "value" : "• 不足または破損したゲームファイルが再ダウンロードされます。Java パスはゲームバージョンに対応するランタイムにリセットされ、必要な Java ランタイムが不足している場合は自動的にインストールされます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 누락되거나 손상된 게임 파일이 다시 다운로드됩니다"
+            "value" : "• 누락되거나 손상된 게임 파일이 다시 다운로드됩니다. Java 경로는 게임 버전과 일치하는 런타임으로 재설정되며, 필요한 Java 런타임이 없으면 자동으로 설치됩니다."
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Manglende eller ødelagte spillfiler lastes ned på nytt"
+            "value" : "• Manglende eller ødelagte spillfiler lastes ned på nytt. Java-banen tilbakestilles til kjøretidsmiljøet som samsvarer med spillversjonen, og nødvendig Java-kjøretidsmiljø installeres hvis det mangler."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Ontbrekende of beschadigde spelbestanden worden opnieuw gedownload"
+            "value" : "• Ontbrekende of beschadigde spelbestanden worden opnieuw gedownload. Het Java-pad wordt teruggezet naar de runtime die overeenkomt met de spelversie; de vereiste Java-runtime wordt geïnstalleerd als deze ontbreekt."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Brakujące lub uszkodzone pliki gry zostaną pobrane ponownie"
+            "value" : "• Brakujące lub uszkodzone pliki gry zostaną pobrane ponownie. Ścieżka Java zostanie przywrócona do środowiska uruchomieniowego dopasowanego do wersji gry, a wymagane środowisko Java zostanie zainstalowane, jeśli go brakuje."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Os arquivos do jogo ausentes ou corrompidos serão baixados novamente"
+            "value" : "• Os arquivos do jogo ausentes ou corrompidos serão baixados novamente. O caminho do Java é redefinido para o runtime correspondente à versão do jogo, e o runtime Java necessário é instalado se estiver ausente."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Недостающие или повреждённые файлы игры будут загружены заново"
+            "value" : "• Недостающие или повреждённые файлы игры будут загружены заново. Путь к Java будет сброшен на среду выполнения, соответствующую версии игры; при отсутствии необходимой среды Java она будет установлена."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Saknade eller skadade spelfiler laddas ned igen"
+            "value" : "• Saknade eller skadade spelfiler laddas ned igen. Java-sökvägen återställs till den runtime som matchar spelversionen, och den nödvändiga Java-runtimen installeras om den saknas."
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• ไฟล์เกมที่หายไปหรือเสียหายจะถูกดาวน์โหลดอีกครั้ง"
+            "value" : "• ไฟล์เกมที่หายไปหรือเสียหายจะถูกดาวน์โหลดอีกครั้ง พาธ Java จะถูกตั้งกลับไปยังรันไทม์ที่ตรงกับเวอร์ชันเกม และจะติดตั้งรันไทม์ Java ที่จำเป็นหากยังไม่มี"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Eksik veya bozuk oyun dosyaları yeniden indirilir"
+            "value" : "• Eksik veya bozuk oyun dosyaları yeniden indirilir. Java yolu, oyun sürümüyle eşleşen çalışma zamanına sıfırlanır ve gerekli Java çalışma zamanı eksikse yüklenir."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Các tệp trò chơi bị thiếu hoặc hỏng sẽ được tải lại"
+            "value" : "• Các tệp trò chơi bị thiếu hoặc hỏng sẽ được tải lại. Đường dẫn Java sẽ được đặt lại thành môi trường chạy tương ứng với phiên bản trò chơi và môi trường chạy Java cần thiết sẽ được cài đặt nếu bị thiếu."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 缺失或损坏的客户端 JAR、依赖库、native 库、日志配置、资源索引、资源和加载器文件会被重新下载；校验通过的文件会跳过，缺失的 Java 运行时会自动安装。"
+            "value" : "• 缺失或损坏的客户端 JAR、依赖库、native 库、日志配置、资源索引、资源和加载器文件会被重新下载；校验通过的文件会跳过。Java 路径会还原为与游戏版本匹配的运行时，缺失的 Java 运行时会自动安装。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 缺失或損壞的用戶端 JAR、依賴庫、native 庫、日誌設定、資源索引、資源和載入器檔案會被重新下載；校驗通過的檔案會跳過，缺失的 Java 執行環境會自動安裝。"
+            "value" : "• 缺失或損壞的用戶端 JAR、依賴庫、native 庫、日誌設定、資源索引、資源和載入器檔案會被重新下載；校驗通過的檔案會跳過。Java 路徑會還原為與遊戲版本相符的執行環境，缺失的 Java 執行環境會自動安裝。"
           }
         }
       }

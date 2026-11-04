@@ -30,8 +30,8 @@ import UserNotifications
 @main
 struct SwiftCraftLauncherApp: App {
     @State var playerListViewModel = PlayerListViewModel()
-    @State var gameRepository = GameRepository()
-    @State var gameLaunchUseCase = GameLaunchUseCase()
+    @State var gameRepository: GameRepository
+    @State var gameLaunchUseCase: GameLaunchUseCase
     @State var container = DIContainer.shared
 
     @Environment(\.openSettings)
@@ -41,6 +41,9 @@ struct SwiftCraftLauncherApp: App {
 
     /// Configures global services and applies app‑level settings.
     init() {
+        let gameRepository = GameRepository()
+        _gameRepository = State(initialValue: gameRepository)
+        _gameLaunchUseCase = State(initialValue: GameLaunchUseCase(gameRepository: gameRepository))
         Self.configureURLCache()
         Self.configureNotifications(delegate: notificationCenterDelegate)
     }

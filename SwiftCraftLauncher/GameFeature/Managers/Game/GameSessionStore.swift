@@ -43,10 +43,11 @@ final class GameSessionStore {
         return actuallyRunning
     }
 
-    func isGameRunningForAnyUser(gameId: String) -> Bool {
+    func isGameActiveForAnyUser(gameId: String) -> Bool {
         let prefix = "\(gameId)_"
         return sessions.contains { key, session in
-            key.hasPrefix(prefix) && session.process?.isRunning == true
+            guard key.hasPrefix(prefix) else { return false }
+            return session.process?.isRunning == true || session.isLaunching
         }
     }
 
