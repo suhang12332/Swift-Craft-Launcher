@@ -121,10 +121,13 @@ struct ModrinthProjectTitleView: View {
 
     private var tagsView: some View {
         HStack(spacing: ModrinthConstants.UIConstants.spacing) {
-            ModrinthTagsView(tags: tags)
             ForEach(infoItems) { item in
                 ModrinthDetailCardTagView(text: item.text)
             }
+            ModrinthTagsView(
+                tags: tags,
+                maxTags: max(0, ModrinthConstants.UIConstants.maxTags - infoItems.count),
+            )
         }
     }
 }
