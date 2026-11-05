@@ -16,7 +16,6 @@ struct ModrinthProjectTitleView: View {
     let tags: [String]
 
     enum ProjectIcon {
-        case favicon(base64: String?)
         case asyncImage(url: URL?)
         case systemImage(name: String)
     }
@@ -47,48 +46,35 @@ struct ModrinthProjectTitleView: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            iconView
-
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(title)
-                        .font(.headline)
-                        .lineLimit(1)
-                    Spacer()
-                    infoRowView
-                }
-
+        ModrinthDetailCardLayout(
+            icon: { iconView },
+            title: {
+                Text(title)
+                    .font(.headline)
+                    .lineLimit(1)
+            },
+            description: {
                 if !description.isEmpty {
                     Text(description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                        .lineLimit(2)
+                        .lineLimit(tags.isEmpty ? 2 : ModrinthConstants.UIConstants.descriptionLineLimit)
                 }
-
+            },
+            tags: {
                 if !tags.isEmpty {
                     tagsView
                 }
-            }
-        }
+            },
+            trailing: {
+                infoColumnView
+            },
+        )
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     @ViewBuilder private var iconView: some View {
         switch icon {
-        case let .favicon(base64):
-            if let base64,
-               let imageData = CommonUtil.imageDataFromBase64(base64),
-               let nsImage = NSImage(data: imageData) {
-                Image(nsImage: nsImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 64, height: 64)
-                    .cornerRadius(8)
-            } else {
-                defaultIcon(systemName: "tv.badge.wifi")
-            }
-
         case let .asyncImage(url):
             if let url {
                 AsyncImage(url: url) { phase in
@@ -96,42 +82,35 @@ struct ModrinthProjectTitleView: View {
                     case let .success(image):
                         image
                             .resizable()
-                            .scaledToFit()
+                            .scaledToFill()
+                            .transition(.opacity)
+                    case .failure:
+                        ModrinthDetailCardPlaceholderIcon(sfSymbol: "questionmark.circle")
                     default:
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.secondary.opacity(0.2))
+                        ModrinthDetailCardPlaceholderIcon()
                     }
                 }
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(for: URLRequest(url: url))
                 }
-                .frame(width: 64, height: 64)
-                .cornerRadius(8)
+                .frame(
+                    width: ModrinthConstants.UIConstants.iconSize,
+                    height: ModrinthConstants.UIConstants.iconSize,
+                )
+                .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
+                .clipped()
             } else {
-                defaultIcon(systemName: "tv.badge.wifi")
+                ModrinthDetailCardPlaceholderIcon(sfSymbol: "tv.badge.wifi")
             }
 
         case let .systemImage(name):
-            defaultIcon(systemName: name)
+            ModrinthDetailCardPlaceholderIcon(sfSymbol: name)
         }
     }
 
-    private func defaultIcon(systemName: String) -> some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(Color.secondary.opacity(0.2))
-            .frame(width: 64, height: 64)
-            .overlay(
-                Image(systemName: systemName)
-                    .foregroundColor(.secondary),
-            )
-    }
-
-    private var infoRowView: some View {
-        HStack {
-            ForEach(Array(infoItems.enumerated()), id: \.offset) { index, item in
-                if index > 0 {
-                    Divider().frame(height: 12)
-                }
+    private var infoColumnView: some View {
+        VStack(alignment: .trailing, spacing: ModrinthConstants.UIConstants.spacing) {
+            ForEach(infoItems) { item in
                 Label(item.text, systemImage: item.systemImage)
                     .lineLimit(1)
             }
@@ -155,7 +134,7 @@ extension ModrinthProjectTitleView {
     ) {
         title = serverName
         description = serverInfo.description.plainText
-        icon = .favicon(base64: serverInfo.favicon)
+        icon = .asyncImage(url: CommonUtil.iconURL(from: serverInfo.favicon))
 
         var items: [InfoItem] = [
             InfoItem(
@@ -197,8 +176,14 @@ extension ModrinthProjectTitleView {
             infoItems = items
         } else {
             infoItems = [
-                InfoItem(text: "\(projectDetail.downloads)", systemImage: "arrow.down.circle"),
-                InfoItem(text: "\(projectDetail.followers)", systemImage: "star"),
+                InfoItem(
+                    text: ModrinthDetailCardView.formatNumber(projectDetail.downloads),
+                    systemImage: "arrow.down.circle",
+                ),
+                InfoItem(
+                    text: ModrinthDetailCardView.formatNumber(projectDetail.followers),
+                    systemImage: "star",
+                ),
             ]
         }
 
