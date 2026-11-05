@@ -10,7 +10,7 @@ import SwiftUI
 /// Displays open-source library acknowledgements.
 public struct AcknowledgementsView: View {
     @State private var viewModel = AcknowledgementsViewModel()
-    private let avatarSize: CGFloat = 40
+    private let avatarSize: CGFloat = 32
     private let avatarCornerRadius: CGFloat = 8
 
     public init() { }
