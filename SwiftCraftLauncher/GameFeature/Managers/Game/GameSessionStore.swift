@@ -56,7 +56,6 @@ final class GameSessionStore {
         return sessions[key]?.isLaunching ?? false
     }
 
-    /// Marks the process as running only when it is still the session's current process.
     func markProcessRunning(gameId: String, userId: String, process: Process) {
         let key = Self.processKey(gameId: gameId, userId: userId)
         guard sessions[key]?.process === process else { return }
