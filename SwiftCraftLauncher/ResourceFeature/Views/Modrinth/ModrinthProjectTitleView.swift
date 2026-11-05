@@ -14,6 +14,12 @@ struct ModrinthProjectTitleView: View {
     let icon: ProjectIcon
     let infoItems: [InfoItem]
     let tags: [String]
+    let style: Style
+
+    enum Style {
+        case standard
+        case detail
+    }
 
     enum ProjectIcon {
         case asyncImage(url: URL?)
@@ -23,12 +29,6 @@ struct ModrinthProjectTitleView: View {
     struct InfoItem: Identifiable {
         let id = UUID()
         let text: String
-        let systemImage: String
-
-        init(text: String, systemImage: String) {
-            self.text = text
-            self.systemImage = systemImage
-        }
     }
 
     init(
@@ -37,12 +37,22 @@ struct ModrinthProjectTitleView: View {
         icon: ProjectIcon,
         infoItems: [InfoItem],
         tags: [String] = [],
+        style: Style = .standard,
     ) {
         self.title = title
         self.description = description
         self.icon = icon
         self.infoItems = infoItems
         self.tags = tags
+        self.style = style
+    }
+
+    private var iconSize: CGFloat {
+        style == .detail ? 64 : ModrinthConstants.UIConstants.iconSize
+    }
+
+    private var titleFont: Font {
+        style == .detail ? .largeTitle.bold() : .headline
     }
 
     var body: some View {
@@ -50,7 +60,7 @@ struct ModrinthProjectTitleView: View {
             icon: { iconView },
             title: {
                 Text(title)
-                    .font(.headline)
+                    .font(titleFont)
                     .lineLimit(1)
             },
             description: {
@@ -58,19 +68,17 @@ struct ModrinthProjectTitleView: View {
                     Text(description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                        .lineLimit(tags.isEmpty ? 2 : ModrinthConstants.UIConstants.descriptionLineLimit)
+                        .lineLimit(ModrinthConstants.UIConstants.descriptionLineLimit)
                 }
             },
             tags: {
-                if !tags.isEmpty {
-                    tagsView
-                }
+                tagsView
             },
             trailing: {
-                infoColumnView
+                EmptyView()
             },
         )
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
     @ViewBuilder private var iconView: some View {
@@ -85,42 +93,39 @@ struct ModrinthProjectTitleView: View {
                             .scaledToFill()
                             .transition(.opacity)
                     case .failure:
-                        ModrinthDetailCardPlaceholderIcon(sfSymbol: "questionmark.circle")
+                        ModrinthDetailCardPlaceholderIcon(
+                            sfSymbol: "questionmark.circle",
+                            size: iconSize,
+                        )
                     default:
-                        ModrinthDetailCardPlaceholderIcon()
+                        ModrinthDetailCardPlaceholderIcon(size: iconSize)
                     }
                 }
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(for: URLRequest(url: url))
                 }
-                .frame(
-                    width: ModrinthConstants.UIConstants.iconSize,
-                    height: ModrinthConstants.UIConstants.iconSize,
-                )
+                .frame(width: iconSize, height: iconSize)
                 .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
                 .clipped()
             } else {
-                ModrinthDetailCardPlaceholderIcon(sfSymbol: "tv.badge.wifi")
+                ModrinthDetailCardPlaceholderIcon(
+                    sfSymbol: "tv.badge.wifi",
+                    size: iconSize,
+                )
             }
 
         case let .systemImage(name):
-            ModrinthDetailCardPlaceholderIcon(sfSymbol: name)
+            ModrinthDetailCardPlaceholderIcon(sfSymbol: name, size: iconSize)
         }
-    }
-
-    private var infoColumnView: some View {
-        VStack(alignment: .trailing, spacing: ModrinthConstants.UIConstants.spacing) {
-            ForEach(infoItems) { item in
-                Label(item.text, systemImage: item.systemImage)
-                    .lineLimit(1)
-            }
-        }
-        .font(.caption)
-        .foregroundColor(.secondary)
     }
 
     private var tagsView: some View {
-        ModrinthTagsView(tags: tags)
+        HStack(spacing: ModrinthConstants.UIConstants.spacing) {
+            ModrinthTagsView(tags: tags)
+            ForEach(infoItems) { item in
+                ModrinthDetailCardTagView(text: item.text)
+            }
+        }
     }
 }
 
@@ -139,18 +144,15 @@ extension ModrinthProjectTitleView {
         var items: [InfoItem] = [
             InfoItem(
                 text: serverPort.flatMap { $0 > 0 ? "\(serverAddress):\($0)" : nil } ?? serverAddress,
-                systemImage: "tv.badge.wifi",
             ),
         ]
 
         if let players = serverInfo.players {
-            items.append(InfoItem(
-                text: "\(players.online) / \(players.max)",
-                systemImage: "person.2",
-            ))
+            items.append(InfoItem(text: "\(players.online) / \(players.max)"))
         }
 
         infoItems = items
+        style = .standard
 
         if let version = serverInfo.version {
             tags = [version.name]
@@ -160,30 +162,28 @@ extension ModrinthProjectTitleView {
     }
 
     /// Creates a title card from a Modrinth project detail.
-    init(projectDetail: ModrinthProjectDetail) {
+    init(
+        projectDetail: ModrinthProjectDetail,
+        style: Style = .standard,
+    ) {
         title = projectDetail.title
         description = projectDetail.description
         icon = .asyncImage(url: projectDetail.iconUrl.flatMap { URL(string: $0) })
+        self.style = style
 
         if let serverInfo = projectDetail.fileName, !serverInfo.isEmpty {
             let parsed = CommonUtil.parseMinecraftJavaServerInfo(from: serverInfo)
             var items: [InfoItem] = [
-                InfoItem(text: parsed.address, systemImage: "tv.badge.wifi"),
+                InfoItem(text: parsed.address),
             ]
             if let playersText = parsed.playersText, !playersText.isEmpty {
-                items.append(InfoItem(text: playersText, systemImage: "person.2"))
+                items.append(InfoItem(text: playersText))
             }
             infoItems = items
         } else {
             infoItems = [
-                InfoItem(
-                    text: ModrinthDetailCardView.formatNumber(projectDetail.downloads),
-                    systemImage: "arrow.down.circle",
-                ),
-                InfoItem(
-                    text: ModrinthDetailCardView.formatNumber(projectDetail.followers),
-                    systemImage: "star",
-                ),
+                InfoItem(text: ModrinthDetailCardView.formatNumber(projectDetail.downloads)),
+                InfoItem(text: ModrinthDetailCardView.formatNumber(projectDetail.followers)),
             ]
         }
 
