@@ -19,7 +19,7 @@ enum ModrinthConstants {
         static let tagVerticalPadding: CGFloat = 1
         static let spacing: CGFloat = 3
         static let descriptionLineLimit = 1
-        static let maxTags = 3
+        static let maxTags = 4
         static let contentSpacing: CGFloat = 8
         static let skeletonPlaceholderCount = 20
     }

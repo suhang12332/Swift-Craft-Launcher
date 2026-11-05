@@ -10,22 +10,19 @@ import SwiftUI
 /// Displays up to `maxTags` tags, with a +N marker when more are available.
 struct ModrinthTagsView: View {
     let tags: [String]
+    var maxTags: Int = ModrinthConstants.UIConstants.maxTags
 
     var body: some View {
         HStack(spacing: ModrinthConstants.UIConstants.spacing) {
             ForEach(
-                Array(
-                    tags.prefix(
-                        ModrinthConstants.UIConstants.maxTags,
-                    ),
-                ),
+                Array(tags.prefix(maxTags)),
                 id: \.self,
             ) { tag in
                 ModrinthDetailCardTagView(text: tag)
             }
 
-            if tags.count > ModrinthConstants.UIConstants.maxTags {
-                Text("+\(tags.count - ModrinthConstants.UIConstants.maxTags)")
+            if tags.count > maxTags {
+                Text("+\(tags.count - maxTags)")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
