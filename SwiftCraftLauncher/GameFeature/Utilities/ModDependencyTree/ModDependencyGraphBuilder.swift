@@ -29,7 +29,7 @@ struct ModDependencyGraphBuilder {
     }
 
     func build(_ input: Input) -> ModDependencyGraph {
-        var localMods = Self.normalizedLocalMods(input.localMods)
+        let localMods = Self.normalizedLocalMods(input.localMods)
 
         var indexByProjectId: [String: Int] = [:]
         indexByProjectId.reserveCapacity(localMods.count)
@@ -37,7 +37,7 @@ struct ModDependencyGraphBuilder {
             indexByProjectId[mod.projectId] = index
         }
 
-        var cycleProjectIds = Self.cycleProjectIds(
+        let cycleProjectIds = Self.cycleProjectIds(
             localMods: localMods,
             indexByProjectId: indexByProjectId,
         )
@@ -77,18 +77,10 @@ struct ModDependencyGraphBuilder {
             ))
         }
 
-        let graph = ModDependencyGraph(
+        return ModDependencyGraph(
             nodes: nodes,
             edges: edges,
         )
-
-        // Manual cleanup: these collections are only needed while flattening
-        // the dependency tree into nodes and edges.
-        localMods.removeAll(keepingCapacity: false)
-        indexByProjectId.removeAll(keepingCapacity: false)
-        cycleProjectIds.removeAll(keepingCapacity: false)
-
-        return graph
     }
 
     /// Returns required dependency IDs that are not installed locally.

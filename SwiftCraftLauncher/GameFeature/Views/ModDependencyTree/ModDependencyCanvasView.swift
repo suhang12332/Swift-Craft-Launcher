@@ -21,7 +21,6 @@ struct ModDependencyCanvasView: View {
     @State private var magnifyStartZoom: CGFloat?
     @State private var selectedNodeIDs: Set<String> = []
     private let frames: [String: CGRect]
-    private let rootCanvasFrame: CGRect
     private let parentsByNodeID: [String: [String]]
 
     private let canvasSize: CGSize
@@ -48,7 +47,6 @@ struct ModDependencyCanvasView: View {
         frames = layout.framesByNodeID.mapValues {
             $0.offsetBy(dx: origin.x, dy: origin.y)
         }
-        rootCanvasFrame = layout.rootFrame.offsetBy(dx: origin.x, dy: origin.y)
 
         var parents: [String: [String]] = [:]
         for edge in layout.edges {
@@ -87,7 +85,10 @@ struct ModDependencyCanvasView: View {
             GameDependencyCard(
                 game: game,
             )
-            .position(x: rootCanvasFrame.midX, y: rootCanvasFrame.midY)
+            .position(
+                x: canvasFrame(for: ModDependencyGraphLayout.gameNodeID).midX,
+                y: canvasFrame(for: ModDependencyGraphLayout.gameNodeID).midY,
+            )
 
             ForEach(layout.nodes) { node in
                 let frame = canvasFrame(for: node.id)

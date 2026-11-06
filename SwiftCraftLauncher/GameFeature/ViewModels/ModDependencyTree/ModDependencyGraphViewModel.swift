@@ -59,12 +59,11 @@ final class ModDependencyGraphViewModel {
         projectIcons = [:]
 
         do {
-            var prepared = try await preparePresentation(for: game)
+            let prepared = try await preparePresentation(for: game)
             guard !Task.isCancelled, generation == loadGeneration else {
                 return
             }
             let icons = await ModDependencyIconLoader.load(iconURLs: prepared.iconURLs)
-            prepared.iconURLs.removeAll(keepingCapacity: false)
 
             guard !Task.isCancelled, generation == loadGeneration else {
                 return
@@ -110,16 +109,11 @@ final class ModDependencyGraphViewModel {
         edges: [ModDependencyGraph.Edge],
         iconURLs: [String: URL]
     ) {
-        var graph: ModDependencyGraph? = try await ModDependencyGraphService().buildGraph(for: game)
-        let nodes = graph?.nodes ?? []
-        let edges = graph?.edges ?? []
-        let iconURLs = graph.map { ModDependencyIconLoader.iconURLs(for: $0) } ?? [:]
-
-        // Manual cleanup: the flattened graph and everything it retained from
-        // the scan/build phase is no longer needed once the render-facing
-        // pieces have been extracted.
-        graph = nil
-
-        return (nodes, edges, iconURLs)
+        let graph = try await ModDependencyGraphService().buildGraph(for: game)
+        return (
+            graph.nodes,
+            graph.edges,
+            ModDependencyIconLoader.iconURLs(for: graph),
+        )
     }
 }

@@ -31,30 +31,21 @@ struct ModDependencyGraphService: Sendable {
 
     /// Scans every mod installed in `game` and returns the dependency graph.
     func buildGraph(for game: GameVersionInfo) async throws -> ModDependencyGraph {
-        var localMods = try await scanner.scan(game: game)
+        let localMods = try await scanner.scan(game: game)
         guard !localMods.isEmpty else {
             throw Self.noModsError()
         }
 
-        var missingProjectIds = ModDependencyGraphBuilder.missingDependencyProjectIds(in: localMods)
-        var externalProjects = await fetchExternalProjects(ids: missingProjectIds)
+        let missingProjectIds = ModDependencyGraphBuilder.missingDependencyProjectIds(in: localMods)
+        let externalProjects = await fetchExternalProjects(ids: missingProjectIds)
 
-        let graph = builder.build(
+        return builder.build(
             ModDependencyGraphBuilder.Input(
                 localMods: localMods,
                 missingProjectIds: missingProjectIds.sorted(),
                 externalProjects: externalProjects,
             ),
         )
-
-        // The flattened graph owns everything the renderer needs. Release the
-        // scan results and external project details explicitly instead of
-        // keeping them alive until the caller returns.
-        localMods.removeAll(keepingCapacity: false)
-        missingProjectIds.removeAll(keepingCapacity: false)
-        externalProjects.removeAll(keepingCapacity: false)
-
-        return graph
     }
 
     static func noModsError() -> GlobalError {
