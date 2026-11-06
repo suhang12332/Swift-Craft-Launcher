@@ -85,6 +85,7 @@ struct ModDependencyGraphBuilder {
 
     /// Returns required dependency IDs that are not installed locally.
     static func missingDependencyProjectIds(in mods: [LocalMod]) -> Set<String> {
+        let mods = normalizedLocalMods(mods)
         let localProjectIds = Set(mods.lazy.map(\.projectId))
         var missingProjectIds: Set<String> = []
 
@@ -126,7 +127,7 @@ struct ModDependencyGraphBuilder {
 
         for mod in mods {
             if let existing = byProjectId[mod.projectId] {
-                if !existing.isEnabled, mod.isEnabled {
+                if prefers(mod, over: existing) {
                     byProjectId[mod.projectId] = mod
                 }
             } else {
@@ -136,6 +137,15 @@ struct ModDependencyGraphBuilder {
         }
 
         return order.compactMap { byProjectId[$0] }
+    }
+
+    /// Prefers the enabled copy of a project, then a stable file-name order so
+    /// duplicate files cannot make the graph depend on scan completion order.
+    private static func prefers(_ candidate: LocalMod, over current: LocalMod) -> Bool {
+        if candidate.isEnabled != current.isEnabled {
+            return candidate.isEnabled
+        }
+        return candidate.fileName < current.fileName
     }
 
     private static func cycleProjectIds(

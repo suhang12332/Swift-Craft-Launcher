@@ -65,7 +65,7 @@ struct ModDependencyGraphLayout: Sendable {
         let isolatedIDs = Set(isolatedNodes.map(\.id))
 
         var layers = Array(repeating: [ModDependencyGraph.Node](), count: modLayerCount)
-        for node in graphNodes {
+        for node in graphNodes where !isolatedIDs.contains(node.id) {
             let depth = layoutDepths[node.id]!
             layers[depth].append(node)
         }
@@ -75,9 +75,7 @@ struct ModDependencyGraphLayout: Sendable {
             childrenById: childrenById,
         )
 
-        let activeLayers = layers.map { layer in
-            layer.filter { !isolatedIDs.contains($0.id) }
-        }
+        let activeLayers = layers
         let rawY = Self.verticalPositions(
             layers: activeLayers,
             parentsById: parentsById,
@@ -325,6 +323,10 @@ struct ModDependencyGraphLayout: Sendable {
     /// Drops edges that are already implied by a longer dependency path. For
     /// example, `C -> A` is removed when `C -> B -> A` exists, which keeps the
     /// board readable without losing reachability.
+    ///
+    /// Edges that belong to a cycle are always kept. Otherwise a cycle would
+    /// act as the "alternate path" for its own edges and remove them, leaving
+    /// genuinely required nodes disconnected.
     private static func transitiveReduction(
         _ edges: [ModDependencyGraph.Edge],
     ) -> [ModDependencyGraph.Edge] {
@@ -333,19 +335,34 @@ struct ModDependencyGraphLayout: Sendable {
             adjacency[edge.from, default: []].append(edge.to)
         }
 
-        return edges.filter { edge in
-            !hasAlternatePath(
+        let cycleEdgeIndices = Set(edges.indices.filter { index in
+            let edge = edges[index]
+            return hasPath(from: edge.to, to: edge.from, adjacency: adjacency)
+        })
+
+        var acyclicAdjacency: [String: [String]] = [:]
+        for (index, edge) in edges.enumerated() where !cycleEdgeIndices.contains(index) {
+            acyclicAdjacency[edge.from, default: []].append(edge.to)
+        }
+
+        return edges.enumerated().compactMap { index, edge in
+            guard !cycleEdgeIndices.contains(index) else {
+                return edge
+            }
+            return hasPath(
                 from: edge.from,
                 to: edge.to,
-                adjacency: adjacency,
-            )
+                adjacency: acyclicAdjacency,
+                ignoringDirectEdge: true,
+            ) ? nil : edge
         }
     }
 
-    private static func hasAlternatePath(
+    private static func hasPath(
         from source: String,
         to target: String,
         adjacency: [String: [String]],
+        ignoringDirectEdge: Bool = false,
     ) -> Bool {
         var queue = [source]
         var visited: Set<String> = [source]
@@ -356,7 +373,7 @@ struct ModDependencyGraphLayout: Sendable {
             index += 1
 
             for next in adjacency[node] ?? [] {
-                if node == source, next == target {
+                if ignoringDirectEdge, node == source, next == target {
                     continue
                 }
                 if next == target {
@@ -382,9 +399,11 @@ struct ModDependencyGraphLayout: Sendable {
         parentsById: [String: [String]],
         childrenById: [String: [String]],
     ) -> [String: Int] {
+        let orderedNodes = nodes.sorted(by: titleOrder)
+
         var titleOrderIndex: [String: Int] = [:]
         titleOrderIndex.reserveCapacity(nodes.count)
-        for (index, node) in nodes.sorted(by: titleOrder).enumerated() {
+        for (index, node) in orderedNodes.enumerated() {
             titleOrderIndex[node.id] = index
         }
 
@@ -409,7 +428,6 @@ struct ModDependencyGraphLayout: Sendable {
             postorder.append(id)
         }
 
-        let orderedNodes = nodes.sorted(by: titleOrder)
         for node in orderedNodes where parentsById[node.id] == nil {
             visit(node.id)
         }

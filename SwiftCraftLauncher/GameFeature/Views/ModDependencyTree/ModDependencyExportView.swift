@@ -14,7 +14,6 @@ struct ModDependencyExportView: View {
     let game: GameVersionInfo
     let gameIcon: NSImage?
     let projectIcons: [String: NSImage]
-    private let frames: [String: CGRect]
 
     init(
         layout: ModDependencyGraphLayout,
@@ -26,7 +25,6 @@ struct ModDependencyExportView: View {
         self.game = game
         self.gameIcon = gameIcon
         self.projectIcons = projectIcons
-        frames = layout.framesByNodeID
     }
 
     var body: some View {
@@ -34,7 +32,7 @@ struct ModDependencyExportView: View {
             Canvas { context, _ in
                 drawModDependencyConnections(
                     edges: layout.edges,
-                    frames: frames,
+                    frames: layout.framesByNodeID,
                     in: &context,
                 )
             }

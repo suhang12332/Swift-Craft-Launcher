@@ -29,10 +29,6 @@ struct ModDependencyGraphWindowContent: View {
                 ModDependencyGraphWindowView(game: payload.game)
             }
         }
-        .frame(
-            minWidth: AuxiliaryWindowID.modDependencyGraph.defaultSize.width,
-            minHeight: AuxiliaryWindowID.modDependencyGraph.defaultSize.height,
-        )
     }
 }
 
@@ -122,6 +118,7 @@ private struct ModDependencyGraphWindowView: View {
             return
         }
 
+        let projectIcons = viewModel.projectIcons
         isSaving = true
         Task { @MainActor in
             defer { isSaving = false }
@@ -131,38 +128,45 @@ private struct ModDependencyGraphWindowView: View {
                 layout: layout,
                 game: game,
                 gameIcon: gameIcon,
-                projectIcons: viewModel.projectIcons,
+                projectIcons: projectIcons,
             )
             let renderer = ImageRenderer(content: content)
             let maxDimension: CGFloat = 12000
             let longestSide = max(layout.size.width, layout.size.height)
             renderer.scale = min(3, maxDimension / longestSide)
 
-            guard let image = renderer.cgImage,
-                  let destination = CGImageDestinationCreateWithURL(
-                      destinationURL as CFURL,
-                      UTType.png.identifier as CFString,
-                      1,
-                      nil,
-                  )
-            else {
+            guard let image = renderer.cgImage else {
+                reportImageSaveFailure(destinationURL)
+                return
+            }
+            guard let destination = CGImageDestinationCreateWithURL(
+                destinationURL as CFURL,
+                UTType.png.identifier as CFString,
+                1,
+                nil,
+            ) else {
+                reportImageSaveFailure(destinationURL)
                 return
             }
 
             CGImageDestinationAddImage(destination, image, nil)
             guard CGImageDestinationFinalize(destination) else {
-                let message = "Failed to write dependency graph PNG to \(destinationURL.path)"
-                AppLog.game.error(message)
-                DIContainer.shared.core.errorHandler.handle(
-                    GlobalError.fileSystem(
-                        i18nKey: "error.filesystem.image_save_failed",
-                        level: .popup,
-                        message: message,
-                    ),
-                )
+                reportImageSaveFailure(destinationURL)
                 return
             }
         }
+    }
+
+    private func reportImageSaveFailure(_ destinationURL: URL) {
+        let message = "Failed to write dependency graph PNG to \(destinationURL.path)"
+        AppLog.game.error(message)
+        DIContainer.shared.core.errorHandler.handle(
+            GlobalError.fileSystem(
+                i18nKey: "error.filesystem.image_save_failed",
+                level: .popup,
+                message: message,
+            ),
+        )
     }
 
     private func saveFileName(for game: GameVersionInfo) -> String {

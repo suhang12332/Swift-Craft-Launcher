@@ -240,6 +240,41 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
         XCTAssertEqual(graph.nodes.first?.isEnabled, true)
     }
 
+    func testBuild_duplicateEnabledFilesUseStableOrder() {
+        let project = Self.makeDetail(id: "project-a", title: "A Mod")
+        let fileB = Self.makeLocalMod(
+            project: project,
+            version: Self.makeVersion(
+                projectId: project.id,
+                versionId: "a-2",
+                sha1: "hash-b",
+                dependencies: [Self.dependency("project-b", type: "required")],
+            ),
+            fileName: "b.jar",
+            isEnabled: true,
+        )
+        let fileA = Self.makeLocalMod(
+            project: project,
+            version: Self.makeVersion(
+                projectId: project.id,
+                versionId: "a-1",
+                sha1: "hash-a",
+                dependencies: [Self.dependency("project-a-dep", type: "required")],
+            ),
+            fileName: "a.jar",
+            isEnabled: true,
+        )
+
+        let firstGraph = builder.build(makeInput(localMods: [fileB, fileA]))
+        let secondGraph = builder.build(makeInput(localMods: [fileA, fileB]))
+        let firstEdges = firstGraph.edges.map { "\($0.from)->\($0.to)" }
+        let secondEdges = secondGraph.edges.map { "\($0.from)->\($0.to)" }
+
+        XCTAssertEqual(firstGraph.nodes.first { $0.projectId == project.id }?.fileName, "a.jar")
+        XCTAssertEqual(firstEdges, secondEdges)
+        XCTAssertEqual(firstEdges, ["project-a->project-a-dep"])
+    }
+
     func testBuild_carriesDisabledState() {
         let project = Self.makeDetail(id: "project-a", title: "A Mod")
         let mod = Self.makeLocalMod(
@@ -438,6 +473,52 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
 
         XCTAssertEqual(rootTargets.count, 1)
         XCTAssertTrue([projectA.id, projectB.id].contains(rootTargets[0]))
+    }
+
+    func testLayout_keepsDependencyEdgesWhenCycleHasShortcut() {
+        let projectA = Self.makeDetail(id: "project-a", title: "A Mod")
+        let projectB = Self.makeDetail(id: "project-b", title: "B Mod")
+        let projectC = Self.makeDetail(id: "project-c", title: "C Library")
+
+        let modA = Self.makeLocalMod(
+            project: projectA,
+            version: Self.makeVersion(
+                projectId: projectA.id,
+                versionId: "a-1",
+                sha1: "hash-a",
+                dependencies: [
+                    Self.dependency(projectB.id, type: "required"),
+                    Self.dependency(projectC.id, type: "required"),
+                ],
+            ),
+            sha1: "hash-a",
+        )
+        let modB = Self.makeLocalMod(
+            project: projectB,
+            version: Self.makeVersion(
+                projectId: projectB.id,
+                versionId: "b-1",
+                sha1: "hash-b",
+                dependencies: [
+                    Self.dependency(projectA.id, type: "required"),
+                    Self.dependency(projectC.id, type: "required"),
+                ],
+            ),
+            sha1: "hash-b",
+        )
+        let modC = Self.makeLocalMod(
+            project: projectC,
+            version: Self.makeVersion(projectId: projectC.id, versionId: "c-1", sha1: "hash-c"),
+            sha1: "hash-c",
+        )
+
+        let graph = builder.build(makeInput(localMods: [modA, modB, modC]))
+        let layout = makeLayout(graph)
+
+        XCTAssertTrue(layout.edges.contains { $0.from == projectC.id && $0.to == projectA.id })
+        XCTAssertTrue(layout.edges.contains { $0.from == projectC.id && $0.to == projectB.id })
+        XCTAssertTrue(layout.edges.contains { $0.from == projectB.id && $0.to == projectA.id })
+        XCTAssertTrue(layout.edges.contains { $0.from == projectA.id && $0.to == projectB.id })
     }
 
     func testLayout_connectsEveryCycleOnlyComponentToGameRoot() {
