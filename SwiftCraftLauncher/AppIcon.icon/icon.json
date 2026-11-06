@@ -41,8 +41,8 @@
           "position" : {
             "scale" : 1,
             "translation-in-points" : [
-              -0.5,
-              38
+              0,
+              36.5
             ]
           }
         }
@@ -74,6 +74,7 @@
       "layers" : [
         {
           "glass" : false,
+          "hidden" : false,
           "image-name" : "font.svg",
           "name" : "font"
         },
@@ -84,6 +85,7 @@
         },
         {
           "glass" : true,
+          "hidden" : false,
           "image-name" : "line.svg",
           "name" : "line"
         }
