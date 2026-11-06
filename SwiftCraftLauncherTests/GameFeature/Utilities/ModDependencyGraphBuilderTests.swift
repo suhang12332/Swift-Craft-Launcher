@@ -53,12 +53,10 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                     Self.dependency("project-embedded", type: "embedded"),
                 ],
             ),
-            sha1: "hash-a",
         )
         let modB = Self.makeLocalMod(
             project: projectB,
             version: Self.makeVersion(projectId: projectB.id, versionId: "b-1", sha1: "hash-b"),
-            sha1: "hash-b",
         )
 
         let graph = builder.build(makeInput(localMods: [modA, modB]))
@@ -88,7 +86,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                     Self.dependency("project-incompatible", type: "incompatible"),
                 ],
             ),
-            sha1: "hash-a",
         )
 
         let graph = builder.build(makeInput(localMods: [modA]))
@@ -108,7 +105,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-a",
                 dependencies: [Self.dependency(projectB.id, type: "required")],
             ),
-            sha1: "hash-a",
         )
 
         let graph = builder.build(makeInput(
@@ -132,7 +128,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-a",
                 dependencies: [Self.dependency("project-missing", type: "required")],
             ),
-            sha1: "hash-a",
         )
 
         let graph = builder.build(makeInput(localMods: [modA]))
@@ -155,7 +150,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-a",
                 dependencies: [Self.dependency(shared.id, type: "required")],
             ),
-            sha1: "hash-a",
         )
         let modB = Self.makeLocalMod(
             project: projectB,
@@ -165,12 +159,10 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-b",
                 dependencies: [Self.dependency(shared.id, type: "required")],
             ),
-            sha1: "hash-b",
         )
         let sharedMod = Self.makeLocalMod(
             project: shared,
             version: Self.makeVersion(projectId: shared.id, versionId: "shared-1", sha1: "hash-shared"),
-            sha1: "hash-shared",
         )
 
         let graph = builder.build(makeInput(
@@ -196,7 +188,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-a",
                 dependencies: [Self.dependency(projectB.id, type: "required")],
             ),
-            sha1: "hash-a",
         )
         let modB = Self.makeLocalMod(
             project: projectB,
@@ -206,7 +197,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-b",
                 dependencies: [Self.dependency(projectA.id, type: "required")],
             ),
-            sha1: "hash-b",
         )
 
         let graph = builder.build(makeInput(localMods: [modA, modB]))
@@ -222,14 +212,12 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
             project: project,
             version: Self.makeVersion(projectId: project.id, versionId: "a-1", sha1: "hash-a"),
             fileName: "a.jar",
-            sha1: "hash-a",
             isEnabled: true,
         )
         let disabled = Self.makeLocalMod(
             project: project,
             version: Self.makeVersion(projectId: project.id, versionId: "a-1", sha1: "hash-a"),
             fileName: "a.jar.disable",
-            sha1: "hash-a",
             isEnabled: false,
         )
 
@@ -281,7 +269,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
             project: project,
             version: Self.makeVersion(projectId: project.id, versionId: "a-1", sha1: "hash-a"),
             fileName: "a.jar.disable",
-            sha1: "hash-a",
             isEnabled: false,
         )
 
@@ -305,7 +292,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-a",
                 dependencies: [Self.dependency(projectB.id, type: "required")],
             ),
-            sha1: "hash-a",
         )
         let modB = Self.makeLocalMod(
             project: projectB,
@@ -315,12 +301,10 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-b",
                 dependencies: [Self.dependency(projectC.id, type: "required")],
             ),
-            sha1: "hash-b",
         )
         let modC = Self.makeLocalMod(
             project: projectC,
             version: Self.makeVersion(projectId: projectC.id, versionId: "c-1", sha1: "hash-c"),
-            sha1: "hash-c",
         )
 
         let graph = builder.build(makeInput(localMods: [modA, modB, modC]))
@@ -357,7 +341,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                     Self.dependency(projectC.id, type: "required"),
                 ],
             ),
-            sha1: "hash-a",
         )
         let modB = Self.makeLocalMod(
             project: projectB,
@@ -367,12 +350,10 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-b",
                 dependencies: [Self.dependency(projectC.id, type: "required")],
             ),
-            sha1: "hash-b",
         )
         let modC = Self.makeLocalMod(
             project: projectC,
             version: Self.makeVersion(projectId: projectC.id, versionId: "c-1", sha1: "hash-c"),
-            sha1: "hash-c",
         )
 
         let graph = builder.build(makeInput(localMods: [modA, modB, modC]))
@@ -403,7 +384,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-a",
                 dependencies: [Self.dependency(shared.id, type: "required")],
             ),
-            sha1: "hash-a",
         )
         let modB = Self.makeLocalMod(
             project: projectB,
@@ -413,12 +393,10 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-b",
                 dependencies: [Self.dependency(shared.id, type: "required")],
             ),
-            sha1: "hash-b",
         )
         let sharedMod = Self.makeLocalMod(
             project: shared,
             version: Self.makeVersion(projectId: shared.id, versionId: "shared-1", sha1: "hash-shared"),
-            sha1: "hash-shared",
         )
 
         let graph = builder.build(makeInput(
@@ -452,7 +430,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-a",
                 dependencies: [Self.dependency(projectB.id, type: "required")],
             ),
-            sha1: "hash-a",
         )
         let modB = Self.makeLocalMod(
             project: projectB,
@@ -462,7 +439,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-b",
                 dependencies: [Self.dependency(projectA.id, type: "required")],
             ),
-            sha1: "hash-b",
         )
 
         let graph = builder.build(makeInput(localMods: [modA, modB]))
@@ -491,7 +467,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                     Self.dependency(projectC.id, type: "required"),
                 ],
             ),
-            sha1: "hash-a",
         )
         let modB = Self.makeLocalMod(
             project: projectB,
@@ -504,12 +479,10 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                     Self.dependency(projectC.id, type: "required"),
                 ],
             ),
-            sha1: "hash-b",
         )
         let modC = Self.makeLocalMod(
             project: projectC,
             version: Self.makeVersion(projectId: projectC.id, versionId: "c-1", sha1: "hash-c"),
-            sha1: "hash-c",
         )
 
         let graph = builder.build(makeInput(localMods: [modA, modB, modC]))
@@ -531,7 +504,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
         let modA = Self.makeLocalMod(
             project: projectA,
             version: Self.makeVersion(projectId: projectA.id, versionId: "a-1", sha1: "hash-a"),
-            sha1: "hash-a",
         )
         let modB = Self.makeLocalMod(
             project: projectB,
@@ -541,7 +513,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-b",
                 dependencies: [Self.dependency(projectC.id, type: "required")],
             ),
-            sha1: "hash-b",
         )
         let modC = Self.makeLocalMod(
             project: projectC,
@@ -551,7 +522,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-c",
                 dependencies: [Self.dependency(projectB.id, type: "required")],
             ),
-            sha1: "hash-c",
         )
         let modD = Self.makeLocalMod(
             project: projectD,
@@ -561,7 +531,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-d",
                 dependencies: [Self.dependency(projectE.id, type: "required")],
             ),
-            sha1: "hash-d",
         )
         let modE = Self.makeLocalMod(
             project: projectE,
@@ -571,7 +540,6 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
                 sha1: "hash-e",
                 dependencies: [Self.dependency(projectD.id, type: "required")],
             ),
-            sha1: "hash-e",
         )
 
         let graph = builder.build(makeInput(localMods: [modA, modB, modC, modD, modE]))
@@ -767,10 +735,8 @@ final class ModDependencyGraphBuilderTests: XCTestCase {
         project: ModrinthProjectDetail,
         version: ModrinthProjectDetailVersion?,
         fileName: String? = nil,
-        sha1: String? = nil,
         isEnabled: Bool = true,
     ) -> LocalMod {
-        _ = sha1
         return LocalMod(
             project: project,
             installedVersion: version,
