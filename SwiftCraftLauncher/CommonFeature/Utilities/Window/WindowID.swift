@@ -55,4 +55,14 @@ enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
             CGSize(width: 1200, height: 800)
         }
     }
+
+    /// Whether this window supports resizing, minimizing, and maximizing.
+    var allowsMaximizeAndMinimize: Bool {
+        switch self {
+        case .modDependencyGraph:
+            true
+        default:
+            false
+        }
+    }
 }

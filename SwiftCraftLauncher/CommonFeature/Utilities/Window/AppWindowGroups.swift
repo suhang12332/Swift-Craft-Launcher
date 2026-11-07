@@ -48,7 +48,6 @@ private struct AuxiliaryWindowScene: View {
                     .environment(gameRepository)
             case .modDependencyGraph:
                 ModDependencyGraphWindowContent()
-                    .allowsMaximizeAndMinimize()
             }
         }
         .navigationTitle(windowID.localizedTitle)
@@ -61,10 +60,7 @@ private struct AuxiliaryWindowScene: View {
         )
         .background(
             WindowAccessor { window in
-                guard windowID != .modDependencyGraph else {
-                    return
-                }
-                WindowStyleHelper.configureAuxiliaryWindow(window)
+                WindowStyleHelper.configureAuxiliaryWindow(window, for: windowID)
             },
         )
         .onAppear {
