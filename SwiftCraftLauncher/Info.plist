@@ -58,7 +58,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.games</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2025-2026 Swift Craft Launcher</string>
+	<string>Copyright © 2025 Swift Craft Launcher</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Used when voice input features are enabled.</string>
 	<key>CFBundleURLTypes</key>
