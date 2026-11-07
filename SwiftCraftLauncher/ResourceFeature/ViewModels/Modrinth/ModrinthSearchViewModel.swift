@@ -100,28 +100,30 @@ final class ModrinthSearchViewModel {
                         query: query,
                     )
                 } else {
-                    let cfParams = ModrinthToCurseForgeSearchAdapter.convertToSearchParams(
-                        projectType: projectType,
-                        versions: filterOptions.versions,
-                        categories: filterOptions.categories,
-                        resolutions: filterOptions.resolutions,
-                        loaders: filterOptions.loaders,
-                        query: query,
-                    )
-                    let cfResult = try await CurseForgeService.searchProjectsThrowing(
-                        gameId: 432, // Minecraft
-                        classId: cfParams.classId,
-                        categoryId: nil,
-                        categoryIds: cfParams.categoryIds,
-                        gameVersion: nil,
-                        gameVersions: cfParams.gameVersions,
-                        searchFilter: cfParams.searchFilter,
-                        modLoaderType: nil,
-                        modLoaderTypes: cfParams.modLoaderTypes,
-                        index: offset,
-                        pageSize: pageSize,
-                    )
-                    result = CFToModrinthAdapter.convertSearchResult(cfResult)
+                    do {
+                        let cfParams = ModrinthToCurseForgeSearchAdapter.convertToSearchParams(
+                            projectType: projectType,
+                            versions: filterOptions.versions,
+                            categories: filterOptions.categories,
+                            resolutions: filterOptions.resolutions,
+                            loaders: filterOptions.loaders,
+                            query: query,
+                        )
+                        let cfResult = try await CurseForgeService.searchProjectsThrowing(
+                            gameId: 432, // Minecraft
+                            classId: cfParams.classId,
+                            categoryId: nil,
+                            categoryIds: cfParams.categoryIds,
+                            gameVersion: nil,
+                            gameVersions: cfParams.gameVersions,
+                            searchFilter: cfParams.searchFilter,
+                            modLoaderType: nil,
+                            modLoaderTypes: cfParams.modLoaderTypes,
+                            index: offset,
+                            pageSize: pageSize,
+                        )
+                        result = CFToModrinthAdapter.convertSearchResult(cfResult)
+                    }
                 }
 
                 try Task.checkCancellation()
