@@ -29,9 +29,12 @@ struct SaveInfoView: View {
         _manager = State(wrappedValue: SaveInfoManager(gameName: gameName, modLoader: modLoader))
     }
 
-    private var currentGameRunningState: Bool {
-        let userId = playerListViewModel.currentPlayer?.id ?? ""
-        return container.core.gameSessionStore.cachedIsGameRunning(gameId: gameId, userId: userId)
+    private var gameState: GameRuntimeState {
+        GameRuntimeState(
+            gameId: gameId,
+            userId: playerListViewModel.currentPlayer?.id,
+            sessionStore: container.core.gameSessionStore,
+        )
     }
 
     var body: some View {
@@ -74,7 +77,7 @@ struct SaveInfoView: View {
         .task {
             await manager.loadData()
         }
-        .onChange(of: currentGameRunningState) { oldValue, newValue in
+        .onChange(of: gameState.isRunning) { oldValue, newValue in
             if oldValue == true, newValue == false {
                 Task {
                     await manager.loadData()

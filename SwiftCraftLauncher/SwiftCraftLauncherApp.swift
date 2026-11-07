@@ -31,8 +31,8 @@ import UserNotifications
 struct SwiftCraftLauncherApp: App {
     @State var playerListViewModel = PlayerListViewModel()
     @State var gameRepository: GameRepository
-    @State var gameLaunchUseCase: GameLaunchUseCase
     @State var container = DIContainer.shared
+    @State private var gameActionsProvider: GameActionsProvider
 
     @Environment(\.openSettings)
     private var openSettings
@@ -41,9 +41,14 @@ struct SwiftCraftLauncherApp: App {
 
     /// Configures global services and applies app‑level settings.
     init() {
-        let gameRepository = GameRepository()
-        _gameRepository = State(initialValue: gameRepository)
-        _gameLaunchUseCase = State(initialValue: GameLaunchUseCase(gameRepository: gameRepository))
+        let repository = GameRepository()
+        let gameLaunchUseCase = GameLaunchUseCase(gameRepository: repository)
+        _gameRepository = State(initialValue: repository)
+        _gameActionsProvider = State(initialValue: GameActionsProvider(
+            container: _container.wrappedValue,
+            gameLaunchUseCase: gameLaunchUseCase,
+            playerListViewModel: _playerListViewModel.wrappedValue,
+        ))
         Self.configureURLCache()
         Self.configureNotifications(delegate: notificationCenterDelegate)
     }
@@ -54,8 +59,8 @@ struct SwiftCraftLauncherApp: App {
             MainView()
                 .environment(playerListViewModel)
                 .environment(gameRepository)
-                .environment(gameLaunchUseCase)
                 .environment(container)
+                .environment(gameActionsProvider)
                 .preferredColorScheme(container.ui.themeManager.preferredColorScheme)
                 .errorAlert(container.core.errorHandler)
                 .windowOpener(container.ui.windowManager)
@@ -98,8 +103,8 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .environment(playerListViewModel)
                 .environment(gameRepository)
-                .environment(gameLaunchUseCase)
                 .environment(container)
+                .environment(gameActionsProvider)
             },
             label: {
                 HStack {
