@@ -78,6 +78,17 @@ struct GameContextMenu: View {
             Label("settings.game.advanced".localized(), systemImage: "gearshape")
         })
 
+        if game.modLoader != GameLoader.vanilla.displayName {
+            Button {
+                container.ui.windowManager.presentModDependencyGraph(for: game)
+            } label: {
+                Label(
+                    "mod.dependency_graph.title".localized(),
+                    systemImage: "point.3.connected.trianglepath.dotted",
+                )
+            }
+        }
+
         if !CommonUtil.isMinecraftSnapshotVersion(game.gameVersion) {
             Button(action: {
                 if showsShowInLauncher {

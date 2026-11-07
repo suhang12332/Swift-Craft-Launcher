@@ -42,14 +42,15 @@ class ModScanner: @unchecked Sendable {
     func getModrinthProjectDetail(
         for fileURL: URL,
     ) async throws -> ModrinthProjectDetail? {
-        guard let hash = try await Self.sha1HashThrowing(of: fileURL) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.file_hash_calculation_failed",
-                level: .silent,
-                message: "SHA1 hash calculation returned nil for file: \(fileURL.path)",
-            )
-        }
+        let hash = try await requiredSHA1Hash(for: fileURL)
+        return try await getModrinthProjectDetail(for: fileURL, hash: hash)
+    }
 
+    /// Resolves project details using a hash that has already been calculated.
+    func getModrinthProjectDetail(
+        for fileURL: URL,
+        hash: String,
+    ) async throws -> ModrinthProjectDetail? {
         let inferredType = AppPaths.resourceType(for: fileURL)
         if let cached = getModCacheFromDatabase(hash: hash) {
             var updatedCached = cached
@@ -83,6 +84,18 @@ class ModScanner: @unchecked Sendable {
         )
         saveToCache(hash: hash, detail: fallbackDetail)
         return fallbackDetail
+    }
+
+    /// Computes the SHA1 used for cache and Modrinth lookups.
+    func requiredSHA1Hash(for fileURL: URL) async throws -> String {
+        guard let hash = try await Self.sha1HashThrowing(of: fileURL) else {
+            throw GlobalError.validation(
+                i18nKey: "error.validation.file_hash_calculation_failed",
+                level: .silent,
+                message: "SHA1 hash calculation returned nil for file: \(fileURL.path)",
+            )
+        }
+        return hash
     }
 
     /// Returns a cached mod detail for the given hash, or `nil` if absent.

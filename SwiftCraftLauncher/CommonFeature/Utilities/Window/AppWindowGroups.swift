@@ -46,6 +46,8 @@ private struct AuxiliaryWindowScene: View {
             case .failedResources:
                 ModPackFailedResourcesWindowContent()
                     .environment(gameRepository)
+            case .modDependencyGraph:
+                ModDependencyGraphWindowContent()
             }
         }
         .navigationTitle(windowID.localizedTitle)
@@ -58,7 +60,7 @@ private struct AuxiliaryWindowScene: View {
         )
         .background(
             WindowAccessor { window in
-                WindowStyleHelper.configureAuxiliaryWindow(window)
+                WindowStyleHelper.configureAuxiliaryWindow(window, for: windowID)
             },
         )
         .onAppear {

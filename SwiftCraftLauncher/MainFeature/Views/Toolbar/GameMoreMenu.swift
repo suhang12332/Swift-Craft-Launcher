@@ -69,6 +69,17 @@ struct GameMoreMenu: View {
                 )
             }
 
+            if game.modLoader != GameLoader.vanilla.displayName {
+                Button {
+                    container.ui.windowManager.presentModDependencyGraph(for: game)
+                } label: {
+                    Label(
+                        "mod.dependency_graph.title".localized(),
+                        systemImage: "point.3.connected.trianglepath.dotted",
+                    )
+                }
+            }
+
             Divider()
 
             Button(role: .destructive) {
@@ -77,7 +88,7 @@ struct GameMoreMenu: View {
                 Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
             }
         } label: {
-            Label("more".localized(), systemImage: "gearshape")
+            Label("more".localized(), systemImage: "hand.tap")
         }
         .help("more".localized())
     }
