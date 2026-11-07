@@ -2,7 +2,7 @@
 //  SaveInfoView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Main view displaying save information including worlds, screenshots, and schematics.

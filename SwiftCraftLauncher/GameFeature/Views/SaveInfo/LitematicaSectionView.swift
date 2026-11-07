@@ -2,7 +2,7 @@
 //  LitematicaSectionView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Displays Litematica schematic files as selectable chips with detail sheet support.

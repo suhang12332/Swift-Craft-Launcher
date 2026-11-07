@@ -2,7 +2,7 @@
 //  MenuBarExtraContentView.swift
 //  MainFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Content view for the macOS menu bar extra, listing games, players, and app actions.

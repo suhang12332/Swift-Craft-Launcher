@@ -2,7 +2,7 @@
 //  WorldInfoSectionView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Displays world save folders as chips that open the world directory in Finder.

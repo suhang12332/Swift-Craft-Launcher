@@ -2,7 +2,7 @@
 //  ResourceCountSectionView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Displays the installed resource counts for a game as a section.

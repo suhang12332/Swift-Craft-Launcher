@@ -2,7 +2,7 @@
 //  GameContextMenu.swift
 //  MainFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Menu content shared by the sidebar context menu, menu bar extra, and toolbar more menu.
