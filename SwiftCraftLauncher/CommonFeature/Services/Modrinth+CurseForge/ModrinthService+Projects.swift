@@ -21,12 +21,15 @@ extension ModrinthService {
             return ModrinthProjectDetail.fromV3(result)
         }
 
-        let url = URLConfig.API.Modrinth.project(id: id)
-        let data = try await APIClient.get(url: url)
+        var detail: ModrinthProjectDetail
+        do {
+            let url = URLConfig.API.Modrinth.project(id: id)
+            let data = try await APIClient.get(url: url)
 
-        let decoder = JSONDecoder()
-        decoder.configureForModrinth()
-        var detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
+            let decoder = JSONDecoder()
+            decoder.configureForModrinth()
+            detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
+        }
 
         let releaseGameVersions = detail.gameVersions.filter { CommonUtil.isReleaseVersionNumber($0) }
         let result = CommonUtil.sortMinecraftVersions(releaseGameVersions)
