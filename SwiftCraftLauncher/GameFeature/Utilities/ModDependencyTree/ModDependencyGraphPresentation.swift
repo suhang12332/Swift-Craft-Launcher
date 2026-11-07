@@ -15,11 +15,11 @@ extension WindowManager {
     func presentModDependencyGraph(for game: GameVersionInfo) {
         Task {
             do {
-                let files = try await LocalModScanner().fileLister(
-                    AppPaths.modsDirectory(gameName: game.gameName),
+                let files = try DIContainer.shared.core.modScanner.readJarZipFiles(
+                    from: AppPaths.modsDirectory(gameName: game.gameName),
                 )
                 guard !files.isEmpty else {
-                    DIContainer.shared.core.errorHandler.handle(ModDependencyGraphService.noModsError())
+                    DIContainer.shared.core.errorHandler.handle(ModDependencyGraphAppService.noModsError())
                     return
                 }
 
@@ -31,7 +31,7 @@ extension WindowManager {
             } catch {
                 let globalError = GlobalError.from(error)
                 if globalError.i18nKey == "error.resource.directory_not_found" {
-                    DIContainer.shared.core.errorHandler.handle(ModDependencyGraphService.noModsError())
+                    DIContainer.shared.core.errorHandler.handle(ModDependencyGraphAppService.noModsError())
                 } else {
                     DIContainer.shared.core.errorHandler.handle(globalError)
                 }
