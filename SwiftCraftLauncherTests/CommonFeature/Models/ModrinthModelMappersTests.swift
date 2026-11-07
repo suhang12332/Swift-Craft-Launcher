@@ -28,13 +28,13 @@ final class ModrinthModelMappersTests: XCTestCase {
         XCTAssertEqual(project.slug, "my-mod")
         XCTAssertEqual(project.title, "My Mod")
         XCTAssertEqual(project.description, "A great mod")
-        XCTAssertEqual(project.categories, ["fabric", "library"])
+        XCTAssertEqual(project.categories, [])
         XCTAssertEqual(project.projectType, "mod")
         XCTAssertEqual(project.downloads, 1000)
         XCTAssertEqual(project.author, "Team1")
-        XCTAssertEqual(project.license, "MIT")
-        XCTAssertEqual(project.clientSide, "required")
-        XCTAssertEqual(project.serverSide, "required")
+        XCTAssertEqual(project.license, "")
+        XCTAssertEqual(project.clientSide, "")
+        XCTAssertEqual(project.serverSide, "")
     }
 
     func testModrinthProject_fromDetail_nilLicense() throws {
@@ -55,7 +55,7 @@ final class ModrinthModelMappersTests: XCTestCase {
         XCTAssertEqual(project.license, "")
     }
 
-    func testModrinthProject_fromDetail_additionalCategories() throws {
+    func testModrinthProject_fromDetail_ignoresAdditionalCategories() throws {
         let detail = try makeDetail(DetailParams(
             id: "proj-3",
             slug: "mod3",
@@ -71,7 +71,7 @@ final class ModrinthModelMappersTests: XCTestCase {
 
         let project = ModrinthProject.from(detail: detail)
 
-        XCTAssertEqual(project.displayCategories, ["library", "utility"])
+        XCTAssertEqual(project.displayCategories, [])
     }
 
     private struct DetailParams {

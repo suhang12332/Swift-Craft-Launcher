@@ -260,7 +260,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         XCTAssertTrue(project.displayCategories.isEmpty)
     }
 
-    func testFromDetail_displayCategories_nonNil() {
+    func testFromDetail_displayCategories_ignoresAdditional() {
         let detail = makeDetail(
             id: "id",
             categories: ["fabric"],
@@ -269,7 +269,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         )
 
         let project = ModrinthProject.from(detail: detail)
-        XCTAssertEqual(project.displayCategories, ["library", "utility"])
+        XCTAssertEqual(project.displayCategories, [])
     }
 
     func testFromDetail_fileName() {
