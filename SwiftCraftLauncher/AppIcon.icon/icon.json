@@ -123,6 +123,14 @@
           "name" : "font"
         },
         {
+          "fill-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "extended-gray:0.50000,1.00000"
+              }
+            }
+          ],
           "hidden" : false,
           "image-name" : "border.svg",
           "name" : "border"
