@@ -2,7 +2,7 @@
 //  FileTreeViewModel.swift
 //  CommonFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -65,6 +65,7 @@ final class FileTreeViewModel {
                 options: options,
             )
 
+            let inheritedSelection: SelectionState = node.selection == .all ? .all : .unselected
             node.children = urls
                 .filter { url in
                     guard showHiddenFiles == false else { return true }
@@ -73,6 +74,7 @@ final class FileTreeViewModel {
                 .map { url -> FileNode in
                     let child = FileNode(url: url)
                     child.parent = node
+                    child.selection = inheritedSelection
                     return child
                 }
                 .sorted { lhs, rhs in
@@ -90,13 +92,7 @@ final class FileTreeViewModel {
     ///
     /// - Returns: Nodes that need UI refresh (self and ancestors).
     func toggleSelection(for node: FileNode) -> [FileNode] {
-        let targetIsOn: Bool
-        if node.isDirectory {
-            targetIsOn = node.selection != .all
-        } else {
-            targetIsOn = node.selection != .all
-        }
-
+        let targetIsOn = node.selection != .all
         applySelection(to: node, isOn: targetIsOn)
         return node.selfAndAncestors()
     }
@@ -104,23 +100,21 @@ final class FileTreeViewModel {
     private func applySelection(to node: FileNode, isOn: Bool) {
         let newState: SelectionState = isOn ? .all : .unselected
         node.selection = newState
-
-        if node.isDirectory {
-            ensureChildrenLoaded(for: node)
-            node.children?.forEach { child in
-                applySelectionDown(child, state: newState)
-            }
-        }
-
+        applySelectionDownLoaded(node, state: newState)
         updateParentsSelection(from: node)
     }
 
-    private func applySelectionDown(_ node: FileNode, state: SelectionState) {
-        node.selection = state
-        guard node.isDirectory else { return }
-        ensureChildrenLoaded(for: node)
-        node.children?.forEach { child in
-            applySelectionDown(child, state: state)
+    /// Applies a selection state to already-loaded descendants only.
+    ///
+    /// Unloaded descendants inherit the state when they are first loaded, so
+    /// selecting a large directory never has to read the whole subtree.
+    private func applySelectionDownLoaded(_ node: FileNode, state: SelectionState) {
+        guard let children = node.children else { return }
+        for child in children {
+            child.selection = state
+            if child.isDirectory {
+                applySelectionDownLoaded(child, state: state)
+            }
         }
     }
 
@@ -142,23 +136,37 @@ final class FileTreeViewModel {
         }
     }
 
-    func selectedFileURLs() -> [URL] {
+    /// Returns selected roots (files and directories).
+    ///
+    /// A fully selected directory is returned as a single URL. Consumers that
+    /// need individual files should expand directories on demand; the export
+    /// pipeline already does this through `resolveSelectedFiles`.
+    func selectedRootURLs() -> [URL] {
         var result: [URL] = []
-        collectSelectedFiles(from: root, into: &result)
+        collectSelectedRoots(from: root, into: &result, isRoot: true)
         return result
     }
 
-    private func collectSelectedFiles(from node: FileNode, into result: inout [URL]) {
-        if node.isDirectory {
-            guard let children = node.children else { return }
-            for child in children {
-                collectSelectedFiles(from: child, into: &result)
+    private func collectSelectedRoots(
+        from node: FileNode,
+        into result: inout [URL],
+        isRoot: Bool = false,
+    ) {
+        if !isRoot {
+            switch node.selection {
+            case .all:
+                result.append(node.url)
+                return
+            case .unselected:
+                return
+            case .some:
+                break
             }
-            return
         }
 
-        if node.selection == .all {
-            result.append(node.url)
+        guard node.isDirectory, let children = node.children else { return }
+        for child in children {
+            collectSelectedRoots(from: child, into: &result)
         }
     }
 }

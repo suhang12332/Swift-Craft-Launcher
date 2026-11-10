@@ -2,7 +2,7 @@
 //  LogSectionView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import AppKit
@@ -32,7 +32,6 @@ struct LogSectionView: View {
                 openLogInConsole(log: log)
             },
             iconName: log.isCrashLog ? "exclamationmark.triangle.fill" : "doc.text.fill",
-            isLoading: false,
             customBackgroundColor: log.isCrashLog ? Color.red.opacity(0.1) : nil,
             customBorderColor: log.isCrashLog ? Color.red.opacity(0.3) : nil,
             maxTextWidth: 150,

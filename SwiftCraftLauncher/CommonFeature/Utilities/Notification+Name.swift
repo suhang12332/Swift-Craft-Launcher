@@ -2,7 +2,7 @@
 //  Notification+Name.swift
 //  CommonFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -13,8 +13,6 @@ extension Notification.Name {
 
     /// Posted when the Minecraft friends account preferences are updated on the server.
     static let minecraftFriendsAccountPreferencesDidChange = Notification.Name("SwiftCraftLauncher.MinecraftFriendsAccountPreferencesDidChange")
-
-    static let gameCrashed = Notification.Name("SwiftCraftLauncher.GameCrashed")
 
     static let localResourceImported = Notification.Name("SwiftCraftLauncher.LocalResourceImported")
 }

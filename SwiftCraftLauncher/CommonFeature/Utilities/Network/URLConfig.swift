@@ -2,7 +2,7 @@
 //  URLConfig.swift
 //  Config
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -281,14 +281,6 @@ enum URLConfig {
                     "versions/\(version).json"
                 }
                 return launcherMeta(loader: loader, path: path)
-            }
-        }
-
-        enum ChunkBase {
-            static let seedMapBase = "https://www.chunkbase.com/apps/seed-map"
-
-            static func seedMap(seed: Int64) -> URL? {
-                URL(string: "\(seedMapBase)#seed=\(seed)")
             }
         }
 

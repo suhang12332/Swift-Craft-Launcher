@@ -2,7 +2,7 @@
 //  GameAdvancedSettingsView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Per-game advanced settings for Java path, garbage collector, memory, and JVM arguments.

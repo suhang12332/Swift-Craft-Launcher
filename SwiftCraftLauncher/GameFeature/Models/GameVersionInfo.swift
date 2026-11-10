@@ -2,7 +2,7 @@
 //  GameVersionInfo.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -107,7 +107,51 @@ struct GameVersionInfo: Codable, Identifiable, Hashable, Sendable {
         gameArguments: [String] = [],
         environmentVariables: String = "",
     ) {
-        self.id = id.uuidString
+        self.init(
+            id: id.uuidString,
+            gameName: gameName,
+            gameIcon: gameIcon,
+            gameVersion: gameVersion,
+            modVersion: modVersion,
+            modJvm: modJvm,
+            modClassPath: modClassPath,
+            assetIndex: assetIndex,
+            modLoader: modLoader,
+            lastPlayed: lastPlayed,
+            javaPath: javaPath,
+            jvmArguments: jvmArguments,
+            launchCommand: launchCommand,
+            xms: xms,
+            xmx: xmx,
+            javaVersion: javaVersion,
+            mainClass: mainClass,
+            gameArguments: gameArguments,
+            environmentVariables: environmentVariables,
+        )
+    }
+
+    init(
+        id: String,
+        gameName: String,
+        gameIcon: String,
+        gameVersion: String,
+        modVersion: String = "",
+        modJvm: [String] = [],
+        modClassPath: String = "",
+        assetIndex: String,
+        modLoader: String,
+        lastPlayed: Date = Date(),
+        javaPath: String = "",
+        jvmArguments: String = "",
+        launchCommand: [String] = [],
+        xms: Int = 0,
+        xmx: Int = 0,
+        javaVersion: Int = 8,
+        mainClass: String = "",
+        gameArguments: [String] = [],
+        environmentVariables: String = "",
+    ) {
+        self.id = id
         self.gameName = gameName
         self.gameIcon = gameIcon
         self.gameVersion = gameVersion

@@ -2,7 +2,7 @@
 //  GameActionManager.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import AppKit
@@ -48,26 +48,13 @@ class GameActionManager {
                 let sessionStore = DIContainer.shared.core.gameSessionStore
                 let modScanner = DIContainer.shared.core.modScanner
 
-                if sessionStore.isGameRunningForAnyUser(gameId: gameId) {
+                if sessionStore.isGameActiveForAnyUser(gameId: gameId) {
                     let error = GlobalError.validation(
                         i18nKey: "error.validation.game_running_cannot_delete",
                         level: .notification,
                     )
                     DIContainer.shared.core.errorHandler.handle(error)
                     return
-                }
-
-                if hasSelectedItem, let selectedItem {
-                    await MainActor.run {
-                        if let firstGame = gameRepository.games.first(where: {
-                            $0.id != gameId
-                        }) {
-                            selectedItem.wrappedValue = .game(firstGame.id)
-                        } else {
-                            selectedItem.wrappedValue = .resource(.mod)
-                            gameType?.wrappedValue = true
-                        }
-                    }
                 }
 
                 sessionStore.removeGameState(gameId: gameId)
@@ -82,6 +69,15 @@ class GameActionManager {
                 await modScanner.clearModCache(for: gameName)
 
                 try await gameRepository.deleteGame(id: gameId)
+
+                if hasSelectedItem, let selectedItem {
+                    if let firstGame = gameRepository.games.first {
+                        selectedItem.wrappedValue = .game(firstGame.id)
+                    } else {
+                        selectedItem.wrappedValue = .resource(.mod)
+                        gameType?.wrappedValue = true
+                    }
+                }
 
                 AppLog.game.info("Successfully deleted game: \(gameName)")
             } catch {

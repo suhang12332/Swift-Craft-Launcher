@@ -2,7 +2,7 @@
 //  ModrinthCompatibilityView.swift
 //  ResourceFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -62,9 +62,7 @@ private struct GameVersionsSection: View {
         ) { item in
             VersionTag(version: item.id)
         } overflowContentBuilder: { _ in
-            AnyView(
-                GameVersionsPopover(versions: versions),
-            )
+            GameVersionsPopover(versions: versions)
         }
     }
 }
@@ -87,10 +85,8 @@ private struct VersionTag: View {
     let version: String
 
     var body: some View {
-        FilterChip(
-            title: version,
-            isSelected: false,
-        ) { }
+        FilterChipLabel(title: version)
+            .equatable()
     }
 }
 
@@ -125,13 +121,12 @@ private struct ServerInfoSection: View {
             items: items,
             isLoading: false,
         ) { item in
-            FilterChip(
+            FilterChipLabel(
                 title: item.id,
-                isSelected: false,
-                action: { },
                 iconName: "tv.badge.wifi",
                 iconColor: connectionStatus.statusColor,
             )
+            .equatable()
             .frame(maxWidth: 160, alignment: .leading)
             .lineLimit(1)
         }
@@ -163,13 +158,12 @@ private struct PlayerInfoSection: View {
             items: items,
             isLoading: false,
         ) { item in
-            FilterChip(
+            FilterChipLabel(
                 title: item.id,
-                isSelected: false,
-                action: { },
                 iconName: "person.2",
                 iconColor: .secondary,
             )
+            .equatable()
         }
     }
 }
@@ -212,12 +206,11 @@ private struct PlatformSupportItem: View {
     let text: String
 
     var body: some View {
-        FilterChip(
+        FilterChipLabel(
             title: text,
-            isSelected: false,
-            action: { },
             iconName: icon,
             iconColor: .secondary,
         )
+        .equatable()
     }
 }

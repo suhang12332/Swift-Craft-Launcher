@@ -2,34 +2,39 @@
 //  GameCrashAlertModifier.swift
 //  MainFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
 /// Presents an alert when a game crashes, offering to open the log directory.
 struct GameCrashAlertModifier: ViewModifier {
-    @State private var isPresented = false
-    @State private var crashDirectory: URL?
+    @Environment(DIContainer.self)
+    private var container
 
     func body(content: Content) -> some View {
-        content
+        let pendingCrashDirectory = container.core.gameSessionStore.pendingCrashDirectory
+
+        return content
             .alert(
                 "error.game_launch.game_crashed".localized(),
-                isPresented: $isPresented,
+                isPresented: Binding(
+                    get: { pendingCrashDirectory != nil },
+                    set: { isPresented in
+                        if !isPresented {
+                            container.core.gameSessionStore.pendingCrashDirectory = nil
+                        }
+                    },
+                ),
             ) {
                 Button("menu.open.log".localized()) {
-                    if let directory = crashDirectory {
-                        NSWorkspace.shared.open(directory)
+                    if let pendingCrashDirectory {
+                        NSWorkspace.shared.open(pendingCrashDirectory)
                     }
                 }
                 Button("common.close".localized(), role: .cancel) { }
             } message: {
                 Text("error.game_launch.game_crashed.description".localized())
-            }
-            .onReceive(NotificationCenter.default.publisher(for: .gameCrashed)) { notification in
-                crashDirectory = notification.userInfo?["directory"] as? URL
-                isPresented = true
             }
     }
 }

@@ -2,7 +2,7 @@
 //  TouchBarSupportConfiguration+App.swift
 //  MainFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import AppKit
@@ -15,14 +15,19 @@ extension TouchBarSupportConfiguration {
     static func make(
         container: DIContainer,
         gameRepository: GameRepository,
-        gameLaunchUseCase: GameLaunchUseCase,
         playerListViewModel: PlayerListViewModel,
+        gameActionsProvider: GameActionsProvider,
         openSettings: @escaping @MainActor () -> Void,
     ) -> TouchBarSupportConfiguration {
         @MainActor
         func selectedGame() -> GameVersionInfo? {
             guard let gameId = container.core.selectedGameManager.selectedGameId else { return nil }
             return gameRepository.getGame(by: gameId)
+        }
+
+        @MainActor
+        func selectedActions() -> GameActions? {
+            selectedGame().map(gameActionsProvider.actions(for:))
         }
 
         return TouchBarSupportConfiguration(
@@ -44,45 +49,28 @@ extension TouchBarSupportConfiguration {
                 }
             },
             isRunning: {
-                guard let gameId = selectedGame()?.id else { return false }
-                let userId = playerListViewModel.currentPlayer?.id ?? ""
-                return container.core.gameSessionStore.cachedIsGameRunning(gameId: gameId, userId: userId)
+                selectedActions()?.isRunning ?? false
             },
             isLaunching: {
-                guard let gameId = selectedGame()?.id else { return false }
-                let userId = playerListViewModel.currentPlayer?.id ?? ""
-                return gameLaunchUseCase.isLaunching(gameId: gameId, userId: userId)
+                selectedActions()?.isLaunching ?? false
             },
             canExportModPack: {
-                selectedGame()?.modLoader != GameLoader.vanilla.displayName
+                selectedActions()?.isModded ?? false
             },
             onPlayStop: {
-                guard let game = selectedGame() else { return }
-
-                Task { @MainActor in
-                    await gameLaunchUseCase.toggleGameState(
-                        player: playerListViewModel.currentPlayer,
-                        game: game,
-                    )
-                }
+                selectedActions()?.toggleGameState()
             },
             onOpenSettings: {
-                if let selectedId = container.core.selectedGameManager.selectedGameId {
-                    container.core.selectedGameManager.setSelectedGameAndOpenAdvancedSettings(selectedId)
-                }
-                openSettings()
+                selectedActions()?.openAdvancedSettings(openSettings: openSettings)
             },
             onExportModPack: {
-                guard let game = selectedGame() else { return }
-                container.ui.gameDialogsPresenter.presentModPackExport(for: game)
+                selectedActions()?.presentModPackExport()
             },
             onShowInFinder: {
-                guard let game = selectedGame() else { return }
-                container.core.gameActionManager.showInFinder(game: game)
+                selectedActions()?.showInFinder()
             },
             onDeleteInstance: {
-                guard let game = selectedGame() else { return }
-                container.ui.gameDialogsPresenter.requestGameDeletion(of: game)
+                selectedActions()?.requestDeletion()
             },
         )
     }

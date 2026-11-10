@@ -2,7 +2,7 @@
 //  ModrinthIndexBuilderTests.swift
 //  SwiftCraftLauncherTests
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 @testable import SwiftCraftLauncher
@@ -63,7 +63,8 @@ final class ModrinthIndexBuilderTests: XCTestCase {
             files: [],
         )
 
-        XCTAssertTrue(json.contains("\"forge-loader\""))
+        XCTAssertTrue(json.contains("\"forge\""))
+        XCTAssertFalse(json.contains("\"forge-loader\""))
     }
 
     func testBuild_neoforge() async throws {
@@ -77,7 +78,8 @@ final class ModrinthIndexBuilderTests: XCTestCase {
             files: [],
         )
 
-        XCTAssertTrue(json.contains("\"neoforge-loader\""))
+        XCTAssertTrue(json.contains("\"neoforge\""))
+        XCTAssertFalse(json.contains("\"neoforge-loader\""))
     }
 
     func testBuild_quilt() async throws {

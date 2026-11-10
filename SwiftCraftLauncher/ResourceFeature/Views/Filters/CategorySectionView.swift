@@ -2,7 +2,7 @@
 //  CategorySectionView.swift
 //  ResourceFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
@@ -18,38 +18,64 @@ struct CategorySectionView: View {
     var body: some View {
         let (visibleItems, overflowItems) = computeVisibleAndOverflowItems()
 
-        return GenericSectionView(
+        if isVersionSection {
+            section(visibleItems: visibleItems, overflowItems: overflowItems) { _ in
+                VersionGroupedView(
+                    items: items,
+                    selectedItems: selectedItems,
+                ) { itemId in
+                    toggleSelection(for: itemId)
+                }
+                .frame(maxHeight: SectionViewConstants.defaultPopoverMaxHeight)
+                .frame(width: SectionViewConstants.defaultPopoverWidth)
+            }
+        } else {
+            defaultSection(visibleItems: visibleItems, overflowItems: overflowItems)
+        }
+    }
+
+    private func section(
+        visibleItems: [FilterItem],
+        overflowItems: [FilterItem],
+        @ViewBuilder overflowContentBuilder: @escaping ([FilterItem]) -> some View,
+    ) -> some View {
+        GenericSectionView(
             title: title,
             items: items,
             isLoading: isLoading,
-            iconName: nil,
             chipBuilder: { item in
-                FilterChip(
-                    title: item.name,
-                    isSelected: selectedItems.contains(item.id),
-                ) { toggleSelection(for: item.id) }
+                chip(for: item)
             },
-            overflowContentBuilder: isVersionSection ? { _ in
-                AnyView(
-                    VersionGroupedView(
-                        items: items,
-                        selectedItems: selectedItems,
-                    ) { itemId in
-                        toggleSelection(for: itemId)
-                    }
-                    .frame(maxHeight: SectionViewConstants.defaultPopoverMaxHeight)
-                    .frame(width: SectionViewConstants.defaultPopoverWidth),
-                )
-            } : nil,
-            clearAction: {
-                clearSelection()
-            },
-            shouldShowClearButton: {
-                !selectedItems.isEmpty
-            },
+            overflowContentBuilder: overflowContentBuilder,
+            clearAction: clearSelection,
+            shouldShowClearButton: { !selectedItems.isEmpty },
             customVisibleItems: visibleItems,
             customOverflowItems: overflowItems,
         )
+    }
+
+    private func defaultSection(visibleItems: [FilterItem], overflowItems: [FilterItem]) -> some View {
+        GenericSectionView(
+            title: title,
+            items: items,
+            isLoading: isLoading,
+            chipBuilder: { item in
+                chip(for: item)
+            },
+            clearAction: clearSelection,
+            shouldShowClearButton: { !selectedItems.isEmpty },
+            customVisibleItems: visibleItems,
+            customOverflowItems: overflowItems,
+        )
+    }
+
+    private func chip(for item: FilterItem) -> some View {
+        FilterChip(
+            title: item.name,
+            isSelected: selectedItems.contains(item.id),
+        ) {
+            toggleSelection(for: item.id)
+        }
     }
 
     private func computeVisibleAndOverflowItems() -> ([FilterItem], [FilterItem]) {

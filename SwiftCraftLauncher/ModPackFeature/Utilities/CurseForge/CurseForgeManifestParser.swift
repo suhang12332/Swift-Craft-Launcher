@@ -2,7 +2,7 @@
 //  CurseForgeManifestParser.swift
 //  ModPackFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -43,10 +43,12 @@ enum CurseForgeManifestParser {
                 return nil
             }
 
-            let manifestData = try Data(contentsOf: manifestPath)
-            AppLog.modPack.info("Successfully read manifest.json data, size: \(manifestData.count) bytes")
-
-            let manifest = try JSONDecoder().decode(CurseForgeManifest.self, from: manifestData)
+            let manifest: CurseForgeManifest
+            do {
+                let manifestData = try Data(contentsOf: manifestPath)
+                AppLog.modPack.info("Successfully read manifest.json data, size: \(manifestData.count) bytes")
+                manifest = try JSONDecoder().decode(CurseForgeManifest.self, from: manifestData)
+            }
 
             let loaderInfo = determineLoaderInfo(from: manifest.minecraft.modLoaders)
 

@@ -2,7 +2,7 @@
 //  GameInstaller.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -109,10 +109,11 @@ final class GameInstaller {
 
     /// Updates the mod loader on an existing game instance, reusing the installation pipeline.
     ///
-    /// The game's name, version, icon, memory, JVM arguments, Java path, and environment
-    /// variables are preserved; only the loader and launch configuration are replaced. On
-    /// failure the existing game record is left untouched and the profile directory is never
-    /// deleted, so saves and mods are always preserved.
+    /// The game's name, version, icon, memory, JVM arguments, and environment variables are
+    /// preserved. The Java path is reset to the runtime matching the game version. Only the
+    /// loader and launch configuration are replaced. On failure the existing game record is
+    /// left untouched and the profile directory is never deleted, so saves and mods are always
+    /// preserved.
     func updateGameLoader(
         input: GameLoaderUpdateInput,
         existingGame: GameVersionInfo,
@@ -127,7 +128,7 @@ final class GameInstaller {
         }
 
         let baseGameInfo = GameVersionInfo(
-            id: UUID(uuidString: existingGame.id) ?? UUID(),
+            id: existingGame.id,
             gameName: existingGame.gameName,
             gameIcon: existingGame.gameIcon,
             gameVersion: existingGame.gameVersion,

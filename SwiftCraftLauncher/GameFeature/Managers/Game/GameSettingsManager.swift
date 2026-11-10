@@ -2,7 +2,7 @@
 //  GameSettingsManager.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -61,7 +61,7 @@ final class GameSettingsManager {
     }
 
     /// The default export format for mod packs.
-    var defaultModPackExportFormat: ModPackExportFormat = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat, defaultValue: .modrinth) {
+    var defaultModPackExportFormat: ModPackExportFormat = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat, defaultValue: .curseforge) {
         didSet { Defaults.save(defaultModPackExportFormat.rawValue, forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat) }
     }
 

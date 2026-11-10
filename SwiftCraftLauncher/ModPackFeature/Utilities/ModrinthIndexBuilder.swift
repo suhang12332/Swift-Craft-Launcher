@@ -2,7 +2,7 @@
 //  ModrinthIndexBuilder.swift
 //  ModPackFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -79,8 +79,8 @@ enum ModrinthIndexBuilder {
         if let minecraft = dependencies.minecraft {
             depsDict["minecraft"] = minecraft
         }
-        if let forgeLoader = dependencies.forgeLoader {
-            depsDict["forge-loader"] = forgeLoader
+        if let forge = dependencies.forge {
+            depsDict["forge"] = forge
         }
         if let fabricLoader = dependencies.fabricLoader {
             depsDict["fabric-loader"] = fabricLoader
@@ -88,8 +88,8 @@ enum ModrinthIndexBuilder {
         if let quiltLoader = dependencies.quiltLoader {
             depsDict["quilt-loader"] = quiltLoader
         }
-        if let neoforgeLoader = dependencies.neoforgeLoader {
-            depsDict["neoforge-loader"] = neoforgeLoader
+        if let neoforge = dependencies.neoforge {
+            depsDict["neoforge"] = neoforge
         }
         jsonDict["dependencies"] = depsDict
 
@@ -110,11 +110,11 @@ enum ModrinthIndexBuilder {
         case GameLoader.forge.displayName:
             return ModrinthIndexDependencies(
                 minecraft: gameVersion,
-                forgeLoader: loaderVersion,
+                forgeLoader: nil,
                 fabricLoader: nil,
                 quiltLoader: nil,
                 neoforgeLoader: nil,
-                forge: nil,
+                forge: loaderVersion,
                 fabric: nil,
                 quilt: nil,
                 neoforge: nil,
@@ -152,11 +152,11 @@ enum ModrinthIndexBuilder {
                 forgeLoader: nil,
                 fabricLoader: nil,
                 quiltLoader: nil,
-                neoforgeLoader: loaderVersion,
+                neoforgeLoader: nil,
                 forge: nil,
                 fabric: nil,
                 quilt: nil,
-                neoforge: nil,
+                neoforge: loaderVersion,
                 dependencies: nil,
             )
         default:

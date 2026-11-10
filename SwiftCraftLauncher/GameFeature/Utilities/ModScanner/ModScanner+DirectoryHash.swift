@@ -2,7 +2,7 @@
 //  ModScanner+DirectoryHash.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -73,18 +73,21 @@ extension ModScanner {
 
         await DIContainer.shared.core.directoryHashCache.set(hashes, for: standardizedDir)
 
+        let resolvedGameName = gameNameHint ?? extractGameName(from: standardizedDir)
+
         if isModsDirectory(standardizedDir) {
-            let gameName = gameNameHint ?? extractGameName(from: standardizedDir)
-            if let gameName {
-                await DIContainer.shared.core.modInstallationCache.setAllModsInstalled(
-                    for: gameName,
-                    hashes: hashes,
-                )
-            }
+            await DIContainer.shared.core.modInstallationCache.setAllModsInstalled(
+                for: resolvedGameName,
+                hashes: hashes,
+            )
         }
 
         await MainActor.run {
-            NotificationCenter.default.post(name: .localResourceImported, object: nil)
+            NotificationCenter.default.post(
+                name: .localResourceImported,
+                object: nil,
+                userInfo: ["gameName": resolvedGameName],
+            )
         }
 
         return hashes
@@ -161,9 +164,8 @@ extension ModScanner {
         dir.lastPathComponent.lowercased() == "mods"
     }
 
-    /// Extracts the game name from a mods directory path.
-    func extractGameName(from modsDir: URL) -> String? {
-        let parentDir = modsDir.deletingLastPathComponent()
-        return parentDir.lastPathComponent
+    /// Extracts the game name from a game resource directory path.
+    func extractGameName(from modsDir: URL) -> String {
+        modsDir.deletingLastPathComponent().lastPathComponent
     }
 }

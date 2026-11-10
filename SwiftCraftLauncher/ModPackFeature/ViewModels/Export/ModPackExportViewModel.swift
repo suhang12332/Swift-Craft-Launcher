@@ -2,7 +2,7 @@
 //  ModPackExportViewModel.swift
 //  ModPackFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +25,8 @@ class ModPackExportViewModel {
     var summary: String = ""
     var exportError: String?
     var tempExportPath: URL?
-    var selectedFileURLs: [URL] = []
+    /// Selected files and directories from the file tree.
+    var selectedURLs: [URL] = []
     var currentExportFormat: ModPackExportFormat = .modrinth
 
     private var exportTask: Task<Void, Never>?
@@ -81,7 +82,7 @@ class ModPackExportViewModel {
                 modPackVersion: modPackVersion,
                 summary: summary.isEmpty ? nil : summary,
                 exportFormat: currentExportFormat,
-                selectedFiles: selectedFileURLs,
+                selectedURLs: selectedURLs,
             ) { progress in
                 Task { @MainActor in
                     guard self.exportRunID == runID else { return }
@@ -161,7 +162,7 @@ class ModPackExportViewModel {
         cancelExport()
         modPackVersion = "1.0.0"
         summary = ""
-        selectedFileURLs = []
+        selectedURLs = []
         if resetFormat {
             currentExportFormat = DIContainer.shared.ui.gameSettingsManager.defaultModPackExportFormat
         }

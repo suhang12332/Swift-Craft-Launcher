@@ -2,7 +2,7 @@
 //  PlayerDataManager.swift
 //  PlayerFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -135,32 +135,19 @@ class PlayerDataManager {
     /// - Parameter id: The identifier of the player to delete.
     /// - Throws: A `GlobalError` if the player cannot be found or deletion fails.
     func deletePlayer(byID id: String) throws {
-        let players = try loadPlayersThrowing()
-        let initialCount = players.count
-        let isDeletingCurrentPlayer = players.contains { $0.id == id && $0.isCurrent }
-
+        // UserProfileStore.deleteProfile already promotes the first remaining
+        // profile to current when the deleted profile was current.
         try profileStore.deleteProfile(byID: id)
         _ = credentialStore.deleteCredential(userId: id)
         OfflineUserServerMap.removeServer(for: id)
 
-        if initialCount > 0 {
-            if isDeletingCurrentPlayer {
-                let remainingPlayers = try loadPlayersThrowing()
-                if !remainingPlayers.isEmpty {
-                    var firstPlayer = remainingPlayers[0]
-                    firstPlayer.isCurrent = true
-                    try updatePlayer(firstPlayer)
-                    AppLog.player.debug("Current player deleted, set first player as current: \(firstPlayer.name)")
-                }
-            }
-            AppLog.player.debug("Player deleted (ID: \(id))")
-        }
+        AppLog.player.debug("Player deleted (ID: \(id))")
     }
 
     /// Saves an array of players, throwing on failure.
     ///
-    /// Profiles and credentials are persisted separately. Orphaned credentials
-    /// (those whose associated profile no longer exists) are cleaned up.
+    /// Profiles and credentials are persisted separately. Deleting a player's
+    /// credential is handled by ``deletePlayer(byID:)``.
     ///
     /// - Parameter players: The players to save.
     /// - Throws: A `GlobalError` if saving fails.
@@ -185,12 +172,6 @@ class PlayerDataManager {
             )
         }
 
-        let existingProfileIds = Set(profiles.map(\.id))
-        let allCredentials = try loadPlayersThrowing().compactMap(\.credential)
-        for credential in allCredentials where !existingProfileIds.contains(credential.userId) {
-            _ = credentialStore.deleteCredential(userId: credential.userId)
-        }
-
         AppLog.player.debug("Player data saved")
     }
 
@@ -199,6 +180,19 @@ class PlayerDataManager {
     /// - Parameter updatedPlayer: The player with updated values.
     /// - Throws: A `GlobalError` if the update fails.
     func updatePlayer(_ updatedPlayer: Player) throws {
+        try persistPlayer(updatedPlayer)
+
+        NotificationCenter.default.post(
+            name: .playerUpdated,
+            object: nil,
+            userInfo: ["updatedPlayer": updatedPlayer],
+        )
+    }
+
+    /// Persists a player without posting a `playerUpdated` notification.
+    ///
+    /// Use this for internal updates where the caller performs a full reload.
+    private func persistPlayer(_ updatedPlayer: Player) throws {
         try profileStore.updateProfile(updatedPlayer.profile)
 
         if let credential = updatedPlayer.credential {

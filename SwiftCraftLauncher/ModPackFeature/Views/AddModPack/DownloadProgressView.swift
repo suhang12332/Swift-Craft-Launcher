@@ -2,7 +2,7 @@
 //  DownloadProgressView.swift
 //  ModPackFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
@@ -53,11 +53,13 @@ struct DownloadProgressView: View {
                 )
             }
 
-            progressRow(
-                title: "modpack.files.title".localized(),
-                installState: modPackInstallState,
-                type: .files,
-            )
+            if modPackInstallState.filesTotal > 0 {
+                progressRow(
+                    title: "modpack.files.title".localized(),
+                    installState: modPackInstallState,
+                    type: .files,
+                )
+            }
 
             if modPackInstallState.dependenciesTotal > 0 {
                 progressRow(

@@ -2,7 +2,7 @@
 //  GameLocalResourceView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import AppKit
@@ -68,7 +68,8 @@ struct GameLocalResourceView: View {
                 searchText: searchText,
             )
         }
-        .onReceive(NotificationCenter.default.publisher(for: .localResourceImported)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .localResourceImported)) { notification in
+            guard notification.userInfo?["gameName"] as? String == game.gameName else { return }
             viewModel.refreshResources()
         }
         .onChange(of: query) { oldValue, newValue in

@@ -3,7 +3,7 @@
 //  SwiftCraftLauncher
 //
 //  Swift Craft Launcher - A modern macOS Minecraft launcher
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -30,9 +30,9 @@ import UserNotifications
 @main
 struct SwiftCraftLauncherApp: App {
     @State var playerListViewModel = PlayerListViewModel()
-    @State var gameRepository = GameRepository()
-    @State var gameLaunchUseCase = GameLaunchUseCase()
+    @State var gameRepository: GameRepository
     @State var container = DIContainer.shared
+    @State private var gameActionsProvider: GameActionsProvider
 
     @Environment(\.openSettings)
     private var openSettings
@@ -41,6 +41,14 @@ struct SwiftCraftLauncherApp: App {
 
     /// Configures global services and applies app‑level settings.
     init() {
+        let repository = GameRepository()
+        let gameLaunchUseCase = GameLaunchUseCase(gameRepository: repository)
+        _gameRepository = State(initialValue: repository)
+        _gameActionsProvider = State(initialValue: GameActionsProvider(
+            container: _container.wrappedValue,
+            gameLaunchUseCase: gameLaunchUseCase,
+            playerListViewModel: _playerListViewModel.wrappedValue,
+        ))
         Self.configureURLCache()
         Self.configureNotifications(delegate: notificationCenterDelegate)
     }
@@ -51,8 +59,8 @@ struct SwiftCraftLauncherApp: App {
             MainView()
                 .environment(playerListViewModel)
                 .environment(gameRepository)
-                .environment(gameLaunchUseCase)
                 .environment(container)
+                .environment(gameActionsProvider)
                 .preferredColorScheme(container.ui.themeManager.preferredColorScheme)
                 .errorAlert(container.core.errorHandler)
                 .windowOpener(container.ui.windowManager)
@@ -95,8 +103,8 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .environment(playerListViewModel)
                 .environment(gameRepository)
-                .environment(gameLaunchUseCase)
                 .environment(container)
+                .environment(gameActionsProvider)
             },
             label: {
                 HStack {

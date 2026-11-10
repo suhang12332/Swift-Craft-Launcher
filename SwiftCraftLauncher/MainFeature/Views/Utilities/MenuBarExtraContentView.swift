@@ -2,7 +2,7 @@
 //  MenuBarExtraContentView.swift
 //  MainFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Content view for the macOS menu bar extra, listing games, players, and app actions.
@@ -11,28 +11,27 @@ import AppKit
 import SwiftUI
 
 struct MenuBarExtraContentView: View {
-    @Environment(DIContainer.self)
-    private var container
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
     @Environment(GameRepository.self)
     private var gameRepository
-    @Environment(GameLaunchUseCase.self)
-    private var gameLaunchUseCase
+    @Environment(GameActionsProvider.self)
+    private var gameActionsProvider
 
     let openSettings: () -> Void
 
+    private func actions(for game: GameVersionInfo) -> GameActions {
+        gameActionsProvider.actions(for: game)
+    }
+
     /// Returns the SF Symbol name reflecting the game's current launch or running state.
     private func gameStatusSymbolName(for game: GameVersionInfo) -> String {
-        let userId = playerListViewModel.currentPlayer?.id ?? ""
-        let isRunning = container.core.gameSessionStore.cachedIsGameRunning(gameId: game.id, userId: userId)
-        let isLaunching = gameLaunchUseCase.isLaunching(gameId: game.id, userId: userId)
-
-        if isLaunching, !isRunning {
+        switch actions(for: game).status {
+        case .launching:
             return "progress.indicator"
-        } else if isRunning {
+        case .running:
             return "stop.fill"
-        } else {
+        case .stopped:
             return "play.fill"
         }
     }
@@ -71,10 +70,8 @@ struct MenuBarExtraContentView: View {
     private func gameMenu(for game: GameVersionInfo) -> some View {
         let contextMenu = GameContextMenu(
             game: game,
-            onDelete: { container.ui.gameDialogsPresenter.requestGameDeletion(of: game) },
-            onOpenSettings: { openSettings() },
-            onExport: { container.ui.gameDialogsPresenter.presentModPackExport(for: game) },
-            showsShowInLauncher: true,
+            placement: .menuBarExtra,
+            onOpenSettings: openSettings,
         )
         Menu {
             contextMenu
@@ -107,9 +104,8 @@ struct MenuBarExtraContentView: View {
 
     /// Synchronizes cached running states for all games.
     private func syncMenuBarGameStatuses() {
-        let userId = playerListViewModel.currentPlayer?.id ?? ""
         for game in gameRepository.games {
-            container.core.gameSessionStore.refreshGameStatus(gameId: game.id, userId: userId)
+            actions(for: game).refreshStatus()
         }
     }
 }

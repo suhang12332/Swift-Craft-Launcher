@@ -24,15 +24,59 @@
         {
           "fill-specializations" : [
             {
+              "value" : {
+                "linear-gradient" : [
+                  "extended-gray:1.00000,1.00000",
+                  "extended-srgb:0.00000,0.47843,1.00000,1.00000"
+                ],
+                "orientation" : {
+                  "start" : {
+                    "x" : 0.5,
+                    "y" : -1.2239757358944254
+                  },
+                  "stop" : {
+                    "x" : 0.5,
+                    "y" : 1
+                  }
+                }
+              }
+            },
+            {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
+                "linear-gradient" : [
+                  "extended-gray:1.00000,1.00000",
+                  "extended-gray:0.00000,1.00000"
+                ],
+                "orientation" : {
+                  "start" : {
+                    "x" : 0.4584307748343779,
+                    "y" : -1.2239757358944254
+                  },
+                  "stop" : {
+                    "x" : 0.5,
+                    "y" : 1.0266702913973547
+                  }
+                }
               }
             },
             {
               "appearance" : "tinted",
               "value" : {
-                "solid" : "extended-srgb:0.00000,0.47843,1.00000,1.00000"
+                "linear-gradient" : [
+                  "extended-gray:0.00000,1.00000",
+                  "extended-gray:0.25000,1.00000"
+                ],
+                "orientation" : {
+                  "start" : {
+                    "x" : 0.5,
+                    "y" : 1
+                  },
+                  "stop" : {
+                    "x" : 0.5,
+                    "y" : -0.37295214241614166
+                  }
+                }
               }
             }
           ],
@@ -42,7 +86,7 @@
             "scale" : 1,
             "translation-in-points" : [
               0,
-              38
+              36.5
             ]
           }
         }
@@ -74,16 +118,26 @@
       "layers" : [
         {
           "glass" : false,
+          "hidden" : false,
           "image-name" : "font.svg",
           "name" : "font"
         },
         {
+          "fill-specializations" : [
+            {
+              "appearance" : "tinted",
+              "value" : {
+                "solid" : "extended-gray:0.50000,1.00000"
+              }
+            }
+          ],
           "hidden" : false,
           "image-name" : "border.svg",
           "name" : "border"
         },
         {
           "glass" : true,
+          "hidden" : false,
           "image-name" : "line.svg",
           "name" : "line"
         }

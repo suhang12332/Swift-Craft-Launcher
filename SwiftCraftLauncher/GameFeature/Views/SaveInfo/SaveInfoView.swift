@@ -2,7 +2,7 @@
 //  SaveInfoView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Main view displaying save information including worlds, screenshots, and schematics.
@@ -29,9 +29,12 @@ struct SaveInfoView: View {
         _manager = State(wrappedValue: SaveInfoManager(gameName: gameName, modLoader: modLoader))
     }
 
-    private var currentGameRunningState: Bool {
-        let userId = playerListViewModel.currentPlayer?.id ?? ""
-        return container.core.gameSessionStore.cachedIsGameRunning(gameId: gameId, userId: userId)
+    private var gameState: GameRuntimeState {
+        GameRuntimeState(
+            gameId: gameId,
+            userId: playerListViewModel.currentPlayer?.id,
+            sessionStore: container.core.gameSessionStore,
+        )
     }
 
     var body: some View {
@@ -41,7 +44,6 @@ struct SaveInfoView: View {
                 WorldInfoSectionView(
                     worlds: manager.worlds,
                     isLoading: manager.isLoadingWorlds,
-                    gameName: gameName,
                 )
             }
 
@@ -57,7 +59,6 @@ struct SaveInfoView: View {
                 LitematicaSectionView(
                     litematicaFiles: manager.litematicaFiles,
                     isLoading: manager.isLoadingLitematica,
-                    gameName: gameName,
                 )
             }
 
@@ -76,7 +77,7 @@ struct SaveInfoView: View {
         .task {
             await manager.loadData()
         }
-        .onChange(of: currentGameRunningState) { oldValue, newValue in
+        .onChange(of: gameState.isRunning) { oldValue, newValue in
             if oldValue == true, newValue == false {
                 Task {
                     await manager.loadData()

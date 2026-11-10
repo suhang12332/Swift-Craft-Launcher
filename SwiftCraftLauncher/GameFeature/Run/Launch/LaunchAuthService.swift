@@ -2,7 +2,7 @@
 //  LaunchAuthService.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -93,11 +93,6 @@ struct LaunchAuthService {
         do {
             try dataManager.updatePlayer(player)
             AppLog.game.debug("Updated token info in player data manager")
-            NotificationCenter.default.post(
-                name: .playerUpdated,
-                object: nil,
-                userInfo: ["updatedPlayer": player],
-            )
             return nil
         } catch {
             AppLog.game.error("Failed to save updated token: \(error.localizedDescription)")

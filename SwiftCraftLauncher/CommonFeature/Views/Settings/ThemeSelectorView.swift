@@ -2,7 +2,7 @@
 //  ThemeSelectorView.swift
 //  CommonFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
@@ -64,27 +64,18 @@ private struct ThemeWindowIcon: View {
     let theme: ThemeMode
 
     var body: some View {
-        // Preview thumbnail is loaded at runtime from the macOS Appearance
-        // settings extension. No image asset is bundled in the app.
-        Image(assetName, bundle: SystemAppearanceBundle.value)
+        Image(iconName, bundle: AppPaths.appearanceBundle)
             .resizable()
             .frame(width: 60, height: 40)
             .cornerRadius(6)
     }
 
-    private var assetName: String {
-        switch theme {
-        case .light: "AppearanceLight"
-        case .dark: "AppearanceDark"
-        case .system: "AppearanceAuto"
+    private var iconName: String {
+        let name = switch theme {
+        case .system: "Auto"
+        case .light: "Light"
+        case .dark: "Dark"
         }
+        return "Appearance" + name
     }
-}
-
-/// The system extension that ships the light/dark/auto preview images shown in
-/// System Settings → Appearance. Its asset catalog is read directly at runtime.
-private enum SystemAppearanceBundle {
-    static let value = Bundle(
-        path: "/System/Library/ExtensionKit/Extensions/Appearance.appex",
-    )
 }

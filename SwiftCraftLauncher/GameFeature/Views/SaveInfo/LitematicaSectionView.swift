@@ -2,10 +2,8 @@
 //  LitematicaSectionView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
-
-import AppKit
 
 // Displays Litematica schematic files as selectable chips with detail sheet support.
 import SwiftUI
@@ -13,7 +11,6 @@ import SwiftUI
 struct LitematicaSectionView: View {
     let litematicaFiles: [LitematicaInfo]
     let isLoading: Bool
-    let gameName: String
 
     @State private var selectedFile: LitematicaInfo?
 
@@ -27,7 +24,7 @@ struct LitematicaSectionView: View {
             litematicaChip(for: file)
         }
         .sheet(item: $selectedFile) { file in
-            LitematicaDetailSheetView(filePath: file.path, gameName: gameName)
+            LitematicaDetailSheetView(filePath: file.path)
         }
     }
 
@@ -38,7 +35,6 @@ struct LitematicaSectionView: View {
                 selectedFile = file
             },
             iconName: "square.stack.3d.up",
-            isLoading: false,
             verticalPadding: 6,
             maxTextWidth: 150,
         )

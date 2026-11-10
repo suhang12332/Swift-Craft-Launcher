@@ -2,7 +2,7 @@
 //  ModScanner+Installation.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -43,10 +43,7 @@ extension ModScanner {
         hash: String,
         in modsDir: URL,
     ) async throws -> Bool {
-        guard let gameName = extractGameName(from: modsDir) else {
-            return false
-        }
-
+        let gameName = extractGameName(from: modsDir)
         return await checkModInstalledCore(hash: hash, gameName: gameName)
     }
 

@@ -2,7 +2,7 @@
 //  GameLaunchUseCaseTests.swift
 //  SwiftCraftLauncherTests
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 @testable import SwiftCraftLauncher
@@ -14,7 +14,7 @@ final class GameLaunchUseCaseTests: XCTestCase {
         let errorHandler = DIContainer.shared.core.errorHandler
         errorHandler.cleanup()
 
-        let useCase = GameLaunchUseCase()
+        let useCase = GameLaunchUseCase(gameRepository: GameRepository())
         await useCase.toggleGameState(player: nil, game: makeGame())
         await Task.yield()
 
@@ -32,7 +32,7 @@ final class GameLaunchUseCaseTests: XCTestCase {
             sessionStore.setGameLaunching(gameId: game.id, userId: player.id, isLaunching: false)
         }
 
-        let useCase = GameLaunchUseCase()
+        let useCase = GameLaunchUseCase(gameRepository: GameRepository())
         await useCase.toggleGameState(player: player, game: game)
 
         XCTAssertTrue(useCase.isLaunching(gameId: game.id, userId: player.id))

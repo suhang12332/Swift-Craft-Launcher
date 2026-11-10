@@ -2,7 +2,7 @@
 //  LitematicaModelsTests.swift
 //  SwiftCraftLauncherTests
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 @testable import SwiftCraftLauncher
@@ -17,34 +17,17 @@ final class LitematicaModelsTests: XCTestCase {
         XCTAssertEqual(info.name, "Test Build")
         XCTAssertEqual(info.id, "test.litematic")
         XCTAssertNil(info.createdDate)
-        XCTAssertEqual(info.fileSize, 0)
-        XCTAssertNil(info.author)
-        XCTAssertNil(info.description)
-        XCTAssertNil(info.version)
-        XCTAssertNil(info.regionCount)
-        XCTAssertNil(info.totalBlocks)
     }
 
-    func testLitematicaInfo_init_allFields() {
+    func testLitematicaInfo_init_createdDate() {
         let date = Date()
         let info = LitematicaInfo(
             name: "My Build",
             path: URL(fileURLWithPath: "/tmp/build.litematic"),
             createdDate: date,
-            fileSize: 1024,
-            author: "Builder",
-            description: "A test build",
-            version: "1.0",
-            regionCount: 5,
-            totalBlocks: 1000,
         )
         XCTAssertEqual(info.name, "My Build")
-        XCTAssertEqual(info.fileSize, 1024)
-        XCTAssertEqual(info.author, "Builder")
-        XCTAssertEqual(info.description, "A test build")
-        XCTAssertEqual(info.version, "1.0")
-        XCTAssertEqual(info.regionCount, 5)
-        XCTAssertEqual(info.totalBlocks, 1000)
+        XCTAssertEqual(info.createdDate, date)
     }
 
     func testLitematicaInfo_equatable() {

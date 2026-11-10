@@ -2,7 +2,7 @@
 //  Common.swift
 //  CommonFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -316,17 +316,6 @@ enum CommonUtil {
             "vi": "vi_vn",
         ]
         return languageMap[launcherLang.lowercased()] ?? "en_us"
-    }
-
-    /// Returns the instance directory for a game ID, or `nil` if the game is not found.
-    static func gameDirectory(for gameId: String) -> URL? {
-        let gameDatabase = GameVersionDatabase(dbPath: AppPaths.gameVersionDatabase.path)
-        try? gameDatabase.initialize()
-        guard let game = try? gameDatabase.getGame(by: gameId) else {
-            AppLog.common.error("Unable to find game in database, cannot get game directory: \(gameId)")
-            return nil
-        }
-        return AppPaths.profileDirectory(gameName: game.gameName)
     }
 
     /// Inserts or updates a key-value entry in a game instance's `options.txt` file.

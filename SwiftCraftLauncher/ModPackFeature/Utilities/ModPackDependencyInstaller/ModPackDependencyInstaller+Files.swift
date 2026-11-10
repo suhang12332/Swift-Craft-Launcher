@@ -2,7 +2,7 @@
 //  ModPackDependencyInstaller+Files.swift
 //  ModPackFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -113,8 +113,14 @@ extension ModPackDependencyInstaller {
                 ).absoluteString
             }
 
-            let effectiveModDetail = try await CurseForgeService.fetchModDetailThrowing(modId: projectId)
-            let subDirectory = effectiveModDetail.directoryName
+            let subDirectory: String
+            let convertedDetail: ModrinthProjectDetail?
+            do {
+                let effectiveModDetail = try await CurseForgeService.fetchModDetailThrowing(modId: projectId)
+                subDirectory = effectiveModDetail.directoryName
+                convertedDetail = CFToModrinthAdapter.convertProjectDetail(effectiveModDetail)
+            }
+
             let destinationPath = resourceDir
                 .appendingPathComponent(subDirectory)
                 .appendingPathComponent(fileDetail.fileName)
@@ -131,13 +137,12 @@ extension ModPackDependencyInstaller {
                 headers: CurseForgeService.getHeaders(),
             )
 
-            if let hash = await DIContainer.shared.core.modScanner.sha1Hash(of: downloadedFile) {
-                if let cfAsModrinth = CFToModrinthAdapter.convertProjectDetail(effectiveModDetail) {
-                    var detailWithFile = cfAsModrinth
-                    detailWithFile.fileName = fileDetail.fileName
-                    detailWithFile.type = detailWithFile.projectType
-                    DIContainer.shared.core.modScanner.saveToCache(hash: hash, detail: detailWithFile)
-                }
+            if let hash = await DIContainer.shared.core.modScanner.sha1Hash(of: downloadedFile),
+               let convertedDetail {
+                var detailWithFile = convertedDetail
+                detailWithFile.fileName = fileDetail.fileName
+                detailWithFile.type = detailWithFile.projectType
+                DIContainer.shared.core.modScanner.saveToCache(hash: hash, detail: detailWithFile)
             }
 
             return true

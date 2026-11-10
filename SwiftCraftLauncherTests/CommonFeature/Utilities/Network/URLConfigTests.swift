@@ -2,7 +2,7 @@
 //  URLConfigTests.swift
 //  SwiftCraftLauncherTests
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 @testable import SwiftCraftLauncher
@@ -108,12 +108,6 @@ final class URLConfigTests: XCTestCase {
             URLConfig.API.AuthlibInjector.serverApiRoot(for: "  https://example.com/  "),
             "https://example.com",
         )
-    }
-
-    func testChunkBase_seedMap() {
-        let url = URLConfig.API.ChunkBase.seedMap(seed: 12345)
-        XCTAssertNotNil(url)
-        XCTAssertTrue(url?.absoluteString.contains("seed=12345") ?? false)
     }
 
     func testCommunity_urls() {

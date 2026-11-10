@@ -2,7 +2,7 @@
 //  ModrinthDetailCardView.swift
 //  ResourceFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -38,22 +38,21 @@ struct ModrinthDetailCardLayout<Icon: View, Title: View, Description: View, Tags
 /// A placeholder icon used when the project icon is not available.
 struct ModrinthDetailCardPlaceholderIcon: View {
     var sfSymbol: String?
+    var size: CGFloat = ModrinthConstants.UIConstants.iconSize
+
     var body: some View {
         ZStack {
             Color.gray.opacity(0.2)
             if let sfSymbol {
                 Image(systemName: sfSymbol)
-                    .font(.system(size: ModrinthConstants.UIConstants.iconSize * 0.4))
+                    .font(.system(size: size * 0.4))
                     .foregroundStyle(.secondary)
             } else {
                 ProgressView()
                     .controlSize(.small)
             }
         }
-        .frame(
-            width: ModrinthConstants.UIConstants.iconSize,
-            height: ModrinthConstants.UIConstants.iconSize,
-        )
+        .frame(width: size, height: size)
         .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
     }
 }

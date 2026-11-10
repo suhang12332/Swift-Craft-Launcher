@@ -2,7 +2,7 @@
 //  ResourceFeatureExtendedTests.swift
 //  SwiftCraftLauncherTests
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 @testable import SwiftCraftLauncher
@@ -50,7 +50,7 @@ final class ResourceFeatureExtendedTests: XCTestCase {
 
     func testModrinthConstants_UIConstants() {
         XCTAssertEqual(SearchPagination.pageSize, 20)
-        XCTAssertEqual(ModrinthConstants.UIConstants.maxTags, 3)
+        XCTAssertEqual(ModrinthConstants.UIConstants.maxTags, 4)
         XCTAssertEqual(ModrinthConstants.UIConstants.descriptionLineLimit, 1)
     }
 

@@ -14,6 +14,8 @@
 		909FCDCD303A038B001CBE3D /* TouchBarSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 909FCDCC303A038B001CBE3D /* TouchBarSupport */; };
 		90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */; };
 		90A1FC1D2FB6406900DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */; };
+		90D6A1000000000000000003 /* ModDependencyGraphKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90D6A1000000000000000002 /* ModDependencyGraphKit */; };
+		90D6A1000000000000000005 /* ModDependencyGraphKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90D6A1000000000000000004 /* ModDependencyGraphKit */; };
 		90DB5E133037E75B008C2DD6 /* SwiftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1D2FB6406900DAD001 /* SwiftNBT */; };
 		90DB5E143037E75B008C2DD6 /* SwiftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1D2FB6406900DAD001 /* SwiftNBT */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
@@ -74,6 +76,7 @@
 				90645F072F6BF80C006AD2D8 /* SwiftMarkDownUI in Frameworks */,
 				90A1FC1D2FB6406900DAD886 /* MinecraftFriendsKit in Frameworks */,
 				9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */,
+				90D6A1000000000000000003 /* ModDependencyGraphKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,6 +85,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				90DB5E143037E75B008C2DD6 /* SwiftNBT in Frameworks */,
+				90D6A1000000000000000005 /* ModDependencyGraphKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,6 +132,7 @@
 				90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */,
 				90A1FC1D2FB6406900DAD001 /* SwiftNBT */,
 				909FCDCC303A038B001CBE3D /* TouchBarSupport */,
+				90D6A1000000000000000002 /* ModDependencyGraphKit */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90D620D12FD7083C00108105 /* Swift Craft Launcher.app */;
@@ -152,6 +157,7 @@
 			name = SwiftCraftLauncherTests;
 			packageProductDependencies = (
 				90A1FC1D2FB6406900DAD001 /* SwiftNBT */,
+				90D6A1000000000000000004 /* ModDependencyGraphKit */,
 			);
 			productName = SwiftCraftLauncherTests;
 			productReference = 90TEST0062E3139B5005A53F1 /* SwiftCraftLauncherTests.xctest */;
@@ -216,6 +222,7 @@
 				90A1FC1B2FB6406900DAD886 /* XCRemoteSwiftPackageReference "MinecraftFriendsKit" */,
 				90A1FC1D2FB6406900DAD000 /* XCRemoteSwiftPackageReference "SwiftNBT" */,
 				909FCDCB303A038B001CBE3D /* XCRemoteSwiftPackageReference "TouchBarSupport" */,
+				90D6A1000000000000000001 /* XCRemoteSwiftPackageReference "ModDependencyGraphKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -310,7 +317,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 91;
+				CURRENT_PROJECT_VERSION = 92;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -334,7 +341,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025-2026 Swift Craft Launcher";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.3.7;
+				MARKETING_VERSION = 1.3.8;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -379,7 +386,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 91;
+				CURRENT_PROJECT_VERSION = 92;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -397,7 +404,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025-2026 Swift Craft Launcher";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.3.7;
+				MARKETING_VERSION = 1.3.8;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -416,7 +423,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 91;
+				CURRENT_PROJECT_VERSION = 92;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -429,7 +436,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.3.7;
+				MARKETING_VERSION = 1.3.8;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_MODULE_NAME = SwiftCraftLauncher;
@@ -451,7 +458,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 91;
+				CURRENT_PROJECT_VERSION = 92;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -464,7 +471,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.3.7;
+				MARKETING_VERSION = 1.3.8;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_MODULE_NAME = SwiftCraftLauncher;
@@ -480,7 +487,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 91;
+				CURRENT_PROJECT_VERSION = 92;
 				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -489,7 +496,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.3.7;
+				MARKETING_VERSION = 1.3.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncherTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -503,7 +510,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 91;
+				CURRENT_PROJECT_VERSION = 92;
 				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -512,7 +519,7 @@
 					"@loader_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.3.7;
+				MARKETING_VERSION = 1.3.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncherTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -618,6 +625,14 @@
 				kind = branch;
 			};
 		};
+		90D6A1000000000000000001 /* XCRemoteSwiftPackageReference "ModDependencyGraphKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/suhang12332/ModDependencyGraphKit.git";
+			requirement = {
+				branch = release;
+				kind = branch;
+			};
+		};
 		90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
@@ -672,6 +687,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 90A1FC1D2FB6406900DAD000 /* XCRemoteSwiftPackageReference "SwiftNBT" */;
 			productName = SwiftNBT;
+		};
+		90D6A1000000000000000002 /* ModDependencyGraphKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 90D6A1000000000000000001 /* XCRemoteSwiftPackageReference "ModDependencyGraphKit" */;
+			productName = ModDependencyGraphKit;
+		};
+		90D6A1000000000000000004 /* ModDependencyGraphKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 90D6A1000000000000000001 /* XCRemoteSwiftPackageReference "ModDependencyGraphKit" */;
+			productName = ModDependencyGraphKit;
 		};
 		90E123456789ABCD0002 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;

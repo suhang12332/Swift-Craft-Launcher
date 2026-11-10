@@ -2,7 +2,7 @@
 //  MainView.swift
 //  MainFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
@@ -18,8 +18,8 @@ struct MainView: View {
     @State private var navigationHandler: SidebarNavigationHandler?
     @Environment(GameRepository.self)
     private var gameRepository
-    @Environment(GameLaunchUseCase.self)
-    private var gameLaunchUseCase
+    @Environment(GameActionsProvider.self)
+    private var gameActionsProvider
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
     @Environment(\.openSettings)
@@ -75,8 +75,8 @@ struct MainView: View {
             TouchBarSupportConfiguration.make(
                 container: container,
                 gameRepository: gameRepository,
-                gameLaunchUseCase: gameLaunchUseCase,
                 playerListViewModel: playerListViewModel,
+                gameActionsProvider: gameActionsProvider,
             ) { openSettings() },
         )
     }

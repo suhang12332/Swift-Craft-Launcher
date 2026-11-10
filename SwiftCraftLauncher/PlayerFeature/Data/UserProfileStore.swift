@@ -2,7 +2,7 @@
 //  UserProfileStore.swift
 //  PlayerFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -77,7 +77,6 @@ class UserProfileStore {
         }
 
         try saveProfilesThrowing(profiles)
-        AppLog.player.debug("New user added: \(profile.name)")
     }
 
     /// Updates an existing user profile.
@@ -116,11 +115,9 @@ class UserProfileStore {
         if profiles.count < initialCount {
             if isDeletingCurrentUser, !profiles.isEmpty {
                 profiles[0].isCurrent = true
-                AppLog.player.debug("Current user deleted, set first user as current: \(profiles[0].name)")
             }
 
             try saveProfilesThrowing(profiles)
-            AppLog.player.debug("User deleted (ID: \(id))")
         } else {
             throw GlobalError.player(
                 i18nKey: "error.player.not_found",

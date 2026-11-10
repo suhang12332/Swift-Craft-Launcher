@@ -2,7 +2,7 @@
 //  GameVersionDatabase.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -91,6 +91,18 @@ class GameVersionDatabase: @unchecked Sendable {
                 "CREATE INDEX IF NOT EXISTS \(indexName) ON \(tableName)(\(column));",
             )
         }
+
+        try db.execute("""
+        DELETE FROM \(tableName)
+        WHERE rowid NOT IN (
+            SELECT MAX(rowid) FROM \(tableName) GROUP BY working_path, game_name
+        );
+        """)
+        try db.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_working_path_game_name
+        ON \(tableName)(working_path, game_name);
+        """)
+
         AppLog.game.debug("Game version table created or already exists")
     }
 

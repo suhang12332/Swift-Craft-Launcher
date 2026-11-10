@@ -2,7 +2,7 @@
 //  GameIconView.swift
 //  MainFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Displays a game's icon with automatic cache-busting on refresh.

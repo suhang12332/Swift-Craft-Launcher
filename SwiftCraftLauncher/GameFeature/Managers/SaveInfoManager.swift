@@ -2,107 +2,23 @@
 //  SaveInfoManager.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 import Observation
-import SwiftNBT
 
 /// Loads and manages save information including worlds, screenshots,
 /// litematica files, and logs for a specific game instance.
 @MainActor
 @Observable
 final class SaveInfoManager {
-    private struct WorldParseResult {
-        let lastPlayed: Date?
-        let gameMode: String?
-        let difficulty: String?
-        let version: String?
-        let hardcore: Bool
-        let cheats: Bool
-        let seed: Int64?
-    }
-
-    nonisolated private static func parseLevelDat(at levelDatPath: URL) -> WorldParseResult? {
-        guard let data = try? Data(contentsOf: levelDatPath),
-              let document = try? NBTDecoder().decode(data),
-              let dataTag = document.root["Data"]?.compoundValue else {
-            return nil
-        }
-
-        var lastPlayed: Date?
-        if let ts = dataTag["LastPlayed"]?.int64Value {
-            lastPlayed = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
-        }
-
-        let gameMode: String? = {
-            if let v = dataTag["GameType"]?.int64Value {
-                return WorldNBTMapper.mapGameMode(Int(v))
-            }
-            return nil
-        }()
-
-        let difficulty: String? = {
-            if let v = dataTag["Difficulty"]?.int64Value {
-                return WorldNBTMapper.mapDifficulty(Int(v))
-            }
-            if let ds = dataTag["difficulty_settings"]?.compoundValue,
-               let diffStr = ds["difficulty"]?.stringValue {
-                return WorldNBTMapper.mapDifficultyString(diffStr)
-            }
-            return nil
-        }()
-
-        let version: String? = dataTag["Version"]?.compoundValue?["Name"]?.stringValue
-        let hardcore: Bool = {
-            if let ds = dataTag["difficulty_settings"]?.compoundValue {
-                return WorldNBTMapper.readBoolFlag(ds["hardcore"])
-            }
-            return WorldNBTMapper.readBoolFlag(dataTag["hardcore"])
-        }()
-        let cheats: Bool = WorldNBTMapper.readBoolFlag(dataTag["allowCommands"])
-        let seed: Int64? = WorldNBTMapper.readSeed(from: dataTag, worldPath: levelDatPath.deletingLastPathComponent())
-
-        return WorldParseResult(
-            lastPlayed: lastPlayed,
-            gameMode: gameMode,
-            difficulty: difficulty,
-            version: version,
-            hardcore: hardcore,
-            cheats: cheats,
-            seed: seed,
-        )
-    }
-
-    nonisolated private static func buildWorldInfo(worldPath: URL, parsed: WorldParseResult?) -> WorldInfo {
+    nonisolated private static func buildWorldInfo(worldPath: URL) -> WorldInfo {
         let worldName = worldPath.lastPathComponent
-        var fileLastPlayed: Date?
-        if let modDate = try? worldPath.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate {
-            fileLastPlayed = modDate
-        }
-        if let parsed {
-            return WorldInfo(
-                name: worldName,
-                path: worldPath,
-                lastPlayed: parsed.lastPlayed ?? fileLastPlayed,
-                gameMode: parsed.gameMode,
-                difficulty: parsed.difficulty,
-                hardcore: parsed.hardcore,
-                cheats: parsed.cheats,
-                version: parsed.version,
-                seed: parsed.seed,
-            )
-        }
-        return WorldInfo(
-            name: worldName,
-            path: worldPath,
-            lastPlayed: fileLastPlayed,
-            gameMode: nil,
-            difficulty: nil,
-            version: nil,
-            seed: nil,
-        )
+        let lastPlayed = (try? worldPath.resourceValues(
+            forKeys: [.contentModificationDateKey],
+        ))?.contentModificationDate
+        return WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed)
     }
 
     let gameName: String
@@ -198,13 +114,12 @@ final class SaveInfoManager {
     /// Checks which save types are available on disk, performing I/O off the main thread.
     private func checkTypesAvailability() async {
         let name = gameName
-        let (worlds, screenshots, litematica, logs) = await Task.detached(priority: .userInitiated) {
+        let (worlds, screenshots, logs) = await Task.detached(priority: .userInitiated) {
             let fm = FileManager.default
             let profileDir = AppPaths.profileDirectory(gameName: name)
             let savesPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
             let screenshotsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)
             let logsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
-            let schematicsDir = AppPaths.schematicsDirectory(gameName: name)
 
             var hasWorlds = false
             if fm.fileExists(atPath: savesPath.path) {
@@ -243,24 +158,6 @@ final class SaveInfoManager {
                 }
             }
 
-            var hasLitematicaFiles = false
-            if fm.fileExists(atPath: schematicsDir.path) {
-                do {
-                    let contents = try fm.contentsOfDirectory(
-                        at: schematicsDir,
-                        includingPropertiesForKeys: [.isRegularFileKey],
-                        options: [.skipsHiddenFiles],
-                    )
-                    hasLitematicaFiles = contents.contains { url in
-                        guard let isFile = try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
-                              isFile == true else { return false }
-                        return url.pathExtension.lowercased() == "litematic"
-                    }
-                } catch {
-                    hasLitematicaFiles = false
-                }
-            }
-
             var hasLogs = false
             if fm.fileExists(atPath: logsPath.path) {
                 do {
@@ -282,13 +179,11 @@ final class SaveInfoManager {
             return (
                 hasWorlds,
                 hasScreenshots,
-                hasLitematicaFiles,
                 hasLogs,
             )
         }.value
         hasWorldsType = worlds
         hasScreenshotsType = screenshots
-        hasLitematicaType = litematica
         hasLogsType = logs
     }
 
@@ -296,6 +191,7 @@ final class SaveInfoManager {
         await checkTypesAvailability()
 
         isLoading = true
+        let vanilla = isVanilla
 
         await withTaskGroup(of: Void.self) { group in
             if hasWorldsType {
@@ -314,7 +210,7 @@ final class SaveInfoManager {
                 await self?.loadResourceCounts()
             }
 
-            if hasLitematicaType {
+            if !vanilla {
                 group.addTask { [weak self] in
                     await self?.loadLitematicaFiles()
                 }
@@ -325,6 +221,20 @@ final class SaveInfoManager {
                     await self?.loadLogs()
                 }
             }
+        }
+
+        if vanilla {
+            hasLitematicaType = false
+            litematicaFiles = []
+        } else {
+            hasLitematicaType = !litematicaFiles.isEmpty
+            let litematicaCount = litematicaFiles.count
+            let schematicsDirectory = AppPaths.schematicsDirectory(gameName: gameName)
+            let insertionIndex = resourceCounts.firstIndex { $0.type == "worlds" } ?? resourceCounts.endIndex
+            resourceCounts.insert(
+                (type: "litematica", count: litematicaCount, directory: schematicsDirectory),
+                at: insertionIndex,
+            )
         }
 
         isLoading = false
@@ -398,12 +308,11 @@ final class SaveInfoManager {
                 (ResourceType.datapack.rawValue, AppPaths.datapacksDirectory(gameName: name)),
                 (ResourceType.resourcepack.rawValue, AppPaths.resourcepacksDirectory(gameName: name)),
                 (ResourceType.shader.rawValue, AppPaths.shaderpacksDirectory(gameName: name)),
-                ("litematica", AppPaths.schematicsDirectory(gameName: name)),
                 ("worlds", profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)),
                 ("screenshots", profileDir.appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)),
                 ("logs", profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)),
             ]
-            let hidden: Set<String> = vanilla ? [ResourceType.mod.rawValue, ResourceType.shader.rawValue, "litematica"] : []
+            let hidden: Set<String> = vanilla ? [ResourceType.mod.rawValue, ResourceType.shader.rawValue] : []
             let types = allTypes.filter { !hidden.contains($0.0) }
             return types.map { type, url in
                 (type: type, count: Self.countFiles(in: url, fm: fm), directory: url)
@@ -468,9 +377,7 @@ final class SaveInfoManager {
         let loadedWorlds = contents.compactMap { worldPath -> WorldInfo? in
             guard let isDirectory = try? worldPath.resourceValues(forKeys: [.isDirectoryKey]).isDirectory,
                   isDirectory == true else { return nil }
-            let levelDatPath = worldPath.appendingPathComponent("level.dat")
-            let parsed = fm.fileExists(atPath: levelDatPath.path) ? Self.parseLevelDat(at: levelDatPath) : nil
-            return Self.buildWorldInfo(worldPath: worldPath, parsed: parsed)
+            return Self.buildWorldInfo(worldPath: worldPath)
         }
 
         return loadedWorlds.sorted { ($0.lastPlayed ?? .distantPast) > ($1.lastPlayed ?? .distantPast) }

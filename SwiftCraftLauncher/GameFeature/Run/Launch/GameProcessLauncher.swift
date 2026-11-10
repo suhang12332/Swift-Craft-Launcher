@@ -2,7 +2,7 @@
 //  GameProcessLauncher.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import AVFoundation
@@ -44,6 +44,7 @@ struct GameProcessLauncher {
         await DIContainer.shared.core.gameSessionStore.storeProcess(
             gameId: game.id,
             userId: player.id,
+            gameDirectory: gameWorkingDirectory,
             process: process,
         )
 
@@ -51,10 +52,10 @@ struct GameProcessLauncher {
             try process.run()
 
             await MainActor.run {
-                DIContainer.shared.core.gameSessionStore.setGameRunning(
+                DIContainer.shared.core.gameSessionStore.markProcessRunning(
                     gameId: game.id,
                     userId: player.id,
-                    isRunning: true,
+                    process: process,
                 )
             }
         } catch {

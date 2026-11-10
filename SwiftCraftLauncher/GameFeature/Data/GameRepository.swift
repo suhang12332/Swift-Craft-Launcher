@@ -2,7 +2,7 @@
 //  GameRepository.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -157,14 +157,8 @@ class GameRepository {
             try self.database.saveGame(gameToSave, workingPath: workingPath)
         }.value
 
-        if gamesByWorkingPath[workingPath] == nil {
-            gamesByWorkingPath[workingPath] = []
-        }
-        if let index = gamesByWorkingPath[workingPath]?.firstIndex(where: { $0.id == game.id }) {
-            gamesByWorkingPath[workingPath]?[index] = game
-        } else {
-            gamesByWorkingPath[workingPath]?.append(game)
-        }
+        upsertGameInMemory(game, workingPath: workingPath)
+        await refreshWorkingPathOptions()
 
         AppLog.game.info("Successfully added game: \(game.gameName) (working path: \(workingPath))")
     }
@@ -184,6 +178,7 @@ class GameRepository {
         }.value
 
         gamesByWorkingPath[workingPath]?.removeAll { $0.id == id }
+        await refreshWorkingPathOptions()
 
         AppLog.game.info("Successfully deleted game: \(game.gameName) (working path: \(workingPath))")
     }
@@ -200,6 +195,7 @@ class GameRepository {
 
         gamesByWorkingPath[workingPath]?.removeAll { $0.gameName == gameName }
         corruptedGamesByWorkingPath[workingPath]?.removeAll { $0 == gameName }
+        await refreshWorkingPathOptions()
 
         AppLog.game.info("Successfully deleted game record named \(gameName) (working path: \(workingPath))")
     }
@@ -234,6 +230,7 @@ class GameRepository {
 
         game.gameName = newName
         try await updateGame(game)
+        await refreshWorkingPathOptions()
         AppLog.game.info("Successfully renamed game from '\(oldName)' to '\(newName)'")
     }
 
@@ -250,16 +247,23 @@ class GameRepository {
             try self.database.saveGame(gameToSave, workingPath: workingPath)
         }.value
 
-        if let index = gamesByWorkingPath[workingPath]?.firstIndex(where: { $0.id == game.id }) {
-            gamesByWorkingPath[workingPath]?[index] = game
-        } else {
-            if gamesByWorkingPath[workingPath] == nil {
-                gamesByWorkingPath[workingPath] = []
-            }
-            gamesByWorkingPath[workingPath]?.append(game)
-        }
+        upsertGameInMemory(game, workingPath: workingPath)
 
         AppLog.game.info("Successfully updated game: \(game.gameName) (working path: \(workingPath))")
+    }
+
+    private func upsertGameInMemory(_ game: GameVersionInfo, workingPath: String) {
+        var games = gamesByWorkingPath[workingPath] ?? []
+        games.removeAll { $0.id != game.id && $0.gameName == game.gameName }
+
+        if let index = games.firstIndex(where: { $0.id == game.id }) {
+            games[index] = game
+        } else {
+            games.append(game)
+        }
+
+        gamesByWorkingPath[workingPath] = games
+        corruptedGamesByWorkingPath[workingPath]?.removeAll { $0 == game.gameName }
     }
 
     private func scanAllGamesModsDirectory() async {
