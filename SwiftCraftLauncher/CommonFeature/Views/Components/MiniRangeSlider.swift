@@ -227,8 +227,6 @@ private struct NativeMiniRangeSlider: NSViewRepresentable {
     }
 }
 
-// MARK: - Legacy (macOS 15 and earlier)
-
 /// Draws only the native track, hiding the knob.
 private final class TrackOnlySliderCell: NSSliderCell {
     override func drawKnob() { }
