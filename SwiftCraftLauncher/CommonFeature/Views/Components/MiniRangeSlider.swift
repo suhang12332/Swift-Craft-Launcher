@@ -312,11 +312,9 @@ final class LegacyRangeSlider: NSControl {
         // Only the clip geometry is custom; the track itself is still drawn by AppKit.
         fillClip.wantsLayer = true
         fillClip.clipsToBounds = true
-        clipsToBounds = false
 
         for control in [baseTrack, fillTrack] {
             control.isContinuous = false
-            control.clipsToBounds = false
             control.setAccessibilityElement(false)
         }
 
@@ -324,7 +322,6 @@ final class LegacyRangeSlider: NSControl {
             control.isContinuous = true
             control.target = self
             control.action = #selector(valueChanged(_:))
-            control.clipsToBounds = false
         }
 
         addSubview(baseTrack)
@@ -336,12 +333,8 @@ final class LegacyRangeSlider: NSControl {
 
     func setRange(_ range: ClosedRange<Double>, bounds: ClosedRange<Double>) {
         for control in [baseTrack, fillTrack, slider, inactiveSlider] {
-            if control.minValue != bounds.lowerBound {
-                control.minValue = bounds.lowerBound
-            }
-            if control.maxValue != bounds.upperBound {
-                control.maxValue = bounds.upperBound
-            }
+            control.minValue = bounds.lowerBound
+            control.maxValue = bounds.upperBound
         }
         lowerValue = range.lowerBound
         upperValue = range.upperBound
@@ -358,7 +351,6 @@ final class LegacyRangeSlider: NSControl {
 
     override func hitTest(_ point: NSPoint) -> NSView? {
         let location = convert(point, from: superview)
-        guard bounds.contains(location) else { return nil }
         if NSApp.currentEvent?.type == .leftMouseDown {
             let midpoint = (lowerValue + upperValue) / 2
             let split = knobCenterX(for: midpoint)
@@ -375,18 +367,10 @@ final class LegacyRangeSlider: NSControl {
     private func updateSliders() {
         let value = activeKnob == .lower ? lowerValue : upperValue
         let inactiveValue = activeKnob == .lower ? upperValue : lowerValue
-        if baseTrack.doubleValue != baseTrack.minValue {
-            baseTrack.doubleValue = baseTrack.minValue
-        }
-        if fillTrack.doubleValue != fillTrack.maxValue {
-            fillTrack.doubleValue = fillTrack.maxValue
-        }
-        if slider.doubleValue != value {
-            slider.doubleValue = value
-        }
-        if inactiveSlider.doubleValue != inactiveValue {
-            inactiveSlider.doubleValue = inactiveValue
-        }
+        baseTrack.doubleValue = baseTrack.minValue
+        fillTrack.doubleValue = fillTrack.maxValue
+        slider.doubleValue = value
+        inactiveSlider.doubleValue = inactiveValue
         updateFillClip()
     }
 
@@ -396,9 +380,9 @@ final class LegacyRangeSlider: NSControl {
         let upperX = knobCenterX(for: upperValue)
 
         let clipRect = NSRect(
-            x: min(lowerX, upperX),
+            x: lowerX,
             y: bounds.minY,
-            width: abs(upperX - lowerX),
+            width: upperX - lowerX,
             height: bounds.height,
         )
         fillClip.frame = clipRect
