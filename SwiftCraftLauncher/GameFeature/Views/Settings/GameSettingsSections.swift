@@ -170,7 +170,6 @@ struct GameSettingsMemoryAllocationSection: View {
                     gameSettingsManager.globalXmx = AppConstants.MemoryDefaults.xmx
                     range = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
                 }
-                .padding(.leading, 8)
             }
         }
         Text(

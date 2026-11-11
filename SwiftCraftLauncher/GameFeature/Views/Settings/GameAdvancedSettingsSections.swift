@@ -107,7 +107,6 @@ struct GameAdvancedSettingsMemorySection: View {
                 Button("common.reset".localized()) {
                     viewModel.resetGameXms()
                 }
-                .padding(.leading, 8)
             }
         }
         Text("\(Int(viewModel.memoryRange.lowerBound)) MB-\(Int(viewModel.memoryRange.upperBound)) MB")

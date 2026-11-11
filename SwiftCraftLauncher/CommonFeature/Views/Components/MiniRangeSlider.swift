@@ -8,196 +8,74 @@
 import AppKit
 import SwiftUI
 
-private final class RangeSliderCell: NSSliderCell {
-    enum ActiveKnob {
-        case lower, upper, inactive
+/// A SwiftUI view that provides a compact range slider.
+struct MiniRangeSlider: View {
+    @Binding var range: ClosedRange<Double>
+    var bounds: ClosedRange<Double>
+    /// Overrides the ambient control size for the slider's inner controls.
+    var controlSize: ControlSize?
+
+    @Environment(\.controlSize)
+    private var environmentControlSize
+
+    init(
+        range: Binding<ClosedRange<Double>>,
+        bounds: ClosedRange<Double>,
+        controlSize: ControlSize? = nil,
+    ) {
+        _range = range
+        self.bounds = bounds
+        self.controlSize = controlSize
     }
 
-    var lowerValue: Double {
-        didSet {
-            let clamped = clampedLower(lowerValue)
-            if clamped != lowerValue {
-                lowerValue = clamped
+    private var resolvedControlSize: ControlSize {
+        controlSize ?? environmentControlSize
+    }
+
+    var body: some View {
+        Group {
+            if #available(macOS 26.0, *) {
+                NativeMiniRangeSlider(
+                    range: $range,
+                    bounds: bounds,
+                    controlSize: resolvedControlSize,
+                )
+            } else {
+                LegacyMiniRangeSlider(
+                    range: $range,
+                    bounds: bounds,
+                    controlSize: resolvedControlSize,
+                )
             }
-            if clamped != oldValue {
-                controlView?.needsDisplay = true
-            }
         }
-    }
-
-    var upperValue: Double {
-        didSet {
-            let clamped = clampedUpper(upperValue)
-            if clamped != upperValue {
-                upperValue = clamped
-            }
-            if clamped != oldValue {
-                controlView?.needsDisplay = true
-            }
-        }
-    }
-
-    private var activeKnob: ActiveKnob = .inactive
-    private var minimumGapValue: Double = 0
-    private var cachedViewBounds: NSRect?
-    private var cachedMinimumGap: Double?
-
-    override init() {
-        lowerValue = 0
-        upperValue = 1
-        super.init()
-        isContinuous = true
-    }
-
-    required init(coder: NSCoder) {
-        lowerValue = 0
-        upperValue = 1
-        super.init(coder: coder)
-        isContinuous = true
-    }
-
-    private func withDoubleValue<T>(_ value: Double, _ body: () -> T) -> T {
-        let saved = doubleValue
-        doubleValue = value
-        defer { doubleValue = saved }
-        return body()
-    }
-
-    private func knobRect(for value: Double, flipped: Bool) -> NSRect {
-        withDoubleValue(value) { super.knobRect(flipped: flipped) }
-    }
-
-    override func drawBar(inside _: NSRect, flipped: Bool) {
-        let barRect = barRect(flipped: flipped)
-
-        withDoubleValue(minValue) {
-            super.drawBar(inside: barRect, flipped: flipped)
-        }
-
-        let lowerKnobRect = knobRect(for: lowerValue, flipped: flipped)
-        let upperKnobRect = knobRect(for: upperValue, flipped: flipped)
-
-        let activeRect = NSRect(
-            x: lowerKnobRect.midX,
-            y: barRect.minY,
-            width: upperKnobRect.midX - lowerKnobRect.midX,
-            height: barRect.height,
-        )
-
-        guard activeRect.width > 0 else { return }
-
-        NSGraphicsContext.saveGraphicsState()
-        defer { NSGraphicsContext.restoreGraphicsState() }
-
-        let radius = barRect.height / 2
-        NSBezierPath(roundedRect: activeRect, xRadius: radius, yRadius: radius).addClip()
-
-        withDoubleValue(upperValue) {
-            super.drawBar(inside: barRect, flipped: flipped)
-        }
-    }
-
-    override func drawKnob(_: NSRect) {
-        let flipped = controlView?.isFlipped ?? false
-        withDoubleValue(lowerValue) {
-            super.drawKnob(super.knobRect(flipped: flipped))
-        }
-        withDoubleValue(upperValue) {
-            super.drawKnob(super.knobRect(flipped: flipped))
-        }
-    }
-
-    override func startTracking(at startPoint: NSPoint, in controlView: NSView) -> Bool {
-        cachedViewBounds = controlView.bounds
-
-        minimumGapValue = min(calculatedMinimumGap(), maxValue - minValue)
-        cachedMinimumGap = minimumGapValue
-
-        let flipped = controlView.isFlipped
-        let lowerKnob = knobRect(for: lowerValue, flipped: flipped)
-        let upperKnob = knobRect(for: upperValue, flipped: flipped)
-
-        activeKnob = (lowerKnob.contains(startPoint) ||
-            squaredDistance(from: startPoint, to: lowerKnob.centerPoint) <
-            squaredDistance(from: startPoint, to: upperKnob.centerPoint)) ? .lower : .upper
-
-        doubleValue = (activeKnob == .lower) ? lowerValue : upperValue
-        _ = super.startTracking(at: startPoint, in: controlView)
-        return true
-    }
-
-    override func continueTracking(last lastPoint: NSPoint, current currentPoint: NSPoint, in controlView: NSView) -> Bool {
-        guard activeKnob != .inactive else { return false }
-
-        if let cachedBounds = cachedViewBounds, cachedBounds == controlView.bounds, let cached = cachedMinimumGap {
-            minimumGapValue = cached
-        } else {
-            minimumGapValue = min(calculatedMinimumGap(), maxValue - minValue)
-            cachedViewBounds = controlView.bounds
-            cachedMinimumGap = minimumGapValue
-        }
-
-        doubleValue = (activeKnob == .lower) ? lowerValue : upperValue
-        super.continueTracking(last: lastPoint, current: currentPoint, in: controlView)
-        let newValue = min(max(doubleValue, minValue), maxValue)
-
-        switch activeKnob {
-        case .lower:
-            lowerValue = min(newValue, max(upperValue - minimumGapValue, minValue))
-        case .upper:
-            upperValue = max(newValue, min(lowerValue + minimumGapValue, maxValue))
-        case .inactive:
-            break
-        }
-
-        if let slider = controlView as? RangeNSSlider {
-            slider.sendAction(slider.action, to: slider.target)
-        }
-
-        return true
-    }
-
-    override func stopTracking(last lastPoint: NSPoint, current stopPoint: NSPoint, in controlView: NSView, mouseIsUp flag: Bool) {
-        super.stopTracking(last: lastPoint, current: stopPoint, in: controlView, mouseIsUp: flag)
-        activeKnob = .inactive
-        cachedViewBounds = nil
-        cachedMinimumGap = nil
-    }
-
-    private func clampedLower(_ value: Double) -> Double {
-        min(max(value, minValue), max(upperValue - minimumGapValue, minValue))
-    }
-
-    private func clampedUpper(_ value: Double) -> Double {
-        max(min(value, maxValue), min(lowerValue + minimumGapValue, maxValue))
-    }
-
-    private func squaredDistance(from point: NSPoint, to center: NSPoint) -> CGFloat {
-        let dx = point.x - center.x
-        let dy = point.y - center.y
-        return dx * dx + dy * dy
-    }
-
-    private func calculatedMinimumGap() -> Double {
-        let track = trackRect
-        let visualKnobSize = max(knobThickness - 3, 0)
-        let usableWidth = max(track.width - visualKnobSize, 1)
-        return Double(visualKnobSize / usableWidth) * (maxValue - minValue)
+        .alignmentGuide(.firstTextBaseline) { $0[.bottom] }
     }
 }
 
-private extension NSRect {
-    var centerPoint: NSPoint {
-        NSPoint(x: midX, y: midY)
+extension ControlSize {
+    /// Maps the SwiftUI control size to its AppKit counterpart.
+    var nsControlSize: NSControl.ControlSize {
+        switch self {
+        case .mini: .mini
+        case .small: .small
+        case .regular: .regular
+        case .large: .large
+        default: .large
+        }
     }
 }
 
+/// Hides the track, leaving only the native knob.
 private final class InactiveRangeSliderCell: NSSliderCell {
-    override func drawBar(inside _: NSRect, flipped _: Bool) { }
+    override func drawBar(inside _: NSRect, flipped _: Bool) {}
 }
 
+/// A range slider built from native sliders, for macOS 26 and later.
+///
+/// An interactive slider draws the track, its knob, and the filled portion via
+/// `neutralValue`; an overlapping inactive slider draws the other knob.
 @available(macOS 26.0, *)
-private final class NativeRangeSlider: NSControl {
+final class NativeRangeSlider: NSControl {
     private enum ActiveKnob {
         case lower, upper
 
@@ -214,6 +92,16 @@ private final class NativeRangeSlider: NSControl {
 
     var range: ClosedRange<Double> {
         lowerValue ... upperValue
+    }
+
+    override var controlSize: NSControl.ControlSize {
+        didSet {
+            guard controlSize != oldValue else { return }
+            for control in [slider, inactiveSlider] {
+                control.controlSize = controlSize
+            }
+            needsLayout = true
+        }
     }
 
     override var intrinsicContentSize: NSSize {
@@ -235,7 +123,6 @@ private final class NativeRangeSlider: NSControl {
         inactiveSlider.cell = InactiveRangeSliderCell()
         clipsToBounds = false
         for control in [slider, inactiveSlider] {
-            control.controlSize = .mini
             control.isContinuous = true
             control.target = self
             control.action = #selector(valueChanged(_:))
@@ -314,6 +201,7 @@ private final class NativeRangeSlider: NSControl {
 private struct NativeMiniRangeSlider: NSViewRepresentable {
     @Binding var range: ClosedRange<Double>
     var bounds: ClosedRange<Double>
+    var controlSize: ControlSize
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -321,6 +209,7 @@ private struct NativeMiniRangeSlider: NSViewRepresentable {
 
     func makeNSView(context: Context) -> NativeRangeSlider {
         let slider = NativeRangeSlider()
+        slider.controlSize = controlSize.nsControlSize
         slider.setRange(range, bounds: bounds)
         slider.target = context.coordinator
         slider.action = #selector(Coordinator.valueChanged(_:))
@@ -329,6 +218,7 @@ private struct NativeMiniRangeSlider: NSViewRepresentable {
 
     func updateNSView(_ nsView: NativeRangeSlider, context: Context) {
         context.coordinator.parent = self
+        nsView.controlSize = controlSize.nsControlSize
         nsView.setRange(range, bounds: bounds)
     }
 
@@ -346,26 +236,61 @@ private struct NativeMiniRangeSlider: NSViewRepresentable {
     }
 }
 
-/// An NSSlider subclass that supports a continuous range selection.
-final class RangeNSSlider: NSSlider {
-    private let rangeCell = RangeSliderCell()
+// MARK: - Legacy (macOS 15 and earlier)
 
-    var lowerValue: Double {
-        get { rangeCell.lowerValue }
-        set { rangeCell.lowerValue = max(minValue, min(newValue, upperValue)) }
+/// Draws only the native track, hiding the knob.
+private final class TrackOnlySliderCell: NSSliderCell {
+    override func drawKnob() {}
+
+    override func drawKnob(_: NSRect) {}
+}
+
+/// Draws only the native knob, hiding the track.
+private final class KnobOnlySliderCell: NSSliderCell {
+    override func drawBar(inside _: NSRect, flipped _: Bool) {}
+}
+
+/// A range slider built from native sliders, for macOS 15 and earlier.
+///
+/// Every pixel is drawn by AppKit: two native tracks (unfilled and filled) and
+/// two native knobs are layered, and the cells only suppress the half they must
+/// not draw. The filled track is clipped to the selected range instead of using
+/// the macOS 26 `neutralValue` API.
+final class LegacyRangeSlider: NSControl {
+    private enum ActiveKnob {
+        case lower, upper
+
+        var opposite: Self {
+            self == .lower ? .upper : .lower
+        }
     }
 
-    var upperValue: Double {
-        get { rangeCell.upperValue }
-        set { rangeCell.upperValue = min(maxValue, max(newValue, lowerValue)) }
+    private let baseTrack = NSSlider()
+    private let fillTrack = NSSlider()
+    private let fillClip = NSView()
+    private let slider = NSSlider()
+    private let inactiveSlider = NSSlider()
+
+    private var activeKnob: ActiveKnob = .upper
+    private var lowerValue: Double = 0
+    private var upperValue: Double = 1
+
+    var range: ClosedRange<Double> {
+        lowerValue ... upperValue
     }
 
-    override var minValue: Double {
-        didSet { rangeCell.minValue = minValue }
+    override var controlSize: NSControl.ControlSize {
+        didSet {
+            guard controlSize != oldValue else { return }
+            for control in [baseTrack, fillTrack, slider, inactiveSlider] {
+                control.controlSize = controlSize
+            }
+            needsLayout = true
+        }
     }
 
-    override var maxValue: Double {
-        didSet { rangeCell.maxValue = maxValue }
+    override var intrinsicContentSize: NSSize {
+        NSSize(width: NSView.noIntrinsicMetric, height: slider.intrinsicContentSize.height)
     }
 
     override init(frame frameRect: NSRect) {
@@ -379,67 +304,159 @@ final class RangeNSSlider: NSSlider {
     }
 
     private func commonInit() {
-        cell = rangeCell
-        isContinuous = true
-    }
-}
+        baseTrack.cell = TrackOnlySliderCell()
+        fillTrack.cell = TrackOnlySliderCell()
+        slider.cell = KnobOnlySliderCell()
+        inactiveSlider.cell = KnobOnlySliderCell()
 
-/// A SwiftUI view that provides a compact range slider.
-struct MiniRangeSlider: View {
-    @Binding var range: ClosedRange<Double>
-    var bounds: ClosedRange<Double>
+        // Only the clip geometry is custom; the track itself is still drawn by AppKit.
+        fillClip.wantsLayer = true
+        fillClip.clipsToBounds = true
+        clipsToBounds = false
 
-    var body: some View {
-        if #available(macOS 26.0, *) {
-            NativeMiniRangeSlider(range: $range, bounds: bounds)
-        } else {
-            LegacyMiniRangeSlider(range: $range, bounds: bounds)
+        for control in [baseTrack, fillTrack] {
+            control.isContinuous = false
+            control.clipsToBounds = false
+            control.setAccessibilityElement(false)
         }
+
+        for control in [slider, inactiveSlider] {
+            control.isContinuous = true
+            control.target = self
+            control.action = #selector(valueChanged(_:))
+            control.clipsToBounds = false
+        }
+
+        addSubview(baseTrack)
+        fillClip.addSubview(fillTrack)
+        addSubview(fillClip)
+        addSubview(slider)
+        addSubview(inactiveSlider)
+    }
+
+    func setRange(_ range: ClosedRange<Double>, bounds: ClosedRange<Double>) {
+        for control in [baseTrack, fillTrack, slider, inactiveSlider] {
+            if control.minValue != bounds.lowerBound {
+                control.minValue = bounds.lowerBound
+            }
+            if control.maxValue != bounds.upperBound {
+                control.maxValue = bounds.upperBound
+            }
+        }
+        lowerValue = range.lowerBound
+        upperValue = range.upperBound
+        updateSliders()
+    }
+
+    override func layout() {
+        super.layout()
+        baseTrack.frame = bounds
+        slider.frame = bounds
+        inactiveSlider.frame = bounds
+        updateFillClip()
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        let location = convert(point, from: superview)
+        guard bounds.contains(location) else { return nil }
+        if NSApp.currentEvent?.type == .leftMouseDown {
+            let midpoint = (lowerValue + upperValue) / 2
+            let split = knobCenterX(for: midpoint)
+            let selectedKnob: ActiveKnob = location.x < split ? .lower : .upper
+            if selectedKnob != activeKnob {
+                activeKnob = selectedKnob
+                updateSliders()
+                slider.layoutSubtreeIfNeeded()
+            }
+        }
+        return slider.hitTest(location)
+    }
+
+    private func updateSliders() {
+        let value = activeKnob == .lower ? lowerValue : upperValue
+        let inactiveValue = activeKnob == .lower ? upperValue : lowerValue
+        if baseTrack.doubleValue != baseTrack.minValue {
+            baseTrack.doubleValue = baseTrack.minValue
+        }
+        if fillTrack.doubleValue != fillTrack.maxValue {
+            fillTrack.doubleValue = fillTrack.maxValue
+        }
+        if slider.doubleValue != value {
+            slider.doubleValue = value
+        }
+        if inactiveSlider.doubleValue != inactiveValue {
+            inactiveSlider.doubleValue = inactiveValue
+        }
+        updateFillClip()
+    }
+
+    /// Clips the filled native track to the selected range.
+    private func updateFillClip() {
+        let lowerX = knobCenterX(for: lowerValue)
+        let upperX = knobCenterX(for: upperValue)
+
+        let clipRect = NSRect(
+            x: min(lowerX, upperX),
+            y: bounds.minY,
+            width: abs(upperX - lowerX),
+            height: bounds.height,
+        )
+        fillClip.frame = clipRect
+        fillTrack.frame = NSRect(
+            x: bounds.minX - clipRect.minX,
+            y: bounds.minY - clipRect.minY,
+            width: bounds.width,
+            height: bounds.height,
+        )
+    }
+
+    private func knobCenterX(for value: Double) -> CGFloat {
+        let knobWidth = slider.knobThickness
+        let usableWidth = max(bounds.width - knobWidth, 0)
+        let span = slider.maxValue - slider.minValue
+        guard span > 0 else { return bounds.midX }
+        let fraction = CGFloat((value - slider.minValue) / span)
+        return bounds.minX + knobWidth / 2 + fraction * usableWidth
+    }
+
+    @objc private func valueChanged(_ sender: NSSlider) {
+        let knob = sender === slider ? activeKnob : activeKnob.opposite
+        let knobWidth = slider.knobThickness
+        let usableWidth = max(bounds.width - knobWidth, 1)
+        let valueSpan = slider.maxValue - slider.minValue
+        let minimumGap = min(Double(knobWidth / usableWidth) * valueSpan, valueSpan)
+        if knob == .lower {
+            lowerValue = min(sender.doubleValue, max(upperValue - minimumGap, slider.minValue))
+        } else {
+            upperValue = max(sender.doubleValue, min(lowerValue + minimumGap, slider.maxValue))
+        }
+        updateSliders()
+        sendAction(action, to: target)
     }
 }
 
 private struct LegacyMiniRangeSlider: NSViewRepresentable {
     @Binding var range: ClosedRange<Double>
     var bounds: ClosedRange<Double>
+    var controlSize: ControlSize
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
-    func makeNSView(context: Context) -> RangeNSSlider {
-        let slider = RangeNSSlider()
-        slider.minValue = bounds.lowerBound
-        slider.maxValue = bounds.upperBound
-        slider.lowerValue = range.lowerBound
-        slider.upperValue = range.upperBound
+    func makeNSView(context: Context) -> LegacyRangeSlider {
+        let slider = LegacyRangeSlider()
+        slider.controlSize = controlSize.nsControlSize
+        slider.setRange(range, bounds: bounds)
         slider.target = context.coordinator
         slider.action = #selector(Coordinator.valueChanged(_:))
         return slider
     }
 
-    func updateNSView(_ nsView: RangeNSSlider, context _: Context) {
-        var needsUpdate = false
-
-        if abs(nsView.minValue - bounds.lowerBound) > 1e-10 {
-            nsView.minValue = bounds.lowerBound
-            needsUpdate = true
-        }
-        if abs(nsView.maxValue - bounds.upperBound) > 1e-10 {
-            nsView.maxValue = bounds.upperBound
-            needsUpdate = true
-        }
-        if abs(nsView.lowerValue - range.lowerBound) > 1e-10 {
-            nsView.lowerValue = range.lowerBound
-            needsUpdate = true
-        }
-        if abs(nsView.upperValue - range.upperBound) > 1e-10 {
-            nsView.upperValue = range.upperBound
-            needsUpdate = true
-        }
-
-        if needsUpdate {
-            nsView.needsDisplay = true
-        }
+    func updateNSView(_ nsView: LegacyRangeSlider, context: Context) {
+        context.coordinator.parent = self
+        nsView.controlSize = controlSize.nsControlSize
+        nsView.setRange(range, bounds: bounds)
     }
 
     @MainActor
@@ -450,8 +467,8 @@ private struct LegacyMiniRangeSlider: NSViewRepresentable {
             self.parent = parent
         }
 
-        @objc func valueChanged(_ sender: RangeNSSlider) {
-            parent.range = sender.lowerValue ... sender.upperValue
+        @objc func valueChanged(_ sender: LegacyRangeSlider) {
+            parent.range = sender.range
         }
     }
 }
