@@ -78,10 +78,6 @@ private final class InactiveRangeSliderCell: NSSliderCell {
 final class NativeRangeSlider: NSControl {
     private enum ActiveKnob {
         case lower, upper
-
-        var opposite: Self {
-            self == .lower ? .upper : .lower
-        }
     }
 
     private let slider = NSSlider()
@@ -121,24 +117,18 @@ final class NativeRangeSlider: NSControl {
     private func commonInit() {
         // Only the inactive knob uses cell drawing; the interactive slider keeps its native renderer.
         inactiveSlider.cell = InactiveRangeSliderCell()
-        clipsToBounds = false
-        for control in [slider, inactiveSlider] {
-            control.isContinuous = true
-            control.target = self
-            control.action = #selector(valueChanged(_:))
-            control.clipsToBounds = false
-            addSubview(control)
-        }
+        inactiveSlider.refusesFirstResponder = true
+        inactiveSlider.setAccessibilityElement(false)
+        slider.target = self
+        slider.action = #selector(valueChanged(_:))
+        addSubview(slider)
+        addSubview(inactiveSlider)
     }
 
     func setRange(_ range: ClosedRange<Double>, bounds: ClosedRange<Double>) {
         for control in [slider, inactiveSlider] {
-            if control.minValue != bounds.lowerBound {
-                control.minValue = bounds.lowerBound
-            }
-            if control.maxValue != bounds.upperBound {
-                control.maxValue = bounds.upperBound
-            }
+            control.minValue = bounds.lowerBound
+            control.maxValue = bounds.upperBound
         }
         lowerValue = range.lowerBound
         upperValue = range.upperBound
@@ -153,41 +143,42 @@ final class NativeRangeSlider: NSControl {
 
     override func hitTest(_ point: NSPoint) -> NSView? {
         let location = convert(point, from: superview)
-        guard bounds.contains(location) else { return nil }
         if NSApp.currentEvent?.type == .leftMouseDown {
             let midpoint = (lowerValue + upperValue) / 2
-            let knobWidth = slider.knobThickness
-            let fraction = (midpoint - slider.minValue) / (slider.maxValue - slider.minValue)
-            let split = knobWidth / 2 + CGFloat(fraction) * (bounds.width - knobWidth)
+            let split = knobCenterX(for: midpoint)
             let selectedKnob: ActiveKnob = location.x < split ? .lower : .upper
             if selectedKnob != activeKnob {
                 activeKnob = selectedKnob
                 updateSliders()
-                slider.layoutSubtreeIfNeeded()
             }
         }
         return slider.hitTest(location)
     }
 
+    /// The horizontal center of the knob for a given value.
+    private func knobCenterX(for value: Double) -> CGFloat {
+        let knobWidth = slider.knobThickness
+        let usableWidth = max(bounds.width - knobWidth, 0)
+        let span = slider.maxValue - slider.minValue
+        guard span > 0 else { return bounds.midX }
+        let fraction = CGFloat((value - slider.minValue) / span)
+        return bounds.minX + knobWidth / 2 + fraction * usableWidth
+    }
+
     private func updateSliders() {
         let value = activeKnob == .lower ? lowerValue : upperValue
         let inactiveValue = activeKnob == .lower ? upperValue : lowerValue
-        slider.neutralValue = inactiveValue
-        if slider.doubleValue != value {
-            slider.doubleValue = value
-        }
-        if inactiveSlider.doubleValue != inactiveValue {
-            inactiveSlider.doubleValue = inactiveValue
-        }
+//        slider.neutralValue = inactiveValue
+        slider.doubleValue = value
+        inactiveSlider.doubleValue = inactiveValue
     }
 
     @objc private func valueChanged(_ sender: NSSlider) {
-        let knob = sender === slider ? activeKnob : activeKnob.opposite
         let knobWidth = slider.knobThickness
         let usableWidth = max(bounds.width - knobWidth, 1)
         let valueSpan = slider.maxValue - slider.minValue
         let minimumGap = min(Double(knobWidth / usableWidth) * valueSpan, valueSpan)
-        if knob == .lower {
+        if activeKnob == .lower {
             lowerValue = min(sender.doubleValue, max(upperValue - minimumGap, slider.minValue))
         } else {
             upperValue = max(sender.doubleValue, min(lowerValue + minimumGap, slider.maxValue))
@@ -259,10 +250,6 @@ private final class KnobOnlySliderCell: NSSliderCell {
 final class LegacyRangeSlider: NSControl {
     private enum ActiveKnob {
         case lower, upper
-
-        var opposite: Self {
-            self == .lower ? .upper : .lower
-        }
     }
 
     private let baseTrack = NSSlider()
@@ -318,11 +305,10 @@ final class LegacyRangeSlider: NSControl {
             control.setAccessibilityElement(false)
         }
 
-        for control in [slider, inactiveSlider] {
-            control.isContinuous = true
-            control.target = self
-            control.action = #selector(valueChanged(_:))
-        }
+        inactiveSlider.refusesFirstResponder = true
+        inactiveSlider.setAccessibilityElement(false)
+        slider.target = self
+        slider.action = #selector(valueChanged(_:))
 
         addSubview(baseTrack)
         fillClip.addSubview(fillTrack)
@@ -358,7 +344,6 @@ final class LegacyRangeSlider: NSControl {
             if selectedKnob != activeKnob {
                 activeKnob = selectedKnob
                 updateSliders()
-                slider.layoutSubtreeIfNeeded()
             }
         }
         return slider.hitTest(location)
@@ -404,12 +389,11 @@ final class LegacyRangeSlider: NSControl {
     }
 
     @objc private func valueChanged(_ sender: NSSlider) {
-        let knob = sender === slider ? activeKnob : activeKnob.opposite
         let knobWidth = slider.knobThickness
         let usableWidth = max(bounds.width - knobWidth, 1)
         let valueSpan = slider.maxValue - slider.minValue
         let minimumGap = min(Double(knobWidth / usableWidth) * valueSpan, valueSpan)
-        if knob == .lower {
+        if activeKnob == .lower {
             lowerValue = min(sender.doubleValue, max(upperValue - minimumGap, slider.minValue))
         } else {
             upperValue = max(sender.doubleValue, min(lowerValue + minimumGap, slider.maxValue))
