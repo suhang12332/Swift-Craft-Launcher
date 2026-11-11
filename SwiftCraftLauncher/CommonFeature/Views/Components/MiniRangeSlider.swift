@@ -192,6 +192,160 @@ private extension NSRect {
     }
 }
 
+private final class InactiveRangeSliderCell: NSSliderCell {
+    override func drawBar(inside _: NSRect, flipped _: Bool) { }
+}
+
+@available(macOS 26.0, *)
+private final class NativeRangeSlider: NSControl {
+    private enum ActiveKnob {
+        case lower, upper
+
+        var opposite: Self {
+            self == .lower ? .upper : .lower
+        }
+    }
+
+    private let slider = NSSlider()
+    private let inactiveSlider = NSSlider()
+    private var activeKnob: ActiveKnob = .upper
+    private var lowerValue: Double = 0
+    private var upperValue: Double = 1
+
+    var range: ClosedRange<Double> {
+        lowerValue ... upperValue
+    }
+
+    override var intrinsicContentSize: NSSize {
+        NSSize(width: NSView.noIntrinsicMetric, height: slider.intrinsicContentSize.height)
+    }
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        commonInit()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        commonInit()
+    }
+
+    private func commonInit() {
+        // Only the inactive knob uses cell drawing; the interactive slider keeps its native renderer.
+        inactiveSlider.cell = InactiveRangeSliderCell()
+        clipsToBounds = false
+        for control in [slider, inactiveSlider] {
+            control.controlSize = .mini
+            control.isContinuous = true
+            control.target = self
+            control.action = #selector(valueChanged(_:))
+            control.clipsToBounds = false
+            addSubview(control)
+        }
+    }
+
+    func setRange(_ range: ClosedRange<Double>, bounds: ClosedRange<Double>) {
+        for control in [slider, inactiveSlider] {
+            if control.minValue != bounds.lowerBound {
+                control.minValue = bounds.lowerBound
+            }
+            if control.maxValue != bounds.upperBound {
+                control.maxValue = bounds.upperBound
+            }
+        }
+        lowerValue = range.lowerBound
+        upperValue = range.upperBound
+        updateSliders()
+    }
+
+    override func layout() {
+        super.layout()
+        slider.frame = bounds
+        inactiveSlider.frame = bounds
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        let location = convert(point, from: superview)
+        guard bounds.contains(location) else { return nil }
+        if NSApp.currentEvent?.type == .leftMouseDown {
+            let midpoint = (lowerValue + upperValue) / 2
+            let knobWidth = slider.knobThickness
+            let fraction = (midpoint - slider.minValue) / (slider.maxValue - slider.minValue)
+            let split = knobWidth / 2 + CGFloat(fraction) * (bounds.width - knobWidth)
+            let selectedKnob: ActiveKnob = location.x < split ? .lower : .upper
+            if selectedKnob != activeKnob {
+                activeKnob = selectedKnob
+                updateSliders()
+                slider.layoutSubtreeIfNeeded()
+            }
+        }
+        return slider.hitTest(location)
+    }
+
+    private func updateSliders() {
+        let value = activeKnob == .lower ? lowerValue : upperValue
+        let inactiveValue = activeKnob == .lower ? upperValue : lowerValue
+        slider.neutralValue = inactiveValue
+        if slider.doubleValue != value {
+            slider.doubleValue = value
+        }
+        if inactiveSlider.doubleValue != inactiveValue {
+            inactiveSlider.doubleValue = inactiveValue
+        }
+    }
+
+    @objc private func valueChanged(_ sender: NSSlider) {
+        let knob = sender === slider ? activeKnob : activeKnob.opposite
+        let knobWidth = slider.knobThickness
+        let usableWidth = max(bounds.width - knobWidth, 1)
+        let valueSpan = slider.maxValue - slider.minValue
+        let minimumGap = min(Double(knobWidth / usableWidth) * valueSpan, valueSpan)
+        if knob == .lower {
+            lowerValue = min(sender.doubleValue, max(upperValue - minimumGap, slider.minValue))
+        } else {
+            upperValue = max(sender.doubleValue, min(lowerValue + minimumGap, slider.maxValue))
+        }
+        updateSliders()
+        sendAction(action, to: target)
+    }
+}
+
+@available(macOS 26.0, *)
+private struct NativeMiniRangeSlider: NSViewRepresentable {
+    @Binding var range: ClosedRange<Double>
+    var bounds: ClosedRange<Double>
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    func makeNSView(context: Context) -> NativeRangeSlider {
+        let slider = NativeRangeSlider()
+        slider.setRange(range, bounds: bounds)
+        slider.target = context.coordinator
+        slider.action = #selector(Coordinator.valueChanged(_:))
+        return slider
+    }
+
+    func updateNSView(_ nsView: NativeRangeSlider, context: Context) {
+        context.coordinator.parent = self
+        nsView.setRange(range, bounds: bounds)
+    }
+
+    @MainActor
+    final class Coordinator: NSObject {
+        var parent: NativeMiniRangeSlider
+
+        init(_ parent: NativeMiniRangeSlider) {
+            self.parent = parent
+        }
+
+        @objc func valueChanged(_ sender: NativeRangeSlider) {
+            parent.range = sender.range
+        }
+    }
+}
+
 /// An NSSlider subclass that supports a continuous range selection.
 final class RangeNSSlider: NSSlider {
     private let rangeCell = RangeSliderCell()
@@ -231,7 +385,20 @@ final class RangeNSSlider: NSSlider {
 }
 
 /// A SwiftUI view that provides a compact range slider.
-struct MiniRangeSlider: NSViewRepresentable {
+struct MiniRangeSlider: View {
+    @Binding var range: ClosedRange<Double>
+    var bounds: ClosedRange<Double>
+
+    var body: some View {
+        if #available(macOS 26.0, *) {
+            NativeMiniRangeSlider(range: $range, bounds: bounds)
+        } else {
+            LegacyMiniRangeSlider(range: $range, bounds: bounds)
+        }
+    }
+}
+
+private struct LegacyMiniRangeSlider: NSViewRepresentable {
     @Binding var range: ClosedRange<Double>
     var bounds: ClosedRange<Double>
 
@@ -277,9 +444,9 @@ struct MiniRangeSlider: NSViewRepresentable {
 
     @MainActor
     final class Coordinator: NSObject {
-        var parent: MiniRangeSlider
+        var parent: LegacyMiniRangeSlider
 
-        init(_ parent: MiniRangeSlider) {
+        init(_ parent: LegacyMiniRangeSlider) {
             self.parent = parent
         }
 
