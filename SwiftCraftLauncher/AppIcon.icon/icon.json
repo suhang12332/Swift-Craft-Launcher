@@ -25,39 +25,13 @@
           "fill-specializations" : [
             {
               "value" : {
-                "linear-gradient" : [
-                  "extended-gray:1.00000,1.00000",
-                  "extended-srgb:0.00000,0.47843,1.00000,1.00000"
-                ],
-                "orientation" : {
-                  "start" : {
-                    "x" : 0.5,
-                    "y" : -1.2239757358944254
-                  },
-                  "stop" : {
-                    "x" : 0.5,
-                    "y" : 1
-                  }
-                }
+                "solid" : "extended-gray:0.25000,1.00000"
               }
             },
             {
               "appearance" : "dark",
               "value" : {
-                "linear-gradient" : [
-                  "extended-gray:1.00000,1.00000",
-                  "extended-gray:0.00000,1.00000"
-                ],
-                "orientation" : {
-                  "start" : {
-                    "x" : 0.4584307748343779,
-                    "y" : -1.2239757358944254
-                  },
-                  "stop" : {
-                    "x" : 0.5,
-                    "y" : 1.0266702913973547
-                  }
-                }
+                "solid" : "srgb:0.00000,0.47843,1.00000,0.67520"
               }
             },
             {
