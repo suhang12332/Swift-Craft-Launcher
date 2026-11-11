@@ -168,7 +168,7 @@ final class NativeRangeSlider: NSControl {
     private func updateSliders() {
         let value = activeKnob == .lower ? lowerValue : upperValue
         let inactiveValue = activeKnob == .lower ? upperValue : lowerValue
-//        slider.neutralValue = inactiveValue
+        slider.neutralValue = inactiveValue
         slider.doubleValue = value
         inactiveSlider.doubleValue = inactiveValue
     }
