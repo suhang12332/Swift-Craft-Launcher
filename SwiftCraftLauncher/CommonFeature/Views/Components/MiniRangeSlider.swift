@@ -67,7 +67,7 @@ extension ControlSize {
 
 /// Hides the track, leaving only the native knob.
 private final class InactiveRangeSliderCell: NSSliderCell {
-    override func drawBar(inside _: NSRect, flipped _: Bool) {}
+    override func drawBar(inside _: NSRect, flipped _: Bool) { }
 }
 
 /// A range slider built from native sliders, for macOS 26 and later.
@@ -231,14 +231,14 @@ private struct NativeMiniRangeSlider: NSViewRepresentable {
 
 /// Draws only the native track, hiding the knob.
 private final class TrackOnlySliderCell: NSSliderCell {
-    override func drawKnob() {}
+    override func drawKnob() { }
 
-    override func drawKnob(_: NSRect) {}
+    override func drawKnob(_: NSRect) { }
 }
 
 /// Draws only the native knob, hiding the track.
 private final class KnobOnlySliderCell: NSSliderCell {
-    override func drawBar(inside _: NSRect, flipped _: Bool) {}
+    override func drawBar(inside _: NSRect, flipped _: Bool) { }
 }
 
 /// A range slider built from native sliders, for macOS 15 and earlier.
