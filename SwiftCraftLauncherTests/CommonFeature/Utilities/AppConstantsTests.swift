@@ -44,6 +44,7 @@ final class AppConstantsTests: XCTestCase {
         XCTAssertFalse(AppConstants.UserDefaultsKeys.userProfiles.isEmpty)
         XCTAssertFalse(AppConstants.UserDefaultsKeys.globalXms.isEmpty)
         XCTAssertFalse(AppConstants.UserDefaultsKeys.globalXmx.isEmpty)
+        XCTAssertFalse(AppConstants.UserDefaultsKeys.enableModDependencyGraph.isEmpty)
         XCTAssertFalse(AppConstants.UserDefaultsKeys.themeMode.isEmpty)
     }
 

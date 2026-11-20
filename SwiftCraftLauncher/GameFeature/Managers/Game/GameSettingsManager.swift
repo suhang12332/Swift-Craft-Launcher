@@ -60,6 +60,14 @@ final class GameSettingsManager {
         didSet { Defaults.save(syncLanguageForNewGames, forKey: AppConstants.UserDefaultsKeys.syncLanguageForNewGames) }
     }
 
+    /// Whether the mod dependency graph entry is available in game menus.
+    var enableModDependencyGraph: Bool = Defaults.loadBool(
+        forKey: AppConstants.UserDefaultsKeys.enableModDependencyGraph,
+        defaultValue: false,
+    ) {
+        didSet { Defaults.save(enableModDependencyGraph, forKey: AppConstants.UserDefaultsKeys.enableModDependencyGraph) }
+    }
+
     /// The default export format for mod packs.
     var defaultModPackExportFormat: ModPackExportFormat = Defaults.loadEnum(forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat, defaultValue: .curseforge) {
         didSet { Defaults.save(defaultModPackExportFormat.rawValue, forKey: AppConstants.UserDefaultsKeys.defaultModPackExportFormat) }

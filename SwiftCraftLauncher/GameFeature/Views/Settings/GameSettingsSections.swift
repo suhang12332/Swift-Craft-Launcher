@@ -66,6 +66,29 @@ struct GameSettingsIncludeSnapshotsRow: View {
     }
 }
 
+/// A row toggling the mod dependency graph menu entry.
+struct GameSettingsModDependencyGraphRow: View {
+    @Environment(GameSettingsManager.self)
+    private var gameSettingsManager
+
+    var body: some View {
+        @Bindable var gameSettingsManager = gameSettingsManager
+        LabeledContent("settings.mod_dependency_graph.title".localized()) {
+            HStack {
+                Toggle(
+                    "",
+                    isOn: $gameSettingsManager.enableModDependencyGraph,
+                )
+                .labelsHidden()
+                Text("settings.mod_dependency_graph.show".localized())
+            }
+        }
+        CommonDescriptionText(
+            text: "settings.mod_dependency_graph.description".localized(),
+        )
+    }
+}
+
 /// A row toggling the memory pressure warning.
 struct GameSettingsMemoryPressureWarningRow: View {
     @Environment(GameSettingsManager.self)
