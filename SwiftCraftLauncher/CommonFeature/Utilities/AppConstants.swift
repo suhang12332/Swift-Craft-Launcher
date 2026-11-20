@@ -36,6 +36,7 @@ enum AppConstants {
         static let defaultAPISource = "defaultAPISource"
         static let includeSnapshotsForGameVersions = "includeSnapshotsForGameVersions"
         static let syncLanguageForNewGames = "syncLanguageForNewGames"
+        static let enableModDependencyGraph = "enableModDependencyGraph"
 
         static let limitCommonSheetHeight = "limitCommonSheetHeight"
         static let concurrentDownloads = "concurrentDownloads"

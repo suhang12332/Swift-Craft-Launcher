@@ -62,7 +62,8 @@ struct GameContextMenu: View {
             Label("settings.game.advanced".localized(), systemImage: "gearshape")
         }
 
-        if gameActions.isModded {
+        if gameActions.isModded,
+           container.ui.gameSettingsManager.enableModDependencyGraph {
             Button {
                 activateMainWindowIfNeeded()
                 gameActions.presentModDependencyGraph()
