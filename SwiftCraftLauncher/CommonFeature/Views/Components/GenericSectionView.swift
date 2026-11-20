@@ -13,6 +13,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View, OverflowContent
     let items: [Item]
     let isLoading: Bool
     let maxItems: Int
+    let maxHeight: CGFloat?
     let iconName: String?
     let chipBuilder: (Item) -> ChipContent
     let overflowContentBuilder: ([Item]) -> OverflowContent
@@ -28,6 +29,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View, OverflowContent
         items: [Item],
         isLoading: Bool,
         maxItems: Int = SectionViewConstants.defaultMaxItems,
+        maxHeight: CGFloat? = SectionViewConstants.defaultMaxHeight,
         iconName: String? = nil,
         @ViewBuilder chipBuilder: @escaping (Item) -> ChipContent,
         @ViewBuilder overflowContentBuilder: @escaping ([Item]) -> OverflowContent,
@@ -40,6 +42,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View, OverflowContent
         self.items = items
         self.isLoading = isLoading
         self.maxItems = maxItems
+        self.maxHeight = maxHeight
         self.iconName = iconName
         self.chipBuilder = chipBuilder
         self.overflowContentBuilder = overflowContentBuilder
@@ -88,7 +91,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View, OverflowContent
         CategorySectionSkeletonView(
             count: SectionViewConstants.defaultPlaceholderCount,
             iconName: iconName,
-            maxHeight: SectionViewConstants.defaultMaxHeight,
+            maxHeight: maxHeight ?? SectionViewConstants.defaultMaxHeight,
             verticalPadding: SectionViewConstants.defaultVerticalPadding,
         )
     }
@@ -98,7 +101,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View, OverflowContent
 
         return ContentWithOverflow(
             items: visibleItems,
-            maxHeight: SectionViewConstants.defaultMaxHeight,
+            maxHeight: maxHeight,
             verticalPadding: SectionViewConstants.defaultVerticalPadding,
         ) { item in
             chipBuilder(item)
@@ -122,6 +125,7 @@ extension GenericSectionView where OverflowContent == OverflowPopoverContent<Ite
         items: [Item],
         isLoading: Bool,
         maxItems: Int = SectionViewConstants.defaultMaxItems,
+        maxHeight: CGFloat? = SectionViewConstants.defaultMaxHeight,
         iconName: String? = nil,
         @ViewBuilder chipBuilder: @escaping (Item) -> ChipContent,
         clearAction: (() -> Void)? = nil,
@@ -134,6 +138,7 @@ extension GenericSectionView where OverflowContent == OverflowPopoverContent<Ite
             items: items,
             isLoading: isLoading,
             maxItems: maxItems,
+            maxHeight: maxHeight,
             iconName: iconName,
             chipBuilder: chipBuilder,
             overflowContentBuilder: { overflowItems in

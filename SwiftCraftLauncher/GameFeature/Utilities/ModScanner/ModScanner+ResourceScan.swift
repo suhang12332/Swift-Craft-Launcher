@@ -60,13 +60,14 @@ extension ModScanner {
         }.value
     }
 
-    /// Returns all jar and zip files in the directory without resolving details, returning an empty array if the directory does not exist.
+    /// Returns all jar and zip files in the directory without resolving details.
+    ///
+    /// Uses the shared directory-listing cache, so the Game Overview and local
+    /// resource list reuse the same scan. The cache refreshes automatically when
+    /// the directory modification date changes.
+    /// Returns an empty array when the directory does not exist.
     func getAllResourceFilesThrowing(_ dir: URL) throws -> [URL] {
-        guard FileManager.default.fileExists(atPath: dir.path) else {
-            return []
-        }
-
-        return try readJarZipFiles(from: dir)
+        try resourceFileCache.archiveFiles(in: dir)
     }
 
     /// Scans a list of files by page, resolving details only for the requested page.

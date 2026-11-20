@@ -10,6 +10,12 @@ import Foundation
 
 /// Scans mod and resource files, resolving details from Modrinth and CurseForge.
 class ModScanner: @unchecked Sendable {
+    /// File extensions recognized as installable resource archives.
+    static let archiveExtensions: Set<String> = ["jar", "zip", "disable"]
+
+    /// Shared cache for archive directory listings, used by both the overview and local lists.
+    let resourceFileCache = ResourceFileCache()
+
     init() { }
 
     /// Schedules an asynchronous rebuild of directory hashes.
@@ -17,6 +23,7 @@ class ModScanner: @unchecked Sendable {
         standardizedDirectoryURL: URL,
         gameNameHint: String?,
     ) {
+        resourceFileCache.invalidate(standardizedDirectoryURL)
         Task.detached(priority: .utility) { [modScanner = self] in
             do {
                 _ = try await modScanner.rebuildDirectoryHashes(

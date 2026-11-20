@@ -64,14 +64,14 @@ struct OverflowPopoverContent<Item: Identifiable, Content: View>: View {
 /// A view that displays items in a flow layout with a maximum height.
 struct ContentWithOverflow<Item: Identifiable, Content: View>: View {
     let items: [Item]
-    let maxHeight: CGFloat
+    let maxHeight: CGFloat?
     let verticalPadding: CGFloat
     let spacing: CGFloat
     let content: (Item) -> Content
 
     init(
         items: [Item],
-        maxHeight: CGFloat = SectionViewConstants.defaultMaxHeight,
+        maxHeight: CGFloat? = SectionViewConstants.defaultMaxHeight,
         verticalPadding: CGFloat = SectionViewConstants.defaultVerticalPadding,
         spacing: CGFloat = 8,
         @ViewBuilder content: @escaping (Item) -> Content,

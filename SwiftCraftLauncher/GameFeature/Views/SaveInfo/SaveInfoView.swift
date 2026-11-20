@@ -11,7 +11,6 @@ import SwiftUI
 struct SaveInfoView: View {
     let gameId: String
     let gameName: String
-    let modLoader: String
     @State private var manager: SaveInfoManager
     @Environment(DIContainer.self)
     private var container
@@ -25,7 +24,6 @@ struct SaveInfoView: View {
     ) {
         self.gameId = gameId
         self.gameName = gameName
-        self.modLoader = modLoader
         _manager = State(wrappedValue: SaveInfoManager(gameName: gameName, modLoader: modLoader))
     }
 
@@ -39,7 +37,11 @@ struct SaveInfoView: View {
 
     var body: some View {
         VStack {
-            ResourceCountSectionView(counts: manager.resourceCounts)
+            ResourceCountSectionView(
+                counts: manager.resourceCounts,
+                isLoading: manager.isLoading,
+            )
+
             if manager.hasWorldsType {
                 WorldInfoSectionView(
                     worlds: manager.worlds,
@@ -69,20 +71,19 @@ struct SaveInfoView: View {
                 )
             }
         }
-        .onChange(of: gameId) { _, _ in
-            Task {
-                await manager.loadData()
-            }
-        }
         .task {
-            await manager.loadData()
+            await manager.loadData().value
         }
         .onChange(of: gameState.isRunning) { oldValue, newValue in
             if oldValue == true, newValue == false {
                 Task {
-                    await manager.loadData()
+                    await manager.loadData().value
                 }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .localResourceImported)) { notification in
+            guard notification.userInfo?["gameName"] as? String == gameName else { return }
+            manager.loadData()
         }
         .onDisappear {
             manager.clearCache()

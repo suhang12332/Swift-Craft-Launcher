@@ -10,38 +10,19 @@ import Foundation
 /// Directory hash scanning and FSEvents watcher management for mod directories.
 extension ModScanner {
     /// Reads the directory and returns all jar and zip files.
+    ///
+    /// Uses the same shared directory-listing cache as the overview and local lists.
     func readJarZipFiles(from dir: URL) throws -> [URL] {
-        guard FileManager.default.fileExists(atPath: dir.path) else {
-            throw GlobalError.resource(
-                i18nKey: "error.resource.directory_not_found",
-                level: .silent,
-                message: "directory not found: \(dir.path)",
-            )
-        }
-
-        let files: [URL]
-        do {
-            files = try FileManager.default.contentsOfDirectory(
-                at: dir,
-                includingPropertiesForKeys: nil,
-            )
-        } catch {
-            throw GlobalError.fileSystem(
-                i18nKey: "error.filesystem.directory_read_failed",
-                level: .silent,
-                message: "failed to read directory: \(dir.path), error: \(error.localizedDescription)",
-            )
-        }
-
-        return files.filter {
-            ["jar", "zip", "disable"].contains($0.pathExtension.lowercased())
-        }
+        try resourceFileCache.existingArchiveFiles(in: dir)
     }
 
     /// Rebuilds the hash set for a directory, updating both the general cache and the mod installation cache when applicable.
+    /// - Parameter notify: When `true`, posts `.localResourceImported` after the rebuild. Initial cache population passes `false`
+    ///   so opening a game does not trigger a redundant UI refresh.
     func rebuildDirectoryHashes(
         dir: URL,
         gameNameHint: String? = nil,
+        notify: Bool = true,
     ) async throws -> Set<String> {
         let standardizedDir = dir.standardizedFileURL
         let jarFiles = try readJarZipFiles(from: standardizedDir)
@@ -82,12 +63,14 @@ extension ModScanner {
             )
         }
 
-        await MainActor.run {
-            NotificationCenter.default.post(
-                name: .localResourceImported,
-                object: nil,
-                userInfo: ["gameName": resolvedGameName],
-            )
+        if notify {
+            await MainActor.run {
+                NotificationCenter.default.post(
+                    name: .localResourceImported,
+                    object: nil,
+                    userInfo: ["gameName": resolvedGameName],
+                )
+            }
         }
 
         return hashes
@@ -118,7 +101,7 @@ extension ModScanner {
         if let cached = await DIContainer.shared.core.directoryHashCache.get(for: standardizedDirectory) {
             return cached
         }
-        return try await rebuildDirectoryHashes(dir: standardizedDirectory)
+        return try await rebuildDirectoryHashes(dir: standardizedDirectory, notify: false)
     }
 
     /// Scans the directory for all detail IDs, returning a set for O(1) lookups.

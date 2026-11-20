@@ -156,7 +156,7 @@ struct LitematicaDetailSheetView: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
             } icon: {
-                Image(systemName: "square.stack.3d.up")
+                Image(systemName: GameOverviewItem.Kind.litematica.systemImage)
             }
             .font(.caption)
             .foregroundColor(.secondary)
