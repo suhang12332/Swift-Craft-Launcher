@@ -2,7 +2,7 @@
 //  LogSectionView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import AppKit
@@ -16,10 +16,10 @@ struct LogSectionView: View {
 
     var body: some View {
         GenericSectionView(
-            title: "saveinfo.logs",
+            title: GameOverviewItem.Kind.log.titleKey,
             items: logs,
             isLoading: isLoading,
-            iconName: "doc.text.fill",
+            iconName: GameOverviewItem.Kind.log.systemImage,
         ) { log in
             logChip(for: log)
         }
@@ -29,9 +29,9 @@ struct LogSectionView: View {
         FilterChip(
             title: log.name,
             action: {
-                openLogInConsole(log: log)
+                openInConsole(log.path)
             },
-            iconName: log.isCrashLog ? "exclamationmark.triangle.fill" : "doc.text.fill",
+            iconName: log.isCrashLog ? GameOverviewItem.errorSystemImage : GameOverviewItem.Kind.log.systemImage,
             customBackgroundColor: log.isCrashLog ? Color.red.opacity(0.1) : nil,
             customBorderColor: log.isCrashLog ? Color.red.opacity(0.3) : nil,
             maxTextWidth: 150,
@@ -39,10 +39,10 @@ struct LogSectionView: View {
         )
     }
 
-    private func openLogInConsole(log: LogInfo) {
+    private func openInConsole(_ url: URL) {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
-        process.arguments = ["-a", "Console", log.path.path]
+        process.arguments = ["-a", "Console", url.path]
 
         do {
             try process.run()

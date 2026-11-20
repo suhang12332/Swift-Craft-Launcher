@@ -2,7 +2,7 @@
 //  CurseForgeService+ModrinthAdapter.swift
 //  CommonFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -16,18 +16,22 @@ extension CurseForgeService {
     static func fetchProjectDetailsAsModrinthThrowing(id: String) async throws -> ModrinthProjectDetail {
         let (modId, _) = try parseCurseForgeId(id)
 
-        async let cfDetailTask = fetchModDetailThrowing(modId: modId)
-        async let descriptionTask = fetchModDescriptionThrowing(modId: modId)
+        var modrinthDetail: ModrinthProjectDetail
+        do {
+            async let cfDetailTask = fetchModDetailThrowing(modId: modId)
+            async let descriptionTask = fetchModDescriptionThrowing(modId: modId)
 
-        let cfDetail = try await cfDetailTask
-        let description = try await descriptionTask
+            let cfDetail = try await cfDetailTask
+            let description = try await descriptionTask
 
-        guard var modrinthDetail = CFToModrinthAdapter.convertProjectDetail(cfDetail, descriptionHTML: description) else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.project_detail_convert_failed",
-                level: .notification,
-                message: "Failed to convert CurseForge project detail to Modrinth format for modId=\(modId)",
-            )
+            guard let converted = CFToModrinthAdapter.convertProjectDetail(cfDetail, descriptionHTML: description) else {
+                throw GlobalError.validation(
+                    i18nKey: "error.validation.project_detail_convert_failed",
+                    level: .notification,
+                    message: "Failed to convert CurseForge project detail to Modrinth format for modId=\(modId)",
+                )
+            }
+            modrinthDetail = converted
         }
         let releaseGameVersions = modrinthDetail.gameVersions.filter { CommonUtil.isReleaseVersionNumber($0) }
         let result = CommonUtil.sortMinecraftVersions(releaseGameVersions)

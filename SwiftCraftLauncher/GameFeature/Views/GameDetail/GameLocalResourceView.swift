@@ -2,7 +2,7 @@
 //  GameLocalResourceView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import AppKit
@@ -49,7 +49,7 @@ struct GameLocalResourceView: View {
             placement: .toolbar,
             prompt: "search.resources".localized(),
         )
-        .onAppear {
+        .task(id: refreshToken) {
             viewModel.updateContextOnRefreshToken(
                 game: game,
                 query: query,
@@ -60,32 +60,20 @@ struct GameLocalResourceView: View {
         .onDisappear {
             viewModel.onDisappear()
         }
-        .onChange(of: refreshToken) { _, _ in
-            viewModel.updateContextOnRefreshToken(
-                game: game,
-                query: query,
-                localFilter: localFilter,
-                searchText: searchText,
-            )
-        }
         .onReceive(NotificationCenter.default.publisher(for: .localResourceImported)) { notification in
             guard notification.userInfo?["gameName"] as? String == game.gameName else { return }
             viewModel.refreshResources()
         }
-        .onChange(of: query) { oldValue, newValue in
-            if oldValue != newValue {
-                searchText = ""
-                viewModel.updateContextOnQueryChanged(
-                    game: game,
-                    query: newValue,
-                    localFilter: localFilter,
-                )
-            }
+        .onChange(of: query) { _, newValue in
+            searchText = ""
+            viewModel.updateContextOnQueryChanged(
+                game: game,
+                query: newValue,
+                localFilter: localFilter,
+            )
         }
-        .onChange(of: searchText) { oldValue, newValue in
-            if oldValue != newValue {
-                viewModel.onSearchTextChanged(newValue)
-            }
+        .onChange(of: searchText) { _, newValue in
+            viewModel.onSearchTextChanged(newValue)
         }
         .onChange(of: localFilter) { _, _ in
             viewModel.updateContextOnLocalFilterChanged(

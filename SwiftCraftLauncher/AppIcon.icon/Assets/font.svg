@@ -7,14 +7,14 @@
             <stop stop-color="#FFFFFF" offset="15.3982736%"></stop>
             <stop stop-color="#FFFFFF" stop-opacity="0.392564467" offset="29.5836976%"></stop>
             <stop stop-color="#F3EFEF" stop-opacity="0" offset="44.1952579%"></stop>
-            <stop stop-color="#FFFFFF" stop-opacity="0.446865154" offset="54.7038899%"></stop>
-            <stop stop-color="#FFFFFF" stop-opacity="0.527047517" offset="64.1307911%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.446865154" offset="62.7038899%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.527047517" offset="99.8306381%"></stop>
             <stop stop-color="#FFFFFF" offset="99.9863418%"></stop>
         </linearGradient>
     </defs>
     <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="椭圆形" transform="translate(-2, -2)">
-            <g transform="translate(2.1111, 2.1111)">
+        <g id="icon" transform="translate(-2, -2)">
+            <g id="椭圆形" style="mix-blend-mode: multiply;" transform="translate(2.1111, 2.1111)">
                 <circle stroke="url(#linearGradient-1)" stroke-width="3" fill-opacity="0" fill="#D8D8D8" cx="416.888862" cy="415.888862" r="329.5"></circle>
                 <path d="M415.888862,102.388862 C502.459496,102.388862 580.834496,137.478544 637.566838,194.210886 C694.299179,250.943227 729.388862,329.318227 729.388862,415.888862 C729.388862,502.459496 694.299179,580.834496 637.566838,637.566838 C580.834496,694.299179 502.459496,729.388862 415.888862,729.388862 C329.318227,729.388862 250.943227,694.299179 194.210886,637.566838 C137.478544,580.834496 102.388862,502.459496 102.388862,415.888862 C102.388862,334.995905 133.026705,261.258745 183.331709,205.648594 C240.698215,142.232237 323.640544,102.388862 415.888862,102.388862 Z" stroke-opacity="0" stroke="#FFFFFF" stroke-width="3" fill-opacity="0" fill="#D8D8D8" transform="translate(415.8889, 415.8889) rotate(-156) translate(-415.8889, -415.8889)"></path>
                 <g id="SWIFT-CRAFT-LAUNCHER" transform="translate(113.3491, 499.2104)" fill="#FFFFFF" fill-opacity="0.85" fill-rule="nonzero">

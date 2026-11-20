@@ -2,7 +2,7 @@
 //  GameSettingsSections.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -170,7 +170,6 @@ struct GameSettingsMemoryAllocationSection: View {
                     gameSettingsManager.globalXmx = AppConstants.MemoryDefaults.xmx
                     range = Double(AppConstants.MemoryDefaults.xms) ... Double(AppConstants.MemoryDefaults.xmx)
                 }
-                .padding(.leading, 8)
             }
         }
         Text(

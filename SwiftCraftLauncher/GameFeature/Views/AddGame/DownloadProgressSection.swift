@@ -2,7 +2,7 @@
 //  DownloadProgressSection.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Displays download progress for game core files and mod loaders.

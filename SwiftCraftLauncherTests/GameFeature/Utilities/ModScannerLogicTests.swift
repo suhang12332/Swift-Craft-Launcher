@@ -2,7 +2,7 @@
 //  ModScannerLogicTests.swift
 //  SwiftCraftLauncherTests
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 @testable import SwiftCraftLauncher
@@ -113,5 +113,69 @@ final class ModScannerLogicTests: XCTestCase {
         XCTAssertNotNil(result)
         XCTAssertEqual(result?.startIndex, 0)
         XCTAssertEqual(result?.endIndex, 1)
+    }
+
+    func testGetAllResourceFilesFiltersArchiveExtensions() throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        for name in ["a.jar", "b.zip", "c.disable", "d.txt", "e.jar.gz"] {
+            try Data().write(to: directory.appendingPathComponent(name))
+        }
+
+        let files = try scanner.getAllResourceFilesThrowing(directory)
+        XCTAssertEqual(
+            files.map(\.lastPathComponent).sorted(),
+            ["a.jar", "b.zip", "c.disable"],
+        )
+    }
+
+    func testGetAllResourceFilesReturnsEmptyForMissingDirectory() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("missing-\(UUID().uuidString)", isDirectory: true)
+
+        XCTAssertEqual(try scanner.getAllResourceFilesThrowing(directory), [])
+    }
+
+    func testGetAllResourceFilesRefreshesWhenDirectoryChanges() throws {
+        let directory = try makeTemporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        XCTAssertEqual(try scanner.getAllResourceFilesThrowing(directory), [])
+
+        try Data().write(to: directory.appendingPathComponent("a.jar"))
+        try setModificationDate(1000, for: directory)
+        XCTAssertEqual(
+            try scanner.getAllResourceFilesThrowing(directory).map(\.lastPathComponent),
+            ["a.jar"],
+        )
+
+        try Data().write(to: directory.appendingPathComponent("b.zip"))
+        try setModificationDate(2000, for: directory)
+        XCTAssertEqual(
+            try scanner.getAllResourceFilesThrowing(directory).map(\.lastPathComponent).sorted(),
+            ["a.jar", "b.zip"],
+        )
+
+        try FileManager.default.removeItem(at: directory.appendingPathComponent("a.jar"))
+        try setModificationDate(3000, for: directory)
+        XCTAssertEqual(
+            try scanner.getAllResourceFilesThrowing(directory).map(\.lastPathComponent),
+            ["b.zip"],
+        )
+    }
+
+    private func makeTemporaryDirectory() throws -> URL {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("ModScannerResourceCacheTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        return url
+    }
+
+    private func setModificationDate(_ timestamp: TimeInterval, for directory: URL) throws {
+        try FileManager.default.setAttributes(
+            [.modificationDate: Date(timeIntervalSince1970: timestamp)],
+            ofItemAtPath: directory.path,
+        )
     }
 }

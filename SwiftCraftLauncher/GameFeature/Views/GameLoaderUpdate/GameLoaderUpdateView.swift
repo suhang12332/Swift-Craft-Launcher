@@ -2,7 +2,7 @@
 //  GameLoaderUpdateView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // A sheet for changing the loader version on an existing game instance, reusing the

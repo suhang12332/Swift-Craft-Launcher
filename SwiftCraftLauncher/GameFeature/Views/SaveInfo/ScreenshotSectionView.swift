@@ -2,7 +2,7 @@
 //  ScreenshotSectionView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import AppKit
@@ -19,10 +19,10 @@ struct ScreenshotSectionView: View {
 
     var body: some View {
         GenericSectionView(
-            title: "saveinfo.screenshots",
+            title: GameOverviewItem.Kind.screenshot.titleKey,
             items: screenshots,
             isLoading: isLoading,
-            iconName: "photo.fill",
+            iconName: GameOverviewItem.Kind.screenshot.systemImage,
         ) { screenshot in
             screenshotChip(for: screenshot)
         }
@@ -37,7 +37,7 @@ struct ScreenshotSectionView: View {
             action: {
                 selectedScreenshot = screenshot
             },
-            iconName: "photo.fill",
+            iconName: GameOverviewItem.Kind.screenshot.systemImage,
             maxTextWidth: 150,
         )
     }
@@ -112,7 +112,7 @@ struct ScreenshotImageView: View {
                 ProgressView().controlSize(.small)
             } else if viewModel.loadFailed {
                 VStack {
-                    Image(systemName: "photo.fill")
+                    Image(systemName: GameOverviewItem.Kind.screenshot.systemImage)
                         .font(.largeTitle)
                         .foregroundColor(.secondary)
                     Text("saveinfo.screenshot.load.failed".localized())

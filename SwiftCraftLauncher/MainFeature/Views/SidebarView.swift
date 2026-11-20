@@ -2,7 +2,7 @@
 //  SidebarView.swift
 //  MainFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
@@ -15,8 +15,6 @@ public struct SidebarView: View {
     private var detailState
     @Environment(GameRepository.self)
     private var gameRepository
-    @Environment(GameLaunchUseCase.self)
-    private var gameLaunchUseCase
     @Environment(PlayerListViewModel.self)
     private var playerListViewModel
     @State private var searchText: String = ""
@@ -61,14 +59,9 @@ public struct SidebarView: View {
                             .tag(game.id)
                         }
                         .contextMenu {
-                            GameContextMenu(
-                                game: game,
-                                onDelete: { container.ui.gameDialogsPresenter.requestGameDeletion(of: game) },
-                                onOpenSettings: { openSettings() },
-                                onExport: {
-                                    container.ui.gameDialogsPresenter.presentModPackExport(for: game)
-                                },
-                            )
+                            GameContextMenu(game: game) {
+                                openSettings()
+                            }
                         }
                     }
                 }
@@ -115,20 +108,18 @@ public struct SidebarView: View {
     }
 
     private var filteredGames: [GameVersionInfo] {
-        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return gameRepository.games
-        }
-        let lower = searchText.lowercased()
-        return gameRepository.games.filter { $0.gameName.lowercased().contains(lower) }
+        gameRepository.games.filter { matchesSearch($0.gameName) }
     }
 
     private var filteredCorruptedGames: [String] {
-        let names = gameRepository.corruptedGames
-        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
-            return names
-        }
-        let lower = trimmed.lowercased()
-        return names.filter { $0.lowercased().contains(lower) }
+        gameRepository.corruptedGames.filter(matchesSearch)
+    }
+
+    private var searchQuery: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    }
+
+    private func matchesSearch(_ text: String) -> Bool {
+        searchQuery.isEmpty || text.lowercased().contains(searchQuery)
     }
 }

@@ -2,7 +2,7 @@
 //  LitematicaDetailSheetView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Displays detailed metadata for a Litematica schematic file.
@@ -156,7 +156,7 @@ struct LitematicaDetailSheetView: View {
                     .lineLimit(1)
                     .truncationMode(.middle)
             } icon: {
-                Image(systemName: "square.stack.3d.up")
+                Image(systemName: GameOverviewItem.Kind.litematica.systemImage)
             }
             .font(.caption)
             .foregroundColor(.secondary)

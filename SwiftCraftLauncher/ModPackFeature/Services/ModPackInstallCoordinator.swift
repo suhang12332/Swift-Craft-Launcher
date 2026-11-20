@@ -2,7 +2,7 @@
 //  ModPackInstallCoordinator.swift
 //  ModPackFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -85,16 +85,21 @@ final class ModPackInstallCoordinator {
             )
             return false
         }
-        guard let preparedPack = await resolvePreparedPack(input) else {
-            input.setProcessing(false)
-            return false
+        let extractedPath: URL
+        let indexInfo: ModrinthIndexInfo
+        let iconPath: String?
+        do {
+            guard let preparedPack = await resolvePreparedPack(input) else {
+                input.setProcessing(false)
+                return false
+            }
+            extractedPath = preparedPack.extractedPath
+            indexInfo = preparedPack.indexInfo
+            iconPath = await downloadOptionalIcon(
+                projectDetailForIcon: preparedPack.projectDetailForIcon,
+                gameName: input.gameName,
+            )
         }
-        let extractedPath = preparedPack.extractedPath
-        let indexInfo = preparedPack.indexInfo
-        let iconPath = await downloadOptionalIcon(
-            projectDetailForIcon: preparedPack.projectDetailForIcon,
-            gameName: input.gameName,
-        )
 
         let profileCreated = await MinecraftFileManager.createProfileDirectories(for: input.gameName)
         guard profileCreated else {

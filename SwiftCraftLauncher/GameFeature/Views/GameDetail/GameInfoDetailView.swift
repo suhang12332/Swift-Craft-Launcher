@@ -2,7 +2,7 @@
 //  GameInfoDetailView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Displays game information details with local and remote resource browsing.
@@ -35,6 +35,15 @@ struct GameInfoDetailView: View {
     @State private var scannedResources: Set<String> = []
     @State private var header: AnyView?
     @State private var showIconFilePicker = false
+
+    private struct RefreshKey: Equatable {
+        let gameName: String
+        let gameType: Bool
+    }
+
+    private var refreshKey: RefreshKey {
+        RefreshKey(gameName: game.gameName, gameType: gameType)
+    }
 
     init(
         game: GameVersionInfo,
@@ -101,7 +110,7 @@ struct GameInfoDetailView: View {
                 )
             }
         }
-        .onChange(of: game.gameName) { _, _ in
+        .onChange(of: refreshKey) { _, _ in
             performRefresh()
         }
         .onChange(of: game.modLoader) { _, _ in
@@ -110,16 +119,13 @@ struct GameInfoDetailView: View {
         .onChange(of: game.modVersion) { _, _ in
             updateHeaders()
         }
-        .onChange(of: gameType) { _, _ in
-            performRefresh()
-        }
         .onChange(of: selectedProjectId) { oldValue, newValue in
-            if oldValue != nil, newValue == nil {
-                resetScanState()
-                scanAllResources()
-            }
+            guard gameType, oldValue != nil, newValue == nil else { return }
+            resetScanState()
+            scanAllResources()
         }
         .onChange(of: query) { _, _ in
+            guard gameType else { return }
             resetScanState()
             scanAllResources()
         }
@@ -162,11 +168,12 @@ struct GameInfoDetailView: View {
     private func performRefresh() {
         updateHeaders()
         container.core.profileStorageManager.calculateGameStorageInfo(game.gameName)
-        if !gameType {
+        if gameType {
+            resetScanState()
+            scanAllResources()
+        } else {
             triggerLocalRefresh()
         }
-        resetScanState()
-        scanAllResources()
     }
 
     private func triggerLocalRefresh() {

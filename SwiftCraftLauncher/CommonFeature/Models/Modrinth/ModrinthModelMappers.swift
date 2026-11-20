@@ -2,7 +2,7 @@
 //  ModrinthModelMappers.swift
 //  CommonFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -130,15 +130,15 @@ public extension ModrinthProject {
             author: detail.team,
             title: detail.title,
             description: detail.description,
-            categories: detail.categories,
-            displayCategories: detail.additionalCategories ?? [],
-            versions: detail.versions,
+            categories: [],
+            displayCategories: [],
+            versions: [],
             downloads: detail.downloads,
             follows: detail.followers,
             iconUrl: detail.iconUrl,
-            license: detail.license?.name ?? "",
-            clientSide: detail.clientSide,
-            serverSide: detail.serverSide,
+            license: "",
+            clientSide: "",
+            serverSide: "",
             fileName: detail.fileName,
         )
     }

@@ -2,7 +2,7 @@
 //  WorldInfoSectionView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Displays world save folders as chips that open the world directory in Finder.
@@ -15,17 +15,17 @@ struct WorldInfoSectionView: View {
 
     var body: some View {
         GenericSectionView(
-            title: "saveinfo.worlds",
+            title: GameOverviewItem.Kind.world.titleKey,
             items: worlds,
             isLoading: isLoading,
-            iconName: "folder.fill",
+            iconName: GameOverviewItem.Kind.world.systemImage,
         ) { world in
             FilterChip(
                 title: world.name,
                 action: {
                     NSWorkspace.shared.open(world.path)
                 },
-                iconName: "folder.fill",
+                iconName: GameOverviewItem.Kind.world.systemImage,
                 maxTextWidth: 150,
             )
         }

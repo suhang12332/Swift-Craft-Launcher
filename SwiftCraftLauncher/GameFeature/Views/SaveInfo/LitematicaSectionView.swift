@@ -2,7 +2,7 @@
 //  LitematicaSectionView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Displays Litematica schematic files as selectable chips with detail sheet support.
@@ -16,10 +16,10 @@ struct LitematicaSectionView: View {
 
     var body: some View {
         GenericSectionView(
-            title: "saveinfo.litematica",
+            title: GameOverviewItem.Kind.litematica.titleKey,
             items: litematicaFiles,
             isLoading: isLoading,
-            iconName: "square.stack.3d.up",
+            iconName: GameOverviewItem.Kind.litematica.systemImage,
         ) { file in
             litematicaChip(for: file)
         }
@@ -34,7 +34,7 @@ struct LitematicaSectionView: View {
             action: {
                 selectedFile = file
             },
-            iconName: "square.stack.3d.up",
+            iconName: GameOverviewItem.Kind.litematica.systemImage,
             verticalPadding: 6,
             maxTextWidth: 150,
         )

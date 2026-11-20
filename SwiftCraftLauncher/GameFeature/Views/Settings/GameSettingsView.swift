@@ -2,7 +2,7 @@
 //  GameSettingsView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Global game settings view for API source, memory allocation, Java runtime, and cache management.

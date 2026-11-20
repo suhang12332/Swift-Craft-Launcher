@@ -2,7 +2,7 @@
 //  ModrinthSearchViewModel+Favorites.swift
 //  ResourceFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -99,12 +99,15 @@ extension ModrinthSearchViewModel {
         )
 
         try Task.checkCancellation()
-        let mods = try await CurseForgeService.fetchModsByIdsThrowing(ids: modIds)
 
-        let matchingMods = mods.filter { matches($0, params: params) }
-        let hits = CFToModrinthAdapter.convertSearchResult(
-            CurseForgeSearchResult(data: matchingMods, pagination: nil),
-        ).hits
+        let hits: [ModrinthProject]
+        do {
+            let mods = try await CurseForgeService.fetchModsByIdsThrowing(ids: modIds)
+            let matchingMods = mods.filter { matches($0, params: params) }
+            hits = CFToModrinthAdapter.convertSearchResult(
+                CurseForgeSearchResult(data: matchingMods, pagination: nil),
+            ).hits
+        }
 
         return sortedByProjectId(hits)
     }

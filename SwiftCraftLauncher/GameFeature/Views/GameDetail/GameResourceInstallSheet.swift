@@ -2,7 +2,7 @@
 //  GameResourceInstallSheet.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // A sheet for installing resources to a specific game with version selection and dependency handling.

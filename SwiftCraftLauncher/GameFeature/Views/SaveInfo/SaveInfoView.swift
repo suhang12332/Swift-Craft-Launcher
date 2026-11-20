@@ -2,7 +2,7 @@
 //  SaveInfoView.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // Main view displaying save information including worlds, screenshots, and schematics.
@@ -11,7 +11,6 @@ import SwiftUI
 struct SaveInfoView: View {
     let gameId: String
     let gameName: String
-    let modLoader: String
     @State private var manager: SaveInfoManager
     @Environment(DIContainer.self)
     private var container
@@ -25,18 +24,24 @@ struct SaveInfoView: View {
     ) {
         self.gameId = gameId
         self.gameName = gameName
-        self.modLoader = modLoader
         _manager = State(wrappedValue: SaveInfoManager(gameName: gameName, modLoader: modLoader))
     }
 
-    private var currentGameRunningState: Bool {
-        let userId = playerListViewModel.currentPlayer?.id ?? ""
-        return container.core.gameSessionStore.cachedIsGameRunning(gameId: gameId, userId: userId)
+    private var gameState: GameRuntimeState {
+        GameRuntimeState(
+            gameId: gameId,
+            userId: playerListViewModel.currentPlayer?.id,
+            sessionStore: container.core.gameSessionStore,
+        )
     }
 
     var body: some View {
         VStack {
-            ResourceCountSectionView(counts: manager.resourceCounts)
+            ResourceCountSectionView(
+                counts: manager.resourceCounts,
+                isLoading: manager.isLoading,
+            )
+
             if manager.hasWorldsType {
                 WorldInfoSectionView(
                     worlds: manager.worlds,
@@ -66,20 +71,19 @@ struct SaveInfoView: View {
                 )
             }
         }
-        .onChange(of: gameId) { _, _ in
-            Task {
-                await manager.loadData()
-            }
-        }
         .task {
-            await manager.loadData()
+            await manager.loadData().value
         }
-        .onChange(of: currentGameRunningState) { oldValue, newValue in
+        .onChange(of: gameState.isRunning) { oldValue, newValue in
             if oldValue == true, newValue == false {
                 Task {
-                    await manager.loadData()
+                    await manager.loadData().value
                 }
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .localResourceImported)) { notification in
+            guard notification.userInfo?["gameName"] as? String == gameName else { return }
+            manager.loadData()
         }
         .onDisappear {
             manager.clearCache()

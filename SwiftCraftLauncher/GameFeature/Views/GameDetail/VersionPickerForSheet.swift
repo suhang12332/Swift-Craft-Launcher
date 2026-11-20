@@ -2,7 +2,7 @@
 //  VersionPickerForSheet.swift
 //  GameFeature
 //
-//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
 // A version picker for selecting resource versions within a sheet.
