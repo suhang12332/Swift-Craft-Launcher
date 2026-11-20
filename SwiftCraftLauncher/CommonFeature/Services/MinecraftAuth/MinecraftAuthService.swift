@@ -106,6 +106,7 @@ final class MinecraftAuthService {
             URLQueryItem(name: "response_mode", value: "query"),
             URLQueryItem(name: "scope", value: scope),
             URLQueryItem(name: "state", value: UUID().uuidString),
+            URLQueryItem(name: "prompt", value: "select_account"),
         ]
         guard let url = components.url else {
             AppLog.common.error("Failed to build authorization URL")
