@@ -57,12 +57,12 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
     }
 
     /// The full authorize URL derived from the base URL and authorize path.
-    var authorizeURL: URL? {
+    var authorizeURL: URL {
         baseURL.appendingPathComponent(authorizePath)
     }
 
     /// The full token URL derived from the base URL and token path.
-    var tokenURL: URL? {
+    var tokenURL: URL {
         baseURL.appendingPathComponent(tokenPath)
     }
 

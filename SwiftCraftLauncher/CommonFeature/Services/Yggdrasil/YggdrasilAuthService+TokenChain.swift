@@ -10,14 +10,6 @@ import Foundation
 /// Performs Yggdrasil OAuth2 token exchange and profile retrieval.
 extension YggdrasilAuthService {
     func exchangeCodeForToken(code: String, server: YggdrasilServerConfig) async throws -> TokenResponse {
-        guard let tokenURL = server.tokenURL else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.yggdrasil_token_url_invalid",
-                level: .notification,
-                message: "Yggdrasil token URL is nil for server \(server.baseURL.absoluteString)",
-            )
-        }
-
         var additionalParams: [String: String] = [:]
         if let clientSecret = server.clientSecret {
             additionalParams["client_secret"] = clientSecret
@@ -25,7 +17,7 @@ extension YggdrasilAuthService {
 
         return try await OAuth2TokenOperations.exchangeCode(
             code: code,
-            tokenURL: tokenURL,
+            tokenURL: server.tokenURL,
             clientId: server.clientId ?? "",
             redirectURI: server.redirectURI,
             scope: server.scope.isEmpty ? nil : server.scope,
@@ -34,14 +26,6 @@ extension YggdrasilAuthService {
     }
 
     private func refreshToken(refreshToken: String, server: YggdrasilServerConfig) async throws -> TokenResponse {
-        guard let refreshTokenURL = server.tokenURL else {
-            throw GlobalError.validation(
-                i18nKey: "error.validation.yggdrasil_refresh_token_url_invalid",
-                level: .notification,
-                message: "Yggdrasil refresh token URL is nil for server \(server.baseURL.absoluteString)",
-            )
-        }
-
         AppLog.common.debug("Refreshing token for server \(server.name)")
 
         var additionalParams: [String: String] = [:]
@@ -51,7 +35,7 @@ extension YggdrasilAuthService {
 
         let result = try await OAuth2TokenOperations.refreshToken(
             refreshToken: refreshToken,
-            tokenURL: refreshTokenURL,
+            tokenURL: server.tokenURL,
             clientId: server.clientId ?? "",
             additionalParameters: additionalParams,
         )
