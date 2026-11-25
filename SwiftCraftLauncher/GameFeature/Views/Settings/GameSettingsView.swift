@@ -32,7 +32,6 @@ public struct GameSettingsView: View {
             spacerView()
             GameSettingsConcurrentDownloadsRow(draft: $concurrentDownloadsDraft)
             GameSettingsIncludeSnapshotsRow()
-            GameSettingsModDependencyGraphRow()
             GameSettingsMemoryPressureWarningRow()
             GameSettingsSyncLanguageRow()
             spacerView()

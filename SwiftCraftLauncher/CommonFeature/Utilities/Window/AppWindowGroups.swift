@@ -46,8 +46,6 @@ private struct AuxiliaryWindowScene: View {
             case .failedResources:
                 ModPackFailedResourcesWindowContent()
                     .environment(gameRepository)
-            case .modDependencyGraph:
-                ModDependencyGraphWindowContent()
             }
         }
         .navigationTitle(windowID.localizedTitle)

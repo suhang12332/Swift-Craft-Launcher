@@ -20,7 +20,6 @@ enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
     case javaDownload
     case skinPreview
     case failedResources
-    case modDependencyGraph
 
     var id: String { rawValue }
 
@@ -36,8 +35,6 @@ enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
             "skin.preview".localized()
         case .failedResources:
             "modpack.failed_resources.title".localized()
-        case .modDependencyGraph:
-            "mod.dependency_graph.title".localized()
         }
     }
 
@@ -51,18 +48,11 @@ enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
             CGSize(width: 1200, height: 800)
         case .failedResources:
             CGSize(width: 460, height: 200)
-        case .modDependencyGraph:
-            CGSize(width: 1200, height: 800)
         }
     }
 
     /// Whether this window supports resizing, minimizing, and maximizing.
     var allowsMaximizeAndMinimize: Bool {
-        switch self {
-        case .modDependencyGraph:
-            true
-        default:
-            false
-        }
+        false
     }
 }

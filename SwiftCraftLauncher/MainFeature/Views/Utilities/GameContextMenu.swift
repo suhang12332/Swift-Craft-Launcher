@@ -62,19 +62,6 @@ struct GameContextMenu: View {
             Label("settings.game.advanced".localized(), systemImage: "gearshape")
         }
 
-        if gameActions.isModded,
-           container.ui.gameSettingsManager.enableModDependencyGraph {
-            Button {
-                activateMainWindowIfNeeded()
-                gameActions.presentModDependencyGraph()
-            } label: {
-                Label(
-                    "mod.dependency_graph.title".localized(),
-                    systemImage: "point.3.connected.trianglepath.dotted",
-                )
-            }
-        }
-
         if !CommonUtil.isMinecraftSnapshotVersion(game.gameVersion) {
             Button {
                 activateMainWindowIfNeeded()
