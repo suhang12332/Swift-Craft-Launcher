@@ -1,5 +1,5 @@
 //
-//  APIKeyObfuscatorTests.swift
+//  ObfuscatorTests.swift
 //  SwiftCraftLauncherTests
 //
 //  © 2025 Swift Craft Launcher Team. All rights reserved.

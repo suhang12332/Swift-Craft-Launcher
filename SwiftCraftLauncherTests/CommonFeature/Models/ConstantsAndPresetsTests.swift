@@ -137,8 +137,8 @@ final class ConstantsAndPresetsTests: XCTestCase {
             token: "/api/yggdrasil/authserver/oauth",
         )
 
-        XCTAssertEqual(config.authorizeURL?.absoluteString, "https://example.com/oauth/authorize")
-        XCTAssertEqual(config.tokenURL?.absoluteString, "https://example.com/oauth/token")
+        XCTAssertEqual(config.authorizeURL.absoluteString, "https://example.com/oauth/authorize")
+        XCTAssertEqual(config.tokenURL.absoluteString, "https://example.com/oauth/token")
         XCTAssertEqual(config.profileURL(for: nil).absoluteString, "https://example.com/api/profile")
     }
 

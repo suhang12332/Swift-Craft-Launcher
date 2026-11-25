@@ -1,5 +1,5 @@
 //
-//  APIKeyObfuscator.swift
+//  Obfuscator.swift
 //  CommonFeature
 //
 //  © 2025 Swift Craft Launcher Team. All rights reserved.

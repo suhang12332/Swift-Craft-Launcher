@@ -105,7 +105,6 @@ final class YggdrasilModelsTests: XCTestCase {
         )
 
         let url = config.authorizeURL
-        guard let url else { XCTFail("Expected non-nil URL"); return }
         XCTAssertTrue(url.absoluteString.contains("/oauth/authorize"))
     }
 
@@ -123,7 +122,6 @@ final class YggdrasilModelsTests: XCTestCase {
         )
 
         let url = config.tokenURL
-        guard let url else { XCTFail("Expected non-nil URL"); return }
         XCTAssertTrue(url.absoluteString.contains("/oauth/token"))
     }
 
