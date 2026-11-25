@@ -139,7 +139,7 @@ final class ConstantsAndPresetsTests: XCTestCase {
 
         XCTAssertEqual(config.authorizeURL?.absoluteString, "https://example.com/oauth/authorize")
         XCTAssertEqual(config.tokenURL?.absoluteString, "https://example.com/oauth/token")
-        XCTAssertEqual(config.profileURL?.absoluteString, "https://example.com/api/profile")
+        XCTAssertEqual(config.profileURL(for: nil).absoluteString, "https://example.com/api/profile")
     }
 
     func testYggdrasilServerConfig_scopeTrimmed() {

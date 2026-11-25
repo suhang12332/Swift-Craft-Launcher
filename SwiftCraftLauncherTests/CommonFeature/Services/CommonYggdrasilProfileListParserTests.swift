@@ -23,6 +23,30 @@ final class CommonYggdrasilProfileListParserTests: XCTestCase {
         XCTAssertEqual(result?.first?.name, "TestPlayer")
     }
 
+    func testParse_singleProfileFormat() throws {
+        let texturesJSON = """
+        {"textures":{"SKIN":{"url":"https://example.com/skin.png","metadata":{"model":"slim"}}}}
+        """
+        let texturesValue = Data(texturesJSON.utf8).base64EncodedString()
+        let json = """
+        {
+          "id": "uuid-single",
+          "name": "SinglePlayer",
+          "properties": [
+            {"name": "textures", "value": "\(texturesValue)"}
+          ]
+        }
+        """
+
+        let result = CommonYggdrasilProfileListParser.parse(data: Data(json.utf8))
+
+        XCTAssertEqual(result?.count, 1)
+        XCTAssertEqual(result?.first?.id, "uuid-single")
+        XCTAssertEqual(result?.first?.name, "SinglePlayer")
+        XCTAssertEqual(result?.first?.skins.first?.url, "https://example.com/skin.png")
+        XCTAssertEqual(result?.first?.skins.first?.variant, "slim")
+    }
+
     func testParse_wrappedDataFormat() throws {
         let data = try Data(contentsOf: TestSupport.fixtureURL(
             subdirectory: "Fixtures/yggdrasil",

@@ -36,10 +36,18 @@ struct AuthorizationCodeResponse {
 struct TokenResponse: Codable {
     let accessToken: String
     let refreshToken: String?
+    let idToken: String?
 
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case refreshToken = "refresh_token"
+        case idToken = "id_token"
+    }
+
+    init(accessToken: String, refreshToken: String? = nil, idToken: String? = nil) {
+        self.accessToken = accessToken
+        self.refreshToken = refreshToken
+        self.idToken = idToken
     }
 }
 

@@ -140,9 +140,27 @@ final class YggdrasilModelsTests: XCTestCase {
             token: "/api/yggdrasil/authserver/oauth",
         )
 
-        let url = config.profileURL
-        guard let url else { XCTFail("Expected non-nil URL"); return }
+        let url = config.profileURL(for: nil)
         XCTAssertTrue(url.absoluteString.contains("/api/profile"))
+    }
+
+    func testServerConfig_profileURL_withProfileId_appendsComponent() {
+        let config = YggdrasilServerConfig(
+            name: "Mua",
+            baseURL: URL.require("https://skin.mualliance.ltd"),
+            redirectURI: "com.su.code.swiftcraftlauncher://oauth",
+            authorizePath: "/open/auth",
+            tokenPath: "/open/token",
+            profilePath: "/api/yggdrasil/sessionserver/session/minecraft/profile",
+            scope: "openid",
+            parserId: .mua,
+            token: "/open/token",
+        )
+
+        XCTAssertEqual(
+            config.profileURL(for: "abc123").absoluteString,
+            "https://skin.mualliance.ltd/api/yggdrasil/sessionserver/session/minecraft/profile/abc123",
+        )
     }
 
     func testServerConfig_equatable() {

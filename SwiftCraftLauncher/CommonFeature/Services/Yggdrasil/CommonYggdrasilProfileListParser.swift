@@ -45,7 +45,9 @@ enum CommonYggdrasilProfileListParser {
 
         let items: [Item]
 
-        if let list = try? JSONDecoder().decode([Item].self, from: data) {
+        if let single = try? JSONDecoder().decode(Item.self, from: data) {
+            items = [single]
+        } else if let list = try? JSONDecoder().decode([Item].self, from: data) {
             items = list
         } else if let wrapper = try? JSONDecoder().decode(ProfileListWrapper.self, from: data), !wrapper.data.isEmpty {
             items = wrapper.data
@@ -97,15 +99,8 @@ enum CommonYggdrasilProfileListParser {
     }
 }
 
-/// Parses LittleSkin-style Yggdrasil profile list responses.
+/// Parses standard Yggdrasil profile list or single-profile responses.
 struct CommonYggdrasilStyleProfileListParser: YggdrasilProfileListParser {
-    let id: YggdrasilProfileParserID = .littleskin
-    private let baseURL: String
-
-    init(baseURL: String) {
-        self.baseURL = baseURL
-    }
-
     func parse(data: Data) async -> [YggdrasilProfileCandidate]? {
         CommonYggdrasilProfileListParser.parse(data: data)
     }

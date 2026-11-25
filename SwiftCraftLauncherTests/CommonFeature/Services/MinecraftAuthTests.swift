@@ -57,6 +57,17 @@ final class MinecraftAuthTests: XCTestCase {
         XCTAssertEqual(decoded.refreshToken, "rt456")
     }
 
+    func testTokenResponse_codable_idToken() throws {
+        let json = """
+        {"access_token": "at123", "id_token": "id123"}
+        """
+        let data = Data(json.utf8)
+        let decoded = try JSONDecoder().decode(TokenResponse.self, from: data)
+
+        XCTAssertEqual(decoded.accessToken, "at123")
+        XCTAssertEqual(decoded.idToken, "id123")
+    }
+
     func testTokenResponse_codable_nilRefreshToken() throws {
         let json = """
         {"access_token": "at123"}

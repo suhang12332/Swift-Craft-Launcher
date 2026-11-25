@@ -9,9 +9,7 @@ import Foundation
 
 /// Parses Ely.by profile list and texture responses.
 enum ElyflyProfileListParser {
-    static func parse(data: Data, baseURL: String) async -> [YggdrasilProfileCandidate]? {
-        _ = baseURL
-
+    static func parse(data: Data) async -> [YggdrasilProfileCandidate]? {
         struct ElyflyUser: Decodable {
             let id: Int?
             let uuid: String
@@ -98,14 +96,7 @@ enum ElyflyProfileListParser {
 
 /// Parses Ely.by-style Yggdrasil profile list responses.
 struct ElyflyProfileStyleProfileListParser: YggdrasilProfileListParser {
-    let id: YggdrasilProfileParserID = .ely
-    private let baseURL: String
-
-    init(baseURL: String) {
-        self.baseURL = baseURL
-    }
-
     func parse(data: Data) async -> [YggdrasilProfileCandidate]? {
-        await ElyflyProfileListParser.parse(data: data, baseURL: baseURL)
+        await ElyflyProfileListParser.parse(data: data)
     }
 }

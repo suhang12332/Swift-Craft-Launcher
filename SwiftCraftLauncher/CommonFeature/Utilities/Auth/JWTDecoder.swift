@@ -25,7 +25,7 @@ enum JWTDecoder {
     }
 
     /// Decodes the payload section of a JWT token into a dictionary.
-    private static func decodePayload(from jwt: String) -> [String: Any]? {
+    static func decodePayload(from jwt: String) -> [String: Any]? {
         let components = jwt.components(separatedBy: ".")
         guard components.count == 3 else {
             AppLog.common.error("Invalid JWT format: not standard 3-part format")
@@ -33,7 +33,10 @@ enum JWTDecoder {
         }
 
         let paddedPayload = addPadding(to: components[1])
-        guard let payloadData = Data(base64Encoded: paddedPayload) else {
+        let base64Payload = paddedPayload
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        guard let payloadData = Data(base64Encoded: base64Payload) else {
             AppLog.common.error("JWT payload base64 decode failed")
             return nil
         }

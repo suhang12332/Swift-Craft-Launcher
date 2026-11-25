@@ -17,6 +17,14 @@ final class JWTDecoderTests: XCTestCase {
         XCTAssertEqual(result, Date(timeIntervalSince1970: 1_700_000_000))
     }
 
+    func testDecodePayload_base64URLCharacters() throws {
+        // The standard base64 encoding of this payload contains '/', so the
+        // base64url form contains '_'.
+        let jwt = try Self.makeJWT(payload: ["x": "???"])
+        let payload = JWTDecoder.decodePayload(from: jwt)
+        XCTAssertEqual(payload?["x"] as? String, "???")
+    }
+
     func testExtractExpirationTime_invalidFormat_notThreeParts() {
         XCTAssertNil(JWTDecoder.extractExpirationTime(from: "only.two"))
     }

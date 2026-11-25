@@ -157,6 +157,12 @@ private extension YggdrasilAuthService {
             items.append(URLQueryItem(name: "scope", value: server.scope))
         }
 
+        // MUA only issues a refresh token when consent is explicitly requested.
+        // Without this, offline_access is not granted and launch-time refresh fails.
+        if server.parserId == .mua {
+            items.append(URLQueryItem(name: "prompt", value: "consent"))
+        }
+
         components.queryItems = items
         return components.url
     }
@@ -171,6 +177,7 @@ private extension YggdrasilAuthService {
             let candidates = try await fetchProfileList(
                 accessToken: token.accessToken,
                 server: server,
+                idToken: token.idToken,
             )
 
             let accessToken = token.accessToken
