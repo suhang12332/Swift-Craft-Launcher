@@ -35,6 +35,8 @@ struct GameFormView: View {
     @State private var mode: GameFormMode
     @State private var imagePickerHandler: ((Result<[URL], Error>) -> Void)?
     @State private var importViewModel = GameFormImportViewModel()
+    @Environment(\.modPackInstallViewBuilder)
+    private var modPackInstallViewBuilder
 
     private enum ImportModePickerValue: Hashable {
         case manual
@@ -70,18 +72,24 @@ struct GameFormView: View {
                             },
                         )
                     case let .modPack(source):
-                        ModPackInstallView(
-                            source: source,
-                            configuration: GameFormConfiguration(
-                                isDownloading: $isDownloading,
-                                isFormValid: $isFormValid,
-                                triggerConfirm: $triggerConfirm,
-                                triggerCancel: $triggerCancel,
-                                isLoadingLoaderVersions: $isLoadingLoaderVersions,
-                                onCancel: { dismiss() },
-                                onConfirm: { dismiss() },
-                            ),
-                        )
+                        Group {
+                            if let modPackInstallViewBuilder {
+                                modPackInstallViewBuilder.makeView(
+                                    source: source,
+                                    configuration: GameFormConfiguration(
+                                        isDownloading: $isDownloading,
+                                        isFormValid: $isFormValid,
+                                        triggerConfirm: $triggerConfirm,
+                                        triggerCancel: $triggerCancel,
+                                        isLoadingLoaderVersions: $isLoadingLoaderVersions,
+                                        onCancel: { dismiss() },
+                                        onConfirm: { dismiss() },
+                                    ),
+                                )
+                            } else {
+                                Text(verbatim: "Mod pack installation is unavailable.")
+                            }
+                        }
                         .id(source.id)
                     }
                 }
