@@ -32,6 +32,11 @@ struct LittleSkinMinecraftTokenParser: YggdrasilMinecraftTokenParser {
     }
 
     func fetchMinecraftToken(profileId: String, minecraftTokenURL: URL, oauthToken: String) async throws -> String {
+        // LittleSkin needs a short delay after the OAuth token is issued or
+        // refreshed before the token can be used to create a Minecraft token.
+        // Requesting too early makes this endpoint fail.
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
+
         let bodyData = try JSONSerialization.data(withJSONObject: ["uuid": profileId])
         let data = try await APIClient.post(
             url: minecraftTokenURL,

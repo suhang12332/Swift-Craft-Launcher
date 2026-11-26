@@ -1,6 +1,6 @@
 //
 //  ModrinthProjectTitleView.swift
-//  CommonFeature
+//  ResourceFeature
 //
 //  © 2025 Swift Craft Launcher Team. All rights reserved.
 //

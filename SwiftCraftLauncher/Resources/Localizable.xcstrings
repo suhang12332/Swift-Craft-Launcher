@@ -31986,417 +31986,6 @@
         }
       }
     },
-    "error.validation.yggdrasil_profile_url_invalid" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "عنوان URL لملف اللاعب غير صالح."
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL til spillerprofil er ugyldig."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die URL des Spielerprofils ist ungültig."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Player profile URL is invalid."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La URL del perfil de jugador no es válida."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pelaajaprofiilin osoite on virheellinen."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’URL du profil joueur est invalide."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "खिलाड़ी प्रोफ़ाइल URL अमान्य है।"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’URL del profilo giocatore non è valida."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プレイヤープロファイルのURLが無効です。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "플레이어 프로필 URL이 올바르지 않습니다。"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL-en til spillerprofilen er ugyldig."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De URL van het spelersprofiel is ongeldig."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adres URL profilu gracza jest nieprawidłowy."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O URL do perfil do jogador é inválido."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Недопустимый URL-адрес профиля игрока."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adress till spelarprofil är ogiltig."
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL โปรไฟล์ผู้เล่นไม่ถูกต้อง"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oyuncu profili URL’si geçersiz."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL hồ sơ người chơi không hợp lệ."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "玩家资料地址无效"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "玩家資料位址無效"
-          }
-        }
-      }
-    },
-    "error.validation.yggdrasil_refresh_token_url_invalid" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "عنوان URL لتحديث الرمز غير صالح."
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL'en til opdatering af token er ugyldig."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die URL zur Token-Aktualisierung ist ungültig."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Refresh token URL is invalid."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La URL de actualización del token no es válida."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tunnuksen päivityksen URL on virheellinen."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L'URL de rafraîchissement du jeton est invalide."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "रीफ़्रेश टोकन URL अमान्य है।"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L'URL di aggiornamento del token non è valida."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "リフレッシュトークンのURLが無効です。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "리프레시 토큰 URL이 올바르지 않습니다。"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL-en for oppdatering av token er ugyldig."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De URL voor het vernieuwen van het token is ongeldig."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adres URL odświeżania tokena jest nieprawidłowy."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A URL de atualização do token é inválida."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Недопустимый URL-адрес обновления токена."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL:en för uppdatering av token är ogiltig."
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL สำหรับรีเฟรชโทเค็นไม่ถูกต้อง"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yenileme belirteci URL'si geçersiz."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL làm mới mã thông báo không hợp lệ."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "刷新Token地址无效"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重新整理Token位址無效"
-          }
-        }
-      }
-    },
-    "error.validation.yggdrasil_token_url_invalid" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "عنوان URL الخاص بالرمز غير صالح."
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token-URL'en er ugyldig."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Token-URL ist ungültig."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token URL is invalid."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La URL del token no es válida."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token-osoite on virheellinen."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’URL du jeton est invalide."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "टोकन URL अमान्य है।"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "L’URL del token non è valida."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "トークンURLが無効です。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "토큰 URL이 올바르지 않습니다。"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token-URL-en er ugyldig."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "De token-URL is ongeldig."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adres URL tokenu jest nieprawidłowy."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "O URL do token é inválido."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Недопустимый URL-адрес токена."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token-adressen är ogiltig."
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL ของโทเค็นไม่ถูกต้อง"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token URL’si geçersiz."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL mã thông báo không hợp lệ."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token地址无效"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token位址無效"
-          }
-        }
-      }
-    },
     "error.validation.zulu_folder_not_found_in_zip" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -68247,417 +67836,6 @@
         }
       }
     },
-    "settings.mod_dependency_graph.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod Graph"
-          }
-        }
-      }
-    },
-    "settings.mod_dependency_graph.show" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "إظهار مخطط تبعيات المودات"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vis mod-afhængighedsgraf"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod-Abhängigkeitsgraph anzeigen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show Mod Dependency Graph"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar grafo de dependencias de mods"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Näytä modiriippuvuuskaavio"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afficher le graphe des dépendances de mods"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod निर्भरता ग्राफ़ दिखाएँ"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostra grafo delle dipendenze delle mod"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod 依存関係グラフを表示"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "모드 의존성 그래프 표시"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vis mod-avhengighetsgraf"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod-afhankelijkheidsgraaf tonen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pokaż graf zależności modów"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar grafo de dependências de mods"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Показывать граф зависимостей модов"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Visa modberoendegraf"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "แสดงกราฟการพึ่งพามอด"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mod bağımlılık grafiğini göster"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hiển thị biểu đồ phụ thuộc Mod"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示 Mod 依赖图"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "顯示 Mod 依賴圖"
-          }
-        }
-      }
-    },
-    "settings.mod_dependency_graph.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "يعرض خيار مخطط تبعيات المودات في قوائم اللعبة. عطّل هذا الخيار إذا لم تكن بحاجة إلى فحص تبعيات المودات."
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Viser punktet Mod-afhængighedsgraf i spilmenuerne. Slå det fra, hvis du ikke har brug for at undersøge mod-afhængigheder."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeigt den Eintrag Mod-Abhängigkeitsgraph in den Spielmenüs an. Deaktiviere diese Option, wenn du die Mod-Abhängigkeiten nicht prüfen musst."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Show the Mod Dependency Graph entry in game menus. Disable this if you do not need to inspect mod dependencies."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Muestra la entrada Grafo de dependencias de mods en los menús del juego. Desactívala si no necesitas revisar las dependencias de los mods."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Näyttää Mod-riippuvuuskaavio -kohdan pelivalikoissa. Poista käytöstä, jos et tarvitse modien riippuvuuksien tarkastelua."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Affiche l’entrée Graphe des dépendances de mods dans les menus du jeu. Désactivez cette option si vous n’avez pas besoin d’inspecter les dépendances des mods."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "गेम मेनू में Mod डिपेंडेंसी ग्राफ़ प्रविष्टि दिखाता है। यदि आपको Mod निर्भरताएँ जाँचने की आवश्यकता नहीं है, तो इसे बंद कर दें।"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostra la voce Grafo delle dipendenze delle mod nei menu del gioco. Disattivala se non hai bisogno di controllare le dipendenze delle mod."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ゲームメニューに Mod 依存関係グラフの項目を表示します。Mod の依存関係を確認する必要がない場合は無効にしてください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "게임 메뉴에 모드 의존성 그래프 항목을 표시합니다. 모드 의존성을 확인할 필요가 없으면 비활성화하세요."
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Viser elementet Mod-avhengighetsgraf i spillmenyene. Slå dette av hvis du ikke trenger å undersøke mod-avhengigheter."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Toont het item Mod-afhankelijkheidsgraaf in de gamemenu's. Schakel dit uit als je de modafhankelijkheden niet hoeft te bekijken."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pokazuje pozycję Graf zależności modów w menu gry. Wyłącz, jeśli nie chcesz sprawdzać zależności modów."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostra a entrada Grafo de dependências de mods nos menus do jogo. Desative esta opção se não precisar verificar as dependências dos mods."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Показывает пункт Граф зависимостей модов в меню игры. Отключите, если вам не нужно проверять зависимости модов."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Visar posten Modberoendegraf i spelmenyerna. Inaktivera om du inte behöver granska modberoenden."
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "แสดงรายการกราฟการพึ่งพามอดในเมนูเกม ปิดตัวเลือกนี้หากคุณไม่จำเป็นต้องตรวจสอบการพึ่งพาของมอด"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oyun menülerinde Mod Bağımlılık Grafiği girişini gösterir. Mod bağımlılıklarını incelemeye ihtiyacınız yoksa bunu devre dışı bırakın."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hiển thị mục Biểu đồ phụ thuộc Mod trong menu trò chơi. Tắt tùy chọn này nếu bạn không cần kiểm tra phụ thuộc của mod."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在游戏菜单中显示 Mod 依赖图入口。如果不需要查看 Mod 依赖关系，可以关闭此选项。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在遊戲選單中顯示 Mod 依賴圖入口。如果不需要查看 Mod 依賴關係，可以關閉此選項。"
-          }
-        }
-      }
-    },
     "settings.modpack.export.format.label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -78265,413 +77443,413 @@
         }
       }
     },
-    "mod.dependency_graph.title" : {
+    "yggdrasil.error.id_token_missing" : {
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "مخطط تبعيات المودات"
+            "value" : "لم يُرجع الخادم رمز هوية. يُرجى المحاولة مرة أخرى."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod-afhængighedsgraf"
+            "value" : "Serveren returnerede ikke et ID-token. Prøv igen."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod-Abhängigkeitsgraph"
+            "value" : "Der Server hat kein ID-Token zurückgegeben. Bitte versuche es erneut."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod Dependency Graph"
+            "value" : "The server did not return an ID token. Please try again."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Grafo de dependencias de mods"
+            "value" : "El servidor no devolvió un token de identidad. Inténtalo de nuevo."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modien riippuvuuskaavio"
+            "value" : "Palvelin ei palauttanut ID-tunnusta. Yritä uudelleen."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Graphe de dépendances des mods"
+            "value" : "Le serveur n’a pas renvoyé de jeton d’identité. Veuillez réessayer."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मॉड निर्भरता ग्राफ़"
+            "value" : "सर्वर ने आईडी टोकन नहीं लौटाया। कृपया पुनः प्रयास करें।"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Grafo delle dipendenze dei mod"
+            "value" : "Il server non ha restituito un token di identità. Riprova."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MOD依存関係グラフ"
+            "value" : "サーバーからIDトークンが返されませんでした。もう一度お試しください。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드 의존성 그래프"
+            "value" : "서버에서 ID 토큰을 반환하지 않았습니다. 다시 시도해 주세요."
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod-avhengighetsgraf"
+            "value" : "Serveren returnerte ikke et ID-token. Prøv igjen."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod-afhankelijkheidsgraaf"
+            "value" : "De server heeft geen ID-token geretourneerd. Probeer het opnieuw."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Graf zależności modów"
+            "value" : "Serwer nie zwrócił tokenu identyfikacji. Spróbuj ponownie."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Grafo de dependências de mods"
+            "value" : "O servidor não retornou um token de identidade. Tente novamente."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Граф зависимостей модов"
+            "value" : "Сервер не вернул ID-токен. Повторите попытку."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modberoendegraf"
+            "value" : "Servern returnerade ingen ID-token. Försök igen."
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "กราฟการพึ่งพามอด"
+            "value" : "เซิร์ฟเวอร์ไม่ได้ส่งคืน ID โทเค็น โปรดลองอีกครั้ง"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod Bağımlılık Grafiği"
+            "value" : "Sunucu bir kimlik belirteci döndürmedi. Lütfen tekrar deneyin."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Đồ thị phụ thuộc mod"
+            "value" : "Máy chủ không trả về mã thông báo ID. Vui lòng thử lại."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod 依赖关系图"
+            "value" : "服务器未返回身份令牌，请重试。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "模組依賴關係圖"
+            "value" : "伺服器未傳回身分權杖，請重試。"
           }
         }
       }
     },
-    "mod.dependency_graph.empty.title" : {
+    "yggdrasil.error.id_token_invalid" : {
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "لا توجد مودات محلية"
+            "value" : "أعاد الخادم رمز هوية غير صالح."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen lokale mods"
+            "value" : "Serveren returnerede et ugyldigt ID-token."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keine lokalen Mods"
+            "value" : "Der Server hat ein ungültiges ID-Token zurückgegeben."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No local mods"
+            "value" : "The server returned an invalid ID token."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No hay mods locales"
+            "value" : "El servidor devolvió un token de identidad no válido."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ei paikallisia modeja"
+            "value" : "Palvelin palautti virheellisen ID-tunnuksen."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun mod local"
+            "value" : "Le serveur a renvoyé un jeton d’identité non valide."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "कोई स्थानीय मॉड नहीं"
+            "value" : "सर्वर ने एक अमान्य आईडी टोकन लौटाया।"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nessun mod locale"
+            "value" : "Il server ha restituito un token di identità non valido."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ローカルMODがありません"
+            "value" : "サーバーから無効なIDトークンが返されました。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "로컬 모드 없음"
+            "value" : "서버에서 유효하지 않은 ID 토큰을 반환했습니다."
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen lokale mods"
+            "value" : "Serveren returnerte et ugyldig ID-token."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geen lokale mods"
+            "value" : "De server heeft een ongeldig ID-token geretourneerd."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Brak lokalnych modów"
+            "value" : "Serwer zwrócił nieprawidłowy token identyfikacji."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nenhum mod local"
+            "value" : "O servidor retornou um token de identidade inválido."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Нет локальных модов"
+            "value" : "Сервер вернул недействительный ID-токен."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inga lokala mods"
+            "value" : "Servern returnerade en ogiltig ID-token."
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ไม่มีมอดในเครื่อง"
+            "value" : "เซิร์ฟเวอร์ส่งคืน ID โทเค็นที่ไม่ถูกต้อง"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yerel mod yok"
+            "value" : "Sunucu geçersiz bir kimlik belirteci döndürdü."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Không có mod cục bộ"
+            "value" : "Máy chủ đã trả về một mã thông báo ID không hợp lệ."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没有本地 Mod"
+            "value" : "服务器返回的身份令牌无效。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "沒有本地模組"
+            "value" : "伺服器傳回的身分權杖無效。"
           }
         }
       }
     },
-    "mod.dependency_graph.empty.message" : {
+    "yggdrasil.error.id_token_missing_selected_profile" : {
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "قم بتثبيت بعض المودات لهذه اللعبة لعرض مخطط تبعياتها."
+            "value" : "لا يحتوي رمز الهوية على selectedProfile. تعذّر تحديد ملف تعريف Minecraft."
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installer nogle mods til dette spil for at se deres afhængighedsgraf."
+            "value" : "ID-tokenet indeholder ikke selectedProfile. Kan ikke finde Minecraft-profilen."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installiere einige Mods für dieses Spiel, um ihren Abhängigkeitsgraphen anzuzeigen."
+            "value" : "Das ID-Token enthält kein selectedProfile. Das Minecraft-Profil kann nicht ermittelt werden."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Install some mods for this game to see their dependency graph."
+            "value" : "The ID token does not contain selectedProfile. Unable to resolve the Minecraft profile."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instala algunos mods para este juego para ver su grafo de dependencias."
+            "value" : "El token de identidad no contiene selectedProfile. No se puede resolver el perfil de Minecraft."
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Asenna joitakin modeja tälle pelille nähdäksesi niiden riippuvuuskaavion."
+            "value" : "ID-tunnus ei sisällä selectedProfile-kenttää. Minecraft-profiilia ei voi selvittää."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installez des mods pour ce jeu afin d'afficher leur graphe de dépendances."
+            "value" : "Le jeton d’identité ne contient pas selectedProfile. Impossible de résoudre le profil Minecraft."
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "इस गेम के लिए कुछ मॉड इंस्टॉल करें ताकि उनका निर्भरता ग्राफ़ देखा जा सके।"
+            "value" : "आईडी टोकन में selectedProfile नहीं है। Minecraft प्रोफ़ाइल का पता नहीं लगाया जा सका।"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installa alcuni mod per questo gioco per visualizzare il loro grafo delle dipendenze."
+            "value" : "Il token di identità non contiene selectedProfile. Impossibile risolvere il profilo Minecraft."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このゲームにMODをインストールすると、依存関係グラフを表示できます。"
+            "value" : "IDトークンにselectedProfileが含まれていません。Minecraftプロフィールを特定できません。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 게임에 모드를 설치하면 의존성 그래프를 볼 수 있습니다."
+            "value" : "ID 토큰에 selectedProfile이 없습니다. Minecraft 프로필을 확인할 수 없습니다."
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installer noen mods for dette spillet for å se avhengighetsgrafen deres."
+            "value" : "ID-tokenet inneholder ikke selectedProfile. Kan ikke finne Minecraft-profilen."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installeer enkele mods voor deze game om hun afhankelijkheidsgraaf te bekijken."
+            "value" : "Het ID-token bevat geen selectedProfile. Kan het Minecraft-profiel niet vinden."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zainstaluj mody dla tej gry, aby zobaczyć ich graf zależności."
+            "value" : "Token identyfikacji nie zawiera selectedProfile. Nie można ustalić profilu Minecraft."
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instale alguns mods para este jogo para ver o grafo de dependências deles."
+            "value" : "O token de identidade não contém selectedProfile. Não foi possível resolver o perfil do Minecraft."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Установите моды для этой игры, чтобы увидеть граф их зависимостей."
+            "value" : "ID-токен не содержит selectedProfile. Не удалось определить профиль Minecraft."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installera några mods för detta spel för att se deras beroendegraf."
+            "value" : "ID-token innehåller inte selectedProfile. Det gick inte att hitta Minecraft-profilen."
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ติดตั้งมอดสำหรับเกมนี้เพื่อดูกราฟการพึ่งพา"
+            "value" : "ID โทเค็นไม่มี selectedProfile ไม่สามารถระบุโปรไฟล์ Minecraft ได้"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bağımlılık grafiğini görmek için bu oyuna birkaç mod yükleyin."
+            "value" : "Kimlik belirteci selectedProfile içermiyor. Minecraft profili çözümlenemedi."
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cài đặt một số mod cho trò chơi này để xem đồ thị phụ thuộc của chúng."
+            "value" : "Mã thông báo ID không chứa selectedProfile. Không thể xác định hồ sơ Minecraft."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "为该游戏安装 Mod 后即可查看依赖关系图。"
+            "value" : "身份令牌中缺少 selectedProfile，无法获取 Minecraft 角色。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "為該遊戲安裝模組後即可查看依賴關係圖。"
+            "value" : "身分權杖中缺少 selectedProfile，無法取得 Minecraft 角色。"
           }
         }
       }

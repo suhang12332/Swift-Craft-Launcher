@@ -1,6 +1,6 @@
 //
 //  YggdrasilAuthView.swift
-//  CommonFeature
+//  PlayerFeature
 //
 //  © 2025 Swift Craft Launcher Team. All rights reserved.
 //

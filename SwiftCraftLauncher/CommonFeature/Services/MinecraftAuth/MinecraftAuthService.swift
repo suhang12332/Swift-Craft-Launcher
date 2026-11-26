@@ -5,7 +5,6 @@
 //  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
-import AuthenticationServices
 import Foundation
 import os
 import SwiftUI
@@ -24,11 +23,11 @@ final class MinecraftAuthService {
 
     let refreshTasksLock = OSAllocatedUnfairLock<[String: Task<Player, Error>]>(initialState: [:])
 
-    private let webAuthenticator = WebAuthenticator()
+    private let authorizationFlow = OAuth2AuthorizationFlow()
 
     @MainActor
     func startAuthentication() async {
-        webAuthenticator.cancel()
+        authorizationFlow.cancel()
 
         isLoading = true
         authenticationIssue = nil
@@ -40,57 +39,29 @@ final class MinecraftAuthService {
             return
         }
 
-        await withCheckedContinuation { continuation in
-            self.webAuthenticator.start(
+        do {
+            switch try await authorizationFlow.requestAuthorizationCode(
                 authorizationURL: authURL,
-                callbackScheme: URL(string: self.redirectUri)?.scheme,
+                callbackScheme: URL(string: redirectUri)?.scheme,
                 prefersEphemeral: DIContainer.shared.ui.playerSettingsManager.enableEphemeralWebLogin,
-            ) { [weak self] callbackURL, error in
-                Task { @MainActor in
-                    if let error {
-                        self?.handleAuthCallbackError(error)
-                        continuation.resume()
-                        return
-                    }
+            ) {
+            case let .authorized(code):
+                await handleAuthorizationCode(code)
 
-                    guard let callbackURL,
-                          let authResponse = AuthorizationCodeResponse(from: callbackURL) else {
-                        AppLog.common.error("Invalid Microsoft callback URL")
-                        self?.authState = .error("minecraft.auth.error.invalid_callback_url".localized())
-                        self?.isLoading = false
-                        continuation.resume()
-                        return
-                    }
+            case .cancelled:
+                AppLog.common.info("User cancelled Microsoft authentication")
+                authState = .idle
+                isLoading = false
 
-                    if authResponse.isUserDenied {
-                        AppLog.common.info("User denied Microsoft authorization")
-                        self?.authState = .idle
-                        self?.isLoading = false
-                        continuation.resume()
-                        return
-                    }
-
-                    if let error = authResponse.error {
-                        let description = authResponse.errorDescription ?? error
-                        AppLog.common.error("Microsoft authorization failed: \(description)")
-                        self?.authState = .error("Authorization failed: \(description)")
-                        self?.isLoading = false
-                        continuation.resume()
-                        return
-                    }
-
-                    guard authResponse.isSuccess, let code = authResponse.code else {
-                        AppLog.common.error("No authorization code received")
-                        self?.authState = .error("minecraft.auth.error.no_authorization_code".localized())
-                        self?.isLoading = false
-                        continuation.resume()
-                        return
-                    }
-
-                    await self?.handleAuthorizationCode(code)
-                    continuation.resume()
-                }
+            case .denied:
+                AppLog.common.info("User denied Microsoft authorization")
+                authState = .idle
+                isLoading = false
             }
+        } catch let error as OAuth2AuthorizationError {
+            handleAuthorizationError(error)
+        } catch {
+            handleAuthorizationError(.sessionFailed(error.localizedDescription))
         }
     }
 
@@ -153,7 +124,7 @@ final class MinecraftAuthService {
     func logout() {
         authState = .idle
         authenticationIssue = nil
-        webAuthenticator.cancel()
+        authorizationFlow.cancel()
         isLoading = false
     }
 
@@ -163,13 +134,19 @@ final class MinecraftAuthService {
     }
 
     @MainActor
-    private func handleAuthCallbackError(_ error: Error) {
-        if let authError = error as? ASWebAuthenticationSessionError,
-           authError.code == .canceledLogin {
-            AppLog.common.info("User cancelled Microsoft authentication")
-            authState = .idle
-        } else {
-            AppLog.common.error("Microsoft authentication failed: \(error.localizedDescription)")
+    private func handleAuthorizationError(_ error: OAuth2AuthorizationError) {
+        switch error {
+        case .invalidCallbackURL:
+            AppLog.common.error("Invalid Microsoft callback URL")
+            authState = .error("minecraft.auth.error.invalid_callback_url".localized())
+        case .missingAuthorizationCode:
+            AppLog.common.error("No authorization code received")
+            authState = .error("minecraft.auth.error.no_authorization_code".localized())
+        case let .authorizationFailed(description):
+            AppLog.common.error("Microsoft authorization failed: \(description)")
+            authState = .error("Authorization failed: \(description)")
+        case let .sessionFailed(description):
+            AppLog.common.error("Microsoft authentication failed: \(description)")
             authState = .error("minecraft.auth.error.authentication_failed".localized())
         }
         isLoading = false

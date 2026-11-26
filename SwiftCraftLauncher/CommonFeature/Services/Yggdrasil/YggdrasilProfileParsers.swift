@@ -9,8 +9,6 @@ import Foundation
 
 /// Defines the interface for parsing Yggdrasil profile list responses.
 protocol YggdrasilProfileListParser: Sendable {
-    var id: YggdrasilProfileParserID { get }
-
     func parse(data: Data) async -> [YggdrasilProfileCandidate]?
 }
 
@@ -18,7 +16,6 @@ protocol YggdrasilProfileListParser: Sendable {
 protocol YggdrasilProfileParserProvider: Sendable {
     func makeParser(
         for id: YggdrasilProfileParserID,
-        baseURL: String,
     ) -> (any YggdrasilProfileListParser)?
 }
 
@@ -36,10 +33,9 @@ enum YggdrasilProfileParsers {
 
         func make(
             _ id: YggdrasilProfileParserID,
-            baseURL: String,
         ) -> (any YggdrasilProfileListParser)? {
             lock.withLock {
-                provider?.makeParser(for: id, baseURL: baseURL)
+                provider?.makeParser(for: id)
             }
         }
     }
@@ -50,7 +46,7 @@ enum YggdrasilProfileParsers {
         registry.configure(provider: provider)
     }
 
-    static func make(_ id: YggdrasilProfileParserID, baseURL: String) -> (any YggdrasilProfileListParser)? {
-        registry.make(id, baseURL: baseURL)
+    static func make(_ id: YggdrasilProfileParserID) -> (any YggdrasilProfileListParser)? {
+        registry.make(id)
     }
 }

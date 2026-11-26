@@ -107,10 +107,6 @@ struct GameActions {
         container.ui.gameDialogsPresenter.presentLoaderUpdate(for: game, mode: mode)
     }
 
-    func presentModDependencyGraph() {
-        container.ui.windowManager.presentModDependencyGraph(for: game)
-    }
-
     func requestDeletion() {
         container.ui.gameDialogsPresenter.requestGameDeletion(of: game)
     }

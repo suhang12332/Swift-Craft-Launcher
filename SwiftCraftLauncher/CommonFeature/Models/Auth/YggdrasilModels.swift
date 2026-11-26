@@ -57,18 +57,23 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
     }
 
     /// The full authorize URL derived from the base URL and authorize path.
-    var authorizeURL: URL? {
+    var authorizeURL: URL {
         baseURL.appendingPathComponent(authorizePath)
     }
 
     /// The full token URL derived from the base URL and token path.
-    var tokenURL: URL? {
+    var tokenURL: URL {
         baseURL.appendingPathComponent(tokenPath)
     }
 
     /// The full profile URL derived from the base URL and profile path.
-    var profileURL: URL? {
-        baseURL.appendingPathComponent(profilePath)
+    /// When `profileId` is provided it is appended as an additional path component.
+    func profileURL(for profileId: String? = nil) -> URL {
+        let url = baseURL.appendingPathComponent(profilePath)
+        guard let profileId else {
+            return url
+        }
+        return url.appendingPathComponent(profileId)
     }
 
     var minecraftTokenURL: URL {

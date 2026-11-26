@@ -5,7 +5,6 @@
 //  © 2025 Swift Craft Launcher Team. All rights reserved.
 //
 
-import AuthenticationServices
 import Foundation
 import SwiftUI
 
@@ -25,7 +24,7 @@ final class YggdrasilAuthService {
     /// The list of player profiles returned after authentication.
     var authenticatedProfiles: [YggdrasilProfile] = []
 
-    private let webAuthenticator = WebAuthenticator()
+    private let authorizationFlow = OAuth2AuthorizationFlow()
 
     /// Sets the Yggdrasil server to use for authentication.
     func setServer(_ config: YggdrasilServerConfig) {
@@ -46,7 +45,7 @@ final class YggdrasilAuthService {
     /// Starts the Yggdrasil OAuth2 authorization code login flow.
     @MainActor
     func startAuthentication() async {
-        webAuthenticator.cancel()
+        authorizationFlow.cancel()
         authenticatedProfiles = []
 
         guard let server = currentServer else {
@@ -62,67 +61,29 @@ final class YggdrasilAuthService {
         isLoading = true
         authState = .waitingForBrowser
 
-        await withCheckedContinuation { continuation in
-            self.webAuthenticator.start(
+        do {
+            switch try await authorizationFlow.requestAuthorizationCode(
                 authorizationURL: authURL,
                 callbackScheme: URL(string: server.redirectURI)?.scheme,
                 prefersEphemeral: DIContainer.shared.ui.playerSettingsManager.enableEphemeralWebLogin,
-            ) { [weak self] callbackURL, error in
-                Task { @MainActor in
-                    @MainActor
-                    func finish(_ state: YggdrasilAuthState) {
-                        self?.authState = state
-                        self?.isLoading = false
-                    }
+            ) {
+            case let .authorized(code):
+                await handleAuthorizationCode(code, server: server)
 
-                    guard let self else {
-                        continuation.resume()
-                        return
-                    }
+            case .cancelled:
+                AppLog.common.info("User cancelled Yggdrasil login")
+                authState = .idle
+                isLoading = false
 
-                    defer { continuation.resume() }
-
-                    if let error {
-                        if let authError = error as? ASWebAuthenticationSessionError,
-                           authError.code == .canceledLogin {
-                            AppLog.common.info("User cancelled Yggdrasil login")
-                            finish(.idle)
-                        } else {
-                            AppLog.common.error("Yggdrasil login failed: \(error.localizedDescription)")
-                            finish(.error("yggdrasil.error.login_failed_retry".localized()))
-                        }
-                        return
-                    }
-
-                    guard let callbackURL,
-                          let authResponse = AuthorizationCodeResponse(from: callbackURL) else {
-                        AppLog.common.error("Invalid Yggdrasil callback URL")
-                        finish(.error("yggdrasil.error.invalid_callback_url".localized()))
-                        return
-                    }
-
-                    if authResponse.isUserDenied {
-                        AppLog.common.info("User denied Yggdrasil authorization")
-                        finish(.idle)
-                        return
-                    }
-
-                    if let error = authResponse.error {
-                        let description = authResponse.errorDescription ?? error
-                        AppLog.common.error("Yggdrasil authorization failed: \(description)")
-                        finish(.error(description))
-                        return
-                    }
-
-                    guard authResponse.isSuccess, let code = authResponse.code else {
-                        AppLog.common.error("No Yggdrasil authorization code received")
-                        finish(.error("yggdrasil.error.no_auth_code".localized()))
-                        return
-                    }
-
-                    await self.handleAuthorizationCode(code, server: server)
-                }
+            case .denied:
+                AppLog.common.info("User denied Yggdrasil authorization")
+                authState = .idle
+                isLoading = false
             }
+        } catch let error as OAuth2AuthorizationError {
+            handleAuthorizationError(error)
+        } catch {
+            handleAuthorizationError(.sessionFailed(error.localizedDescription))
         }
     }
 
@@ -131,16 +92,34 @@ final class YggdrasilAuthService {
     func logout() {
         authState = .idle
         isLoading = false
-        webAuthenticator.cancel()
+        authorizationFlow.cancel()
         currentServer = nil
         authenticatedProfiles = []
     }
 }
 
 private extension YggdrasilAuthService {
+    @MainActor
+    func handleAuthorizationError(_ error: OAuth2AuthorizationError) {
+        switch error {
+        case .invalidCallbackURL:
+            AppLog.common.error("Invalid Yggdrasil callback URL")
+            authState = .error("yggdrasil.error.invalid_callback_url".localized())
+        case .missingAuthorizationCode:
+            AppLog.common.error("No Yggdrasil authorization code received")
+            authState = .error("yggdrasil.error.no_auth_code".localized())
+        case let .authorizationFailed(description):
+            AppLog.common.error("Yggdrasil authorization failed: \(description)")
+            authState = .error(description)
+        case let .sessionFailed(description):
+            AppLog.common.error("Yggdrasil login failed: \(description)")
+            authState = .error("yggdrasil.error.login_failed_retry".localized())
+        }
+        isLoading = false
+    }
+
     func buildAuthorizationURL(for server: YggdrasilServerConfig) -> URL? {
-        guard let authorizeURL = server.authorizeURL,
-              var components = URLComponents(url: authorizeURL, resolvingAgainstBaseURL: false) else {
+        guard var components = URLComponents(url: server.authorizeURL, resolvingAgainstBaseURL: false) else {
             return nil
         }
 
@@ -157,6 +136,10 @@ private extension YggdrasilAuthService {
             items.append(URLQueryItem(name: "scope", value: server.scope))
         }
 
+        if server.parserId == .mua || server.parserId == .littleskin {
+            items.append(URLQueryItem(name: "prompt", value: "consent"))
+        }
+
         components.queryItems = items
         return components.url
     }
@@ -171,6 +154,7 @@ private extension YggdrasilAuthService {
             let candidates = try await fetchProfileList(
                 accessToken: token.accessToken,
                 server: server,
+                idToken: token.idToken,
             )
 
             let accessToken = token.accessToken

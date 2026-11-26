@@ -61,6 +61,7 @@ struct SwiftCraftLauncherApp: App {
                 .environment(gameRepository)
                 .environment(container)
                 .environment(gameActionsProvider)
+                .environment(\.modPackInstallViewBuilder, .app)
                 .preferredColorScheme(container.ui.themeManager.preferredColorScheme)
                 .errorAlert(container.core.errorHandler)
                 .windowOpener(container.ui.windowManager)

@@ -20,15 +20,6 @@
       }
     },
     {
-      "identity" : "moddependencygraphkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/suhang12332/ModDependencyGraphKit.git",
-      "state" : {
-        "branch" : "release",
-        "revision" : "70f1932793a4e796070b182afe8018b63818f49d"
-      }
-    },
-    {
       "identity" : "nsskinrender",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/suhang12332/NSSkinRender.git",

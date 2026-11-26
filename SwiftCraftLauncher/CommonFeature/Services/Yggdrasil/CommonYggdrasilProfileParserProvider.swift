@@ -11,15 +11,12 @@ import Foundation
 struct CommonYggdrasilProfileParserProvider: YggdrasilProfileParserProvider {
     func makeParser(
         for id: YggdrasilProfileParserID,
-        baseURL: String,
     ) -> (any YggdrasilProfileListParser)? {
         switch id {
-        case .littleskin:
-            return CommonYggdrasilStyleProfileListParser(baseURL: baseURL)
-        case .mua:
-            return CommonBlessingSkinStyleProfileListParser(baseURL: baseURL)
+        case .littleskin, .mua:
+            return CommonYggdrasilStyleProfileListParser()
         case .ely:
-            return ElyflyProfileStyleProfileListParser(baseURL: baseURL)
+            return ElyflyProfileStyleProfileListParser()
         }
     }
 }
