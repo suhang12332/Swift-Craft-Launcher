@@ -50,39 +50,37 @@ class JavaManager {
     }
 
     func canJavaRun(at javaPath: String) -> Bool {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: javaPath)
-        process.arguments = ["-version"]
-
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = pipe
-
-        do {
-            try process.run()
-            process.waitUntilExit()
-
-            let exitCode = process.terminationStatus
-            if exitCode == 0 {
-                AppLog.game.debug("Java launch verification succeeded: \(javaPath)")
-                return true
-            } else {
-                AppLog.game.error("Java launch verification failed, exit code: \(exitCode)")
-                return false
-            }
-        } catch {
-            AppLog.game.error("Java launch verification exception: \(error.localizedDescription)")
+        guard let result = runJavaCommand(at: javaPath, arguments: ["-version"]) else {
+            AppLog.game.error("Java launch verification failed to start: \(javaPath)")
             return false
         }
+
+        guard result.exitCode == 0 else {
+            AppLog.game.error("Java launch verification failed, exit code: \(result.exitCode)")
+            return false
+        }
+
+        AppLog.game.debug("Java launch verification succeeded: \(javaPath)")
+        return true
     }
 
     /// Returns the output of `java --version` for the specified executable.
     /// - Parameter javaPath: The path to the Java executable.
     /// - Returns: The combined stdout and stderr output, or `nil` if execution fails.
     func getJavaVersionInfo(at javaPath: String) -> String? {
+        guard let result = runJavaCommand(at: javaPath, arguments: ["--version"]),
+              !result.output.isEmpty else {
+            return nil
+        }
+
+        return String(data: result.output, encoding: .utf8)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func runJavaCommand(at javaPath: String, arguments: [String]) -> (exitCode: Int32, output: Data)? {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: javaPath)
-        process.arguments = ["--version"]
+        process.arguments = arguments
 
         let pipe = Pipe()
         process.standardOutput = pipe
@@ -93,12 +91,9 @@ class JavaManager {
             process.waitUntilExit()
 
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            guard !data.isEmpty else { return nil }
-
-            return String(data: data, encoding: .utf8)?
-                .trimmingCharacters(in: .whitespacesAndNewlines)
+            return (process.terminationStatus, data)
         } catch {
-            AppLog.game.error("Failed to get Java version info: \(error.localizedDescription)")
+            AppLog.game.error("Failed to run Java command at \(javaPath): \(error.localizedDescription)")
             return nil
         }
     }
