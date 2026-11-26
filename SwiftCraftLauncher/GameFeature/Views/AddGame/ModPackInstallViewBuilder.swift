@@ -27,6 +27,5 @@ struct ModPackInstallViewBuilder: @unchecked Sendable {
 }
 
 extension EnvironmentValues {
-    // The injected builder for the mod pack installation view, or `nil` when unavailable.
     @Entry var modPackInstallViewBuilder: ModPackInstallViewBuilder?
 }
