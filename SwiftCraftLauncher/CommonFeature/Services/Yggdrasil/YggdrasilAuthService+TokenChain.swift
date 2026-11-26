@@ -61,11 +61,13 @@ extension YggdrasilAuthService {
             }
 
             let seed = try profileFromIDToken(idToken)
-            return [try await enrichProfile(
-                seed,
-                accessToken: accessToken,
-                server: server,
-            )]
+            return [
+                try await enrichProfile(
+                    seed,
+                    accessToken: accessToken,
+                    server: server,
+                ),
+            ]
         }
 
         let data = try await fetchProfileData(
