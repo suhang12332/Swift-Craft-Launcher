@@ -38,7 +38,6 @@ public struct PlayerSettingsView: View {
             }
             if isMinecraftAccount {
                 PlayerSettingsHistorySkinLibraryRow()
-                PlayerSettingsMinecraftFriendsAccountSection(viewModel: viewModel)
                 spacerView()
             }
             if canAddOffline {
@@ -52,11 +51,6 @@ public struct PlayerSettingsView: View {
             canAddOffline = await container.premiumAccountFlagManager.canAddOfflineAccount(
                 ipLocationService: container.ipLocationService,
             )
-            guard let p = currentPlayer, p.isOnlineAccount else {
-                viewModel.clearMinecraftFriendAccountPreferences()
-                return
-            }
-            await viewModel.reloadMinecraftFriendAccountPreferences(currentPlayer: p)
         }
     }
 }

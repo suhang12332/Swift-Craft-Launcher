@@ -85,69 +85,6 @@ struct PlayerSettingsHistorySkinLibraryRow: View {
     }
 }
 
-/// A section for managing the current online account's Minecraft friend preferences.
-struct PlayerSettingsMinecraftFriendsAccountSection: View {
-    @Environment(PlayerListViewModel.self)
-    private var playerListViewModel
-    @Bindable var viewModel: PlayerSettingsViewModel
-
-    private var currentPlayer: Player? {
-        playerListViewModel.currentPlayer
-    }
-
-    private var isMinecraftAccount: Bool {
-        guard let p = currentPlayer else { return false }
-        return p.isOnlineAccount
-    }
-
-    private var minecraftFriendAccountToggleDisabled: Bool {
-        viewModel.minecraftFriendAccountPreferences == nil
-            || viewModel.isLoadingMinecraftFriendAccountPreferences
-            || viewModel.isSavingMinecraftFriendAccountPreferences
-    }
-
-    var body: some View {
-        LabeledContent("settings.player.minecraft_friends_account.section".localized()) {
-            if viewModel.isLoadingMinecraftFriendAccountPreferences {
-                ProgressView()
-                    .scaleEffect(0.8)
-                    .controlSize(.small)
-            } else if isMinecraftAccount {
-                Button("settings.player.minecraft_friends_account.reload_from_account".localized()) {
-                    Task { await viewModel.reloadMinecraftFriendAccountPreferences(currentPlayer: currentPlayer) }
-                }
-                .disabled(viewModel.isSavingMinecraftFriendAccountPreferences)
-            }
-        }
-        CommonDescriptionText(text: "settings.player.minecraft_friends_account.description".localized())
-        LabeledContent("") {
-            Toggle(
-                "settings.player.minecraft_friends_account.enable_friend_list".localized(),
-                isOn: Binding(
-                    get: { viewModel.minecraftFriendAccountPreferences?.friends == .enabled },
-                    set: { on in
-                        Task { await viewModel.setMinecraftFriendListEnabled(on, currentPlayer: currentPlayer) }
-                    },
-                ),
-            )
-            .disabled(minecraftFriendAccountToggleDisabled)
-        }
-        .padding(.bottom, 4)
-        LabeledContent("") {
-            Toggle(
-                "settings.player.minecraft_friends_account.enable_accept_invites".localized(),
-                isOn: Binding(
-                    get: { viewModel.minecraftFriendAccountPreferences?.acceptInvites == .enabled },
-                    set: { on in
-                        Task { await viewModel.setMinecraftFriendAcceptInvitesEnabled(on, currentPlayer: currentPlayer) }
-                    },
-                ),
-            )
-            .disabled(minecraftFriendAccountToggleDisabled)
-        }
-    }
-}
-
 /// A row for downloading or updating the authlib-injector JAR.
 struct PlayerSettingsAuthlibInjectorRow: View {
     @Bindable var viewModel: PlayerSettingsViewModel

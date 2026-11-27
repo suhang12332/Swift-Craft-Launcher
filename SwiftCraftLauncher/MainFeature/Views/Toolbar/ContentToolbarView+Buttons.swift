@@ -122,62 +122,47 @@ struct SkinToolbarButton: View {
     }
 }
 
+private struct MinecraftFriendsSheetPresentation: Identifiable {
+    let id: String
+    let host: MinecraftFriendsSheetHostAdapter
+}
+
 struct MinecraftFriendsToolbarButton: View {
     @Environment(DIContainer.self)
     private var container
 
     let currentPlayer: Player?
     let viewModel: MinecraftFriendsSheetViewModel
-    @State private var showSheet = false
-    @State private var sheetHost: MinecraftFriendsSheetHostAdapter?
-    @State private var isLoading = false
+    @State private var presentation: MinecraftFriendsSheetPresentation?
 
     var body: some View {
         Button {
-            Task {
-                guard let p = currentPlayer else { return }
-                isLoading = true
-                defer { isLoading = false }
-                let host = MinecraftFriendsSheetHostAdapter(player: p)
-                sheetHost = host
-                viewModel.prepare(playerId: p.id, host: host)
-                await viewModel.load(forceRefresh: false)
-                guard !Task.isCancelled else { return }
-                showSheet = true
-            }
+            guard let p = currentPlayer else { return }
+            let host = MinecraftFriendsSheetHostAdapter(player: p)
+            viewModel.prepare(playerId: p.id, host: host)
+            presentation = MinecraftFriendsSheetPresentation(id: p.id, host: host)
         } label: {
-            if isLoading {
-                ProgressView()
-                    .controlSize(.small)
-            } else {
-                Label("minecraft.friends.toolbar.title".localized(), systemImage: "person.2")
-            }
+            Label("minecraft.friends.toolbar.title".localized(), systemImage: "person.2")
         }
         .help("minecraft.friends.toolbar.help".localized())
-        .disabled(isLoading)
-        .sheet(isPresented: $showSheet) {
-            if let p = currentPlayer, sheetHost != nil {
-                MinecraftFriendsSheetView(
-                    playerId: p.id,
-                    viewModel: viewModel,
-                    localize: MinecraftFriendsSheetLocalize.resolver(
-                        localeIdentifier: { container.ui.languageManager.selectedLanguage },
-                        fallback: { $0.localized() },
-                    ),
-                    limitBodyScrollHeight: container.ui.generalSettingsManager.limitCommonSheetHeight,
-                ) { _, url in
-                    Group {
-                        if let u = url, !u.isEmpty {
-                            MinecraftSkinUtils(type: .url, src: u, size: 40)
-                        } else {
-                            ProgressView()
-                                .controlSize(.small)
-                                .frame(width: 40, height: 40)
-                        }
+        .sheet(item: $presentation) { presentation in
+            MinecraftFriendsSheetView(
+                playerId: presentation.id,
+                viewModel: viewModel,
+                localize: MinecraftFriendsSheetLocalize.resolver(
+                    localeIdentifier: { container.ui.languageManager.selectedLanguage },
+                    fallback: { $0.localized() },
+                ),
+                limitBodyScrollHeight: container.ui.generalSettingsManager.limitCommonSheetHeight,
+            ) { _, url in
+                Group {
+                    if let u = url, !u.isEmpty {
+                        MinecraftSkinUtils(type: .url, src: u, size: 40)
+                    } else {
+                        ProgressView()
+                            .controlSize(.small)
+                            .frame(width: 40, height: 40)
                     }
-                }
-                .onDisappear {
-                    sheetHost = nil
                 }
             }
         }

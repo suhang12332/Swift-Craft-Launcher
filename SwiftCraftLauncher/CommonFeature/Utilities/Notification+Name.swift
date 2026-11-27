@@ -11,8 +11,5 @@ import Foundation
 extension Notification.Name {
     static let playerUpdated = Notification.Name("SwiftCraftLauncher.PlayerUpdated")
 
-    /// Posted when the Minecraft friends account preferences are updated on the server.
-    static let minecraftFriendsAccountPreferencesDidChange = Notification.Name("SwiftCraftLauncher.MinecraftFriendsAccountPreferencesDidChange")
-
     static let localResourceImported = Notification.Name("SwiftCraftLauncher.LocalResourceImported")
 }
