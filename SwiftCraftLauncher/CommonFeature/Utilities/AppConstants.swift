@@ -26,7 +26,6 @@ enum AppConstants {
         static let enableEphemeralWebLogin = "enableEphemeralWebLogin"
         static let defaultYggdrasilServerBaseURL = "defaultYggdrasilServerBaseURL"
         static let enableHistorySkinLibrary = "enableHistorySkinLibrary"
-        static let enableMinecraftFriendsPresenceNotifications = "enableMinecraftFriendsPresenceNotifications"
         static let hasAddedPremiumAccount = "hasAddedPremiumAccount"
         static let offlineUserServerMap = "offlineUserServerMap"
 
