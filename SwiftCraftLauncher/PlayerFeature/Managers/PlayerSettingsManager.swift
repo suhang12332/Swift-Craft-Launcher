@@ -31,14 +31,4 @@ final class PlayerSettingsManager {
     var enableHistorySkinLibrary: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableHistorySkinLibrary) {
         didSet { Defaults.save(enableHistorySkinLibrary, forKey: AppConstants.UserDefaultsKeys.enableHistorySkinLibrary) }
     }
-
-    /// A Boolean value indicating whether Minecraft friend presence notifications are enabled.
-    ///
-    /// When enabled, the launcher polls for friend online/offline/invite status
-    /// in the background while a Microsoft account is selected.
-    var enableMinecraftFriendsPresenceNotifications: Bool = Defaults.loadBool(forKey: AppConstants.UserDefaultsKeys.enableMinecraftFriendsPresenceNotifications) {
-        didSet {
-            Defaults.save(enableMinecraftFriendsPresenceNotifications, forKey: AppConstants.UserDefaultsKeys.enableMinecraftFriendsPresenceNotifications)
-        }
-    }
 }

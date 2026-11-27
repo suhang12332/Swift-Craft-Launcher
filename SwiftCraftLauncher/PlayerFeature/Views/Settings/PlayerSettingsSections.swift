@@ -85,25 +85,6 @@ struct PlayerSettingsHistorySkinLibraryRow: View {
     }
 }
 
-/// A row toggling Minecraft friend presence notifications for online accounts.
-struct PlayerSettingsFriendsPresenceNotificationsRow: View {
-    @Environment(PlayerSettingsManager.self)
-    private var playerSettingsManager
-
-    var body: some View {
-        @Bindable var playerSettingsManager = playerSettingsManager
-        LabeledContent("settings.player.minecraft_friends_presence_notifications".localized()) {
-            Toggle(
-                "settings.player.minecraft_friends_presence_notifications.toggle".localized(),
-                isOn: $playerSettingsManager.enableMinecraftFriendsPresenceNotifications,
-            )
-        }
-        CommonDescriptionText(
-            text: "settings.player.minecraft_friends_presence_notifications.description".localized(),
-        )
-    }
-}
-
 /// A section for managing the current online account's Minecraft friend preferences.
 struct PlayerSettingsMinecraftFriendsAccountSection: View {
     @Environment(PlayerListViewModel.self)

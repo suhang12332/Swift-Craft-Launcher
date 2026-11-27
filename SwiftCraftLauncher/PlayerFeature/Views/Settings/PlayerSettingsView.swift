@@ -10,7 +10,7 @@ import SwiftUI
 /// Displays and manages player-related settings in the launcher configuration.
 ///
 /// This view provides toggles for ephemeral login, offline login, skin library,
-/// Minecraft friend presence notifications, and authlib-injector management.
+/// and authlib-injector management.
 public struct PlayerSettingsView: View {
     @Environment(PlayerSettingsManager.self)
     private var playerSettingsManager
@@ -38,7 +38,6 @@ public struct PlayerSettingsView: View {
             }
             if isMinecraftAccount {
                 PlayerSettingsHistorySkinLibraryRow()
-                PlayerSettingsFriendsPresenceNotificationsRow()
                 PlayerSettingsMinecraftFriendsAccountSection(viewModel: viewModel)
                 spacerView()
             }

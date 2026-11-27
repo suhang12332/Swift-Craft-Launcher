@@ -30,6 +30,5 @@ final class UIContainer: @unchecked Sendable {
 
     // Minecraft Friends
 
-    @MainActorLazy var minecraftFriendsPresencePollingCoordinator: MinecraftFriendsPresencePollingCoordinator = .init()
     @Lazy var minecraftFriendsService: MinecraftFriendsService = .init()
 }

@@ -67,9 +67,6 @@ struct SwiftCraftLauncherApp: App {
                 .windowOpener(container.ui.windowManager)
                 .task {
                     container.system.sparkleUpdateService.scheduleStartupCheckIfNeeded()
-                    container.ui.minecraftFriendsPresencePollingCoordinator.start(
-                        playerListViewModel: playerListViewModel,
-                    )
                 }
                 .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in
                     ProgressDownloadManager.cleanup()
